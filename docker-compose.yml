@@ -1,0 +1,84 @@
+version: "3.9"
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: heartnote-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-heartnote}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-heartnote_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-heartnote}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./server/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-heartnote} -d ${POSTGRES_DB:-heartnote}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - heartnote-network
+
+  # FastAPI Backend Server
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: heartnote-server
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-heartnote}:${POSTGRES_PASSWORD:-heartnote_secret}@db:5432/${POSTGRES_DB:-heartnote}
+      - SECRET_KEY=${SECRET_KEY:-your-super-secret-key-change-in-production}
+      - DEBUG=${DEBUG:-true}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
+      - API_V1_PREFIX=/api/v1
+    ports:
+      - "${SERVER_PORT:-8000}:8000"
+    volumes:
+      - ./server:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - heartnote-network
+
+  # Next.js Frontend Client
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: heartnote-client
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      - NEXT_PUBLIC_APP_NAME=HeartNote
+    ports:
+      - "${CLIENT_PORT:-3000}:3000"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - server
+    networks:
+      - heartnote-network
+
+networks:
+  heartnote-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
