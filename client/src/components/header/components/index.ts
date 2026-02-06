@@ -8,3 +8,4 @@ export { ThemeToggle } from './ThemeToggle';
 export { AuthButtons } from './AuthButtons';
 export { HamburgerButton } from './HamburgerButton';
 export { MobileMenu } from './MobileMenu';
+export { UserMenu } from './UserMenu';

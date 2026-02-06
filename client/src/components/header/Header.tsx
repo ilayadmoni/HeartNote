@@ -6,6 +6,7 @@
  * Supports desktop, tablet (iPad), and mobile (iPhone) layouts
  */
 
+import { useState } from "react";
 import type { HeaderProps } from "./types";
 import { NAV_ITEMS } from "./constants";
 import { useHeader } from "./hooks/useHeader";
@@ -17,61 +18,92 @@ import {
   HamburgerButton,
   MobileMenu,
 } from "./components";
+import { LoginModal } from "@/components/auth";
 
 export function Header({ className = "" }: HeaderProps) {
   const { isMobileMenuOpen, isScrolled, toggleMobileMenu, closeMobileMenu } =
     useHeader();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  const openLoginModal = () => {
+    closeMobileMenu();
+    setIsLoginModalOpen(true);
+  };
+
+  const closeLoginModal = () => {
+    setIsLoginModalOpen(false);
+  };
 
   return (
-    <header
-      dir="rtl"
-      className={`
-        sticky top-0 z-50 w-full
-        backdrop-blur-sm
-        transition-shadow duration-300
-        ${isScrolled ? "shadow-md" : ""}
-        ${className}
-      `}
-      style={{
-        backgroundColor: "var(--header-bg)",
-        borderBottom: "1px solid var(--header-border)",
-      }}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 lg:h-18 gap-4">
-          {/* Right Side: Logo (RTL) */}
-          <div className="flex-shrink-0">
-            <Logo />
-          </div>
+    <>
+      <header
+        id="main-navigation"
+        dir="rtl"
+        role="banner"
+        aria-label="כותרת ראשית"
+        className={`
+          sticky top-0 z-50 w-full
+          backdrop-blur-sm
+          transition-shadow duration-300
+          ${isScrolled ? "shadow-md" : ""}
+          ${className}
+        `}
+        style={{
+          backgroundColor: "var(--header-bg)",
+          borderBottom: "1px solid var(--header-border)",
+        }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="relative flex items-center justify-center h-16 lg:h-18">
+            {/* Right Side: Logo (RTL) - Absolute positioned */}
+            <div className="absolute right-0 flex-shrink-0">
+              <Logo />
+            </div>
 
-          {/* Center: Desktop Navigation */}
-          <div className="hidden lg:flex flex-1 justify-center">
-            <NavLinks items={NAV_ITEMS} />
-          </div>
+            {/* Center: Desktop Navigation - Centered */}
+            <div className="hidden lg:block">
+              <NavLinks items={NAV_ITEMS} />
+            </div>
 
-          {/* Left Side: Actions (RTL) */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Theme Toggle */}
-            <ThemeToggle />
+            {/* Left Side: Actions (RTL) - Absolute positioned */}
+            <div className="absolute left-0 flex items-center gap-2 flex-shrink-0">
+              {/* Theme Toggle */}
+              <ThemeToggle />
 
-            {/* Desktop Auth Buttons */}
-            <AuthButtons variant="desktop" className="hidden lg:flex" />
+              {/* Desktop Auth Buttons */}
+              <AuthButtons
+                variant="desktop"
+                className="hidden lg:flex"
+                onLoginClick={openLoginModal}
+              />
 
-            {/* Mobile Hamburger */}
-            <HamburgerButton
-              isOpen={isMobileMenuOpen}
-              onClick={toggleMobileMenu}
-            />
+              {/* Mobile Hamburger */}
+              <HamburgerButton
+                isOpen={isMobileMenuOpen}
+                onClick={toggleMobileMenu}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      <MobileMenu
-        isOpen={isMobileMenuOpen}
-        onClose={closeMobileMenu}
-        navItems={NAV_ITEMS}
+        {/* Mobile Menu */}
+        <MobileMenu
+          isOpen={isMobileMenuOpen}
+          onClose={closeMobileMenu}
+          navItems={NAV_ITEMS}
+          onLoginClick={openLoginModal}
+        />
+      </header>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={closeLoginModal}
+        onSwitchToRegister={() => {
+          // TODO: Implement register modal switch
+          console.log("Switch to register");
+        }}
       />
-    </header>
+    </>
   );
 }

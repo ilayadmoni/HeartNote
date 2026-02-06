@@ -14,7 +14,7 @@ export function NavLinks({
   onItemClick,
 }: NavLinksProps) {
   return (
-    <nav className={className}>
+    <nav className={className} aria-label="ניווט ראשי">
       <ul className="flex items-center gap-6 lg:gap-8">
         {items.map((item) => (
           <li key={item.id}>
@@ -22,11 +22,12 @@ export function NavLinks({
               href={item.href}
               onClick={onItemClick}
               className="
-                text-sm font-medium
+                text-sm
                 text-[#2e3c52] dark:text-gray-200
                 hover:text-[#c4735f] dark:hover:text-[#e8917a]
                 transition-colors duration-200
                 whitespace-nowrap
+                text-hebrew-heading
               "
             >
               {item.label}

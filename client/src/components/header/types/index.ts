@@ -17,6 +17,7 @@ export interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   navItems: NavItem[];
+  onLoginClick?: () => void;
 }
 
 export interface NavLinksProps {
@@ -36,6 +37,7 @@ export interface ThemeToggleProps {
 export interface AuthButtonsProps {
   className?: string;
   variant?: 'desktop' | 'mobile';
+  onLoginClick?: () => void;
 }
 
 export interface HamburgerButtonProps {

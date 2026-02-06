@@ -25,6 +25,7 @@ export function HamburgerButton({
       `}
       aria-label={isOpen ? "סגור תפריט" : "פתח תפריט"}
       aria-expanded={isOpen}
+      aria-controls="mobile-menu"
     >
       <div className="w-5 h-4 relative flex flex-col justify-between">
         <span

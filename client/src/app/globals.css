@@ -4,6 +4,48 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
+/* Custom Font - GlacialIndifference for Logo */
+@font-face {
+  font-family: 'GlacialIndifference';
+  src: url('/assets/fonts/GlacialIndifference-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Custom Font - OpenSans for Hebrew */
+@font-face {
+  font-family: 'OpenSans';
+  src: url('/assets/fonts/OpenSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenSans';
+  src: url('/assets/fonts/OpenSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Hebrew Typography Utilities */
+.text-hebrew-heading {
+  font-family: 'OpenSans', sans-serif;
+  font-weight: 700;
+}
+
+.text-hebrew-body {
+  font-family: 'OpenSans', sans-serif;
+  font-weight: 400;
+}
+
+.text-hebrew-small {
+  font-family: 'OpenSans', sans-serif;
+  font-weight: 400;
+}
+
 /* ====================================
    Light Mode (Default)
    ==================================== */
@@ -59,8 +101,24 @@ body {
 }
 
 /* ====================================
-   Custom Scrollbar
+   Custom Scrollbar (Left Side)
    ==================================== */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+/* For Firefox - scrollbar on left */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2e3c52 transparent;
+}
+
+.dark * {
+  scrollbar-color: #415A77 transparent;
+}
+
+/* For Webkit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -70,29 +128,165 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(212, 130, 111, 0.4);
+  background: #2e3c52;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 130, 111, 0.6);
+  background: #1B263B;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(212, 130, 111, 0.3);
+  background: #415A77;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 130, 111, 0.5);
+  background: #5a7a9a;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
 }
 
 /* ====================================
-   Focus Styles
+   Focus Styles & Accessibility
    ==================================== */
 *:focus-visible {
   outline: 2px solid rgb(212, 130, 111);
   outline-offset: 2px;
 }
+
+/* Focus within for containers */
+.focus-within-ring:focus-within {
+  outline: 2px solid rgb(212, 130, 111);
+  outline-offset: 2px;
+}
+
+/* Skip to content focus styles */
+.skip-link:focus {
+  position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 9999;
+  padding: 1rem 2rem;
+  background-color: #2e3c52;
+  color: white;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-spin-slow,
+  .animate-spin-slow-reverse,
+  .animate-float {
+    animation: none !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 255, 255, 255;
+    --background-end-rgb: 255, 255, 255;
+  }
+  
+  .dark {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+  
+  *:focus-visible {
+    outline: 3px solid currentColor !important;
+    outline-offset: 3px !important;
+  }
+  
+  a, button {
+    text-decoration: underline;
+  }
+}
+
+/* Screen Reader Only (visually hidden but accessible) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Make sr-only visible on focus (for skip links) */
+.sr-only:focus,
+.sr-only:focus-within {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Not sr-only (utility to override) */
+.not-sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Forced Colors Mode (Windows High Contrast) */
+@media (forced-colors: active) {
+  .btn-primary,
+  .btn-outline {
+    border: 2px solid currentColor;
+  }
+  
+  a:focus,
+  button:focus {
+    outline: 3px solid currentColor;
+  }
+}
+
+/* Touch target sizing for mobile accessibility */
+@media (pointer: coarse) {
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 
 /* ====================================
    Utility Classes
@@ -163,6 +357,53 @@ body {
   }
 }
 
+@keyframes spin-slow-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes conveyor {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -80px 0;
+  }
+}
+
 .animate-spin-slow {
-  animation: spin-slow 4s linear infinite;
+  animation: spin-slow 10s linear infinite;
+}
+
+.animate-spin-slow-reverse {
+  animation: spin-slow-reverse 15s linear infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.conveyor-belt {
+  background-image: repeating-linear-gradient(
+    90deg,
+    #415A77 0px,
+    #415A77 10px,
+    transparent 10px,
+    transparent 40px
+  );
+  background-size: 80px 10px;
+  animation: conveyor 2s linear infinite;
 }
