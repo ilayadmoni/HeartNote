@@ -7,6 +7,7 @@
  */
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import type { HeaderProps } from "./types";
 import { NAV_ITEMS } from "./constants";
 import { useHeader } from "./hooks/useHeader";
@@ -21,9 +22,18 @@ import {
 import { LoginModal } from "@/components/auth";
 
 export function Header({ className = "" }: HeaderProps) {
+  const pathname = usePathname();
   const { isMobileMenuOpen, isScrolled, toggleMobileMenu, closeMobileMenu } =
     useHeader();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  // Hide header on create pages (editor) and preview frame
+  if (
+    pathname?.startsWith("/create") ||
+    pathname?.startsWith("/preview-frame")
+  ) {
+    return null;
+  }
 
   const openLoginModal = () => {
     closeMobileMenu();

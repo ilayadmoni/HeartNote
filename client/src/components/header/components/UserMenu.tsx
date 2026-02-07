@@ -46,8 +46,13 @@ export function UserMenu() {
 
   if (!user) return null;
 
-  const displayName = user.displayName || "משתמש";
-  const photoURL = user.photoURL;
+  const displayName =
+    user.user_metadata?.full_name ||
+    user.user_metadata?.display_name ||
+    user.email?.split("@")[0] ||
+    "משתמש";
+  const photoURL =
+    user.user_metadata?.avatar_url || user.user_metadata?.picture;
   const initials = displayName.charAt(0).toUpperCase();
 
   return (

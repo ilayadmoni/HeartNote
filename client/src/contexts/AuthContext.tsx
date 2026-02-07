@@ -3,6 +3,7 @@
 /**
  * AuthContext
  * Provides authentication state and methods throughout the app
+ * Uses Supabase Auth with backend sync
  */
 
 import {
@@ -12,20 +13,13 @@ import {
   useState,
   ReactNode,
 } from "react";
-import {
-  User,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut as firebaseSignOut,
-  updateProfile,
-} from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
+import { User, Session } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   loading: boolean;
   error: string | null;
   signIn: (email: string, password: string) => Promise<void>;
@@ -34,38 +28,56 @@ interface AuthContextType {
     password: string,
     displayName: string,
   ) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const googleProvider = new GoogleAuthProvider();
-
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter(); // Initialize router
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Listen to auth state changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Sign in with email/password
   const signIn = async (email: string, password: string) => {
     try {
       setError(null);
-      await signInWithEmailAndPassword(auth, email, password);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        setError(getErrorMessage(error.message));
+        throw error;
+      }
     } catch (err) {
-      const message = getErrorMessage(err);
-      setError(message);
+      if (err instanceof Error && !error) {
+        setError(getErrorMessage(err.message));
+      }
       throw err;
     }
   };
@@ -78,51 +90,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
-      const result = await createUserWithEmailAndPassword(
-        auth,
+      const { error } = await supabase.auth.signUp({
         email,
         password,
-      );
-
-      // Update display name
-      if (result.user) {
-        await updateProfile(result.user, { displayName });
+        options: {
+          data: {
+            full_name: displayName,
+            display_name: displayName,
+          },
+        },
+      });
+      if (error) {
+        setError(getErrorMessage(error.message));
+        throw error;
       }
     } catch (err) {
-      const message = getErrorMessage(err);
-      setError(message);
-      throw err;
-    }
-  };
-
-  // Sign in with Google
-  const signInWithGoogle = async () => {
-    try {
-      setError(null);
-      // Using popup - if this fails, user should check Firebase Console settings
-      await signInWithPopup(auth, googleProvider);
-    } catch (err) {
-      // Log the full error for debugging
-      console.error("Google Sign-In Error:", err);
-
-      const errorCode = (err as { code?: string }).code;
-      const errorMessage = (err as { message?: string }).message;
-
-      console.error("Error Code:", errorCode);
-      console.error("Error Message:", errorMessage);
-
-      // Handle specific popup errors
-      if (errorCode === "auth/popup-blocked") {
-        setError("חלון הקופץ נחסם. אנא אפשרו חלונות קופצים עבור אתר זה");
-      } else if (errorCode === "auth/unauthorized-domain") {
-        setError("הדומיין אינו מורשה. יש להוסיף אותו בהגדרות Firebase");
-      } else if (errorCode === "auth/configuration-not-found") {
-        setError("Google Sign-In לא מוגדר. הפעילו אותו ב-Firebase Console");
-      } else if (errorCode === "auth/internal-error") {
-        setError("שגיאה פנימית. וודאו ש-Google Sign-In מופעל ב-Firebase");
-      } else {
-        const message = getErrorMessage(err);
-        setError(message);
+      if (err instanceof Error && !error) {
+        setError(getErrorMessage(err.message));
       }
       throw err;
     }
@@ -132,10 +116,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       setError(null);
-      await firebaseSignOut(auth);
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        setError(getErrorMessage(error.message));
+        throw error;
+      }
+      setUser(null);
+      setSession(null);
+      router.refresh();
+      router.push("/");
     } catch (err) {
-      const message = getErrorMessage(err);
-      setError(message);
+      if (err instanceof Error && !error) {
+        setError(getErrorMessage(err.message));
+      }
       throw err;
     }
   };
@@ -147,11 +140,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        session,
         loading,
         error,
         signIn,
         signUp,
-        signInWithGoogle,
         signOut,
         clearError,
       }}
@@ -170,35 +163,43 @@ export function useAuth() {
   return context;
 }
 
-// Helper: Convert Firebase errors to Hebrew messages
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    const code = (error as { code?: string }).code;
+// Helper: Convert Supabase errors to Hebrew messages
+function getErrorMessage(errorMessage: string): string {
+  const lowerMessage = errorMessage.toLowerCase();
 
-    switch (code) {
-      case "auth/email-already-in-use":
-        return "כתובת האימייל כבר בשימוש";
-      case "auth/invalid-email":
-        return "כתובת אימייל לא תקינה";
-      case "auth/operation-not-allowed":
-        return "הפעולה אינה מורשית";
-      case "auth/weak-password":
-        return "הסיסמה חלשה מדי";
-      case "auth/user-disabled":
-        return "החשבון הושבת";
-      case "auth/user-not-found":
-        return "משתמש לא נמצא";
-      case "auth/wrong-password":
-        return "סיסמה שגויה";
-      case "auth/invalid-credential":
-        return "פרטי ההתחברות שגויים";
-      case "auth/popup-closed-by-user":
-        return "החלון נסגר לפני השלמת ההתחברות";
-      case "auth/cancelled-popup-request":
-        return "הבקשה בוטלה";
-      default:
-        return "אירעה שגיאה. נסו שנית";
-    }
+  if (
+    lowerMessage.includes("email already registered") ||
+    lowerMessage.includes("user already registered")
+  ) {
+    return "כתובת האימייל כבר בשימוש";
   }
-  return "אירעה שגיאה לא צפויה";
+  if (lowerMessage.includes("invalid email")) {
+    return "כתובת אימייל לא תקינה";
+  }
+  if (lowerMessage.includes("password") && lowerMessage.includes("weak")) {
+    return "הסיסמה חלשה מדי";
+  }
+  if (lowerMessage.includes("password") && lowerMessage.includes("short")) {
+    return "הסיסמה קצרה מדי (מינימום 6 תווים)";
+  }
+  if (
+    lowerMessage.includes("invalid login credentials") ||
+    lowerMessage.includes("invalid credentials")
+  ) {
+    return "פרטי ההתחברות שגויים";
+  }
+  if (lowerMessage.includes("email not confirmed")) {
+    return "יש לאמת את כתובת האימייל";
+  }
+  if (lowerMessage.includes("user not found")) {
+    return "משתמש לא נמצא";
+  }
+  if (lowerMessage.includes("too many requests")) {
+    return "יותר מדי ניסיונות. נסו שוב מאוחר יותר";
+  }
+  if (lowerMessage.includes("network")) {
+    return "שגיאת רשת. בדקו את החיבור לאינטרנט";
+  }
+
+  return "אירעה שגיאה. נסו שנית";
 }

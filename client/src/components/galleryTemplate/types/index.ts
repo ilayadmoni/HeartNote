@@ -7,38 +7,52 @@ export interface Template {
   id: string;
   title: string;
   description: string;
-  imageSrc: string;
+  imageSrc?: string;
   category: TemplateCategory;
   badge?: TemplateBadge;
   link: string;
   linkText?: string;
   isFree?: boolean;
+  isPremium?: boolean;
+  componentKey: TemplateComponentKey;
 }
+
+export type TemplateComponentKey =
+  | "DateInvite"
+  | "ScratchCard"
+  | "Timeline"
+  | "LoveCoupons"
+  | "RelationshipQuiz"
+  | "OpenWhen";
 
 export type TemplateCategory =
   | "all"
-  | "dates-love"
-  | "birthdays"
-  | "family-friends"
-  | "humor";
+  | "romantic"
+  | "fun"
+  | "memories"
+  | "gifts";
 
 export interface TemplateBadge {
-  type: "heart" | "star" | "new" | "free";
+  type: "heart" | "star" | "new" | "free" | "premium";
   color?: string;
 }
 
 export interface FilterTab {
   id: TemplateCategory;
   label: string;
+  emoji?: string;
 }
 
 export interface GalleryTemplateProps {
   className?: string;
+  onTemplateClick?: (template: Template) => void;
 }
 
 export interface TemplateCardProps {
   template: Template;
   className?: string;
+  onPreview?: (template: Template) => void;
+  onClick?: (template: Template) => void;
 }
 
 export interface FilterTabsProps {

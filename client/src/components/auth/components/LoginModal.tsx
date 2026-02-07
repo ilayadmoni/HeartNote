@@ -10,7 +10,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, LogIn } from "lucide-react";
 import { AuthInput } from "./AuthInput";
 import { AuthTabs } from "./AuthTabs";
-import { GoogleSignInButton } from "./GoogleSignInButton";
 import { RegisterForm } from "./RegisterForm";
 import { FocusTrap } from "@/components/accessibility";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,7 +26,7 @@ import {
 import type { LoginModalProps, LoginFormData } from "../types";
 
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
-  const { signIn, signUp, signInWithGoogle, error, clearError } = useAuth();
+  const { signIn, signUp, error, clearError } = useAuth();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
@@ -35,7 +34,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   });
   const [errors, setErrors] = useState<Partial<LoginFormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   // Reset form when modal closes
   useEffect(() => {
@@ -104,18 +102,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       // Error is handled by AuthContext
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setIsGoogleLoading(true);
-    try {
-      await signInWithGoogle();
-      onClose();
-    } catch {
-      // Error is handled by AuthContext
-    } finally {
-      setIsGoogleLoading(false);
     }
   };
 
@@ -273,21 +259,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                       isSubmitting={isSubmitting}
                     />
                   )}
-
-                  {/* Divider */}
-                  <div className="flex items-center gap-3 my-3">
-                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-                    <span className="text-gray-400 dark:text-gray-500 text-xs">
-                      או
-                    </span>
-                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-                  </div>
-
-                  {/* Google Sign In */}
-                  <GoogleSignInButton
-                    onClick={handleGoogleSignIn}
-                    isLoading={isGoogleLoading}
-                  />
                 </div>
 
                 {/* Bottom Accent */}
