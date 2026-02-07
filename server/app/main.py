@@ -1,136 +1,70 @@
 """
-HeartNote - Main FastAPI Application Entry Point
-
-This module initializes the FastAPI application with:
-- CORS middleware configuration
-- Health check endpoints
-- API router mounting
-- Lifespan events for startup/shutdown
+HeartNote FastAPI Application
+Main entry point for the API server
 """
 
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
-from fastapi import FastAPI, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
 from app.api.v1.router import api_router
-from app.core.config import settings
-from app.db.session import engine, init_db
+from app.core import get_settings
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """
-    Application lifespan manager.
-    Handles startup and shutdown events.
-    """
-    # Startup
-    print("🚀 Starting HeartNote API...")
-    await init_db()
-    print("✅ Database initialized")
-    
+async def lifespan(app: FastAPI):
+    """Application lifespan events"""
+    settings = get_settings()
+    print(f"🚀 HeartNote API starting on port {settings.port}")
+    print(f"📊 Max active pages: {settings.max_active_pages}")
+    print(f"⏰ Page expiry: {settings.page_expiry_hours} hours")
     yield
-    
-    # Shutdown
-    print("🛑 Shutting down HeartNote API...")
-    await engine.dispose()
-    print("✅ Database connections closed")
+    print("👋 HeartNote API shutting down")
 
 
-def create_application() -> FastAPI:
-    """
-    Factory function to create and configure the FastAPI application.
-    Follows the factory pattern for better testability.
-    """
+def create_app() -> FastAPI:
+    """Create and configure FastAPI application"""
+    settings = get_settings()
+
     app = FastAPI(
-        title=settings.APP_NAME,
-        description="HeartNote - A modern note-taking application with card-based organization",
-        version="0.1.0",
-        openapi_url=f"{settings.API_V1_PREFIX}/openapi.json" if settings.DEBUG else None,
-        docs_url=f"{settings.API_V1_PREFIX}/docs" if settings.DEBUG else None,
-        redoc_url=f"{settings.API_V1_PREFIX}/redoc" if settings.DEBUG else None,
+        title="HeartNote API",
+        description="Interactive greeting cards platform API",
+        version="1.0.0",
+        docs_url="/docs" if settings.debug else None,
+        redoc_url="/redoc" if settings.debug else None,
         lifespan=lifespan,
     )
 
-    # Configure CORS
+    # CORS middleware
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.CORS_ORIGINS_LIST,
+        allow_origins=settings.cors_origins_list,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
-    # Mount API router
-    app.include_router(api_router, prefix=settings.API_V1_PREFIX)
+    # Mount API routes
+    app.include_router(api_router, prefix="/api")
+
+    # Health check
+    @app.get("/health")
+    async def health_check():
+        return {
+            "status": "healthy",
+            "service": "heartnote-api",
+            "version": "1.0.0",
+        }
 
     return app
 
 
-# Create the application instance
-app = create_application()
+# Create app instance
+app = create_app()
 
 
-# ===========================================
-# Health Check Endpoints
-# ===========================================
-
-@app.get("/health", tags=["Health"])
-async def health_check() -> JSONResponse:
-    """
-    Basic health check endpoint.
-    Returns 200 OK if the server is running.
-    """
-    return JSONResponse(
-        status_code=status.HTTP_200_OK,
-        content={
-            "status": "healthy",
-            "service": settings.APP_NAME,
-            "version": "0.1.0",
-        }
-    )
-
-
-@app.get("/health/ready", tags=["Health"])
-async def readiness_check() -> JSONResponse:
-    """
-    Readiness check endpoint.
-    Verifies database connectivity and other dependencies.
-    """
-    from app.db.session import check_db_connection
-    
-    db_healthy = await check_db_connection()
-    
-    if db_healthy:
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content={
-                "status": "ready",
-                "database": "connected",
-            }
-        )
-    
-    return JSONResponse(
-        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-        content={
-            "status": "not_ready",
-            "database": "disconnected",
-        }
-    )
-
-
-@app.get("/", tags=["Root"])
-async def root() -> JSONResponse:
-    """
-    Root endpoint with API information.
-    """
-    return JSONResponse(
-        status_code=status.HTTP_200_OK,
-        content={
-            "message": f"Welcome to {settings.APP_NAME} API",
-            "version": "0.1.0",
-            "docs": f"{settings.API_V1_PREFIX}/docs" if settings.DEBUG else "Disabled in production",
-        }
-    )
+if __name__ == "__main__":
+    import uvicorn
+    settings = get_settings()
+    uvicorn.run("app.main:app", host="0.0.0.0", port=settings.port, reload=settings.debug)

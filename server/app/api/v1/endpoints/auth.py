@@ -1,41 +1,101 @@
-"""Authentication Endpoints"""
+"""
+Auth Endpoints
+Provides user info for authenticated requests (Auth is handled by Supabase on Frontend)
+"""
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
 
-from app.db.session import get_db
-from app.schemas.auth import Token, LoginRequest, RegisterRequest, RefreshTokenRequest
-from app.schemas.user import UserResponse
-from app.services.auth_service import AuthService
+from app.core import CurrentUser, verify_user
+from app.db.supabase import get_supabase_client
 
 router = APIRouter()
 
 
-@router.post("/login", response_model=Token)
-async def login(credentials: LoginRequest, db: AsyncSession = Depends(get_db)):
-    """Authenticate user and return tokens."""
-    auth_service = AuthService(db)
-    tokens = await auth_service.login(credentials)
-    if not tokens:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-    return tokens
+class UserProfile(BaseModel):
+    """User profile response"""
+    id: str
+    email: str | None
+    full_name: str | None
+    avatar_url: str | None
+    subscription_type: str
+    created_at: str
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
-    """Register a new user."""
-    auth_service = AuthService(db)
-    user = await auth_service.register(data)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
-    return user
+@router.get("/me", response_model=UserProfile)
+async def get_current_user_profile(
+    current_user: CurrentUser = Depends(verify_user),
+):
+    """
+    Get the current authenticated user's profile.
+    Token is verified locally, then profile is fetched from DB.
+    """
+    supabase = get_supabase_client()
+
+    result = supabase.table("profiles").select(
+        "id, email, full_name, avatar_url, subscription_type, created_at"
+    ).eq("id", current_user.id).single().execute()
+
+    if not result.data:
+        # Profile doesn't exist yet - this shouldn't happen if trigger works
+        # But handle gracefully
+        return UserProfile(
+            id=current_user.id,
+            email=current_user.email,
+            full_name=None,
+            avatar_url=None,
+            subscription_type="free",
+            created_at="",
+        )
+
+    profile = result.data
+    return UserProfile(
+        id=profile["id"],
+        email=profile.get("email"),
+        full_name=profile.get("full_name"),
+        avatar_url=profile.get("avatar_url"),
+        subscription_type=profile.get("subscription_type", "free"),
+        created_at=profile.get("created_at", ""),
+    )
 
 
-@router.post("/refresh", response_model=Token)
-async def refresh_token(data: RefreshTokenRequest, db: AsyncSession = Depends(get_db)):
-    """Refresh access token."""
-    auth_service = AuthService(db)
-    tokens = await auth_service.refresh_tokens(data.refresh_token)
-    if not tokens:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
-    return tokens
+class UpdateProfileRequest(BaseModel):
+    """Request to update profile"""
+    full_name: str | None = None
+    avatar_url: str | None = None
+
+
+@router.patch("/me", response_model=UserProfile)
+async def update_profile(
+    request: UpdateProfileRequest,
+    current_user: CurrentUser = Depends(verify_user),
+):
+    """Update the current user's profile"""
+    supabase = get_supabase_client()
+
+    update_data = {}
+    if request.full_name is not None:
+        update_data["full_name"] = request.full_name
+    if request.avatar_url is not None:
+        update_data["avatar_url"] = request.avatar_url
+
+    if not update_data:
+        # Nothing to update, just return current profile
+        return await get_current_user_profile(current_user)
+
+    result = supabase.table("profiles").update(
+        update_data
+    ).eq("id", current_user.id).execute()
+
+    if not result.data:
+        return await get_current_user_profile(current_user)
+
+    profile = result.data[0]
+    return UserProfile(
+        id=profile["id"],
+        email=profile.get("email"),
+        full_name=profile.get("full_name"),
+        avatar_url=profile.get("avatar_url"),
+        subscription_type=profile.get("subscription_type", "free"),
+        created_at=profile.get("created_at", ""),
+    )

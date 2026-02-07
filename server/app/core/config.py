@@ -1,70 +1,48 @@
 """
-Application Configuration
-
-Centralized configuration management using Pydantic Settings.
-Supports environment variables and .env files.
+HeartNote Core Configuration
+Loads environment variables and provides typed settings
 """
 
 from functools import lru_cache
-from typing import List
-
-from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """
-    Application settings with environment variable support.
-    Uses Pydantic v2 settings management.
-    """
-    
+    """Application settings loaded from environment variables"""
+
+    # Server
+    port: int = 8000
+    debug: bool = False
+    cors_origins: str = "http://localhost:3000,http://localhost:3001"
+
+    # Supabase
+    supabase_url: str = ""
+    supabase_anon_key: str = ""
+    supabase_service_role_key: str = ""
+    supabase_jwt_secret: str = ""
+
+    # Business Logic
+    max_active_pages: int = 3
+    page_expiry_hours: int = 1
+
+    # Database (optional - for direct SQLAlchemy connection)
+    database_url: str | None = None
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        """Parse CORS origins as list"""
+        return [origin.strip() for origin in self.cors_origins.split(",")]
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        case_sensitive=True,
+        case_sensitive=False,
         extra="ignore",
     )
 
-    # Application
-    APP_NAME: str = "HeartNote"
-    DEBUG: bool = True
-    API_V1_PREFIX: str = "/api/v1"
 
-    # Database
-    DATABASE_URL: str = "postgresql+asyncpg://heartnote:heartnote_secret@localhost:5432/heartnote"
-
-    # Security
-    SECRET_KEY: str = "your-super-secret-key-change-in-production"
-    JWT_SECRET_KEY: str = "your-jwt-secret-key-change-in-production"
-    JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
-
-    # CORS
-    CORS_ORIGINS: str = "http://localhost:3000"
-
-    @property
-    def CORS_ORIGINS_LIST(self) -> List[str]:
-        """Parse CORS origins from comma-separated string to list."""
-        return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
-
-    @field_validator("DATABASE_URL", mode="before")
-    @classmethod
-    def validate_database_url(cls, v: str) -> str:
-        """Ensure database URL uses asyncpg driver."""
-        if v.startswith("postgresql://"):
-            return v.replace("postgresql://", "postgresql+asyncpg://", 1)
-        return v
-
-
-@lru_cache
+@lru_cache()
 def get_settings() -> Settings:
-    """
-    Get cached settings instance.
-    Uses LRU cache for performance.
-    """
+    """Get cached settings instance"""
     return Settings()
 
-
-# Global settings instance
-settings = get_settings()

@@ -75,6 +75,12 @@ class User(Base, UUIDMixin, TimestampMixin):
         default=dict,
         nullable=True,
     )
+    supabase_id: Mapped[Optional[str]] = mapped_column(
+        String(255),
+        unique=True,
+        index=True,
+        nullable=True,
+    )
 
     # Relationships
     cards: Mapped[List["Card"]] = relationship(
