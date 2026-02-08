@@ -2,12 +2,12 @@
 
 /**
  * DateInvite Component - Desktop Version
- * Premium full-screen romantic experience for desktop
- * Uses dynamic viewport units for robustness
+ * Compact card-style design matching Mobile
+ * Enhanced "No" button movement with smooth UX
  */
 
 import { motion } from "framer-motion";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Heart } from "lucide-react";
 import type { DateInviteDesktopProps } from "../types";
 
 export function DateInviteDesktop({
@@ -19,123 +19,135 @@ export function DateInviteDesktop({
   onNoHover,
 }: DateInviteDesktopProps) {
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-[#fdf6f3] via-[#faf7f5] to-[#f8ece8] dark:from-gray-900 dark:via-[#1a1f2e] dark:to-[#252d3b] relative overflow-hidden">
-      {/* Ambient background glow */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] bg-[#d4826f]/15 dark:bg-[#d4826f]/8 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[35vw] h-[35vw] bg-[#e8917a]/15 dark:bg-[#e8917a]/8 rounded-full blur-[100px]" />
-      </div>
-
-      {/* Decorative elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <span className="absolute top-[10%] left-[15%] text-3xl opacity-40 animate-pulse">
-          💕
+    <div className="h-full w-full flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 p-4 overflow-hidden relative">
+      {/* Background Hearts Pattern */}
+      <div className="absolute inset-0 opacity-25 pointer-events-none overflow-hidden">
+        <span className="absolute top-[8%] left-[12%] text-xl opacity-40">
+          ❤
         </span>
-        <span className="absolute top-[20%] right-[10%] text-2xl opacity-30">
-          💗
+        <span className="absolute top-[15%] right-[15%] text-lg opacity-30">
+          ❤
         </span>
-        <span className="absolute bottom-[25%] left-[8%] text-3xl opacity-35">
-          💖
+        <span className="absolute bottom-[22%] left-[10%] text-xl opacity-35">
+          ❤
         </span>
-        <span className="absolute bottom-[15%] right-[15%] text-2xl opacity-40 animate-pulse">
-          💝
+        <span className="absolute bottom-[12%] right-[12%] text-lg opacity-25">
+          ❤
         </span>
-        <span className="absolute top-[15%] left-[25%] text-xl opacity-50">
-          ✨
+        <span className="absolute top-[45%] left-[6%] text-sm opacity-20">
+          ❤
         </span>
-        <span className="absolute top-[25%] right-[20%] text-2xl opacity-60">
-          ✨
-        </span>
-        <span className="absolute bottom-[30%] left-[20%] text-xl opacity-40">
-          ✨
-        </span>
-        <span className="absolute bottom-[20%] right-[25%] text-2xl opacity-50">
-          ✨
+        <span className="absolute bottom-[40%] right-[6%] text-sm opacity-25">
+          ❤
         </span>
       </div>
 
-      {/* Main Content */}
+      {/* Main Card - Compact */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative z-10 text-center px-8 max-w-4xl"
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="relative z-10 w-full max-w-sm bg-white dark:bg-gray-800 rounded-[24px] shadow-xl shadow-black/8 dark:shadow-black/25 p-6 flex flex-col items-center text-center"
       >
         {!answered ? (
           <>
-            {/* Heart icon */}
-            <motion.div
-              className="mb-12"
-              animate={{ scale: [1, 1.08, 1] }}
-              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-            >
-              <span className="text-9xl drop-shadow-2xl">💝</span>
-            </motion.div>
+            {/* Icon Container - Smaller */}
+            <div className="w-14 h-14 bg-gradient-to-br from-[#ffe4e6] to-[#fff1f2] dark:from-gray-700 dark:to-gray-600 rounded-xl flex items-center justify-center mb-5 shadow-md shadow-[#d4826f]/10">
+              <motion.span
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="text-2xl"
+              >
+                💌
+              </motion.span>
+            </div>
 
-            {/* Question */}
-            <h1 className="text-6xl lg:text-7xl font-bold text-[#2e3c52] dark:text-white mb-16 text-hebrew-heading leading-tight drop-shadow-sm">
+            {/* Question - Smaller */}
+            <h1 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-1.5 text-hebrew-heading leading-tight">
               {data.question}
             </h1>
 
-            {/* Buttons */}
-            <div className="flex justify-center gap-10">
+            {/* Subtitle */}
+            <p className="text-xs text-gray-400 mb-6 text-hebrew-body">
+              ...אני מבטיח שיהיה כיף
+            </p>
+
+            {/* Buttons - Compact */}
+            <div className="w-full flex flex-col items-center gap-3">
+              {/* Yes Button */}
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={onYes}
-                className="px-16 py-6 bg-gradient-to-r from-[#d4826f] to-[#e8917a] hover:from-[#c4735f] hover:to-[#d4826f] text-white text-3xl font-bold rounded-full shadow-2xl shadow-[#d4826f]/30 transition-all duration-300 text-hebrew-heading group relative overflow-hidden"
+                className="w-full py-3 bg-[#d4826f] hover:bg-[#c4735f] text-white text-base font-bold rounded-full shadow-lg shadow-[#d4826f]/20 text-hebrew-heading flex items-center justify-center gap-2 transition-all"
               >
-                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                <span className="relative z-10">{data.yesText}</span>
+                <span>{data.yesText}</span>
+                <Heart size={16} fill="currentColor" className="opacity-80" />
               </motion.button>
 
+              {/* No Button - Constrained movement */}
               <motion.button
-                animate={{ x: noPosition.x, y: noPosition.y }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                animate={{
+                  x: noPosition.x * 0.4,
+                  y: noPosition.y * 0.25,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 30,
+                  mass: 0.8,
+                }}
                 onHoverStart={onNoHover}
-                className="px-16 py-6 bg-white/90 dark:bg-gray-700/90 text-gray-500 dark:text-gray-400 text-3xl font-bold rounded-full shadow-xl transition-colors text-hebrew-heading hover:bg-gray-100 dark:hover:bg-gray-600 border border-transparent hover:border-gray-200 dark:hover:border-gray-600"
+                className="px-5 py-2 text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-all text-hebrew-body hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
               >
                 {data.noText}
               </motion.button>
             </div>
           </>
         ) : (
+          /* Success State - Compact */
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center"
+            transition={{ duration: 0.3 }}
+            className="flex flex-col items-center w-full py-2"
           >
             <motion.div
-              animate={{ scale: [1, 1.1, 1], rotate: [0, -5, 5, 0] }}
-              transition={{ repeat: Infinity, duration: 3 }}
-              className="mb-10"
+              animate={{ rotate: [0, -8, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 2.5 }}
+              className="mb-4"
             >
-              <span className="text-[11rem] drop-shadow-2xl">💖</span>
+              <span className="text-5xl">💖</span>
             </motion.div>
 
-            <h2 className="text-7xl lg:text-8xl font-black bg-gradient-to-r from-[#d4826f] via-[#e8917a] to-[#d4826f] bg-clip-text text-transparent text-hebrew-heading mb-8 drop-shadow-sm">
+            <h2 className="text-xl font-bold text-[#d4826f] text-hebrew-heading mb-1.5">
               {data.successMessage}
             </h2>
 
-            <p className="text-3xl text-gray-500 dark:text-gray-300 text-hebrew-body mb-12 font-medium">
+            <p className="text-xs text-gray-400 mb-5 text-hebrew-body">
               💕 אני כל כך שמח/ה! 💕
             </p>
 
             <button
               onClick={onReset}
-              className="flex items-center gap-3 px-8 py-4 text-xl text-gray-400 hover:text-[#d4826f] dark:hover:text-[#e8917a] transition-all text-hebrew-body border-2 border-gray-100 dark:border-gray-800 rounded-full hover:border-[#d4826f] dark:hover:border-[#e8917a] bg-white/50 dark:bg-black/20 backdrop-blur-sm"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-gray-400 hover:text-[#d4826f] transition-all bg-gray-50 dark:bg-gray-700/50 rounded-full text-hebrew-body"
             >
-              <RotateCcw size={24} />
+              <RotateCcw size={12} />
               <span>שאל שוב</span>
             </button>
           </motion.div>
         )}
       </motion.div>
 
+      {/* Footer Credit */}
+      <p className="absolute bottom-2 text-[10px] text-gray-300 dark:text-gray-600 text-hebrew-body">
+        HeartNote Factory © 2024
+      </p>
+
+      {/* Background Image Overlay */}
       {data.backgroundImage && (
         <div
-          className="absolute inset-0 opacity-[0.05] bg-cover bg-center pointer-events-none mix-blend-overlay"
+          className="absolute inset-0 opacity-[0.04] bg-cover bg-center pointer-events-none"
           style={{ backgroundImage: `url(${data.backgroundImage})` }}
         />
       )}

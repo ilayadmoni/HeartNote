@@ -2,10 +2,9 @@
 
 /**
  * EditorPreview Component
- * Live template preview - direct rendering for mobile, iframe for desktop
+ * Live template preview - direct rendering for proper auto-height
  */
 
-import { useEffect, useRef, useState } from "react";
 import {
   DateInvite,
   ScratchCard,
@@ -36,66 +35,21 @@ interface EditorPreviewProps {
   isMobile?: boolean;
 }
 
-export function EditorPreview({
-  templateId,
-  data,
-  isMobile,
-}: EditorPreviewProps) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [loaded, setLoaded] = useState(false);
+export function EditorPreview({ templateId, data }: EditorPreviewProps) {
+  const Component = TEMPLATE_COMPONENTS[templateId];
 
-  // Store data in sessionStorage for iframe to read (desktop only)
-  useEffect(() => {
-    if (!isMobile) {
-      sessionStorage.setItem(`preview_${templateId}`, JSON.stringify(data));
-    }
-  }, [templateId, data, isMobile]);
-
-  // Update iframe when data changes (desktop only)
-  useEffect(() => {
-    if (!isMobile && iframeRef.current && loaded) {
-      try {
-        iframeRef.current.contentWindow?.postMessage(
-          { type: "UPDATE_DATA", data },
-          "*",
-        );
-      } catch {
-        // Fallback handled by sessionStorage polling
-      }
-    }
-  }, [data, loaded, isMobile]);
-
-  // Mobile: Render component directly for proper sizing
-  if (isMobile) {
-    const Component = TEMPLATE_COMPONENTS[templateId];
-
-    if (!Component) {
-      return (
-        <div className="h-full flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900">
-          <p className="text-gray-400 text-sm text-hebrew-body">
-            תבנית לא נמצאה
-          </p>
-        </div>
-      );
-    }
-
+  if (!Component) {
     return (
-      <div className="h-full w-full overflow-auto bg-[#faf7f5] dark:bg-gray-900">
-        <Component data={data} />
+      <div className="min-h-[400px] flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900 rounded-xl">
+        <p className="text-gray-400 text-sm text-hebrew-body">תבנית לא נמצאה</p>
       </div>
     );
   }
 
-  // Desktop: Use iframe for isolated viewport
+  // Render component directly for auto-height
   return (
-    <div className="h-full w-full bg-gray-900 overflow-hidden">
-      <iframe
-        ref={iframeRef}
-        src={`/preview-frame/${templateId}`}
-        onLoad={() => setLoaded(true)}
-        className="w-full h-full border-0 block"
-        title="תצוגה מקדימה"
-      />
+    <div className="w-full flex-1 rounded-xl overflow-hidden shadow-lg">
+      <Component data={data} />
     </div>
   );
 }

@@ -101,47 +101,49 @@ body {
 }
 
 /* ====================================
-   Custom Scrollbar (Left Side)
+   Custom Scrollbar (Premier Design)
    ==================================== */
 html {
   overflow-y: scroll;
   scrollbar-gutter: stable;
 }
 
-/* For Firefox - scrollbar on left */
+/* Firefox: Standard Properties */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2e3c52 transparent;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent; /* Subtle Grey Thumb, Transparent Track */
 }
 
 .dark * {
-  scrollbar-color: #415A77 transparent;
+  scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
 }
 
-/* For Webkit browsers (Chrome, Safari, Edge) */
+/* Webkit: Chrome, Safari, Edge */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 8px; /* Slim but usable */
+  height: 8px; /* Consistent horizontal scroll */
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: transparent; /* Seamless blending */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2e3c52;
-  border-radius: 4px;
+  background-color: rgba(156, 163, 175, 0.5); /* Muted Grey (Slate-400 @ 50%) */
+  border-radius: 9999px; /* Fully rounded pill shape */
+  /* Optional: Add border + background-clip: content-box if you want it to look "floating" inside the track */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1B263B;
+  background-color: #d4826f; /* Brand Accent (Coral) - Enhanced visibility on interact */
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #415A77;
+  background-color: rgba(156, 163, 175, 0.3); /* Subtle Grey in Dark Mode */
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #5a7a9a;
+  background-color: #e8917a; /* Dark Mode Accent */
 }
 
 /* Hide scrollbar utility */

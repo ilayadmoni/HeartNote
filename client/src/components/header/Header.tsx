@@ -27,11 +27,8 @@ export function Header({ className = "" }: HeaderProps) {
     useHeader();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // Hide header on create pages (editor) and preview frame
-  if (
-    pathname?.startsWith("/create") ||
-    pathname?.startsWith("/preview-frame")
-  ) {
+  // Hide header only on preview frame (iframe content)
+  if (pathname?.startsWith("/preview-frame")) {
     return null;
   }
 

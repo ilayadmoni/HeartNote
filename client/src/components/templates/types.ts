@@ -38,7 +38,7 @@ export interface TimelineEvent {
   date: string;               // "2023-01-15"
   title: string;              // "הפגישה הראשונה שלנו"
   description?: string;
-  image?: string;             // URL
+  icon?: string;              // Emoji: "💖"
 }
 
 export interface TimelineData {

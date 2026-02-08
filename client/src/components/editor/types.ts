@@ -12,7 +12,8 @@ export type EditorFieldType =
   | "color"
   | "image"
   | "select"
-  | "toggle";
+  | "toggle"
+  | "events";
 
 export interface EditorField {
   key: string;

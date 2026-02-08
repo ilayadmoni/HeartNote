@@ -18,18 +18,6 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         placeholder: "?האם תצא/י איתי לדייט",
       },
       {
-        key: "yesText",
-        label: "טקסט כפתור כן",
-        type: "text",
-        placeholder: "כן!",
-      },
-      {
-        key: "noText",
-        label: "טקסט כפתור לא",
-        type: "text",
-        placeholder: "לא",
-      },
-      {
         key: "successMessage",
         label: "הודעת הצלחה",
         type: "text",
@@ -37,7 +25,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
       },
     ],
     defaultData: {
-      question: "?האם תצא/י איתי לדייט",
+      question: "האם תצא/י איתי לדייט?",
       yesText: "כן!",
       noText: "לא",
       successMessage: "!יש! איזה כיף",
@@ -68,7 +56,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
       scratchColor: "#c0c0c0",
     },
   },
-  "timeline": {
+  timeline: {
     templateId: "timeline",
     title: "ציר הזמן שלנו",
     description: "ספרו את הסיפור שלכם דרך אירועים בציר זמן",
@@ -78,6 +66,11 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         label: "כותרת",
         type: "text",
         placeholder: "הסיפור שלנו",
+      },
+      {
+        key: "events",
+        label: "אירועים",
+        type: "events",
       },
     ],
     defaultData: {

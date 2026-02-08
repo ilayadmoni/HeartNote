@@ -3,13 +3,13 @@
 /**
  * EditorMobile Component
  * Mobile layout - Preview card on top, edit form sliding up from bottom
- * Premium design following project rules
+ * Uses global Header/Footer from layout.tsx
  */
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { ChevronUp, ChevronDown, Send, ChevronLeft } from "lucide-react";
+import { ChevronUp, ChevronDown, Send } from "lucide-react";
 import { EditorSidebar } from "../components/EditorSidebar";
 import { EditorPreview } from "../components/EditorPreview";
 import { SuccessModal } from "../components/SuccessModal";
@@ -33,7 +33,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
 
   if (!config) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900 p-4">
+      <div className="min-h-[60vh] flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900 p-4">
         <div className="text-center">
           <p className="text-2xl mb-4">❌</p>
           <p className="text-gray-600 dark:text-gray-400 text-hebrew-body">
@@ -68,20 +68,11 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
-      {/* Header - Clean & Minimal */}
-      <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-700 px-4 py-3">
+    <div className="min-h-[calc(100vh-140px)] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
+      {/* Compact Toolbar */}
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-4 py-3">
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm text-hebrew-body"
-            aria-label="חזרה"
-          >
-            <ChevronLeft size={18} />
-            <span>חזרה ללובי</span>
-          </button>
-
-          <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading flex items-center gap-2">
+          <h1 className="text-base font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
             {config.title}
           </h1>
 
@@ -98,7 +89,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
             <span>שליחה</span>
           </button>
         </div>
-      </header>
+      </div>
 
       {/* Preview Area - Takes most of the screen */}
       <div

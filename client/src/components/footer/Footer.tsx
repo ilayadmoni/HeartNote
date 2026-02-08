@@ -15,11 +15,8 @@ export function Footer(props: FooterProps) {
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // Hide footer on create pages (editor) and preview frame
-  if (
-    pathname?.startsWith("/create") ||
-    pathname?.startsWith("/preview-frame")
-  ) {
+  // Hide footer only on preview frame (iframe content)
+  if (pathname?.startsWith("/preview-frame")) {
     return null;
   }
 

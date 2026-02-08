@@ -3,12 +3,13 @@
 /**
  * EditorDesktop Component
  * Desktop layout - preview fills main area, sidebar on right
+ * Uses global Header/Footer from layout.tsx
  */
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Send, ArrowRight } from "lucide-react";
+import { Send } from "lucide-react";
 import { EditorSidebar } from "../components/EditorSidebar";
 import { EditorPreview } from "../components/EditorPreview";
 import { SuccessModal } from "../components/SuccessModal";
@@ -19,6 +20,8 @@ import type { TemplateEditorProps } from "../types";
 export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const router = useRouter();
   const config = EDITOR_CONFIGS[templateId];
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [previewHeight, setPreviewHeight] = useState<number | null>(null);
 
   const [data, setData] = useState<Record<string, unknown>>(
     config?.defaultData || {},
@@ -29,9 +32,29 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     expiresAt: string;
   } | null>(null);
 
+  // Track preview height to sync sidebar max-height
+  useEffect(() => {
+    if (!previewRef.current) return;
+
+    const updateHeight = () => {
+      if (previewRef.current) {
+        setPreviewHeight(previewRef.current.offsetHeight);
+      }
+    };
+
+    // Initial measurement
+    updateHeight();
+
+    // Use ResizeObserver for dynamic updates
+    const resizeObserver = new ResizeObserver(updateHeight);
+    resizeObserver.observe(previewRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, [data]);
+
   if (!config) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900">
+      <div className="min-h-[60vh] flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900">
         <div className="text-center">
           <p className="text-2xl mb-4">❌</p>
           <p className="text-gray-600 dark:text-gray-400 text-hebrew-body">
@@ -66,18 +89,9 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
-      {/* Header */}
-      <header className="flex-shrink-0 h-14 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-[#2e3c52] dark:text-gray-300 hover:text-[#d4826f] dark:hover:text-[#e8917a] transition-colors"
-          aria-label="חזרה"
-        >
-          <ArrowRight size={20} />
-          <span className="text-sm text-hebrew-body">חזרה</span>
-        </button>
-
+    <div className="min-h-[calc(100vh-180px)] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
+      {/* Compact Toolbar */}
+      <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex items-center justify-between">
         <h1 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
           {config.title}
         </h1>
@@ -96,17 +110,23 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
           )}
           <span>{isPublishing ? "יוצר..." : "שליחה"}</span>
         </motion.button>
-      </header>
+      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Preview Area - Full width except sidebar */}
-        <main className="flex-1 p-6 overflow-auto">
+      {/* Main Content - Grid layout for aligned heights */}
+      <div className="flex-1 flex p-6 gap-6 items-stretch">
+        {/* Preview Area - Auto height with responsive minimum */}
+        <main
+          ref={previewRef}
+          className="flex-1 min-h-[calc(100vh-250px)] flex flex-col"
+        >
           <EditorPreview templateId={templateId} data={data} />
         </main>
 
-        {/* Sidebar */}
-        <aside className="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+        {/* Sidebar - Max height matches preview, scrolls when content exceeds */}
+        <aside
+          className="w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-y-auto flex-shrink-0"
+          style={{ maxHeight: previewHeight ? `${previewHeight}px` : "auto" }}
+        >
           <EditorSidebar config={config} data={data} onChange={handleChange} />
         </aside>
       </div>

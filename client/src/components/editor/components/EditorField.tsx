@@ -6,10 +6,12 @@
  */
 
 import { motion } from "framer-motion";
-import type { EditorFieldDef } from "../types";
+import type { EditorField as EditorFieldType } from "../types";
+import { TimelineEventsEditor } from "./TimelineEventsEditor";
+import type { TimelineEvent } from "@/components/templates/types";
 
 interface EditorFieldProps {
-  field: EditorFieldDef;
+  field: EditorFieldType;
   value: unknown;
   onChange: (value: unknown) => void;
 }
@@ -94,6 +96,13 @@ export function EditorField({ field, value, onChange }: EditorFieldProps) {
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
         </motion.button>
+      )}
+
+      {field.type === "events" && (
+        <TimelineEventsEditor
+          events={(value as TimelineEvent[]) || []}
+          onChange={onChange}
+        />
       )}
     </div>
   );
