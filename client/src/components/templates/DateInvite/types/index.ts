@@ -9,6 +9,7 @@ export interface DateInviteBaseProps {
     noText: string;
     successMessage: string;
     backgroundImage?: string;
+    primaryColor?: string;
   };
   answered: boolean;
   noPosition: { x: number; y: number };

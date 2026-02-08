@@ -105,19 +105,23 @@ export const PREVIEW_DATA = {
   },
   LoveCoupons: {
     coupons: [
-      { id: "1", title: "עיסוי", icon: "💆", isRedeemed: false },
-      { id: "2", title: "ארוחה", icon: "🍽️", isRedeemed: true },
+      { id: "1", title: "עיסוי", icon: "💆", color: "emerald", isRedeemed: false },
+      { id: "2", title: "ארוחה", icon: "🍽️", color: "sky", isRedeemed: true },
     ],
   },
   RelationshipQuiz: {
     title: "?",
-    questions: [{ id: "1", question: "?", options: ["A", "B"], correctIndex: 0 }],
-    scoreMessages: [],
+    questions: [
+      { id: "1", question: "?", options: ["A", "B", "C", "D"], correctIndex: 0 },
+    ],
+    scoreMessages: [
+      { minScore: 0, message: "כל הכבוד!", emoji: "💪" },
+    ],
   },
   OpenWhen: {
     envelopes: [
-      { id: "1", title: "😢", content: "", isLocked: false },
-      { id: "2", title: "💪", content: "", isLocked: true },
+      { id: "1", title: "😢", emoji: "😢", content: "", dateOpen: "2026-01-01" },
+      { id: "2", title: "💪", emoji: "💪", content: "", dateOpen: "2099-01-01" },
     ],
   },
 };

@@ -12,15 +12,25 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { DateInviteDesktop } from "./Desktop/DateInviteDesktop";
 import { DateInviteMobile } from "./Mobile/DateInviteMobile";
 import type { TemplateComponentProps, DateInviteData } from "../types";
+import { DEFAULT_PRIMARY_COLOR } from "../types";
 
 export function DateInvite({ data }: TemplateComponentProps<DateInviteData>) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [answered, setAnswered] = useState(false);
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
 
+  const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
+
   const handleYes = useCallback(() => {
     setAnswered(true);
-    const colors = ["#d4826f", "#e8917a", "#faf7f5", "#ff6b8a", "#ff8fa3"];
+    // Generate color variations based on primaryColor
+    const colors = [
+      primaryColor,
+      `${primaryColor}cc`,
+      "#faf7f5",
+      "#ff6b8a",
+      "#ff8fa3",
+    ];
     confetti({
       particleCount: 100,
       spread: 70,
@@ -33,7 +43,7 @@ export function DateInvite({ data }: TemplateComponentProps<DateInviteData>) {
       origin: { x: 0.7, y: 0.5 },
       colors,
     });
-  }, []);
+  }, [primaryColor]);
 
   const handleReset = useCallback(() => {
     setAnswered(false);

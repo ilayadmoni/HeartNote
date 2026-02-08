@@ -108,21 +108,21 @@ const SAMPLE_DATA = {
         id: "1",
         title: "כשאת/ה עצוב/ה",
         content: "אני תמיד כאן בשבילך ❤️",
-        isLocked: false,
+        dateOpen: "2023-01-01", // Past date (unlocked)
         emoji: "😢",
       },
       {
         id: "2",
         title: "כשמתגעגעים",
         content: "גם אני מתגעגע/ת...",
-        isLocked: false,
+        dateOpen: "2023-01-01", // Past date (unlocked)
         emoji: "💕",
       },
       {
         id: "3",
         title: "ביום המיוחד",
         content: "הפתעה!",
-        isLocked: true,
+        dateOpen: "2030-01-01", // Future date (locked)
         emoji: "🎁",
       },
     ],

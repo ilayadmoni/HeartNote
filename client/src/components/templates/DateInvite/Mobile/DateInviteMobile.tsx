@@ -9,6 +9,8 @@
 import { motion } from "framer-motion";
 import { RotateCcw, Heart } from "lucide-react";
 import type { DateInviteMobileProps } from "../types";
+import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
+import { FooterBranding } from "@/components/templates/components";
 
 export function DateInviteMobile({
   data,
@@ -18,6 +20,8 @@ export function DateInviteMobile({
   onReset,
   onNoHover,
 }: DateInviteMobileProps) {
+  const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
+
   return (
     <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 px-5 py-6 overflow-hidden relative">
       {/* Background Hearts Pattern */}
@@ -52,7 +56,12 @@ export function DateInviteMobile({
         {!answered ? (
           <>
             {/* Icon Container */}
-            <div className="w-14 h-14 bg-gradient-to-br from-[#ffe4e6] to-[#fff1f2] dark:from-gray-700 dark:to-gray-600 rounded-xl flex items-center justify-center mb-5 shadow-sm">
+            <div
+              className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-sm"
+              style={{
+                background: `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}10)`,
+              }}
+            >
               <motion.span
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ repeat: Infinity, duration: 2 }}
@@ -78,7 +87,11 @@ export function DateInviteMobile({
               <motion.button
                 whileTap={{ scale: 0.96 }}
                 onClick={onYes}
-                className="w-full py-3 bg-[#d4826f] hover:bg-[#c4735f] text-white text-base font-bold rounded-full shadow-lg shadow-[#d4826f]/20 text-hebrew-heading flex items-center justify-center gap-2 transition-all"
+                className="w-full py-3 text-white text-base font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
+                style={{
+                  backgroundColor: primaryColor,
+                  boxShadow: `0 10px 25px ${primaryColor}30`,
+                }}
               >
                 <span>{data.yesText}</span>
                 <Heart size={16} fill="currentColor" className="opacity-80" />
@@ -114,7 +127,10 @@ export function DateInviteMobile({
               <span className="text-5xl">💖</span>
             </motion.div>
 
-            <h2 className="text-xl font-bold text-[#d4826f] text-hebrew-heading mb-1.5">
+            <h2
+              className="text-xl font-bold text-hebrew-heading mb-1.5"
+              style={{ color: primaryColor }}
+            >
               {data.successMessage}
             </h2>
 
@@ -124,7 +140,7 @@ export function DateInviteMobile({
 
             <button
               onClick={onReset}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-gray-400 hover:text-[#d4826f] transition-all bg-gray-50 dark:bg-gray-700/50 rounded-full text-hebrew-body"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-gray-400 transition-all bg-gray-50 dark:bg-gray-700/50 rounded-full text-hebrew-body"
             >
               <RotateCcw size={12} />
               <span>שאל שוב</span>
@@ -134,9 +150,7 @@ export function DateInviteMobile({
       </motion.div>
 
       {/* Footer Credit */}
-      <p className="absolute bottom-3 text-[10px] text-gray-300 dark:text-gray-600 text-hebrew-body">
-        HeartNote Factory © 2024
-      </p>
+      <FooterBranding className="absolute bottom-3" />
 
       {/* Background Image Overlay */}
       {data.backgroundImage && (

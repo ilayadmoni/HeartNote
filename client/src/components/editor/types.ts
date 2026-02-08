@@ -13,7 +13,10 @@ export type EditorFieldType =
   | "image"
   | "select"
   | "toggle"
-  | "events";
+  | "events"
+  | "envelopes"
+  | "questions"
+  | "coupons";
 
 export interface EditorField {
   key: string;

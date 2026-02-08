@@ -9,11 +9,14 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import type { ScratchCardProps } from "../types";
+import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
+import { FooterBranding } from "@/components/templates/components";
 
 interface ExtendedData {
   title?: string;
   prizeContent?: string;
   prize?: { content: string };
+  primaryColor?: string;
 }
 
 const getPrizeContent = (data: unknown): string => {
@@ -30,6 +33,7 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
     new Set(),
   );
   const [isRevealed, setIsRevealed] = useState(false);
+  const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   const handleScratch = useCallback((index: number) => {
     setScratchedBlocks((prev) => {
@@ -70,7 +74,10 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
         <div className="relative min-h-[120px] m-4 rounded-xl overflow-hidden bg-white dark:bg-gray-700">
           {/* Prize Layer (Behind) */}
           <div className="flex flex-col items-center justify-center p-6 py-8 z-0">
-            <p className="text-xs text-[#d4826f] mb-2 text-hebrew-body tracking-widest">
+            <p
+              className="text-xs mb-2 text-hebrew-body tracking-widest"
+              style={{ color: primaryColor }}
+            >
               CONGRATULATIONS
             </p>
             <p className="text-2xl md:text-3xl font-bold text-[#5d4e37] dark:text-white text-center text-hebrew-heading leading-relaxed">
@@ -126,9 +133,7 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
       </p>
 
       {/* Footer Credit */}
-      <p className="absolute bottom-4 text-[10px] text-gray-300 dark:text-gray-600 text-hebrew-body">
-        HeartNote Factory © 2024
-      </p>
+      <FooterBranding className="absolute bottom-4" />
     </div>
   );
 }

@@ -9,11 +9,14 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import type { ScratchCardProps } from "../types";
+import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
+import { FooterBranding } from "@/components/templates/components";
 
 interface ExtendedData {
   title?: string;
   prizeContent?: string;
   prize?: { content: string };
+  primaryColor?: string;
 }
 
 const getPrizeContent = (data: unknown): string => {
@@ -30,6 +33,7 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
     new Set(),
   );
   const [isRevealed, setIsRevealed] = useState(false);
+  const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   const handleScratch = useCallback((index: number) => {
     setScratchedBlocks((prev) => {
@@ -70,7 +74,10 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
         <div className="relative aspect-[4/3] m-3 rounded-xl overflow-hidden bg-white dark:bg-gray-700">
           {/* Prize Layer (Behind) */}
           <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-0">
-            <p className="text-[10px] text-[#d4826f] mb-1 text-hebrew-body tracking-widest">
+            <p
+              className="text-[10px] mb-1 text-hebrew-body tracking-widest"
+              style={{ color: primaryColor }}
+            >
               CONGRATULATIONS
             </p>
             <p className="text-xl font-bold text-[#5d4e37] dark:text-white text-center text-hebrew-heading leading-relaxed">
@@ -129,7 +136,10 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
         {/* Serial Number Footer */}
         <div className="bg-[#5d4e37] dark:bg-[#8b7355] py-2 px-3 flex items-center justify-center gap-2">
           <span className="text-gray-400 text-sm">☆</span>
-          <span className="text-[10px] text-[#d4826f] font-bold tracking-wider">
+          <span
+            className="text-[10px] font-bold tracking-wider"
+            style={{ color: primaryColor }}
+          >
             {serialNumber}
           </span>
           <span className="text-gray-400 text-sm">☆</span>
@@ -142,9 +152,7 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
       </p>
 
       {/* Footer Credit */}
-      <p className="absolute bottom-2 text-[10px] text-gray-300 dark:text-gray-600 text-hebrew-body">
-        HeartNote Factory © 2024
-      </p>
+      <FooterBranding className="absolute bottom-2" />
     </div>
   );
 }

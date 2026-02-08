@@ -7,9 +7,12 @@
 
 import { motion } from "framer-motion";
 import type { TimelineDesktopProps } from "../types";
+import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
+import { FooterBranding } from "@/components/templates/components";
 
 export function TimelineDesktop({ data }: TimelineDesktopProps) {
   const hasEvents = data.events && data.events.length > 0;
+  const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 p-6 overflow-auto relative">
@@ -31,7 +34,12 @@ export function TimelineDesktop({ data }: TimelineDesktopProps) {
         {hasEvents ? (
           <div className="relative">
             {/* Vertical Line */}
-            <div className="absolute left-4 top-3 bottom-3 w-0.5 bg-gradient-to-b from-[#d4826f]/30 via-[#e8917a]/50 to-[#d4826f]/30 rounded-full" />
+            <div
+              className="absolute left-4 top-3 bottom-3 w-0.5 rounded-full"
+              style={{
+                background: `linear-gradient(to bottom, ${primaryColor}30, ${primaryColor}50, ${primaryColor}30)`,
+              }}
+            />
 
             {/* Events */}
             <div className="space-y-4">
@@ -44,14 +52,25 @@ export function TimelineDesktop({ data }: TimelineDesktopProps) {
                   className="relative flex items-start gap-4 pr-2"
                 >
                   {/* Icon Circle */}
-                  <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-[#ffe4e6] to-[#fff1f2] dark:from-gray-700 dark:to-gray-600 flex items-center justify-center shadow-sm">
+                  <div
+                    className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm"
+                    style={{
+                      background: `linear-gradient(135deg, ${primaryColor}15, ${primaryColor}08)`,
+                    }}
+                  >
                     <span className="text-sm">{event.icon || "📌"}</span>
                   </div>
 
                   {/* Event Content */}
                   <div className="flex-1 pb-2">
                     {/* Date Badge */}
-                    <span className="inline-block px-2 py-0.5 text-[10px] font-bold text-[#d4826f] bg-[#d4826f]/10 rounded-full mb-1.5">
+                    <span
+                      className="inline-block px-2 py-0.5 text-[10px] font-bold rounded-full mb-1.5"
+                      style={{
+                        color: primaryColor,
+                        backgroundColor: `${primaryColor}15`,
+                      }}
+                    >
                       {formatDate(event.date)}
                     </span>
 
@@ -83,9 +102,7 @@ export function TimelineDesktop({ data }: TimelineDesktopProps) {
       </motion.div>
 
       {/* Footer Credit */}
-      <p className="absolute bottom-2 text-[10px] text-gray-300 dark:text-gray-600 text-hebrew-body">
-        HeartNote Factory © 2024
-      </p>
+      <FooterBranding className="absolute bottom-2" />
     </div>
   );
 }

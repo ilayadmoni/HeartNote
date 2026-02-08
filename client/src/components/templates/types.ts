@@ -4,6 +4,12 @@
  */
 
 // =============================================================================
+// SHARED: PRIMARY COLOR
+// =============================================================================
+/** Default accent color used when no primaryColor is specified */
+export const DEFAULT_PRIMARY_COLOR = "#d4826f";
+
+// =============================================================================
 // 1. DATE INVITE
 // =============================================================================
 export interface DateInviteData {
@@ -12,6 +18,7 @@ export interface DateInviteData {
   noText: string;             // "לא"
   successMessage: string;     // "!יש לנו דייט"
   backgroundImage?: string;   // Optional background URL
+  primaryColor?: string;      // Accent color for buttons, highlights
 }
 
 // =============================================================================
@@ -28,6 +35,7 @@ export interface ScratchCardData {
   };
   scratchColor: string;       // e.g., "#c0c0c0"
   title?: string;             // "גרד וגלה את ההפתעה"
+  primaryColor?: string;      // Accent color for buttons, highlights
 }
 
 // =============================================================================
@@ -44,6 +52,7 @@ export interface TimelineEvent {
 export interface TimelineData {
   title?: string;             // "הסיפור שלנו"
   events: TimelineEvent[];
+  primaryColor?: string;      // Accent color for timeline line, badges
 }
 
 // =============================================================================
@@ -54,6 +63,7 @@ export interface LoveCoupon {
   title: string;              // "ארוחת ערב רומנטית"
   description?: string;
   icon?: string;              // Emoji: "🍽️"
+  color?: string;             // Tailwind color key: "emerald" | "sky" | "amber" etc.
   isRedeemed: boolean;
   redeemedAt?: string;
 }
@@ -61,6 +71,7 @@ export interface LoveCoupon {
 export interface LoveCouponsData {
   title?: string;             // "קופונים מיוחדים"
   coupons: LoveCoupon[];
+  primaryColor?: string;      // Accent color for buttons, highlights
 }
 
 // =============================================================================
@@ -83,6 +94,7 @@ export interface RelationshipQuizData {
   title?: string;             // "כמה את/ה מכיר/ה אותי?"
   questions: QuizQuestion[];
   scoreMessages: QuizScoreMessage[];
+  primaryColor?: string;      // Accent color for buttons, progress bar
 }
 
 // =============================================================================
@@ -92,13 +104,14 @@ export interface OpenWhenEnvelope {
   id: string;
   title: string;              // "כשאת/ה עצוב/ה"
   content: string;            // Letter content (supports line breaks)
-  isLocked: boolean;
   emoji?: string;             // "😢"
+  dateOpen: string;           // ISO date string "2026-03-15" — unlocks on this date
 }
 
 export interface OpenWhenData {
   title?: string;             // "מכתבים מיוחדים"
   envelopes: OpenWhenEnvelope[];
+  primaryColor?: string;      // Accent color for envelopes, modal
 }
 
 // =============================================================================

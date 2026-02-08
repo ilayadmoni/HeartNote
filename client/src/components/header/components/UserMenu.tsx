@@ -51,9 +51,6 @@ export function UserMenu() {
     user.user_metadata?.display_name ||
     user.email?.split("@")[0] ||
     "משתמש";
-  const photoURL =
-    user.user_metadata?.avatar_url || user.user_metadata?.picture;
-  const initials = displayName.charAt(0).toUpperCase();
 
   return (
     <div ref={menuRef} className="relative">
@@ -61,7 +58,7 @@ export function UserMenu() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="
-          flex items-center gap-2 p-1 pr-3
+          flex items-center gap-2 px-3 py-1.5
           rounded-full
           bg-white dark:bg-gray-700
           border border-gray-200 dark:border-gray-600
@@ -72,21 +69,8 @@ export function UserMenu() {
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        {/* Avatar */}
-        <div className="w-8 h-8 rounded-full overflow-hidden bg-[#d4826f] flex items-center justify-center">
-          {photoURL ? (
-            <img
-              src={photoURL}
-              alt={displayName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-white text-sm font-bold">{initials}</span>
-          )}
-        </div>
-
-        {/* Name (Desktop only) */}
-        <span className="hidden md:block text-sm font-medium text-[#2e3c52] dark:text-white max-w-[100px] truncate text-hebrew-body">
+        {/* Name */}
+        <span className="text-sm font-medium text-[#2e3c52] dark:text-white max-w-[100px] truncate text-hebrew-body">
           {displayName}
         </span>
 
@@ -130,7 +114,10 @@ export function UserMenu() {
               <MenuItem
                 icon={<User size={16} />}
                 label="הפרופיל שלי"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setIsOpen(false);
+                  window.location.href = "/profile";
+                }}
               />
               <MenuItem
                 icon={<Settings size={16} />}

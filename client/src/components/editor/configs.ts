@@ -29,6 +29,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
       yesText: "כן!",
       noText: "לא",
       successMessage: "!יש! איזה כיף",
+      primaryColor: "#d4826f",
     },
   },
   "scratch-card": {
@@ -54,6 +55,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
       prizeContent: "🎁 זכית בהפתעה מיוחדת!",
       gridSize: { cols: 6, rows: 4 },
       scratchColor: "#c0c0c0",
+      primaryColor: "#d4826f",
     },
   },
   timeline: {
@@ -76,6 +78,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
     defaultData: {
       title: "הסיפור שלנו",
       events: [],
+      primaryColor: "#d4826f",
     },
   },
   "love-coupons": {
@@ -87,12 +90,43 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         key: "title",
         label: "כותרת",
         type: "text",
-        placeholder: "קופונים מיוחדים",
+        placeholder: "פנקס קופונים",
+      },
+      {
+        key: "coupons",
+        label: "קופונים",
+        type: "coupons",
       },
     ],
     defaultData: {
-      title: "קופונים מיוחדים",
-      coupons: [],
+      title: "פנקס קופונים",
+      coupons: [
+        {
+          id: "coupon-1",
+          title: "20 דקות מסאז'",
+          description: "מקפה דרג שווים",
+          icon: "💆",
+          color: "emerald",
+          isRedeemed: false,
+        },
+        {
+          id: "coupon-2",
+          title: "פטור משטיפת כלים",
+          description: "מקפה דרג שווים",
+          icon: "🧽",
+          color: "sky",
+          isRedeemed: false,
+        },
+        {
+          id: "coupon-3",
+          title: "בחירת סרט הערב",
+          description: "מימוש 1",
+          icon: "🎬",
+          color: "amber",
+          isRedeemed: false,
+        },
+      ],
+      primaryColor: "#d4826f",
     },
   },
   "relationship-quiz": {
@@ -104,13 +138,42 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         key: "title",
         label: "כותרת",
         type: "text",
-        placeholder: "?כמה את/ה מכיר/ה אותי",
+        placeholder: "כמה טוב את מכירה אותי?",
+      },
+      {
+        key: "questions",
+        label: "שאלות",
+        type: "questions",
       },
     ],
     defaultData: {
-      title: "?כמה את/ה מכיר/ה אותי",
-      questions: [],
-      scoreMessages: [],
+      title: "כמה טוב את מכירה אותי?",
+      questions: [
+        {
+          id: "q-1",
+          question: "איזה מאכל אני הכי אוהב?",
+          options: ["פיצה", "סושי", "המבורגר", "שוקולד"],
+          correctIndex: 0,
+        },
+        {
+          id: "q-2",
+          question: "מה החלום הכי גדול שלי?",
+          options: ["לטייל בעולם", "לפתוח עסק", "לגור בחו\"ל", "להיות שף"],
+          correctIndex: 0,
+        },
+        {
+          id: "q-3",
+          question: "מה הצבע האהוב עליי?",
+          options: ["כחול", "אדום", "ירוק", "שחור"],
+          correctIndex: 0,
+        },
+      ],
+      scoreMessages: [
+        { minScore: 80, message: "מכיר/ה אותי מושלם!", emoji: "🎉" },
+        { minScore: 50, message: "כמעט מושלם...", emoji: "😊" },
+        { minScore: 0, message: "כל הכבוד על הניסיון!", emoji: "💪" },
+      ],
+      primaryColor: "#d4826f",
     },
   },
   "open-when": {
@@ -124,10 +187,31 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         type: "text",
         placeholder: "מכתבים מיוחדים",
       },
+      {
+        key: "envelopes",
+        label: "מעטפות",
+        type: "envelopes",
+      },
     ],
     defaultData: {
-      title: "מכתבים מיוחדים",
-      envelopes: [],
+      title: "...תפתחי כש",
+      envelopes: [
+        {
+          id: "env-1",
+          title: "כשאת מתגעגעת",
+          emoji: "💖",
+          dateOpen: new Date().toISOString().split("T")[0],
+          content: "את תמיד בלב שלי, גם כשאנחנו רחוקים...",
+        },
+        {
+          id: "env-2",
+          title: "כשאת עצובה",
+          emoji: "😢",
+          dateOpen: new Date().toISOString().split("T")[0],
+          content: "תזכרי שאני כאן בשבילך, תמיד.",
+        },
+      ],
+      primaryColor: "#d4826f",
     },
   },
 };

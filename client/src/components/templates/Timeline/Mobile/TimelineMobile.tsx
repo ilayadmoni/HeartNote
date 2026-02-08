@@ -7,9 +7,12 @@
 
 import { motion } from "framer-motion";
 import type { TimelineMobileProps } from "../types";
+import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
+import { FooterBranding } from "@/components/templates/components";
 
 export function TimelineMobile({ data }: TimelineMobileProps) {
   const hasEvents = data.events && data.events.length > 0;
+  const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
     <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 px-4 py-5 overflow-auto relative">
@@ -31,7 +34,12 @@ export function TimelineMobile({ data }: TimelineMobileProps) {
         {hasEvents ? (
           <div className="relative">
             {/* Vertical Line */}
-            <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-[#d4826f]/30 via-[#e8917a]/50 to-[#d4826f]/30 rounded-full" />
+            <div
+              className="absolute left-3 top-2 bottom-2 w-0.5 rounded-full"
+              style={{
+                background: `linear-gradient(to bottom, ${primaryColor}30, ${primaryColor}50, ${primaryColor}30)`,
+              }}
+            />
 
             {/* Events */}
             <div className="space-y-3">
@@ -44,14 +52,25 @@ export function TimelineMobile({ data }: TimelineMobileProps) {
                   className="relative flex items-start gap-3"
                 >
                   {/* Icon Circle */}
-                  <div className="relative z-10 flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-[#ffe4e6] to-[#fff1f2] dark:from-gray-700 dark:to-gray-600 flex items-center justify-center shadow-sm">
+                  <div
+                    className="relative z-10 flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center shadow-sm"
+                    style={{
+                      background: `linear-gradient(135deg, ${primaryColor}15, ${primaryColor}08)`,
+                    }}
+                  >
                     <span className="text-xs">{event.icon || "📌"}</span>
                   </div>
 
                   {/* Event Content */}
                   <div className="flex-1 pb-1">
                     {/* Date Badge */}
-                    <span className="inline-block px-1.5 py-0.5 text-[9px] font-bold text-[#d4826f] bg-[#d4826f]/10 rounded-full mb-1">
+                    <span
+                      className="inline-block px-1.5 py-0.5 text-[9px] font-bold rounded-full mb-1"
+                      style={{
+                        color: primaryColor,
+                        backgroundColor: `${primaryColor}15`,
+                      }}
+                    >
                       {formatDate(event.date)}
                     </span>
 
@@ -83,9 +102,7 @@ export function TimelineMobile({ data }: TimelineMobileProps) {
       </motion.div>
 
       {/* Footer Credit */}
-      <p className="absolute bottom-2 text-[10px] text-gray-300 dark:text-gray-600 text-hebrew-body">
-        HeartNote Factory © 2024
-      </p>
+      <FooterBranding className="absolute bottom-2" />
     </div>
   );
 }

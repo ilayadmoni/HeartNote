@@ -8,7 +8,10 @@
 import { motion } from "framer-motion";
 import type { EditorField as EditorFieldType } from "../types";
 import { TimelineEventsEditor } from "./TimelineEventsEditor";
-import type { TimelineEvent } from "@/components/templates/types";
+import { EnvelopesEditor } from "./EnvelopesEditor";
+import { QuestionsEditor } from "./QuestionsEditor";
+import { CouponsEditor } from "./CouponsEditor";
+import type { TimelineEvent, OpenWhenEnvelope, QuizQuestion, LoveCoupon } from "@/components/templates/types";
 
 interface EditorFieldProps {
   field: EditorFieldType;
@@ -101,6 +104,27 @@ export function EditorField({ field, value, onChange }: EditorFieldProps) {
       {field.type === "events" && (
         <TimelineEventsEditor
           events={(value as TimelineEvent[]) || []}
+          onChange={onChange}
+        />
+      )}
+
+      {field.type === "envelopes" && (
+        <EnvelopesEditor
+          envelopes={(value as OpenWhenEnvelope[]) || []}
+          onChange={onChange}
+        />
+      )}
+
+      {field.type === "questions" && (
+        <QuestionsEditor
+          questions={(value as QuizQuestion[]) || []}
+          onChange={onChange}
+        />
+      )}
+
+      {field.type === "coupons" && (
+        <CouponsEditor
+          coupons={(value as LoveCoupon[]) || []}
           onChange={onChange}
         />
       )}

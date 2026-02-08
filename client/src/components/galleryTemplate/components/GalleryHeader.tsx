@@ -20,20 +20,6 @@ export function GalleryHeader({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Decorative Hearts */}
-        <div className="flex justify-center gap-2 mb-4">
-          {["💕", "✨", "💕"].map((emoji, i) => (
-            <motion.span
-              key={i}
-              animate={{ y: [0, -5, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5, delay: i * 0.2 }}
-              className="text-2xl"
-            >
-              {emoji}
-            </motion.span>
-          ))}
-        </div>
-
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2e3c52] dark:text-white mb-4 transition-colors duration-300 text-hebrew-heading">
           {title}
         </h1>

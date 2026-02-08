@@ -9,6 +9,8 @@
 import { motion } from "framer-motion";
 import { RotateCcw, Heart } from "lucide-react";
 import type { DateInviteDesktopProps } from "../types";
+import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
+import { FooterBranding } from "@/components/templates/components";
 
 export function DateInviteDesktop({
   data,
@@ -18,6 +20,11 @@ export function DateInviteDesktop({
   onReset,
   onNoHover,
 }: DateInviteDesktopProps) {
+  const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
+
+  // Calculate a slightly darker hover color
+  const hoverColor = adjustBrightness(primaryColor, -15);
+
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 p-4 overflow-hidden relative">
       {/* Background Hearts Pattern */}
@@ -52,7 +59,13 @@ export function DateInviteDesktop({
         {!answered ? (
           <>
             {/* Icon Container - Smaller */}
-            <div className="w-14 h-14 bg-gradient-to-br from-[#ffe4e6] to-[#fff1f2] dark:from-gray-700 dark:to-gray-600 rounded-xl flex items-center justify-center mb-5 shadow-md shadow-[#d4826f]/10">
+            <div
+              className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-md"
+              style={{
+                background: `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}10)`,
+                boxShadow: `0 4px 12px ${primaryColor}15`,
+              }}
+            >
               <motion.span
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ repeat: Infinity, duration: 2 }}
@@ -79,7 +92,17 @@ export function DateInviteDesktop({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onYes}
-                className="w-full py-3 bg-[#d4826f] hover:bg-[#c4735f] text-white text-base font-bold rounded-full shadow-lg shadow-[#d4826f]/20 text-hebrew-heading flex items-center justify-center gap-2 transition-all"
+                className="w-full py-3 text-white text-base font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
+                style={{
+                  backgroundColor: primaryColor,
+                  boxShadow: `0 10px 25px ${primaryColor}30`,
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = hoverColor)
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = primaryColor)
+                }
               >
                 <span>{data.yesText}</span>
                 <Heart size={16} fill="currentColor" className="opacity-80" />
@@ -120,7 +143,10 @@ export function DateInviteDesktop({
               <span className="text-5xl">💖</span>
             </motion.div>
 
-            <h2 className="text-xl font-bold text-[#d4826f] text-hebrew-heading mb-1.5">
+            <h2
+              className="text-xl font-bold text-hebrew-heading mb-1.5"
+              style={{ color: primaryColor }}
+            >
               {data.successMessage}
             </h2>
 
@@ -130,7 +156,10 @@ export function DateInviteDesktop({
 
             <button
               onClick={onReset}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-gray-400 hover:text-[#d4826f] transition-all bg-gray-50 dark:bg-gray-700/50 rounded-full text-hebrew-body"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-gray-400 transition-all bg-gray-50 dark:bg-gray-700/50 rounded-full text-hebrew-body"
+              style={{ "--hover-color": primaryColor } as React.CSSProperties}
+              onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "")}
             >
               <RotateCcw size={12} />
               <span>שאל שוב</span>
@@ -140,9 +169,7 @@ export function DateInviteDesktop({
       </motion.div>
 
       {/* Footer Credit */}
-      <p className="absolute bottom-2 text-[10px] text-gray-300 dark:text-gray-600 text-hebrew-body">
-        HeartNote Factory © 2024
-      </p>
+      <FooterBranding className="absolute bottom-2" />
 
       {/* Background Image Overlay */}
       {data.backgroundImage && (
@@ -153,4 +180,25 @@ export function DateInviteDesktop({
       )}
     </div>
   );
+}
+
+/** Adjust hex color brightness by percentage (-100 to 100) */
+function adjustBrightness(hex: string, percent: number): string {
+  const num = parseInt(hex.replace("#", ""), 16);
+  const r = Math.min(
+    255,
+    Math.max(0, (num >> 16) + ((num >> 16) * percent) / 100),
+  );
+  const g = Math.min(
+    255,
+    Math.max(
+      0,
+      ((num >> 8) & 0x00ff) + (((num >> 8) & 0x00ff) * percent) / 100,
+    ),
+  );
+  const b = Math.min(
+    255,
+    Math.max(0, (num & 0x0000ff) + ((num & 0x0000ff) * percent) / 100),
+  );
+  return `#${(0x1000000 + (Math.round(r) << 16) + (Math.round(g) << 8) + Math.round(b)).toString(16).slice(1)}`;
 }

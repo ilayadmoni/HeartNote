@@ -29,7 +29,7 @@ export function TemplateCard({
       `}
     >
       {/* Preview Container */}
-      <div className="relative aspect-[4/3] bg-gradient-to-br from-[#faf7f5] to-[#f5f0eb] dark:from-gray-700 dark:to-gray-800 overflow-hidden">
+      <div className="relative aspect-[7/3] bg-gradient-to-br from-[#faf7f5] to-[#f5f0eb] dark:from-gray-700 dark:to-gray-800 overflow-hidden">
         {/* Badges */}
         <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
           {/* Premium/Free Badge */}
