@@ -7,7 +7,7 @@
 export * from "./types";
 
 // Components
-export { DateInvite } from "./DateInvite";
+export { DateInvite } from "./DateInvite/DateInvite";
 export { ScratchCard } from "./ScratchCard";
 export { Timeline } from "./Timeline";
 export { LoveCoupons } from "./LoveCoupons";

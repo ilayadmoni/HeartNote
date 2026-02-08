@@ -2,11 +2,33 @@
 
 /**
  * EditorPreview Component
- * Live template preview - no device mockups, just the actual template
+ * Live template preview - direct rendering for mobile, iframe for desktop
  */
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import {
+  DateInvite,
+  ScratchCard,
+  Timeline,
+  LoveCoupons,
+  RelationshipQuiz,
+  OpenWhen,
+} from "@/components/templates";
+
+// Template component map for direct rendering
+const TEMPLATE_COMPONENTS: Record<
+  string,
+  React.ComponentType<{ data: unknown }>
+> = {
+  "date-invite": DateInvite as React.ComponentType<{ data: unknown }>,
+  "scratch-card": ScratchCard as React.ComponentType<{ data: unknown }>,
+  timeline: Timeline as React.ComponentType<{ data: unknown }>,
+  "love-coupons": LoveCoupons as React.ComponentType<{ data: unknown }>,
+  "relationship-quiz": RelationshipQuiz as React.ComponentType<{
+    data: unknown;
+  }>,
+  "open-when": OpenWhen as React.ComponentType<{ data: unknown }>,
+};
 
 interface EditorPreviewProps {
   templateId: string;
@@ -22,14 +44,16 @@ export function EditorPreview({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [loaded, setLoaded] = useState(false);
 
-  // Store data in sessionStorage for iframe to read
+  // Store data in sessionStorage for iframe to read (desktop only)
   useEffect(() => {
-    sessionStorage.setItem(`preview_${templateId}`, JSON.stringify(data));
-  }, [templateId, data]);
+    if (!isMobile) {
+      sessionStorage.setItem(`preview_${templateId}`, JSON.stringify(data));
+    }
+  }, [templateId, data, isMobile]);
 
-  // Update iframe when data changes
+  // Update iframe when data changes (desktop only)
   useEffect(() => {
-    if (iframeRef.current && loaded) {
+    if (!isMobile && iframeRef.current && loaded) {
       try {
         iframeRef.current.contentWindow?.postMessage(
           { type: "UPDATE_DATA", data },
@@ -39,17 +63,32 @@ export function EditorPreview({
         // Fallback handled by sessionStorage polling
       }
     }
-  }, [data, loaded]);
+  }, [data, loaded, isMobile]);
 
+  // Mobile: Render component directly for proper sizing
+  if (isMobile) {
+    const Component = TEMPLATE_COMPONENTS[templateId];
+
+    if (!Component) {
+      return (
+        <div className="h-full flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900">
+          <p className="text-gray-400 text-sm text-hebrew-body">
+            תבנית לא נמצאה
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="h-full w-full overflow-auto bg-[#faf7f5] dark:bg-gray-900">
+        <Component data={data} />
+      </div>
+    );
+  }
+
+  // Desktop: Use iframe for isolated viewport
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className={`
-        relative overflow-hidden w-full h-full
-        ${isMobile ? "w-full h-full" : "max-w-4xl mx-auto h-[calc(100vh-140px)]"}
-      `}
-    >
+    <div className="h-full w-full bg-gray-900 overflow-hidden">
       <iframe
         ref={iframeRef}
         src={`/preview-frame/${templateId}`}
@@ -57,6 +96,6 @@ export function EditorPreview({
         className="w-full h-full border-0 block"
         title="תצוגה מקדימה"
       />
-    </motion.div>
+    </div>
   );
 }
