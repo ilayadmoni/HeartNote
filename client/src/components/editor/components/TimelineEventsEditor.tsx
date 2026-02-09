@@ -25,6 +25,7 @@ const EMOJI_OPTIONS = [
   "🎂",
   "💕",
   "🌟",
+  "🐶",
 ];
 const MAX_EVENTS = 7;
 

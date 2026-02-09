@@ -106,6 +106,7 @@ export interface OpenWhenEnvelope {
   content: string;            // Letter content (supports line breaks)
   emoji?: string;             // "😢"
   dateOpen: string;           // ISO date string "2026-03-15" — unlocks on this date
+  color?: string;             // Per-card color key (e.g., "rose", "sky")
 }
 
 export interface OpenWhenData {

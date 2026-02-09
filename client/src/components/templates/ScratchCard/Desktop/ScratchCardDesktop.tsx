@@ -6,11 +6,13 @@
  * Max 150 lines per project rules
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
+import { RotateCcw } from "lucide-react";
+import confetti from "canvas-confetti";
 import type { ScratchCardProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
-import { FooterBranding } from "@/components/templates/components";
+import { FooterBranding, BackToGallery } from "@/components/templates/components";
 
 interface ExtendedData {
   title?: string;
@@ -35,6 +37,19 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
   const [isRevealed, setIsRevealed] = useState(false);
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
+  // Trigger confetti when card is revealed
+  useEffect(() => {
+    if (isRevealed) {
+      confetti({ particleCount: 80, spread: 60, origin: { x: 0.3, y: 0.5 }, colors: [primaryColor, "#ffd700", "#ff6b8a"] });
+      confetti({ particleCount: 80, spread: 60, origin: { x: 0.7, y: 0.5 }, colors: [primaryColor, "#ffd700", "#ff6b8a"] });
+    }
+  }, [isRevealed, primaryColor]);
+
+  const handleReset = useCallback(() => {
+    setScratchedBlocks(new Set());
+    setIsRevealed(false);
+  }, []);
+
   const handleScratch = useCallback((index: number) => {
     setScratchedBlocks((prev) => {
       const newSet = new Set(prev);
@@ -50,6 +65,9 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 p-6 overflow-auto relative">
+      {/* Back to Gallery */}
+      <BackToGallery className="absolute top-4 right-4 z-20" />
+
       {/* Title */}
       {data.title && (
         <h1 className="text-2xl font-bold text-center text-[#5d4e37] dark:text-white mb-6 text-hebrew-heading">
@@ -71,7 +89,10 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
         </div>
 
         {/* Scratch Area */}
-        <div className="relative min-h-[120px] m-4 rounded-xl overflow-hidden bg-white dark:bg-gray-700">
+        <div
+          className="relative min-h-[120px] m-4 rounded-xl overflow-hidden"
+          style={{ backgroundColor: primaryColor + '15' }}
+        >
           {/* Prize Layer (Behind) */}
           <div className="flex flex-col items-center justify-center p-6 py-8 z-0">
             <p
@@ -131,6 +152,21 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
       <p className="mt-4 text-sm text-gray-400 dark:text-gray-500 text-hebrew-body">
         👆 גררו את הכרטיס עם האצבע
       </p>
+
+      {/* Reload Button */}
+      {isRevealed && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={handleReset}
+          className="mt-3 w-10 h-10 rounded-full bg-white dark:bg-gray-700 shadow-md flex items-center justify-center text-gray-500 hover:text-[#d4826f] transition-colors"
+          aria-label="שחק מחדש"
+        >
+          <RotateCcw size={18} />
+        </motion.button>
+      )}
 
       {/* Footer Credit */}
       <FooterBranding className="absolute bottom-4" />

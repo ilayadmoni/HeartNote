@@ -2,7 +2,7 @@
 
 /**
  * useCoupons Hook
- * Manages coupon redemption state
+ * Manages coupon redemption state with reset support
  */
 
 import { useState, useCallback } from "react";
@@ -21,5 +21,11 @@ export function useCoupons(initialCoupons: LoveCoupon[]) {
     );
   }, []);
 
-  return { coupons, handleRedeem };
+  const handleReset = useCallback(() => {
+    setCoupons((prev) =>
+      prev.map((coupon) => ({ ...coupon, isRedeemed: false, redeemedAt: undefined })),
+    );
+  }, []);
+
+  return { coupons, handleRedeem, handleReset };
 }

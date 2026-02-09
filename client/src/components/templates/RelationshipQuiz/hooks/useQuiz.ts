@@ -3,10 +3,31 @@
 /**
  * useQuiz Hook
  * Manages quiz state: current question, score, answer feedback, auto-advance
+ * Shuffles answer options so the correct answer isn't always in the same position
  */
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import type { QuizQuestion, AnswerState } from "../types";
+
+interface ShuffledQuestion {
+  question: string;
+  options: string[];
+  correctIndex: number;
+}
+
+/** Fisher-Yates shuffle that also remaps correctIndex */
+function shuffleOptions(q: QuizQuestion): ShuffledQuestion {
+  const indices = q.options.map((_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  return {
+    question: q.question,
+    options: indices.map((i) => q.options[i]),
+    correctIndex: indices.indexOf(q.correctIndex),
+  };
+}
 
 interface UseQuizReturn {
   currentIndex: number;
@@ -16,6 +37,7 @@ interface UseQuizReturn {
   isFinished: boolean;
   progress: number;
   handleAnswer: (optionIndex: number) => void;
+  currentQuestion: ShuffledQuestion;
 }
 
 export function useQuiz(questions: QuizQuestion[]): UseQuizReturn {
@@ -25,19 +47,27 @@ export function useQuiz(questions: QuizQuestion[]): UseQuizReturn {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isFinished, setIsFinished] = useState(false);
 
+  // Shuffle all questions once on mount
+  const shuffledQuestions = useMemo(
+    () => questions.map(shuffleOptions),
+    [questions],
+  );
+
+  const currentQuestion = shuffledQuestions[currentIndex] ?? shuffledQuestions[0];
+
   const progress = questions.length > 0
     ? ((currentIndex + 1) / questions.length) * 100
     : 0;
 
   const handleAnswer = useCallback(
     (optionIndex: number) => {
-      if (answerState !== "none" || !questions[currentIndex]) return;
+      if (answerState !== "none" || !shuffledQuestions[currentIndex]) return;
       setSelectedIndex(optionIndex);
-      const isCorrect = optionIndex === questions[currentIndex].correctIndex;
+      const isCorrect = optionIndex === shuffledQuestions[currentIndex].correctIndex;
       setAnswerState(isCorrect ? "correct" : "wrong");
       if (isCorrect) setScore((prev) => prev + 1);
     },
-    [answerState, currentIndex, questions],
+    [answerState, currentIndex, shuffledQuestions],
   );
 
   // Auto-advance after 1.5s
@@ -63,5 +93,6 @@ export function useQuiz(questions: QuizQuestion[]): UseQuizReturn {
     isFinished,
     progress,
     handleAnswer,
+    currentQuestion,
   };
 }

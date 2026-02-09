@@ -14,6 +14,16 @@ const EMOJI_OPTIONS = [
   "💌", "😢", "😊", "💪", "🎉", "💖",
   "🌟", "🏠", "🌧️", "☀️", "🎂", "✈️",
 ];
+
+const COLOR_OPTIONS = [
+  { key: "rose", label: "ורוד", dot: "bg-rose-400" },
+  { key: "sky", label: "כחול", dot: "bg-sky-400" },
+  { key: "amber", label: "כתום", dot: "bg-amber-400" },
+  { key: "violet", label: "סגול", dot: "bg-violet-400" },
+  { key: "emerald", label: "ירוק", dot: "bg-emerald-400" },
+  { key: "pink", label: "פינק", dot: "bg-pink-400" },
+];
+
 const MAX_ENVELOPES = 6;
 
 interface EnvelopesEditorProps {
@@ -124,6 +134,22 @@ function EnvelopeItem({ envelope, index, onRemove, onUpdate }: EnvelopeItemProps
         ))}
       </div>
 
+      {/* Card Color Picker */}
+      <div className="flex gap-1.5 flex-wrap">
+        {COLOR_OPTIONS.map((c) => (
+          <button
+            key={c.key}
+            onClick={() => onUpdate(envelope.id, "color", c.key)}
+            className={`w-6 h-6 rounded-full ${c.dot} transition-all ${
+              envelope.color === c.key
+                ? "ring-2 ring-[#d4826f] ring-offset-1 scale-110"
+                : "opacity-60 hover:opacity-100"
+            }`}
+            title={c.label}
+          />
+        ))}
+      </div>
+
       {/* Title */}
       <input
         type="text"
@@ -139,7 +165,7 @@ function EnvelopeItem({ envelope, index, onRemove, onUpdate }: EnvelopeItemProps
         type="date"
         value={envelope.dateOpen}
         onChange={(e) => onUpdate(envelope.id, "dateOpen", e.target.value)}
-        className={inputClass}
+        className={`${inputClass} text-center max-w-[200px] mx-auto`}
       />
 
       {/* Content */}

@@ -4,7 +4,7 @@
  */
 
 /** Maximum coupons the user can create */
-export const MAX_COUPONS = 8;
+export const MAX_COUPONS = 6;
 
 /** Coupon color options — key used in data, classes used for rendering */
 export const COUPON_COLORS: { key: string; label: string; bg: string; bgDark: string }[] = [

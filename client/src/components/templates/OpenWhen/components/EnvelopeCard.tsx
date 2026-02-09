@@ -2,13 +2,23 @@
 
 /**
  * EnvelopeCard Component
- * Individual envelope with pastel background, emoji, lock state based on dateOpen
+ * Individual envelope with per-card color, emoji, lock state based on dateOpen
  */
 
 import { motion } from "framer-motion";
 import type { OpenWhenEnvelope } from "../types";
 import { ENVELOPE_COLORS, isEnvelopeUnlocked } from "../constants";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
+
+/** Map color key to Tailwind classes */
+const COLOR_KEY_MAP: Record<string, { bg: string; border: string }> = {
+  rose: { bg: "bg-rose-50 dark:bg-rose-900/20", border: "border-rose-200 dark:border-rose-800" },
+  sky: { bg: "bg-sky-50 dark:bg-sky-900/20", border: "border-sky-200 dark:border-sky-800" },
+  amber: { bg: "bg-amber-50 dark:bg-amber-900/20", border: "border-amber-200 dark:border-amber-800" },
+  violet: { bg: "bg-violet-50 dark:bg-violet-900/20", border: "border-violet-200 dark:border-violet-800" },
+  emerald: { bg: "bg-emerald-50 dark:bg-emerald-900/20", border: "border-emerald-200 dark:border-emerald-800" },
+  pink: { bg: "bg-pink-50 dark:bg-pink-900/20", border: "border-pink-200 dark:border-pink-800" },
+};
 
 interface EnvelopeCardProps {
   envelope: OpenWhenEnvelope;
@@ -24,7 +34,10 @@ export function EnvelopeCard({
   primaryColor = DEFAULT_PRIMARY_COLOR,
 }: EnvelopeCardProps) {
   const unlocked = isEnvelopeUnlocked(envelope.dateOpen);
-  const color = ENVELOPE_COLORS[index % ENVELOPE_COLORS.length];
+  // Use per-card color if set, otherwise fall back to rotating palette
+  const color = envelope.color && COLOR_KEY_MAP[envelope.color]
+    ? COLOR_KEY_MAP[envelope.color]
+    : ENVELOPE_COLORS[index % ENVELOPE_COLORS.length];
 
   return (
     <motion.button

@@ -88,22 +88,22 @@ function PerforatedEdge() {
   return (
     <div className="relative w-4 flex flex-col items-center justify-around py-2 bg-[#2e3c52] dark:bg-gray-700">
       {[...Array(5)].map((_, i) => (
-        <div key={i} className="w-2.5 h-2.5 rounded-full bg-[#1e2633] dark:bg-gray-900" />
+        <div key={i} className="w-2.5 h-2.5 rounded-full bg-white dark:bg-gray-900" />
       ))}
     </div>
   );
 }
 
-/** "מומש" stamp overlay */
+/** "מומש" stamp overlay - centered on coupon */
 function RedeemedStamp() {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.5, rotate: -15 }}
-      animate={{ opacity: 1, scale: 1, rotate: -12 }}
-      className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+      animate={{ opacity: 1, scale: 1, rotate: -8 }}
+      className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
     >
-      <div className="px-5 py-1.5 border-4 border-red-600/60 rounded-lg bg-white/20">
-        <span className="text-xl font-black text-red-600/80 text-hebrew-heading">מומש</span>
+      <div className="px-6 py-2 border-4 border-red-500/70 rounded-lg bg-white/30 dark:bg-black/20 backdrop-blur-[1px]">
+        <span className="text-2xl font-black text-red-500/80 text-hebrew-heading">מומש</span>
       </div>
     </motion.div>
   );

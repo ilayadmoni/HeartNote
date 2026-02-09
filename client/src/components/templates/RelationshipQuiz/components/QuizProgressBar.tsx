@@ -27,7 +27,7 @@ export function QuizProgressBar({ current, total, progress }: QuizProgressBarPro
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.4 }}
-          className="h-full bg-gradient-to-r from-indigo-400 to-indigo-500 rounded-full"
+          className="h-full bg-gradient-to-r from-[#e8917a] to-[#d4826f] rounded-full"
           style={{
             backgroundImage: `repeating-linear-gradient(
               -45deg, transparent, transparent 4px,

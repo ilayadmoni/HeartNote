@@ -3,9 +3,11 @@
 /**
  * SparkleDecoration Component
  * Animated sparkle effects positioned around the card edges
+ * Fixed: mobile glitch by using will-change and reducing animation on mobile
  */
 
 import { motion } from "framer-motion";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const SPARKLES = [
   { top: "8%", right: "8%", delay: 0 },
@@ -15,6 +17,8 @@ const SPARKLES = [
 ];
 
 export function SparkleDecoration() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   return (
     <>
       {SPARKLES.map((pos, i) => (
@@ -26,14 +30,19 @@ export function SparkleDecoration() {
             right: pos.right,
             bottom: pos.bottom,
             left: pos.left,
+            willChange: "transform, opacity",
           }}
-          animate={{
-            scale: [0.5, 1.2, 0.5],
-            opacity: [0.3, 0.9, 0.3],
-            rotate: [0, 180, 360],
-          }}
+          animate={
+            isMobile
+              ? { opacity: [0.3, 0.8, 0.3] }
+              : {
+                  scale: [0.5, 1.2, 0.5],
+                  opacity: [0.3, 0.9, 0.3],
+                  rotate: [0, 180, 360],
+                }
+          }
           transition={{
-            duration: 3,
+            duration: isMobile ? 4 : 3,
             delay: pos.delay,
             repeat: Infinity,
             ease: "easeInOut",

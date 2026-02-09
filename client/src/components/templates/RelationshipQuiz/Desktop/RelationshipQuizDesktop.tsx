@@ -10,7 +10,7 @@ import type { QuizViewProps } from "../types";
 import { useQuiz } from "../hooks/useQuiz";
 import { getScoreMessage } from "../constants";
 import { QuizProgressBar, QuestionCard, QuizResults } from "../components";
-import { FooterBranding } from "@/components/templates/components";
+import { FooterBranding, BackToGallery } from "@/components/templates/components";
 
 export function RelationshipQuizDesktop({ data }: QuizViewProps) {
   const quiz = useQuiz(data.questions);
@@ -19,6 +19,9 @@ export function RelationshipQuizDesktop({ data }: QuizViewProps) {
 
   return (
     <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-12 px-6 relative">
+      {/* Back to Gallery */}
+      <BackToGallery className="absolute top-4 right-4 z-20" />
+
       <div className="max-w-lg mx-auto">
         {/* Title */}
         {data.title && (
@@ -44,7 +47,7 @@ export function RelationshipQuizDesktop({ data }: QuizViewProps) {
             />
             <AnimatePresence mode="wait">
               <QuestionCard
-                question={data.questions[quiz.currentIndex]}
+                question={quiz.currentQuestion}
                 questionIndex={quiz.currentIndex}
                 selectedIndex={quiz.selectedIndex}
                 answerState={quiz.answerState}

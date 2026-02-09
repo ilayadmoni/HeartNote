@@ -10,7 +10,7 @@ import type { QuizViewProps } from "../types";
 import { useQuiz } from "../hooks/useQuiz";
 import { getScoreMessage } from "../constants";
 import { QuizProgressBar, QuestionCard, QuizResults } from "../components";
-import { FooterBranding } from "@/components/templates/components";
+import { FooterBranding, BackToGallery } from "@/components/templates/components";
 
 export function RelationshipQuizMobile({ data }: QuizViewProps) {
   const quiz = useQuiz(data.questions);
@@ -19,10 +19,13 @@ export function RelationshipQuizMobile({ data }: QuizViewProps) {
 
   return (
     <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-8 px-4 relative">
+      {/* Back to Gallery */}
+      <BackToGallery className="absolute top-3 right-3 z-20" />
+
       <div className="max-w-md mx-auto">
         {/* Title */}
         {data.title && (
-          <h1 className="text-2xl font-bold text-center text-[#2e3c52] dark:text-white mb-6 text-hebrew-heading">
+          <h1 className="text-2xl font-bold text-center text-[#2e3c52] dark:text-white mb-10 text-hebrew-heading">
             {data.title}
           </h1>
         )}
@@ -44,7 +47,7 @@ export function RelationshipQuizMobile({ data }: QuizViewProps) {
             />
             <AnimatePresence mode="wait">
               <QuestionCard
-                question={data.questions[quiz.currentIndex]}
+                question={quiz.currentQuestion}
                 questionIndex={quiz.currentIndex}
                 selectedIndex={quiz.selectedIndex}
                 answerState={quiz.answerState}

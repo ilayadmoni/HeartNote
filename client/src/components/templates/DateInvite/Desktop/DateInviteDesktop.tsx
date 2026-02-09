@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { RotateCcw, Heart } from "lucide-react";
 import type { DateInviteDesktopProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
-import { FooterBranding } from "@/components/templates/components";
+import { FooterBranding, BackToGallery } from "@/components/templates/components";
 
 export function DateInviteDesktop({
   data,
@@ -27,6 +27,9 @@ export function DateInviteDesktop({
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 p-4 overflow-hidden relative">
+      {/* Back to Gallery */}
+      <BackToGallery className="absolute top-4 right-4 z-20" />
+
       {/* Background Hearts Pattern */}
       <div className="absolute inset-0 opacity-25 pointer-events-none overflow-hidden">
         <span className="absolute top-[8%] left-[12%] text-xl opacity-40">
@@ -82,17 +85,17 @@ export function DateInviteDesktop({
 
             {/* Subtitle */}
             <p className="text-xs text-gray-400 mb-6 text-hebrew-body">
-              ...אני מבטיח שיהיה כיף
+              ...כדאי לך לבחור את התשובה הנכונה
             </p>
 
             {/* Buttons - Compact */}
-            <div className="w-full flex flex-col items-center gap-3">
+            <div className="w-full flex flex-row items-center gap-3">
               {/* Yes Button */}
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onYes}
-                className="w-full py-3 text-white text-base font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
+                className="flex-1 py-3 text-white text-base font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
                 style={{
                   backgroundColor: primaryColor,
                   boxShadow: `0 10px 25px ${primaryColor}30`,
@@ -108,20 +111,20 @@ export function DateInviteDesktop({
                 <Heart size={16} fill="currentColor" className="opacity-80" />
               </motion.button>
 
-              {/* No Button - Constrained movement */}
+              {/* No Button - Enhanced evasion */}
               <motion.button
                 animate={{
-                  x: noPosition.x * 0.4,
-                  y: noPosition.y * 0.25,
+                  x: noPosition.x,
+                  y: noPosition.y,
                 }}
                 transition={{
                   type: "spring",
-                  stiffness: 500,
-                  damping: 30,
-                  mass: 0.8,
+                  stiffness: 600,
+                  damping: 20,
+                  mass: 0.5,
                 }}
                 onHoverStart={onNoHover}
-                className="px-5 py-2 text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-all text-hebrew-body hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                className="flex-1 px-5 py-3 text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-all text-hebrew-body hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
               >
                 {data.noText}
               </motion.button>
@@ -151,7 +154,7 @@ export function DateInviteDesktop({
             </h2>
 
             <p className="text-xs text-gray-400 mb-5 text-hebrew-body">
-              💕 אני כל כך שמח/ה! 💕
+              💕 מחכה לראות אותך 💕
             </p>
 
             <button

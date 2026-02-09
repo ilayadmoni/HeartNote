@@ -5,7 +5,7 @@
 
 /** Default score messages when user provides none */
 export const DEFAULT_SCORE_MESSAGES = [
-  { minScore: 80, message: "מכיר/ה אותי מושלם! 😍", emoji: "🎉" },
+  { minScore: 80, message: "מכירים אותי מושלם! 😍", emoji: "🎉" },
   { minScore: 50, message: "כמעט מושלם...", emoji: "😊" },
   { minScore: 0, message: "כל הכבוד על הניסיון!", emoji: "💪" },
 ];

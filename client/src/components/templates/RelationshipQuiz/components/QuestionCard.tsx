@@ -2,15 +2,15 @@
 
 /**
  * QuestionCard Component
- * Animated card with question text and answer options
+ * Animated card with question text and shuffled answer options
  */
 
 import { motion } from "framer-motion";
-import type { QuizQuestion, AnswerState } from "../types";
+import type { AnswerState } from "../types";
 import { OptionButton } from "./OptionButton";
 
 interface QuestionCardProps {
-  question: QuizQuestion;
+  question: { question: string; options: string[]; correctIndex: number };
   questionIndex: number;
   selectedIndex: number | null;
   answerState: AnswerState;

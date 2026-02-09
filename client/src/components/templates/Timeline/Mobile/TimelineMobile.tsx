@@ -8,7 +8,7 @@
 import { motion } from "framer-motion";
 import type { TimelineMobileProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
-import { FooterBranding } from "@/components/templates/components";
+import { FooterBranding, BackToGallery } from "@/components/templates/components";
 
 export function TimelineMobile({ data }: TimelineMobileProps) {
   const hasEvents = data.events && data.events.length > 0;
@@ -16,6 +16,9 @@ export function TimelineMobile({ data }: TimelineMobileProps) {
 
   return (
     <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 px-4 py-5 overflow-auto relative">
+      {/* Back to Gallery */}
+      <BackToGallery className="absolute top-3 right-3 z-20" />
+
       {/* Main Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -100,6 +103,9 @@ export function TimelineMobile({ data }: TimelineMobileProps) {
           </div>
         )}
       </motion.div>
+
+      {/* Spacer between content and footer branding */}
+      <div className="mt-6" />
 
       {/* Footer Credit */}
       <FooterBranding className="absolute bottom-2" />

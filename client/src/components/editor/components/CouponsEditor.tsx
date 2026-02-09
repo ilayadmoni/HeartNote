@@ -24,7 +24,7 @@ const COLOR_OPTIONS = [
   { key: "cyan", label: "תכלת", dot: "bg-cyan-400" },
 ];
 
-const MAX_COUPONS = 8;
+const MAX_COUPONS = 6;
 
 interface CouponsEditorProps {
   coupons: LoveCoupon[];

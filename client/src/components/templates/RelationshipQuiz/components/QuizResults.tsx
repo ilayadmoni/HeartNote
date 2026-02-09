@@ -3,6 +3,7 @@
 /**
  * QuizResults Component
  * End-of-quiz score screen with percentage circle, message, and decorative stars
+ * Uses theme color (coral) instead of purple, gender-neutral text
  */
 
 import { motion } from "framer-motion";
@@ -36,12 +37,12 @@ export function QuizResults({ score, total, message }: QuizResultsProps) {
         ))}
       </div>
 
-      {/* Score Circle */}
+      {/* Score Circle - theme color */}
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 15 }}
-        className="w-40 h-40 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex flex-col items-center justify-center shadow-xl mb-6 relative"
+        className="w-40 h-40 rounded-full bg-gradient-to-br from-[#d4826f] to-[#c4735f] flex flex-col items-center justify-center shadow-xl mb-6 relative"
       >
         <span className="text-[10px] uppercase tracking-widest text-yellow-300 font-bold text-english-heading bg-yellow-400/20 px-2 py-0.5 rounded-full absolute -top-3">
           Final Score
@@ -57,7 +58,7 @@ export function QuizResults({ score, total, message }: QuizResultsProps) {
       </h2>
 
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 text-hebrew-body text-center">
-        את מכירה אותי הכי טוב בעולם
+        מכירים אותי הכי טוב בעולם
       </p>
 
       {/* Retry Button */}
@@ -65,7 +66,7 @@ export function QuizResults({ score, total, message }: QuizResultsProps) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => window.location.reload()}
-        className="px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-full text-hebrew-heading transition-colors"
+        className="px-8 py-3 bg-[#d4826f] hover:bg-[#c4735f] text-white font-bold rounded-full text-hebrew-heading transition-colors"
       >
         חזרה להתחלה
       </motion.button>

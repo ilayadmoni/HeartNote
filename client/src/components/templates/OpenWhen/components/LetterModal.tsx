@@ -33,15 +33,15 @@ export function LetterModal({
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
           />
 
-          {/* Letter */}
+          {/* Letter - Centered on both Desktop and Mobile */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8, y: 50 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 50 }}
-            className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg md:max-h-[80vh] z-50 overflow-auto"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
             <div
-              className="bg-[#fffef8] dark:bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 min-h-[360px]"
+              className="bg-[#fffef8] dark:bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-lg max-h-[80vh] overflow-auto relative"
               style={{
                 backgroundImage: `repeating-linear-gradient(transparent, transparent 31px, #e5e5e5 31px, #e5e5e5 32px)`,
                 backgroundPosition: "0 24px",

@@ -52,8 +52,8 @@ export function DateInvite({ data }: TemplateComponentProps<DateInviteData>) {
 
   const handleNoHover = useCallback(() => {
     setNoPosition({
-      x: (Math.random() - 0.5) * (isMobile ? 60 : 120),
-      y: (Math.random() - 0.5) * (isMobile ? 30 : 60),
+      x: (Math.random() - 0.5) * (isMobile ? 140 : 250),
+      y: (Math.random() - 0.5) * (isMobile ? 80 : 140),
     });
   }, [isMobile]);
 

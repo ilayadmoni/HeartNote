@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { RotateCcw, Heart } from "lucide-react";
 import type { DateInviteMobileProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
-import { FooterBranding } from "@/components/templates/components";
+import { FooterBranding, BackToGallery } from "@/components/templates/components";
 
 export function DateInviteMobile({
   data,
@@ -24,6 +24,9 @@ export function DateInviteMobile({
 
   return (
     <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 px-5 py-6 overflow-hidden relative">
+      {/* Back to Gallery */}
+      <BackToGallery className="absolute top-3 right-3 z-20" />
+
       {/* Background Hearts Pattern */}
       <div className="absolute inset-0 opacity-20 pointer-events-none overflow-hidden">
         <span className="absolute top-[8%] left-[10%] text-xl opacity-40">
@@ -78,16 +81,16 @@ export function DateInviteMobile({
 
             {/* Subtitle */}
             <p className="text-xs text-gray-400 mb-6 text-hebrew-body">
-              ...אני מבטיח שיהיה כיף
+              ...כדאי לך לבחור את התשובה הנכונה
             </p>
 
             {/* Buttons */}
-            <div className="w-full flex flex-col items-center gap-3">
+            <div className="w-full flex flex-row items-center gap-3">
               {/* Yes Button */}
               <motion.button
                 whileTap={{ scale: 0.96 }}
                 onClick={onYes}
-                className="w-full py-3 text-white text-base font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
+                className="flex-1 py-3 text-white text-base font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
                 style={{
                   backgroundColor: primaryColor,
                   boxShadow: `0 10px 25px ${primaryColor}30`,
@@ -97,15 +100,15 @@ export function DateInviteMobile({
                 <Heart size={16} fill="currentColor" className="opacity-80" />
               </motion.button>
 
-              {/* No Button */}
+              {/* No Button - Enhanced evasion */}
               <motion.button
                 animate={{
-                  x: noPosition.x * 0.3,
-                  y: noPosition.y * 0.2,
+                  x: noPosition.x * 0.8,
+                  y: noPosition.y * 0.6,
                 }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                transition={{ type: "spring", stiffness: 500, damping: 18 }}
                 onTouchStart={onNoHover}
-                className="px-5 py-2 text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-colors text-hebrew-body"
+                className="flex-1 px-5 py-3 text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-colors text-hebrew-body"
               >
                 {data.noText}
               </motion.button>
@@ -135,7 +138,7 @@ export function DateInviteMobile({
             </h2>
 
             <p className="text-xs text-gray-400 mb-5 text-hebrew-body">
-              💕 אני כל כך שמח/ה! 💕
+              💕 מחכה לראות אותך 💕
             </p>
 
             <button
