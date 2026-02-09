@@ -90,14 +90,16 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   };
 
   const handleRegister = async (
-    name: string,
+    firstName: string,
+    lastName: string,
     email: string,
     password: string,
+    dateOfBirth: string,
   ) => {
     setIsSubmitting(true);
     try {
-      await signUp(email, password, name);
-      onClose();
+      await signUp(email, password, firstName, lastName, dateOfBirth);
+      // Don't close modal - RegisterForm will show success message
     } catch {
       // Error is handled by AuthContext
     } finally {

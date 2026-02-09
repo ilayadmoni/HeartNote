@@ -2,56 +2,119 @@
 
 /**
  * RegisterForm Component
- * Compact registration form with name, email, password
+ * Registration form with first name, last name, email, password, confirm password, date of birth
+ * Includes real-time validation and success state
  */
 
 import { useState } from "react";
+import { CheckCircle } from "lucide-react";
 import { AuthInput } from "./AuthInput";
-import { AUTH_LABELS, AUTH_PLACEHOLDERS, AUTH_VALIDATION } from "../constants";
+import {
+  AUTH_LABELS,
+  AUTH_PLACEHOLDERS,
+  AUTH_VALIDATION,
+  REGISTER_SUCCESS_MESSAGE,
+} from "../constants";
 
 interface RegisterFormProps {
-  onSubmit: (name: string, email: string, password: string) => Promise<void>;
+  onSubmit: (
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    dateOfBirth: string,
+  ) => Promise<void>;
   isSubmitting: boolean;
 }
 
 interface FormData {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
+  confirmPassword: string;
+  dateOfBirth: string;
 }
 
 interface FormErrors {
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   password?: string;
+  confirmPassword?: string;
+  dateOfBirth?: string;
 }
+
+// Password validation: min 8 chars, at least 1 letter and 1 number
+const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
 export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
   const [formData, setFormData] = useState<FormData>({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
+    confirmPassword: "",
+    dateOfBirth: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  // Real-time validation for individual fields
+  const validateField = (
+    field: keyof FormData,
+    value: string,
+  ): string | undefined => {
+    switch (field) {
+      case "firstName":
+        return !value.trim() ? AUTH_VALIDATION.firstNameRequired : undefined;
+      case "lastName":
+        return !value.trim() ? AUTH_VALIDATION.lastNameRequired : undefined;
+      case "email":
+        if (!value.trim()) return AUTH_VALIDATION.emailRequired;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+          return AUTH_VALIDATION.emailInvalid;
+        return undefined;
+      case "password":
+        if (!value) return AUTH_VALIDATION.passwordRequired;
+        if (value.length < 8) return AUTH_VALIDATION.passwordMinLength;
+        if (!PASSWORD_REGEX.test(value)) return AUTH_VALIDATION.passwordFormat;
+        return undefined;
+      case "confirmPassword":
+        if (value !== formData.password)
+          return AUTH_VALIDATION.passwordMismatch;
+        return undefined;
+      case "dateOfBirth":
+        return !value ? AUTH_VALIDATION.dateOfBirthRequired : undefined;
+      default:
+        return undefined;
+    }
+  };
+
+  const handleFieldChange = (field: keyof FormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
+    // Clear error when user starts typing, validate on blur instead
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const handleFieldBlur = (field: keyof FormData) => {
+    const error = validateField(field, formData[field]);
+    if (error) {
+      setErrors((prev) => ({ ...prev, [field]: error }));
+    }
+  };
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = AUTH_VALIDATION.nameRequired;
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = AUTH_VALIDATION.emailRequired;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = AUTH_VALIDATION.emailInvalid;
-    }
-
-    if (!formData.password) {
-      newErrors.password = AUTH_VALIDATION.passwordRequired;
-    } else if (formData.password.length < 6) {
-      newErrors.password = AUTH_VALIDATION.passwordMinLength;
-    }
+    // Validate all fields
+    (Object.keys(formData) as (keyof FormData)[]).forEach((field) => {
+      const error = validateField(field, formData[field]);
+      if (error) newErrors[field] = error;
+    });
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -61,20 +124,58 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
     e.preventDefault();
     if (!validate()) return;
 
-    await onSubmit(formData.name, formData.email, formData.password);
+    try {
+      await onSubmit(
+        formData.firstName,
+        formData.lastName,
+        formData.email,
+        formData.password,
+        formData.dateOfBirth,
+      );
+      setIsSuccess(true);
+    } catch {
+      // Error handled by parent
+    }
   };
+
+  // Show success state
+  if (isSuccess) {
+    return (
+      <div className="text-center py-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
+          <CheckCircle className="w-8 h-8 text-green-500" />
+        </div>
+        <p className="text-[#2e3c52] dark:text-white text-hebrew-body text-sm leading-relaxed">
+          {REGISTER_SUCCESS_MESSAGE}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit}>
-      <AuthInput
-        id="register-name"
-        label={AUTH_LABELS.name}
-        type="text"
-        placeholder={AUTH_PLACEHOLDERS.name}
-        value={formData.name}
-        onChange={(value) => setFormData({ ...formData, name: value })}
-        error={errors.name}
-      />
+      {/* Name Row - Two columns */}
+      <div className="grid grid-cols-2 gap-3">
+        <AuthInput
+          id="register-firstName"
+          label={AUTH_LABELS.firstName}
+          type="text"
+          placeholder={AUTH_PLACEHOLDERS.firstName}
+          value={formData.firstName}
+          onChange={(value) => handleFieldChange("firstName", value)}
+          error={errors.firstName}
+        />
+
+        <AuthInput
+          id="register-lastName"
+          label={AUTH_LABELS.lastName}
+          type="text"
+          placeholder={AUTH_PLACEHOLDERS.lastName}
+          value={formData.lastName}
+          onChange={(value) => handleFieldChange("lastName", value)}
+          error={errors.lastName}
+        />
+      </div>
 
       <AuthInput
         id="register-email"
@@ -82,8 +183,18 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
         type="email"
         placeholder={AUTH_PLACEHOLDERS.email}
         value={formData.email}
-        onChange={(value) => setFormData({ ...formData, email: value })}
+        onChange={(value) => handleFieldChange("email", value)}
         error={errors.email}
+      />
+
+      <AuthInput
+        id="register-dateOfBirth"
+        label={AUTH_LABELS.dateOfBirth}
+        type="date"
+        placeholder={AUTH_PLACEHOLDERS.dateOfBirth}
+        value={formData.dateOfBirth}
+        onChange={(value) => handleFieldChange("dateOfBirth", value)}
+        error={errors.dateOfBirth}
       />
 
       <AuthInput
@@ -92,8 +203,20 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
         type="password"
         placeholder={AUTH_PLACEHOLDERS.password}
         value={formData.password}
-        onChange={(value) => setFormData({ ...formData, password: value })}
+        onChange={(value) => handleFieldChange("password", value)}
         error={errors.password}
+        showPasswordToggle
+      />
+
+      <AuthInput
+        id="register-confirmPassword"
+        label={AUTH_LABELS.confirmPassword}
+        type="password"
+        placeholder={AUTH_PLACEHOLDERS.confirmPassword}
+        value={formData.confirmPassword}
+        onChange={(value) => handleFieldChange("confirmPassword", value)}
+        error={errors.confirmPassword}
+        showPasswordToggle
       />
 
       {/* Submit Button */}

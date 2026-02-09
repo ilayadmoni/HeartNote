@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { SkipLinks } from "@/components/accessibility";
+import { ScrollToTop } from "@/components/ui";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +32,7 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
+            <ScrollToTop />
           </AuthProvider>
         </ThemeProvider>
       </body>

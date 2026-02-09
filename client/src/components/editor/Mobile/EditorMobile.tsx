@@ -2,17 +2,17 @@
 
 /**
  * EditorMobile Component
- * Mobile layout - Preview card on top, edit form sliding up from bottom
+ * Mobile layout - Preview card on top, draggable bottom sheet for edit form
  * Uses global Header/Footer from layout.tsx
  */
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { ChevronUp, ChevronDown, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { EditorSidebar } from "../components/EditorSidebar";
 import { EditorPreview } from "../components/EditorPreview";
 import { SuccessModal } from "../components/SuccessModal";
+import { BottomSheet } from "@/components/ui";
 import { EDITOR_CONFIGS } from "../configs";
 import { createUserPage } from "../api";
 import type { TemplateEditorProps } from "../types";
@@ -94,59 +94,22 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
       {/* Preview Area - Takes most of the screen */}
       <div
         className="flex-1 overflow-hidden relative"
-        style={{ paddingBottom: "60px" }}
+        style={{ paddingBottom: "80px" }}
       >
         <EditorPreview templateId={templateId} data={data} isMobile />
       </div>
 
-      {/* Bottom Sheet - Edit Form */}
-      <div
-        className={`fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 rounded-t-[28px] shadow-[0_-4px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_30px_rgba(0,0,0,0.3)] border-t border-gray-100 dark:border-gray-700 z-40 transition-all duration-300 ${
-          isFormOpen ? "max-h-[65vh]" : ""
-        }`}
+      {/* Draggable Bottom Sheet - Properties Panel */}
+      <BottomSheet
+        isOpen={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        collapsedHeight={72}
+        expandedHeight={65}
+        label="ערוך מאפיינים"
+        expandedLabel="סגור עריכה"
       >
-        {/* Handle Bar */}
-        <button
-          onClick={() => setIsFormOpen(!isFormOpen)}
-          className="w-full py-3 flex flex-col items-center gap-1"
-          aria-label={isFormOpen ? "סגור עריכה" : "פתח עריכה"}
-        >
-          {/* Visual Handle */}
-          <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mb-1" />
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-600 dark:text-gray-300 text-hebrew-body">
-              {isFormOpen ? "סגור עריכה" : "ערוך מאפיינים"}
-            </span>
-            {isFormOpen ? (
-              <ChevronDown className="text-gray-400" size={18} />
-            ) : (
-              <ChevronUp className="text-gray-400" size={18} />
-            )}
-          </div>
-        </button>
-
-        {/* Form Content with Animation */}
-        <AnimatePresence>
-          {isFormOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="overflow-hidden"
-            >
-              <div className="max-h-[50vh] overflow-y-auto pb-safe">
-                <EditorSidebar
-                  config={config}
-                  data={data}
-                  onChange={handleChange}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+        <EditorSidebar config={config} data={data} onChange={handleChange} />
+      </BottomSheet>
 
       {/* Success Modal */}
       <SuccessModal

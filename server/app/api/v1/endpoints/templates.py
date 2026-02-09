@@ -1,17 +1,31 @@
 """
 Templates API Endpoint
-Handles template listing and management
+Handles template listing and management.
+
+Templates are public data so most endpoints are unauthenticated.
+We use the ANON key client (not admin) to respect any RLS policies on the
+templates table.  When a user is authenticated, their JWT is forwarded so
+RLS can distinguish premium access if needed.
 """
 
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
+from supabase import Client
 
 from app.core import CurrentUser, verify_user_optional
-from app.db.supabase import get_supabase_client
+from app.db.supabase import get_user_supabase_client
+from app.core.config import get_settings
 
 router = APIRouter()
+
+
+def _get_anon_client() -> Client:
+    """Get an anon-key Supabase client for public queries."""
+    from supabase import create_client
+    settings = get_settings()
+    return create_client(settings.supabase_url, settings.supabase_anon_key)
 
 
 class TemplateResponse(BaseModel):
@@ -48,9 +62,13 @@ async def get_templates(
     """
     Get all active templates.
     
-    Public endpoint but premium templates may be marked for authenticated users.
+    Public endpoint — uses the user's RLS client when authenticated,
+    otherwise falls back to anon-key client.
     """
-    supabase = get_supabase_client()
+    if current_user and current_user.access_token:
+        supabase = get_user_supabase_client(current_user.access_token)
+    else:
+        supabase = _get_anon_client()
 
     result = supabase.table("templates").select(
         "id, name, name_he, description, description_he, "
@@ -81,8 +99,8 @@ async def get_templates(
 
 @router.get("/{template_id}", response_model=TemplateResponse)
 async def get_template(template_id: str):
-    """Get a single template by ID"""
-    supabase = get_supabase_client()
+    """Get a single template by ID (public, anon client)"""
+    supabase = _get_anon_client()
 
     result = supabase.table("templates").select(
         "id, name, name_he, description, description_he, "
@@ -112,8 +130,8 @@ async def get_template(template_id: str):
 
 @router.get("/by-key/{component_key}", response_model=TemplateResponse)
 async def get_template_by_key(component_key: str):
-    """Get a template by its component key"""
-    supabase = get_supabase_client()
+    """Get a template by its component key (public, anon client)"""
+    supabase = _get_anon_client()
 
     result = supabase.table("templates").select(
         "id, name, name_he, description, description_he, "

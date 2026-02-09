@@ -34,8 +34,11 @@ export const PLAN_CONFIGS: Record<PlanType, PlanConfig> = {
 /** Mock user data - will be replaced with API call */
 export const MOCK_USER_PROFILE: UserProfile = {
   id: "user-123",
-  fullName: "עילי אדמוני",
+  firstName: "עילי",
+  lastName: "אדמוני",
   email: "ilayadmoni9@gmail.com",
+  avatarUrl: undefined,
+  dateOfBirth: "1995-05-15",
   joinDate: "2024-01-15",
   subscription: {
     plan: "pro",

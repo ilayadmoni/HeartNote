@@ -3,32 +3,52 @@
 /**
  * ProfileMobile Component
  * Mobile layout for profile page - single column stack
+ * Includes user info, subscription, templates, edit, avatar, and delete account
  */
 
 import { motion } from "framer-motion";
-import type { ProfileMobileProps, UserProfile } from "../types";
+import type { UserProfile, ProfileMobileProps } from "../types";
 import {
   UserInfoCard,
   SubscriptionCard,
   TemplateUsageCard,
   TemplatesList,
+  EditProfileCard,
+  AvatarSelector,
+  DeleteAccountCard,
 } from "../components";
 
 interface Props extends ProfileMobileProps {
   profile: UserProfile;
+  avatarOptions: string[];
   onRenew: () => void;
   onUpgrade: () => void;
   onViewTemplate: (id: string) => void;
   onDeleteTemplate: (id: string) => void;
+  onEditProfile: (firstName: string, lastName: string) => Promise<void>;
+  onAvatarSelect: (avatarUrl: string) => Promise<boolean>;
+  onDeleteAccount: () => Promise<void>;
 }
 
 export function ProfileMobile({
   profile,
+  avatarOptions,
   onRenew,
   onUpgrade,
   onViewTemplate,
   onDeleteTemplate,
+  onEditProfile,
+  onAvatarSelect,
+  onDeleteAccount,
 }: Props) {
+  // Format subscription for the card
+  const subscriptionData = {
+    plan: profile.subscription.plan,
+    startDate: profile.createdAt.split("T")[0],
+    expiryDate: profile.subscription.expires_at?.split("T")[0],
+    isActive: profile.subscription.is_active,
+  };
+
   return (
     <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-6 px-4">
       <div className="max-w-md mx-auto">
@@ -49,30 +69,53 @@ export function ProfileMobile({
             transition={{ delay: 0.1 }}
           >
             <UserInfoCard
-              fullName={profile.fullName}
+              firstName={profile.firstName || ""}
+              lastName={profile.lastName || ""}
               email={profile.email}
-              joinDate={profile.joinDate}
+              joinDate={profile.createdAt}
+              avatarUrl={profile.avatarUrl}
             />
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
+            transition={{ delay: 0.12 }}
           >
-            <TemplateUsageCard
-              used={profile.templatesUsed}
-              plan={profile.subscription.plan}
+            <EditProfileCard
+              firstName={profile.firstName || ""}
+              lastName={profile.lastName || ""}
+              onSave={onEditProfile}
             />
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.14 }}
+          >
+            <AvatarSelector
+              avatarOptions={avatarOptions}
+              currentAvatar={profile.avatarUrl}
+              onSelect={onAvatarSelect}
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.16 }}
+          >
+            <TemplateUsageCard used={0} plan={profile.subscription.plan} />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18 }}
           >
             <SubscriptionCard
-              subscription={profile.subscription}
+              subscription={subscriptionData}
               onRenew={onRenew}
               onUpgrade={onUpgrade}
             />
@@ -81,13 +124,21 @@ export function ProfileMobile({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
+            transition={{ delay: 0.2 }}
           >
             <TemplatesList
-              templates={profile.templates}
+              templates={[]}
               onView={onViewTemplate}
               onDelete={onDeleteTemplate}
             />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.22 }}
+          >
+            <DeleteAccountCard onDelete={onDeleteAccount} />
           </motion.div>
         </div>
       </div>

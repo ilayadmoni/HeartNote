@@ -20,18 +20,22 @@ export interface LoginFormData {
 }
 
 export interface RegisterFormData {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
+  dateOfBirth: string;
 }
 
 export interface AuthInputProps {
   id: string;
   label: string;
-  type?: "text" | "email" | "password";
+  type?: "text" | "email" | "password" | "date";
   placeholder: string;
   value: string;
   onChange: (value: string) => void;
   error?: string;
+  /** Show password toggle for password fields */
+  showPasswordToggle?: boolean;
 }

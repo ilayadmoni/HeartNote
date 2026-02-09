@@ -27,6 +27,14 @@ from app.schemas.auth import (
     LoginRequest,
     RegisterRequest,
 )
+from app.schemas.profile import (
+    ProfileResponse,
+    ProfileUpdate,
+    SubscriptionInfo,
+    SubscriptionType,
+    AvatarOptionsResponse,
+    AVATAR_OPTIONS_LIST,
+)
 
 __all__ = [
     # User
@@ -47,4 +55,11 @@ __all__ = [
     "TokenPayload",
     "LoginRequest",
     "RegisterRequest",
+    # Profile
+    "ProfileResponse",
+    "ProfileUpdate",
+    "SubscriptionInfo",
+    "SubscriptionType",
+    "AvatarOptionsResponse",
+    "AVATAR_OPTIONS_LIST",
 ]

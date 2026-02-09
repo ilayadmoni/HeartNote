@@ -26,7 +26,9 @@ interface AuthContextType {
   signUp: (
     email: string,
     password: string,
-    displayName: string,
+    firstName: string,
+    lastName: string,
+    dateOfBirth?: string,
   ) => Promise<void>;
   signOut: () => Promise<void>;
   clearError: () => void;
@@ -86,7 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (
     email: string,
     password: string,
-    displayName: string,
+    firstName: string,
+    lastName: string,
+    dateOfBirth?: string,
   ) => {
     try {
       setError(null);
@@ -95,15 +99,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password,
         options: {
           data: {
-            full_name: displayName,
-            display_name: displayName,
+            first_name: firstName,
+            last_name: lastName,
+            full_name: `${firstName} ${lastName}`.trim(),
+            date_of_birth: dateOfBirth,
           },
+          // Don't auto-sign in - require email verification
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) {
         setError(getErrorMessage(error.message));
         throw error;
       }
+      // Don't set user - they need to verify email first
     } catch (err) {
       if (err instanceof Error && !error) {
         setError(getErrorMessage(err.message));

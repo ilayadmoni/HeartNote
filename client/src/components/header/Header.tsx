@@ -50,14 +50,17 @@ export function Header({ className = "" }: HeaderProps) {
         aria-label="כותרת ראשית"
         className={`
           sticky top-0 z-50 w-full
-          backdrop-blur-sm
-          transition-shadow duration-300
-          ${isScrolled ? "shadow-md" : ""}
+          transition-all duration-300 ease-out
+          ${
+            isScrolled
+              ? "backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 shadow-lg shadow-black/5 dark:shadow-black/20 border-b border-gray-200/50 dark:border-gray-700/50"
+              : "backdrop-blur-sm border-b"
+          }
           ${className}
         `}
         style={{
-          backgroundColor: "var(--header-bg)",
-          borderBottom: "1px solid var(--header-border)",
+          backgroundColor: isScrolled ? undefined : "var(--header-bg)",
+          borderColor: isScrolled ? undefined : "var(--header-border)",
         }}
       >
         <div className="container mx-auto px-4">

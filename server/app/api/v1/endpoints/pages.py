@@ -1,6 +1,9 @@
 """
 Pages API Endpoint
-Handles creation and retrieval of user-generated pages with business logic limits
+Handles creation and retrieval of user-generated pages with business logic limits.
+
+Security: Authenticated endpoints use ``get_rls_client`` so that every Supabase
+query runs under the user's JWT and Postgres RLS is enforced.
 """
 
 from datetime import datetime, timedelta, timezone
@@ -9,9 +12,10 @@ import secrets
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
+from supabase import Client
 
-from app.core import CurrentUser, get_settings, verify_user
-from app.db.supabase import get_supabase_client
+from app.core import CurrentUser, get_settings, verify_user, get_rls_client
+from app.db.supabase import get_user_supabase_client, get_admin_supabase_client
 
 router = APIRouter()
 
@@ -63,16 +67,16 @@ class PageListItem(BaseModel):
 async def create_page(
     request: CreatePageRequest,
     current_user: CurrentUser = Depends(verify_user),
+    supabase: Client = Depends(get_rls_client),
 ):
     """
     Create a new page.
     
     - Checks active page limit (MAX_ACTIVE_PAGES)
     - Sets expiration (PAGE_EXPIRY_HOURS)
-    - Logs action to user_actions
+    - All queries run under the user's JWT (RLS enforced)
     """
     settings = get_settings()
-    supabase = get_supabase_client()
 
     # 1. Check active page limit
     active_count_result = supabase.table("user_pages").select(
@@ -158,9 +162,9 @@ async def create_page(
 @router.get("/my", response_model=list[PageListItem])
 async def get_my_pages(
     current_user: CurrentUser = Depends(verify_user),
+    supabase: Client = Depends(get_rls_client),
 ):
-    """Get current user's pages"""
-    supabase = get_supabase_client()
+    """Get current user's pages (RLS enforced)"""
 
     result = supabase.table("user_pages").select(
         "id, route_slug, title, expires_at, view_count, created_at, "
@@ -194,9 +198,13 @@ async def get_page(slug: str):
     """
     Get a page by slug (PUBLIC endpoint).
     
-    Returns 404 if not found, 410 if expired/deleted.
+    Uses anon-key client (no user token).  RLS policies on user_pages
+    should allow SELECT for published pages via an anon role policy.
     """
-    supabase = get_supabase_client()
+    from app.core.config import get_settings as _get_settings
+    _settings = _get_settings()
+    from supabase import create_client
+    supabase = create_client(_settings.supabase_url, _settings.supabase_anon_key)
 
     # Fetch page with template info
     result = supabase.table("user_pages").select(
@@ -265,9 +273,9 @@ async def get_page(slug: str):
 async def delete_page(
     page_id: str,
     current_user: CurrentUser = Depends(verify_user),
+    supabase: Client = Depends(get_rls_client),
 ):
-    """Soft delete a page (owner only)"""
-    supabase = get_supabase_client()
+    """Soft delete a page (owner only, RLS enforced)"""
 
     # Verify ownership
     result = supabase.table("user_pages").select("id").eq(

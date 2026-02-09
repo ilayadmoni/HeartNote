@@ -10,15 +10,24 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
 
-    # Server
-    port: int = 8000
+    # Application
+    app_name: str = "HeartNote"
     debug: bool = False
-    cors_origins: str = "http://localhost:3000,http://localhost:3001"
+    api_v1_prefix: str = "/api/v1"
+
+    # Server
+    port: int = 80
+
+    # CORS - comma-separated list of origins
+    cors_origins: str = "http://localhost:3000,http://localhost:3001,http://localhost:80,http://localhost"
 
     # Supabase
-    supabase_url: str = ""
-    supabase_anon_key: str = ""
+    supabase_url: str = ""       # REQUIRED – e.g. https://xxxx.supabase.co
+    supabase_anon_key: str = ""  # REQUIRED
     supabase_service_role_key: str = ""
+
+    # Legacy – no longer required for RS256+JWKS auth.  Kept only so
+    # existing .env files that still set it won't cause startup errors.
     supabase_jwt_secret: str = ""
 
     # Business Logic
@@ -28,10 +37,18 @@ class Settings(BaseSettings):
     # Database (optional - for direct SQLAlchemy connection)
     database_url: str | None = None
 
+    # Legacy JWT settings (not used for Supabase RS256 auth)
+    secret_key: str = "dev-secret-key"
+    jwt_secret_key: str = "dev-jwt-secret"
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 7
+
     @property
     def cors_origins_list(self) -> list[str]:
         """Parse CORS origins as list"""
-        return [origin.strip() for origin in self.cors_origins.split(",")]
+        if not self.cors_origins:
+            return ["http://localhost:3000"]
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -46,3 +63,6 @@ def get_settings() -> Settings:
     """Get cached settings instance"""
     return Settings()
 
+
+# Module-level settings instance for convenience
+settings = get_settings()

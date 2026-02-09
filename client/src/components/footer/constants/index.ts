@@ -11,7 +11,7 @@ export const FOOTER_LINKS: FooterLinkGroup[] = [
     links: [
       { id: "gallery", label: "גלריית התבניות", href: "/gallery" },
       { id: "how-it-works", label: "איך זה עובד?", href: "/#how-it-works" },
-      { id: "about", label: "עלינו", href: "/about" },
+      { id: "faq", label: "שאלות נפוצות", href: "/faq" },
     ],
   },
   {

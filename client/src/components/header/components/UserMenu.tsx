@@ -46,9 +46,11 @@ export function UserMenu() {
 
   if (!user) return null;
 
+  // Display first name only, with fallbacks
   const displayName =
-    user.user_metadata?.full_name ||
-    user.user_metadata?.display_name ||
+    user.user_metadata?.first_name ||
+    user.user_metadata?.full_name?.split(" ")[0] ||
+    user.user_metadata?.display_name?.split(" ")[0] ||
     user.email?.split("@")[0] ||
     "משתמש";
 

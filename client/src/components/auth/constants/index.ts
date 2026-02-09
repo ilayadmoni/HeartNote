@@ -15,21 +15,26 @@ export const REGISTER_SUBTITLE = "צרו חשבון והתחילו ליצור ב
 export const REGISTER_BUTTON = "הרשמה";
 export const REGISTER_LOGIN_PROMPT = "כבר יש לכם חשבון?";
 export const REGISTER_LOGIN_LINK = "התחברו";
+export const REGISTER_SUCCESS_MESSAGE = "ההרשמה הושלמה בהצלחה! נא לבדוק את האימייל לאימות החשבון.";
 
 // Form Labels
 export const AUTH_LABELS = {
-  name: "שם מלא",
+  firstName: "שם פרטי",
+  lastName: "שם משפחה",
   email: "אימייל",
   password: "סיסמה",
   confirmPassword: "אימות סיסמה",
+  dateOfBirth: "תאריך לידה",
 } as const;
 
 // Placeholders
 export const AUTH_PLACEHOLDERS = {
-  name: "הכניסו את שמכם",
+  firstName: "הכניסו את שמכם הפרטי",
+  lastName: "הכניסו את שם המשפחה",
   email: "your@email.com",
   password: "••••••••",
   confirmPassword: "••••••••",
+  dateOfBirth: "",
 } as const;
 
 // Validation
@@ -37,7 +42,11 @@ export const AUTH_VALIDATION = {
   emailRequired: "נא להזין אימייל",
   emailInvalid: "אימייל לא תקין",
   passwordRequired: "נא להזין סיסמה",
-  passwordMinLength: "הסיסמה חייבת להכיל לפחות 6 תווים",
-  nameRequired: "נא להזין שם",
+  passwordMinLength: "הסיסמה חייבת להכיל לפחות 8 תווים",
+  passwordFormat: "הסיסמה חייבת להכיל לפחות אות אחת ומספר אחד",
+  firstNameRequired: "נא להזין שם פרטי",
+  lastNameRequired: "נא להזין שם משפחה",
   passwordMismatch: "הסיסמאות אינן תואמות",
+  dateOfBirthRequired: "נא להזין תאריך לידה",
 } as const;
+

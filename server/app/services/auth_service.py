@@ -1,4 +1,11 @@
-"""Auth Service - Authentication business logic"""
+"""
+Auth Service - Legacy authentication business logic
+
+NOTE: This service implements non-Supabase login/register/refresh flows.
+      With the RS256+JWKS migration, all authentication goes through Supabase Auth.
+      This module is kept for backwards compatibility but is NOT actively used by
+      any mounted API router.
+"""
 
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,40 +13,29 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from app.schemas.auth import Token, LoginRequest, RegisterRequest
 from app.services.user_service import UserService
-from app.core.security import create_access_token, create_refresh_token, decode_token
 
 
 class AuthService:
+    """Legacy auth service — not used in the Supabase auth flow."""
+
     def __init__(self, db: AsyncSession):
         self.db = db
         self.user_service = UserService(db)
 
     async def login(self, credentials: LoginRequest) -> Optional[Token]:
-        user = await self.user_service.authenticate(credentials.email, credentials.password)
-        if not user:
-            return None
-        return Token(
-            access_token=create_access_token(user.id),
-            refresh_token=create_refresh_token(user.id),
+        """Legacy login — prefer Supabase Auth ``/auth/v1/token``."""
+        raise NotImplementedError(
+            "Direct login is disabled — authenticate via Supabase Auth instead."
         )
 
     async def register(self, data: RegisterRequest) -> Optional[User]:
-        existing = await self.user_service.get_by_email(data.email)
-        if existing:
-            return None
-        from app.schemas.user import UserCreate
-        return await self.user_service.create(UserCreate(
-            email=data.email, password=data.password, full_name=data.full_name
-        ))
+        """Legacy register — prefer Supabase Auth ``/auth/v1/signup``."""
+        raise NotImplementedError(
+            "Direct registration is disabled — sign up via Supabase Auth instead."
+        )
 
     async def refresh_tokens(self, refresh_token: str) -> Optional[Token]:
-        payload = decode_token(refresh_token)
-        if not payload or payload.get("type") != "refresh":
-            return None
-        user = await self.user_service.get(payload["sub"])
-        if not user:
-            return None
-        return Token(
-            access_token=create_access_token(user.id),
-            refresh_token=create_refresh_token(user.id),
+        """Legacy token refresh — prefer Supabase Auth ``/auth/v1/token?grant_type=refresh_token``."""
+        raise NotImplementedError(
+            "Token refresh is handled by Supabase Auth — use the Supabase client."
         )

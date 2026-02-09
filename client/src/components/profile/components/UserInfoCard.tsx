@@ -2,18 +2,28 @@
 
 /**
  * UserInfoCard Component
- * Displays user's basic information: name, email, join date
+ * Displays user's basic information: name, email, join date, avatar
  */
 
 import { Calendar, Mail, User } from "lucide-react";
+import Image from "next/image";
 
 interface UserInfoCardProps {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   joinDate: string;
+  avatarUrl?: string | null;
 }
 
-export function UserInfoCard({ fullName, email, joinDate }: UserInfoCardProps) {
+export function UserInfoCard({
+  firstName,
+  lastName,
+  email,
+  joinDate,
+  avatarUrl,
+}: UserInfoCardProps) {
+  const fullName = `${firstName} ${lastName}`.trim() || "משתמש";
   const formattedJoinDate = new Date(joinDate).toLocaleDateString("he-IL", {
     day: "numeric",
     month: "long",
@@ -22,12 +32,22 @@ export function UserInfoCard({ fullName, email, joinDate }: UserInfoCardProps) {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-      {/* Header with initials */}
+      {/* Header with avatar */}
       <div className="flex items-center gap-4 mb-6">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#d4826f] to-[#c4735f] flex items-center justify-center shadow-lg">
-          <span className="text-2xl font-bold text-white">
-            {fullName.charAt(0)}
-          </span>
+        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-[#d4826f] to-[#c4735f] flex items-center justify-center shadow-lg">
+          {avatarUrl ? (
+            <Image
+              src={avatarUrl}
+              alt={fullName}
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          ) : (
+            <span className="text-2xl font-bold text-white">
+              {firstName.charAt(0) || email.charAt(0).toUpperCase()}
+            </span>
+          )}
         </div>
         <div>
           <h2 className="text-xl font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">

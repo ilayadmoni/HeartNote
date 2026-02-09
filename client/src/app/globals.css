@@ -345,6 +345,15 @@ html {
   .container {
     @apply max-w-7xl mx-auto;
   }
+
+  /* Safe area padding for iOS devices */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
 }
 
 /* ====================================
