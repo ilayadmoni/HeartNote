@@ -72,13 +72,35 @@ export const TEMPLATES: Template[] = [
     id: "open-when",
     title: "פתח כש...",
     description:
-      "מעטפות דיגיטליות עם מכתבים לרגעים מיוחדים. כשעצוב, כשמתגעגע, כששמח... 💌",
+      "מעטפות דיגיטליות עם מכתבים לרגעים מיוחדים. כשעצוב, כשמתגעגעים... 💌",
     category: "romantic",
     isPremium: true,
     componentKey: "OpenWhen",
     link: "/create/open-when",
     badge: { type: "premium", color: "#f59e0b" },
     linkText: "פרימיום",
+  },
+  {
+    id: "decision-wheel",
+    title: "גלגל החלטות",
+    description:
+      "לא יודעים מה לעשות? סובבו את הגלגל ותנו לגורל להחליט! 🎡",
+    category: "fun",
+    isFree: true,
+    componentKey: "DecisionWheel",
+    link: "/create/decision-wheel",
+    badge: { type: "free", color: "#22c55e" },
+  },
+  {
+    id: "steamy-window",
+    title: "חלון מאודה",
+    description:
+      "העבירו את האצבע על החלון המאודה וגלו את ההודעה הסודית שמוסתרת מאחוריו! 🫧",
+    category: "romantic",
+    isFree: true,
+    componentKey: "SteamyWindow",
+    link: "/create/steamy-window",
+    badge: { type: "free", color: "#22c55e" },
   },
 ];
 
@@ -92,9 +114,7 @@ export const PREVIEW_DATA = {
   },
   ScratchCard: {
     title: "",
-    prize: { type: "text" as const, content: "🎁" },
-    gridSize: { cols: 4, rows: 3 },
-    scratchColor: "#c0c0c0",
+    prizeContent: "🎁",
   },
   Timeline: {
     events: [
@@ -123,5 +143,14 @@ export const PREVIEW_DATA = {
       { id: "1", title: "😢", emoji: "😢", content: "", dateOpen: "2026-01-01" },
       { id: "2", title: "💪", emoji: "💪", content: "", dateOpen: "2099-01-01" },
     ],
+  },
+  DecisionWheel: {
+    title: "גלגל ההחלטות",
+    options: ["ארוחה", "סרט", "טיול", "מסאז'"],
+  },
+  SteamyWindow: {
+    title: "יש לך הודעה...",
+    revealMessage: "❤️",
+    emoji: "💖",
   },
 };

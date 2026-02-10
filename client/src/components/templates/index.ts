@@ -6,6 +6,14 @@
 // Types
 export * from "./types";
 
+// Registry
+export {
+  TEMPLATE_REGISTRY,
+  getTemplateComponent,
+  templateIdToComponentKey,
+  componentKeyToTemplateId,
+} from "./registry";
+
 // Components
 export { DateInvite } from "./DateInvite/DateInvite";
 export { ScratchCard } from "./ScratchCard/ScratchCard";

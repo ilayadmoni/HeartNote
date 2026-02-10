@@ -92,13 +92,13 @@ export function UserMenu() {
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
             className="
-              absolute top-full left-0 mt-2
-              w-48
+              absolute top-full right-0 left-auto mt-2
+              w-56 max-w-[calc(100vw-1rem)]
               bg-white dark:bg-gray-800
               rounded-xl shadow-lg
               border border-gray-100 dark:border-gray-700
               overflow-hidden
-              z-50
+              z-[60]
             "
           >
             {/* User Info */}

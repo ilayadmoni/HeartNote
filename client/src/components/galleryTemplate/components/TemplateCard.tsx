@@ -88,7 +88,7 @@ export function TemplateCard({
                   : "bg-[#d4826f] text-white hover:bg-[#c4735f]"
               }`}
             >
-              ← {template.isPremium ? "שדרג ליצירה" : "התחל ליצור"}
+              {template.isPremium ? "שדרגו ליצירה" : "התחילו ליצור"}
             </motion.button>
           ) : (
             <Link href={template.link} className="block w-full">
@@ -101,7 +101,7 @@ export function TemplateCard({
                     : "bg-[#d4826f] text-white hover:bg-[#c4735f]"
                 }`}
               >
-                ← {template.isPremium ? "שדרג ליצירה" : "התחל ליצור"}
+                {template.isPremium ? "שדרגו ליצירה" : "התחילו ליצור"}
               </motion.button>
             </Link>
           )}

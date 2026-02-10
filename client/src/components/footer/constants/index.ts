@@ -34,7 +34,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
   {
     id: "instagram",
     label: "Instagram",
-    href: "https://instagram.com/nitsanbp_social",
+    href: "https://instagram.com/heartnote.co.il",
     icon: "instagram",
   },
 ];

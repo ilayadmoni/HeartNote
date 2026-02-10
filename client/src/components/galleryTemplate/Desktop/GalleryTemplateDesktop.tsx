@@ -30,7 +30,7 @@ export function GalleryTemplateDesktop({
         {/* Header Section */}
         <GalleryHeader
           title="בחרו את החוויה הבאה שלכם"
-          subtitle="גלריית תבניות אינטראקטיביות שנוצרו באהבה. בחרו, התאימו אישית, ושלחו!"
+          subtitle="גלריית תבניות אינטראקטיביות שנוצרו באהבה. התאימו אישית, ושלחו!"
           className="mb-10"
         />
 

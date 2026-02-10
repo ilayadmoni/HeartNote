@@ -6,12 +6,13 @@
  * Uses global Header/Footer from layout.tsx
  */
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
 import { EditorSidebar } from "../components/EditorSidebar";
 import { EditorPreview } from "../components/EditorPreview";
 import { SuccessModal } from "../components/SuccessModal";
+import { QuotaModal } from "../components/QuotaModal";
 import { BottomSheet } from "@/components/ui";
 import { EDITOR_CONFIGS } from "../configs";
 import { createUserPage } from "../api";
@@ -30,6 +31,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
     url: string;
     expiresAt: string;
   } | null>(null);
+  const [showQuotaModal, setShowQuotaModal] = useState(false);
 
   if (!config) {
     return (
@@ -50,18 +52,23 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
     );
   }
 
-  const handleChange = (key: string, value: unknown) => {
+  const handleChange = useCallback((key: string, value: unknown) => {
     setData((prev) => ({ ...prev, [key]: value }));
-  };
+  }, []);
 
   const handlePublish = async () => {
     setIsPublishing(true);
     try {
       const result = await createUserPage(templateId, data);
       setSuccessData({ url: result.url, expiresAt: result.expiresAt });
-    } catch (error) {
-      console.error("Failed to publish:", error);
-      alert("שגיאה ביצירת הכרטיס. נסה שוב.");
+    } catch (error: unknown) {
+      const apiError = error as { status?: number; detail?: string };
+      if (apiError.status === 403 && apiError.detail === "QUOTA_EXCEEDED") {
+        setShowQuotaModal(true);
+      } else {
+        console.error("Failed to publish:", error);
+        alert("שגיאה ביצירת הכרטיס. נסה שוב.");
+      }
     } finally {
       setIsPublishing(false);
     }
@@ -117,6 +124,12 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
         onClose={() => setSuccessData(null)}
         url={successData?.url || ""}
         expiresAt={successData?.expiresAt || ""}
+      />
+
+      {/* Quota Exceeded Modal */}
+      <QuotaModal
+        isOpen={showQuotaModal}
+        onClose={() => setShowQuotaModal(false)}
       />
     </div>
   );

@@ -3,11 +3,12 @@
 /**
  * Profile Component
  * Main export with responsive wrapper - switches between Desktop and Mobile.
- * Fetches real data from FastAPI backend using the useProfile hook.
+ * Fetches real data from FastAPI backend using the useProfile and useDashboard hooks.
  */
 
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useProfile } from "@/hooks/useProfile";
+import { useDashboard } from "@/hooks/useDashboard";
 import { ProfileDesktop } from "./Desktop/ProfileDesktop";
 import { ProfileMobile } from "./Mobile/ProfileMobile";
 import { ProfileSkeleton } from "./components";
@@ -19,12 +20,22 @@ export function Profile({ className = "" }: ProfileProps) {
   const {
     profile,
     avatarOptions,
-    loading,
-    error,
+    loading: profileLoading,
+    error: profileError,
     updateProfile,
     deleteAccount,
-    refresh,
+    refresh: refreshProfile,
   } = useProfile();
+
+  const {
+    dashboard,
+    loading: dashboardLoading,
+    error: dashboardError,
+    refresh: refreshDashboard,
+  } = useDashboard();
+
+  const loading = profileLoading || dashboardLoading;
+  const error = profileError || dashboardError;
 
   // Show skeleton while loading
   if (loading) {
@@ -49,7 +60,10 @@ export function Profile({ className = "" }: ProfileProps) {
             נסו לרענן את הדף
           </p>
           <button
-            onClick={refresh}
+            onClick={() => {
+              refreshProfile();
+              refreshDashboard();
+            }}
             className="px-6 py-2.5 rounded-lg bg-[#d4826f] hover:bg-[#c4735f] text-white font-bold text-sm transition-all text-hebrew-heading"
           >
             נסה שוב
@@ -67,13 +81,13 @@ export function Profile({ className = "" }: ProfileProps) {
     window.location.href = "/pricing";
   };
 
-  const handleViewTemplate = (id: string) => {
-    window.location.href = `/p/${id}`;
+  const handleViewTemplate = (slug: string) => {
+    window.location.href = `/p/${slug}`;
   };
 
-  const handleDeleteTemplate = async (id: string) => {
+  const handleDeleteTemplate = async (slug: string) => {
     // TODO: Implement template deletion via API
-    console.log("Delete template:", id);
+    console.log("Delete template:", slug);
   };
 
   const handleEditProfile = async (
@@ -100,6 +114,7 @@ export function Profile({ className = "" }: ProfileProps) {
   const props = {
     profile,
     avatarOptions,
+    dashboard,
     onRenew: handleRenew,
     onUpgrade: handleUpgrade,
     onViewTemplate: handleViewTemplate,

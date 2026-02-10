@@ -42,9 +42,7 @@ const DEFAULT_DATA: Record<string, Record<string, unknown>> = {
   },
   "scratch-card": {
     title: "גרד וגלה את ההפתעה",
-    prize: { type: "text", content: "🎁 זכית!" },
-    gridSize: { cols: 6, rows: 4 },
-    scratchColor: "#c0c0c0",
+    prizeContent: "🎁 זכית!",
   },
   timeline: {
     title: "הסיפור שלנו",

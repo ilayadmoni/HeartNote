@@ -10,7 +10,10 @@ import { motion } from "framer-motion";
 import { RotateCcw, Heart } from "lucide-react";
 import type { DateInviteMobileProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+} from "@/components/templates/components";
 
 export function DateInviteMobile({
   data,
@@ -54,7 +57,7 @@ export function DateInviteMobile({
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-[320px] bg-white dark:bg-gray-800 rounded-[28px] shadow-xl shadow-black/5 dark:shadow-black/20 p-6 flex flex-col items-center text-center"
+        className="relative z-10 w-full max-w-[320px] bg-white dark:bg-gray-800 rounded-[28px] shadow-xl shadow-black/5 dark:shadow-black/20 p-6 flex flex-col items-center text-center overflow-hidden"
       >
         {!answered ? (
           <>
@@ -90,7 +93,7 @@ export function DateInviteMobile({
               <motion.button
                 whileTap={{ scale: 0.96 }}
                 onClick={onYes}
-                className="flex-1 py-3 text-white text-base font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
+                className="flex-1 h-12 text-white text-sm font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
                 style={{
                   backgroundColor: primaryColor,
                   boxShadow: `0 10px 25px ${primaryColor}30`,
@@ -103,12 +106,12 @@ export function DateInviteMobile({
               {/* No Button - Enhanced evasion */}
               <motion.button
                 animate={{
-                  x: noPosition.x * 0.8,
-                  y: noPosition.y * 0.6,
+                  x: noPosition.x,
+                  y: noPosition.y,
                 }}
-                transition={{ type: "spring", stiffness: 500, damping: 18 }}
+                transition={{ type: "spring", stiffness: 500, damping: 22 }}
                 onTouchStart={onNoHover}
-                className="flex-1 px-5 py-3 text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-colors text-hebrew-body"
+                className="flex-1 h-12 text-sm font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-colors text-hebrew-heading flex items-center justify-center"
               >
                 {data.noText}
               </motion.button>

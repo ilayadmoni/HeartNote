@@ -25,15 +25,7 @@ export interface DateInviteData {
 // 2. SCRATCH CARD
 // =============================================================================
 export interface ScratchCardData {
-  prize: {
-    type: 'text' | 'image';
-    content: string;          // Text or image URL
-  };
-  gridSize: {
-    cols: number;             // e.g., 6
-    rows: number;             // e.g., 4
-  };
-  scratchColor: string;       // e.g., "#c0c0c0"
+  prizeContent: string;       // Text content to reveal
   title?: string;             // "גרד וגלה את ההפתעה"
   primaryColor?: string;      // Accent color for buttons, highlights
 }
@@ -87,7 +79,6 @@ export interface QuizQuestion {
 export interface QuizScoreMessage {
   minScore: number;           // 0-100
   message: string;            // "!מכיר.ה אותי מצוין"
-  emoji?: string;             // "🎉"
 }
 
 export interface RelationshipQuizData {
@@ -116,8 +107,29 @@ export interface OpenWhenData {
 }
 
 // =============================================================================
+// 7. DECISION WHEEL
+// =============================================================================
+export interface DecisionWheelData {
+  title?: string;             // "גלגל ההחלטות"
+  subtitle?: string;          // "סובבו וגלו!"
+  options: string[];           // 2-8 text labels for wheel segments
+  primaryColor?: string;      // Accent color for spin button, pointer
+}
+
+// =============================================================================
+// 8. STEAMY WINDOW
+// =============================================================================
+export interface SteamyWindowData {
+  title?: string;             // "חלון מאודה"
+  revealMessage: string;      // Hidden text revealed after scratching
+  emoji?: string;             // Emoji shown above the message: "💖"
+  primaryColor?: string;      // Accent color for revealed text
+}
+
+// =============================================================================
 // COMPONENT PROPS
 // =============================================================================
 export interface TemplateComponentProps<T> {
   data: T;
 }
+

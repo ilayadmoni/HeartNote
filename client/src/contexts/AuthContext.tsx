@@ -59,10 +59,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Force Next.js to re-render server components when auth state
+      // changes (login / logout).  Without this the header buttons stay
+      // "locked" until a manual page refresh.
+      router.refresh();
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [router]);
 
   // Sign in with email/password
   const signIn = async (email: string, password: string) => {

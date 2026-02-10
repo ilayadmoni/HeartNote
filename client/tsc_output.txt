@@ -1,0 +1,22 @@
+src/components/home/components/GalleryTeaserCard.tsx(12,8): error TS2305: Module '"@/components/galleryTemplate/components"' has no exported member 'PreviewType'.
+src/components/home/components/GalleryTeaserCard.tsx(43,26): error TS2322: Type '{ type: PreviewType; }' is not assignable to type 'IntrinsicAttributes & TemplatePreviewProps'.
+  Property 'type' does not exist on type 'IntrinsicAttributes & TemplatePreviewProps'.
+src/components/profile/components/SubscriptionCard.tsx(25,43): error TS2339: Property 'startDate' does not exist on type 'SubscriptionInfo'.
+src/components/profile/components/SubscriptionCard.tsx(28,44): error TS2339: Property 'expiryDate' does not exist on type 'SubscriptionInfo'.
+src/components/profile/components/SubscriptionCard.tsx(45,27): error TS2339: Property 'hebrewName' does not exist on type 'PlanConfig'.
+src/components/profile/components/SubscriptionCard.tsx(48,27): error TS2339: Property 'description' does not exist on type 'PlanConfig'.
+src/components/profile/components/SubscriptionCard.tsx(54,45): error TS2551: Property 'isActive' does not exist on type 'SubscriptionInfo'. Did you mean 'is_active'?
+src/components/profile/components/TemplatesList.tsx(75,49): error TS2339: Property 'type' does not exist on type 'UserTemplate'.
+src/components/profile/components/TemplatesList.tsx(75,67): error TS2339: Property 'type' does not exist on type 'UserTemplate'.
+src/components/profile/components/TemplateUsageCard.tsx(20,26): error TS2339: Property 'maxTemplates' does not exist on type 'PlanConfig'.
+src/components/profile/constants/index.ts(13,5): error TS2353: Object literal may only specify known properties, and 'hebrewName' does not exist in type 'PlanConfig'.
+src/components/profile/constants/index.ts(20,5): error TS2353: Object literal may only specify known properties, and 'hebrewName' does not exist in type 'PlanConfig'.
+src/components/profile/constants/index.ts(27,5): error TS2353: Object literal may only specify known properties, and 'hebrewName' does not exist in type 'PlanConfig'.
+src/components/profile/constants/index.ts(40,3): error TS2322: Type 'undefined' is not assignable to type 'string | null'.
+src/components/profile/constants/index.ts(45,5): error TS2353: Object literal may only specify known properties, and 'startDate' does not exist in type 'SubscriptionInfo'.
+src/components/profile/Desktop/ProfileDesktop.tsx(100,17): error TS2739: Type '{ plan: PlanType; startDate: string; expiryDate: string | undefined; isActive: boolean; }' is missing the following properties from type 'SubscriptionInfo': is_active, expires_at
+src/components/profile/Mobile/ProfileMobile.tsx(118,15): error TS2739: Type '{ plan: PlanType; startDate: string; expiryDate: string | undefined; isActive: boolean; }' is missing the following properties from type 'SubscriptionInfo': is_active, expires_at
+src/features/auth/LoginForm.tsx(11,11): error TS2339: Property 'login' does not exist on type 'AuthContextType'.
+src/features/auth/LoginForm.tsx(11,18): error TS2339: Property 'isLoading' does not exist on type 'AuthContextType'.
+src/services/profileApi.ts(72,69): error TS2345: Argument of type 'ProfileUpdateData' is not assignable to parameter of type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type 'ProfileUpdateData'.

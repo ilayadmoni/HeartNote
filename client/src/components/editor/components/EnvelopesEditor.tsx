@@ -8,6 +8,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { BrandCalendar } from "@/components/ui/BrandCalendar";
 import type { OpenWhenEnvelope } from "@/components/templates/types";
 
 const EMOJI_OPTIONS = [
@@ -161,11 +162,10 @@ function EnvelopeItem({ envelope, index, onRemove, onUpdate }: EnvelopeItemProps
       />
 
       {/* Date Open */}
-      <input
-        type="date"
+      <BrandCalendar
         value={envelope.dateOpen}
-        onChange={(e) => onUpdate(envelope.id, "dateOpen", e.target.value)}
-        className={`${inputClass} text-center max-w-[200px] mx-auto`}
+        onChange={(val) => onUpdate(envelope.id, "dateOpen", val)}
+        className="max-w-[200px] mx-auto"
       />
 
       {/* Content */}

@@ -3,20 +3,20 @@
  * Type definitions for the template editor
  */
 
-import type { DateInviteData } from "@/components/templates/types";
-
-// Editor field types
-export type EditorFieldType = 
+// Editor field types — must cover all types used in config_schema JSONB
+export type EditorFieldType =
   | "text"
   | "textarea"
   | "color"
+  | "image_url"
   | "image"
   | "select"
   | "toggle"
   | "events"
   | "envelopes"
   | "questions"
-  | "coupons";
+  | "coupons"
+  | "options";
 
 export interface EditorField {
   key: string;
@@ -56,17 +56,3 @@ export interface EditorFieldProps {
   value: unknown;
   onChange: (value: unknown) => void;
 }
-
-// Color presets
-export interface ColorPreset {
-  name: string;
-  primary: string;
-  secondary: string;
-}
-
-export const COLOR_PRESETS: ColorPreset[] = [
-  { name: "קורל", primary: "#d4826f", secondary: "#e8917a" },
-  { name: "כחול", primary: "#3b82f6", secondary: "#60a5fa" },
-  { name: "סגול", primary: "#8b5cf6", secondary: "#a78bfa" },
-  { name: "ורוד", primary: "#ec4899", secondary: "#f472b6" },
-];

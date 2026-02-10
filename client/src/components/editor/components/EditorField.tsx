@@ -7,11 +7,18 @@
 
 import { motion } from "framer-motion";
 import type { EditorField as EditorFieldType } from "../types";
+import { ColorPicker } from "./ColorPicker";
 import { TimelineEventsEditor } from "./TimelineEventsEditor";
 import { EnvelopesEditor } from "./EnvelopesEditor";
 import { QuestionsEditor } from "./QuestionsEditor";
 import { CouponsEditor } from "./CouponsEditor";
-import type { TimelineEvent, OpenWhenEnvelope, QuizQuestion, LoveCoupon } from "@/components/templates/types";
+import { OptionsEditor } from "./OptionsEditor";
+import type {
+  TimelineEvent,
+  OpenWhenEnvelope,
+  QuizQuestion,
+  LoveCoupon,
+} from "@/components/templates/types";
 
 interface EditorFieldProps {
   field: EditorFieldType;
@@ -70,15 +77,31 @@ export function EditorField({ field, value, onChange }: EditorFieldProps) {
         </select>
       )}
 
-      {field.type === "number" && (
+      {(field.type as string) === "number" && (
         <input
           type="number"
           value={(value as number) || 0}
           onChange={(e) => onChange(Number(e.target.value))}
           placeholder={field.placeholder}
           className={baseInputClass}
-          min={field.min}
-          max={field.max}
+          min={
+            (field as unknown as Record<string, unknown>).min as
+              | number
+              | undefined
+          }
+          max={
+            (field as unknown as Record<string, unknown>).max as
+              | number
+              | undefined
+          }
+        />
+      )}
+
+      {field.type === "color" && (
+        <ColorPicker
+          value={(value as string) || ""}
+          onChange={(c) => onChange(c)}
+          label={field.label}
         />
       )}
 
@@ -125,6 +148,13 @@ export function EditorField({ field, value, onChange }: EditorFieldProps) {
       {field.type === "coupons" && (
         <CouponsEditor
           coupons={(value as LoveCoupon[]) || []}
+          onChange={onChange}
+        />
+      )}
+
+      {field.type === "options" && (
+        <OptionsEditor
+          options={(value as string[]) || []}
           onChange={onChange}
         />
       )}

@@ -15,9 +15,42 @@ from pydantic import BaseModel
 from supabase import Client
 
 from app.core import CurrentUser, get_settings, verify_user, get_rls_client
+from app.core.color_palette import ALLOWED_COLORS
 from app.db.supabase import get_user_supabase_client, get_admin_supabase_client
 
 router = APIRouter()
+
+
+# =============================================================================
+# VALIDATION HELPERS
+# =============================================================================
+
+def validate_custom_settings(
+    custom_settings: dict[str, Any],
+    config_schema: dict[str, Any],
+) -> list[str]:
+    """
+    Validate custom_settings against the template's config_schema.
+    Returns a list of validation error strings (empty = valid).
+
+    Key rule: fields of type "color" must be in the ALLOWED_COLORS palette.
+    """
+    errors: list[str] = []
+    for field_key, schema_def in config_schema.items():
+        if not isinstance(schema_def, dict):
+            continue
+        field_type = schema_def.get("type")
+        if field_type != "color":
+            continue
+        # Only validate if the caller actually supplied a value for this field
+        value = custom_settings.get(field_key)
+        if value is None:
+            continue
+        if not isinstance(value, str) or value.upper() not in ALLOWED_COLORS:
+            errors.append(
+                f"Field '{field_key}' value '{value}' is not in the allowed color palette."
+            )
+    return errors
 
 
 # =============================================================================
@@ -94,13 +127,12 @@ async def create_page(
     if active_count >= settings.max_active_pages:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"You have reached the maximum of {settings.max_active_pages} active pages. "
-                   f"Please wait for existing pages to expire or upgrade your plan.",
+            detail="QUOTA_EXCEEDED",
         )
 
-    # 2. Get template info
+    # 2. Get template info (include config_schema for validation)
     template_result = supabase.table("templates").select(
-        "id, name_he, is_premium"
+        "id, name_he, is_premium, config_schema"
     ).eq("id", request.template_id).single().execute()
 
     if not template_result.data:
@@ -111,13 +143,22 @@ async def create_page(
 
     template = template_result.data
 
-    # 3. TODO: Check premium template access (for future)
+    # 3. Validate custom_settings against config_schema (color palette check)
+    config_schema = template.get("config_schema", {})
+    validation_errors = validate_custom_settings(request.custom_settings, config_schema)
+    if validation_errors:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Invalid color values: {'; '.join(validation_errors)}",
+        )
+
+    # 4. TODO: Check premium template access (for future)
     # if template["is_premium"]:
     #     profile = get_user_profile(current_user.id)
     #     if profile.subscription_type == "free":
     #         raise HTTPException(403, "Premium template requires subscription")
 
-    # 4. Generate slug and expiration
+    # 5. Generate slug and expiration
     route_slug = secrets.token_urlsafe(6)  # ~8 chars
     expires_at = datetime.now(timezone.utc) + timedelta(hours=settings.page_expiry_hours)
 

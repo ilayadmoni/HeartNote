@@ -1,6 +1,10 @@
 /**
  * Editor Configurations
- * Config for each template's editable fields
+ * Config for each template's editable fields.
+ *
+ * NOTE: The `config_schema` in the database is the source of truth for
+ * validation. This file drives the editor UI and provides defaults.
+ * Fields of type "color" will render the restricted 12-swatch palette.
  */
 
 import type { EditorConfig } from "./types";
@@ -9,7 +13,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
   "date-invite": {
     templateId: "date-invite",
     title: "הזמנה לדייט",
-    description: "כרטיס אינטראקטיבי שבו כפתור ה\"לא\" בורח. אי אפשר לסרב!",
+    description: 'כרטיס אינטראקטיבי שבו כפתור ה"לא" בורח. אי אפשר לסרב!',
     fields: [
       {
         key: "question",
@@ -23,13 +27,18 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         type: "text",
         placeholder: "!יש! איזה כיף",
       },
+      {
+        key: "primaryColor",
+        label: "צבע ראשי",
+        type: "color",
+      },
     ],
     defaultData: {
       question: "האם תצא/י איתי לדייט?",
       yesText: "כן!",
       noText: "לא",
       successMessage: "!יש! איזה כיף",
-      primaryColor: "#d4826f",
+      primaryColor: "#C7CEEA",
     },
   },
   "scratch-card": {
@@ -49,13 +58,16 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         type: "textarea",
         placeholder: "🎁 זכית בהפתעה מיוחדת!",
       },
+      {
+        key: "primaryColor",
+        label: "צבע ראשי",
+        type: "color",
+      },
     ],
     defaultData: {
       title: "גרד וגלה את ההפתעה",
       prizeContent: "🎁 זכית בהפתעה מיוחדת!",
-      gridSize: { cols: 6, rows: 4 },
-      scratchColor: "#c0c0c0",
-      primaryColor: "#d4826f",
+      primaryColor: "#FFB7B2",
     },
   },
   timeline: {
@@ -74,11 +86,16 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         label: "אירועים",
         type: "events",
       },
+      {
+        key: "primaryColor",
+        label: "צבע ראשי",
+        type: "color",
+      },
     ],
     defaultData: {
       title: "הסיפור שלנו",
       events: [],
-      primaryColor: "#d4826f",
+      primaryColor: "#B5EAD7",
     },
   },
   "love-coupons": {
@@ -97,6 +114,11 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         label: "קופונים",
         type: "coupons",
       },
+      {
+        key: "primaryColor",
+        label: "צבע ראשי",
+        type: "color",
+      },
     ],
     defaultData: {
       title: "פנקס קופונים",
@@ -104,7 +126,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         {
           id: "coupon-1",
           title: "20 דקות מסאז'",
-          description: "מקפה דרג שווים",
+          description: "קופון למימוש",
           icon: "💆",
           color: "emerald",
           isRedeemed: false,
@@ -112,7 +134,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         {
           id: "coupon-2",
           title: "פטור משטיפת כלים",
-          description: "מקפה דרג שווים",
+          description: "קופון למימוש",
           icon: "🧽",
           color: "sky",
           isRedeemed: false,
@@ -120,13 +142,13 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         {
           id: "coupon-3",
           title: "בחירת סרט הערב",
-          description: "מימוש 1",
+          description: "קופון למימוש",
           icon: "🎬",
           color: "amber",
           isRedeemed: false,
         },
       ],
-      primaryColor: "#d4826f",
+      primaryColor: "#E1BEE7",
     },
   },
   "relationship-quiz": {
@@ -145,6 +167,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         label: "שאלות",
         type: "questions",
       },
+
     ],
     defaultData: {
       title: "כמה טוב את מכירה אותי?",
@@ -158,7 +181,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         {
           id: "q-2",
           question: "מה החלום הכי גדול שלי?",
-          options: ["לטייל בעולם", "לפתוח עסק", "לגור בחו\"ל", "להיות שף"],
+          options: ["לטייל בעולם", "לפתוח עסק", 'לגור בחו"ל', "להיות שף"],
           correctIndex: 0,
         },
         {
@@ -169,11 +192,11 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         },
       ],
       scoreMessages: [
-        { minScore: 80, message: "מכיר/ה אותי מושלם!", emoji: "🎉" },
-        { minScore: 50, message: "כמעט מושלם...", emoji: "😊" },
-        { minScore: 0, message: "כל הכבוד על הניסיון!", emoji: "💪" },
+        { minScore: 80, message: "מכיר/ה אותי מושלם!" },
+        { minScore: 50, message: "כמעט מושלם..." },
+        { minScore: 0, message: "כל הכבוד על הניסיון!" },
       ],
-      primaryColor: "#d4826f",
+      primaryColor: "#38b6ff",
     },
   },
   "open-when": {
@@ -192,6 +215,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         label: "מעטפות",
         type: "envelopes",
       },
+
     ],
     defaultData: {
       title: "...תפתחי כש",
@@ -211,6 +235,84 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
           content: "תזכרי שאני כאן בשבילך, תמיד.",
         },
       ],
+      primaryColor: "#F8BBD0",
+    },
+  },
+  "decision-wheel": {
+    templateId: "decision-wheel",
+    title: "גלגל החלטות",
+    description: "סובבו את הגלגל וקבלו תשובה!",
+    fields: [
+      {
+        key: "title",
+        label: "כותרת",
+        type: "text",
+        placeholder: "גלגל ההחלטות",
+      },
+      {
+        key: "subtitle",
+        label: "כותרת משנה",
+        type: "text",
+        placeholder: "סובבו וגלו!",
+      },
+      {
+        key: "options",
+        label: "אופציות (2-8)",
+        type: "options",
+      },
+      {
+        key: "primaryColor",
+        label: "צבע ראשי",
+        type: "color",
+      },
+    ],
+    defaultData: {
+      title: "גלגל ההחלטות",
+      subtitle: "לחצו על הכפתור וגלו!",
+      options: [
+        "ארוחת ערב רומנטית",
+        "סרט ביחד",
+        "טיול בטבע",
+        "ערב משחקים",
+        "מסאז' מפנק",
+        "בישול ביחד",
+      ],
+      primaryColor: "#d4826f",
+    },
+  },
+  "steamy-window": {
+    templateId: "steamy-window",
+    title: "חלון מאודה",
+    description: "הודעה מוסתרת מאחורי אדים — העבירו אצבע כדי לגלות",
+    fields: [
+      {
+        key: "title",
+        label: "כותרת",
+        type: "text",
+        placeholder: "יש לך הודעה...",
+      },
+      {
+        key: "revealMessage",
+        label: "הודעה מוסתרת",
+        type: "textarea",
+        placeholder: "הטקסט שייחשף אחרי הגירוד",
+      },
+      {
+        key: "emoji",
+        label: "אימוג'י",
+        type: "text",
+        placeholder: "💖",
+      },
+      {
+        key: "primaryColor",
+        label: "צבע ראשי",
+        type: "color",
+      },
+    ],
+    defaultData: {
+      title: "יש לך הודעה...",
+      revealMessage: "אני אוהב אותך! ❤️",
+      emoji: "💖",
       primaryColor: "#d4826f",
     },
   },

@@ -9,10 +9,15 @@
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { EditorField } from "./EditorField";
-import { ColorPicker } from "./ColorPicker";
 import type { EditorSidebarProps } from "../types";
 
 export function EditorSidebar({ config, data, onChange }: EditorSidebarProps) {
+  // Deduplicate fields by key — prevents duplicate form inputs when the
+  // config_schema accidentally contains repeated keys.
+  const uniqueFields = config.fields.filter(
+    (field, index, arr) => arr.findIndex((f) => f.key === field.key) === index,
+  );
+
   return (
     <div className="flex flex-col h-full">
       {/* Compact Header - Fixed */}
@@ -27,7 +32,7 @@ export function EditorSidebar({ config, data, onChange }: EditorSidebarProps) {
 
       {/* Form Fields - Scrollable */}
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-        {config.fields.map((field, index) => (
+        {uniqueFields.map((field, index) => (
           <motion.div
             key={field.key}
             initial={{ opacity: 0, x: -10 }}
@@ -41,18 +46,6 @@ export function EditorSidebar({ config, data, onChange }: EditorSidebarProps) {
             />
           </motion.div>
         ))}
-
-        {/* Color Picker */}
-        <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: config.fields.length * 0.03 }}
-        >
-          <ColorPicker
-            value={(data.primaryColor as string) || "#d4826f"}
-            onChange={(color) => onChange("primaryColor", color)}
-          />
-        </motion.div>
       </div>
 
       {/* Footer Hint - Fixed */}

@@ -7,6 +7,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { BrandCalendar } from "@/components/ui/BrandCalendar";
 import type { TimelineEvent } from "@/components/templates/types";
 
 interface TimelineEventsEditorProps {
@@ -104,11 +105,9 @@ export function TimelineEventsEditor({
             </div>
 
             {/* Date Input */}
-            <input
-              type="date"
+            <BrandCalendar
               value={event.date}
-              onChange={(e) => updateEvent(event.id, "date", e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#d4826f]/50"
+              onChange={(val) => updateEvent(event.id, "date", val)}
             />
 
             {/* Title Input */}

@@ -9,6 +9,7 @@
 import { useState } from "react";
 import { CheckCircle } from "lucide-react";
 import { AuthInput } from "./AuthInput";
+import { BrandCalendar } from "@/components/ui/BrandCalendar";
 import {
   AUTH_LABELS,
   AUTH_PLACEHOLDERS,
@@ -187,13 +188,10 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
         error={errors.email}
       />
 
-      <AuthInput
-        id="register-dateOfBirth"
-        label={AUTH_LABELS.dateOfBirth}
-        type="date"
-        placeholder={AUTH_PLACEHOLDERS.dateOfBirth}
+      <BrandCalendar
         value={formData.dateOfBirth}
         onChange={(value) => handleFieldChange("dateOfBirth", value)}
+        label={AUTH_LABELS.dateOfBirth}
         error={errors.dateOfBirth}
       />
 

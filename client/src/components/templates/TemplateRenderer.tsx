@@ -2,37 +2,12 @@
 
 /**
  * TemplateRenderer
- * Dynamic component loader that renders templates based on component_key
+ * Dynamic component loader that renders templates based on component_key.
+ * Uses the centralized registry.
  */
 
 import { Suspense } from "react";
-import {
-  DateInvite,
-  ScratchCard,
-  Timeline,
-  LoveCoupons,
-  RelationshipQuiz,
-  OpenWhen,
-  type DateInviteData,
-  type ScratchCardData,
-  type TimelineData,
-  type LoveCouponsData,
-  type RelationshipQuizData,
-  type OpenWhenData,
-} from "@/components/templates";
-
-// Component registry - maps component_key to actual component
-const TEMPLATE_COMPONENTS: Record<
-  string,
-  React.ComponentType<{ data: unknown }>
-> = {
-  DateInvite: DateInvite as React.ComponentType<{ data: unknown }>,
-  ScratchCard: ScratchCard as React.ComponentType<{ data: unknown }>,
-  Timeline: Timeline as React.ComponentType<{ data: unknown }>,
-  LoveCoupons: LoveCoupons as React.ComponentType<{ data: unknown }>,
-  RelationshipQuiz: RelationshipQuiz as React.ComponentType<{ data: unknown }>,
-  OpenWhen: OpenWhen as React.ComponentType<{ data: unknown }>,
-};
+import { getTemplateComponent } from "./registry";
 
 export interface TemplateRendererProps {
   componentKey: string;
@@ -43,7 +18,7 @@ export function TemplateRenderer({
   componentKey,
   data,
 }: TemplateRendererProps) {
-  const Component = TEMPLATE_COMPONENTS[componentKey];
+  const Component = getTemplateComponent(componentKey);
 
   if (!Component) {
     return (
@@ -77,19 +52,3 @@ function TemplateLoader() {
     </div>
   );
 }
-
-// Type helper for getting the correct data type based on component key
-export type TemplateDataType<K extends keyof typeof TEMPLATE_COMPONENTS> =
-  K extends "DateInvite"
-    ? DateInviteData
-    : K extends "ScratchCard"
-      ? ScratchCardData
-      : K extends "Timeline"
-        ? TimelineData
-        : K extends "LoveCoupons"
-          ? LoveCouponsData
-          : K extends "RelationshipQuiz"
-            ? RelationshipQuizData
-            : K extends "OpenWhen"
-              ? OpenWhenData
-              : never;

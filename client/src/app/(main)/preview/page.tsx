@@ -26,9 +26,7 @@ const SAMPLE_DATA = {
   },
   ScratchCard: {
     title: "גרד וגלה את ההפתעה",
-    prize: { type: "text" as const, content: "🎉 זכית בארוחת ערב רומנטית!" },
-    gridSize: { cols: 6, rows: 4 },
-    scratchColor: "#c0c0c0",
+    prizeContent: "🎉 זכית בארוחת ערב רומנטית!",
   },
   Timeline: {
     title: "הסיפור שלנו",

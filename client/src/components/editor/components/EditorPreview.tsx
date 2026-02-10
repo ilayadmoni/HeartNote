@@ -2,32 +2,14 @@
 
 /**
  * EditorPreview Component
- * Live template preview - direct rendering for proper auto-height
+ * Live template preview — uses the centralized registry.
  */
 
+import React from "react";
 import {
-  DateInvite,
-  ScratchCard,
-  Timeline,
-  LoveCoupons,
-  RelationshipQuiz,
-  OpenWhen,
-} from "@/components/templates";
-
-// Template component map for direct rendering
-const TEMPLATE_COMPONENTS: Record<
-  string,
-  React.ComponentType<{ data: unknown }>
-> = {
-  "date-invite": DateInvite as React.ComponentType<{ data: unknown }>,
-  "scratch-card": ScratchCard as React.ComponentType<{ data: unknown }>,
-  timeline: Timeline as React.ComponentType<{ data: unknown }>,
-  "love-coupons": LoveCoupons as React.ComponentType<{ data: unknown }>,
-  "relationship-quiz": RelationshipQuiz as React.ComponentType<{
-    data: unknown;
-  }>,
-  "open-when": OpenWhen as React.ComponentType<{ data: unknown }>,
-};
+  TEMPLATE_REGISTRY,
+  templateIdToComponentKey,
+} from "@/components/templates/registry";
 
 interface EditorPreviewProps {
   templateId: string;
@@ -35,8 +17,10 @@ interface EditorPreviewProps {
   isMobile?: boolean;
 }
 
-export function EditorPreview({ templateId, data }: EditorPreviewProps) {
-  const Component = TEMPLATE_COMPONENTS[templateId];
+export const EditorPreview = React.memo(function EditorPreview({ templateId, data }: EditorPreviewProps) {
+  // Convert kebab-case templateId to PascalCase component_key
+  const componentKey = templateIdToComponentKey(templateId);
+  const Component = TEMPLATE_REGISTRY[componentKey];
 
   if (!Component) {
     return (
@@ -52,4 +36,4 @@ export function EditorPreview({ templateId, data }: EditorPreviewProps) {
       <Component data={data} />
     </div>
   );
-}
+});

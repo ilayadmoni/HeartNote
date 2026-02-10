@@ -16,10 +16,10 @@ class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
 
     # Server
-    port: int = 80
+    port: int = 8000
 
     # CORS - comma-separated list of origins
-    cors_origins: str = "http://localhost:3000,http://localhost:3001,http://localhost:80,http://localhost"
+    cors_origins: str = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://192.168.1.22:3000,http://localhost:8000,http://localhost"
 
     # Supabase
     supabase_url: str = ""       # REQUIRED – e.g. https://xxxx.supabase.co

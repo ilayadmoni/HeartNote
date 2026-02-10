@@ -5,16 +5,16 @@
 
 /** Default score messages when user provides none */
 export const DEFAULT_SCORE_MESSAGES = [
-  { minScore: 80, message: "מכירים אותי מושלם! 😍", emoji: "🎉" },
-  { minScore: 50, message: "כמעט מושלם...", emoji: "😊" },
-  { minScore: 0, message: "כל הכבוד על הניסיון!", emoji: "💪" },
+  { minScore: 80, message: "מכירים אותי מושלם! 😍" },
+  { minScore: 50, message: "כמעט מושלם..." },
+  { minScore: 0, message: "כל הכבוד על הניסיון!" },
 ];
 
 /** Get the right score message for a percentage */
 export function getScoreMessage(
   percentage: number,
-  messages: { minScore: number; message: string; emoji?: string }[],
-): { message: string; emoji?: string } {
+  messages: { minScore: number; message: string }[],
+): { message: string } {
   const pool = messages.length > 0 ? messages : DEFAULT_SCORE_MESSAGES;
   const sorted = [...pool].sort((a, b) => b.minScore - a.minScore);
   for (const msg of sorted) {
@@ -22,7 +22,7 @@ export function getScoreMessage(
       return msg;
     }
   }
-  return { message: "כל הכבוד על הניסיון!", emoji: "💪" };
+  return { message: "כל הכבוד על הניסיון!" };
 }
 
 /** Max questions the editor allows */

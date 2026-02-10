@@ -6,7 +6,7 @@
  * Uses responsive wrapper pattern per project rules
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { DateInviteDesktop } from "./Desktop/DateInviteDesktop";
@@ -18,6 +18,11 @@ export function DateInvite({ data }: TemplateComponentProps<DateInviteData>) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [answered, setAnswered] = useState(false);
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
@@ -51,9 +56,10 @@ export function DateInvite({ data }: TemplateComponentProps<DateInviteData>) {
   }, []);
 
   const handleNoHover = useCallback(() => {
+    // Constrained to stay within card bounds
     setNoPosition({
-      x: (Math.random() - 0.5) * (isMobile ? 140 : 250),
-      y: (Math.random() - 0.5) * (isMobile ? 80 : 140),
+      x: (Math.random() - 0.5) * (isMobile ? 100 : 180),
+      y: (Math.random() - 0.5) * (isMobile ? 60 : 100),
     });
   }, [isMobile]);
 
@@ -65,6 +71,8 @@ export function DateInvite({ data }: TemplateComponentProps<DateInviteData>) {
     onReset: handleReset,
     onNoHover: handleNoHover,
   };
+
+  if (!mounted) return null;
 
   return isMobile ? (
     <DateInviteMobile {...sharedProps} />

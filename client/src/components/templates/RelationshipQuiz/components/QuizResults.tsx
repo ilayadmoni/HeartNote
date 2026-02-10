@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 interface QuizResultsProps {
   score: number;
   total: number;
-  message: { message: string; emoji?: string };
+  message: { message: string };
 }
 
 export function QuizResults({ score, total, message }: QuizResultsProps) {

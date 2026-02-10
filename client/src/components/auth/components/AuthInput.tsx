@@ -25,7 +25,7 @@ export function AuthInput({
   const inputType = type === "password" && showPassword ? "text" : type;
 
   return (
-    <div className="mb-3">
+    <div className="mb-2">
       <label
         htmlFor={id}
         className="block text-xs font-bold text-[#2e3c52] dark:text-gray-200 mb-1 text-right text-hebrew-heading"

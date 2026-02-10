@@ -3,11 +3,13 @@
 /**
  * ProfileMobile Component
  * Mobile layout for profile page - single column stack
- * Includes user info, subscription, templates, edit, avatar, and delete account
+ * Includes user info, subscription, templates, edit, avatar, and delete account.
+ * Receives real dashboard data (stats + pages) from the useDashboard hook.
  */
 
 import { motion } from "framer-motion";
 import type { UserProfile, ProfileMobileProps } from "../types";
+import type { DashboardData } from "@/hooks/useDashboard";
 import {
   UserInfoCard,
   SubscriptionCard,
@@ -21,10 +23,11 @@ import {
 interface Props extends ProfileMobileProps {
   profile: UserProfile;
   avatarOptions: string[];
+  dashboard: DashboardData | null;
   onRenew: () => void;
   onUpgrade: () => void;
-  onViewTemplate: (id: string) => void;
-  onDeleteTemplate: (id: string) => void;
+  onViewTemplate: (slug: string) => void;
+  onDeleteTemplate: (slug: string) => void;
   onEditProfile: (firstName: string, lastName: string) => Promise<void>;
   onAvatarSelect: (avatarUrl: string) => Promise<boolean>;
   onDeleteAccount: () => Promise<void>;
@@ -33,6 +36,7 @@ interface Props extends ProfileMobileProps {
 export function ProfileMobile({
   profile,
   avatarOptions,
+  dashboard,
   onRenew,
   onUpgrade,
   onViewTemplate,
@@ -48,6 +52,9 @@ export function ProfileMobile({
     expiryDate: profile.subscription.expires_at?.split("T")[0],
     isActive: profile.subscription.is_active,
   };
+
+  const usedCount = dashboard?.stats.used ?? 0;
+  const pages = dashboard?.pages ?? [];
 
   return (
     <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-6 px-4">
@@ -106,7 +113,7 @@ export function ProfileMobile({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.16 }}
           >
-            <TemplateUsageCard used={0} plan={profile.subscription.plan} />
+            <TemplateUsageCard used={usedCount} plan={profile.subscription.plan} />
           </motion.div>
 
           <motion.div
@@ -127,7 +134,7 @@ export function ProfileMobile({
             transition={{ delay: 0.2 }}
           >
             <TemplatesList
-              templates={[]}
+              pages={pages}
               onView={onViewTemplate}
               onDelete={onDeleteTemplate}
             />

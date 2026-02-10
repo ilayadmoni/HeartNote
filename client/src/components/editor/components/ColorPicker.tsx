@@ -2,48 +2,56 @@
 
 /**
  * ColorPicker Component
- * Preset color selection for templates
+ * Restricted swatch palette — only HeartNote's 12 approved colors.
+ * No arbitrary hex input.
  */
 
 import { motion } from "framer-motion";
+import { COLOR_PALETTE } from "@/constants/colors";
 
 interface ColorPickerProps {
   value: string;
   onChange: (color: string) => void;
+  label?: string;
 }
-
-const COLORS = [
-  { name: "קורל", value: "#d4826f" },
-  { name: "כחול", value: "#2e3c52" },
-  { name: "סגול", value: "#8b5cf6" },
-  { name: "ורוד", value: "#ec4899" },
-  { name: "ירוק", value: "#10b981" },
-];
 
 export function ColorPicker({ value, onChange }: ColorPickerProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-[#2e3c52] dark:text-gray-200 mb-3 text-hebrew-heading">
-        צבע ראשי
-      </label>
-      <div className="flex gap-3">
-        {COLORS.map((color) => (
-          <motion.button
-            key={color.value}
-            type="button"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => onChange(color.value)}
-            className={`
-              w-10 h-10 rounded-full transition-all duration-200
-              ${value === color.value ? "ring-2 ring-offset-2 ring-[#2e3c52] dark:ring-white" : ""}
-            `}
-            style={{ backgroundColor: color.value }}
-            aria-label={color.name}
-            title={color.name}
-          />
-        ))}
+      <div className="grid grid-cols-6 gap-2.5">
+        {COLOR_PALETTE.map((color) => {
+          const isSelected = value?.toUpperCase() === color.hex.toUpperCase();
+          return (
+            <motion.button
+              key={color.hex}
+              type="button"
+              whileHover={{ scale: 1.15 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => onChange(color.hex)}
+              className={`
+                w-9 h-9 rounded-full transition-all duration-200
+                ${
+                  isSelected
+                    ? "ring-2 ring-offset-2 ring-[#2e3c52] dark:ring-white dark:ring-offset-gray-800 shadow-md"
+                    : "hover:shadow-sm"
+                }
+              `}
+              style={{ backgroundColor: color.hex }}
+              aria-label={color.nameHe}
+              title={color.nameHe}
+            />
+          );
+        })}
       </div>
+
+      {/* Show selected color name */}
+      {value && (
+        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-hebrew-body">
+          {COLOR_PALETTE.find(
+            (c) => c.hex.toUpperCase() === value.toUpperCase(),
+          )?.nameHe ?? value}
+        </p>
+      )}
     </div>
   );
 }
