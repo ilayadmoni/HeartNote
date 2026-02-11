@@ -24,7 +24,7 @@ router = APIRouter()
     "/me",
     response_model=ProfileResponse,
     summary="Get current user's profile",
-    description="Retrieves the authenticated user's profile including subscription status.",
+    description="Retrieves the authenticated user's profile including subscription status and creation quotas.",
 )
 async def get_my_profile(
     current_user: CurrentUser = Depends(verify_user),
@@ -57,11 +57,11 @@ async def get_my_profile(
         )
 
 
-@router.put(
+@router.patch(
     "/me",
     response_model=ProfileResponse,
     summary="Update current user's profile",
-    description="Updates the authenticated user's profile details.",
+    description="Partially updates the authenticated user's profile details (first_name, last_name, avatar_url, date_of_birth).",
 )
 async def update_my_profile(
     update_data: ProfileUpdate,

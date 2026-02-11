@@ -2,16 +2,23 @@
 
 /**
  * SubscriptionCard Component
- * Displays user's subscription plan, dates, and status
+ * Displays user's subscription tier, dates, and status.
+ * Aligned with new DB schema (subscription_tier: free | premium).
  */
 
 import { motion } from "framer-motion";
 import { Calendar, AlertCircle, CheckCircle, Crown } from "lucide-react";
-import { PLAN_CONFIGS } from "../constants";
-import type { SubscriptionInfo } from "../types";
+import { TIER_CONFIGS } from "../constants";
+
+interface SubscriptionData {
+  tier: string;
+  startDate: string | undefined;
+  expiryDate: string | undefined;
+  isActive: boolean;
+}
 
 interface SubscriptionCardProps {
-  subscription: SubscriptionInfo;
+  subscription: SubscriptionData;
   onRenew: () => void;
   onUpgrade: () => void;
 }
@@ -21,13 +28,14 @@ export function SubscriptionCard({
   onRenew,
   onUpgrade,
 }: SubscriptionCardProps) {
-  const planConfig = PLAN_CONFIGS[subscription.plan];
-  const startDate = new Date(subscription.startDate).toLocaleDateString(
-    "he-IL",
-  );
-  const expiryDate = new Date(subscription.expiryDate).toLocaleDateString(
-    "he-IL",
-  );
+  const tierKey = (subscription.tier === "premium" ? "premium" : "free") as keyof typeof TIER_CONFIGS;
+  const tierConfig = TIER_CONFIGS[tierKey];
+  const startDate = subscription.startDate
+    ? new Date(subscription.startDate).toLocaleDateString("he-IL")
+    : "—";
+  const expiryDate = subscription.expiryDate
+    ? new Date(subscription.expiryDate).toLocaleDateString("he-IL")
+    : "—";
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
@@ -36,16 +44,16 @@ export function SubscriptionCard({
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center"
-            style={{ backgroundColor: `${planConfig.color}20` }}
+            style={{ backgroundColor: `${tierConfig.color}20` }}
           >
-            <Crown size={20} style={{ color: planConfig.color }} />
+            <Crown size={20} style={{ color: tierConfig.color }} />
           </div>
           <div>
             <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
-              {planConfig.hebrewName}
+              {tierConfig.nameHe}
             </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 text-hebrew-body">
-              {planConfig.description}
+              {tierConfig.features[0]}
             </p>
           </div>
         </div>
@@ -70,9 +78,11 @@ export function SubscriptionCard({
 
       {/* Action Buttons */}
       <div className="flex gap-3">
-        <ActionButton label="חידוש מנוי" onClick={onRenew} variant="primary" />
-        {subscription.plan !== "premium" && (
-          <ActionButton label="שדרוג" onClick={onUpgrade} variant="secondary" />
+        {subscription.tier !== "premium" && (
+          <ActionButton label="שדרוג לפרימיום" onClick={onUpgrade} variant="primary" />
+        )}
+        {subscription.tier === "premium" && (
+          <ActionButton label="חידוש מנוי" onClick={onRenew} variant="primary" />
         )}
       </div>
     </div>

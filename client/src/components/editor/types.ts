@@ -44,6 +44,8 @@ export interface EditorSidebarProps {
   config: EditorConfig;
   data: Record<string, unknown>;
   onChange: (key: string, value: unknown) => void;
+  /** User ID — forwarded to image upload fields */
+  userId?: string;
 }
 
 export interface EditorPreviewProps {

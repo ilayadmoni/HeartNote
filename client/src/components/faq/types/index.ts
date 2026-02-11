@@ -2,6 +2,8 @@
  * FAQ Page Types
  */
 
+import { ReactNode } from "react";
+
 export interface FAQProps {
   className?: string;
 }
@@ -9,5 +11,5 @@ export interface FAQProps {
 export interface FAQItem {
   id: string;
   question: string;
-  answer: string;
+  answer: string | ReactNode;
 }

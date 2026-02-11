@@ -18,7 +18,7 @@ interface EditorPreviewProps {
 }
 
 export const EditorPreview = React.memo(function EditorPreview({ templateId, data }: EditorPreviewProps) {
-  // Convert kebab-case templateId to PascalCase component_key
+  // Convert kebab-case templateId to PascalCase registry key
   const componentKey = templateIdToComponentKey(templateId);
   const Component = TEMPLATE_REGISTRY[componentKey];
 

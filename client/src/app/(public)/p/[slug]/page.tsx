@@ -1,9 +1,9 @@
 /**
- * Public Page View
- * Displays user-created cards by slug — NO main site header/nav.
- * Fetches from FastAPI /api/v1/pages/{slug} (public endpoint).
+ * Public Creation View
+ * Displays user-created cards by ID — NO main site header/nav.
+ * Fetches from FastAPI /api/v1/creations/{id} (public endpoint).
  *
- * Routing: unknown slug → redirect('/').
+ * Routing: unknown ID → redirect('/').
  * Expired: custom branded UI.
  * Valid: template + share buttons + footer.
  */
@@ -16,22 +16,22 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-interface PageData {
+interface CreationData {
   id: string;
-  slug: string;
-  template_key: string;
-  template_title: string;
-  content_data: Record<string, unknown>;
+  template_slug: string;
+  template_name: string;
+  metadata: Record<string, unknown>;
+  is_paid: boolean | null;
   expires_at: string | null;
   created_at: string;
 }
 
-// Fetch page data from FastAPI (server-side)
-async function getPage(slug: string): Promise<PageData | null> {
+// Fetch creation data from FastAPI (server-side)
+async function getCreation(id: string): Promise<CreationData | null> {
   const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/+$/, "");
 
   try {
-    const response = await fetch(`${baseUrl}/api/v1/pages/${slug}`, {
+    const response = await fetch(`${baseUrl}/api/v1/creations/${id}`, {
       cache: "no-store",
     });
 
@@ -40,13 +40,13 @@ async function getPage(slug: string): Promise<PageData | null> {
     }
 
     if (!response.ok) {
-      console.error("Failed to fetch page:", response.status);
+      console.error("Failed to fetch creation:", response.status);
       return null;
     }
 
     return response.json();
   } catch (error) {
-    console.error("Error fetching page:", error);
+    console.error("Error fetching creation:", error);
     return null;
   }
 }
@@ -55,19 +55,19 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const page = await getPage(slug);
+  const creation = await getCreation(slug);
 
-  if (!page) {
+  if (!creation) {
     return {
       title: "HeartNote - מפעל הברכות הדיגיטלי",
     };
   }
 
   return {
-    title: `${page.template_title || "כרטיס"} | HeartNote`,
+    title: `${creation.template_name || "כרטיס"} | HeartNote`,
     description: "כרטיס אינטראקטיבי שנוצר ב-HeartNote",
     openGraph: {
-      title: page.template_title || "כרטיס מיוחד",
+      title: creation.template_name || "כרטיס מיוחד",
       description: "פתחו וגלו את ההפתעה!",
       type: "website",
     },
@@ -76,15 +76,15 @@ export async function generateMetadata({
 
 export default async function PublicPage({ params }: PageProps) {
   const { slug } = await params;
-  const page = await getPage(slug);
+  const creation = await getCreation(slug);
 
   // ── 404 → redirect home ──────────────────────────────────────────
-  if (!page) {
+  if (!creation) {
     redirect("/");
   }
 
   // ── Expired → branded UI ─────────────────────────────────────────
-  if (page.expires_at && new Date(page.expires_at) < new Date()) {
+  if (creation.expires_at && new Date(creation.expires_at) < new Date()) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#faf7f5] to-[#f0ebe5] dark:from-gray-900 dark:to-gray-800 p-6">
         <div className="text-center max-w-md">
@@ -118,8 +118,8 @@ export default async function PublicPage({ params }: PageProps) {
   // ── Render Template + Share + Footer ──────────────────────────────
   return (
     <UserPageClient
-      templateKey={page.template_key}
-      contentData={page.content_data}
+      templateKey={creation.template_slug}
+      contentData={creation.metadata}
     />
   );
 }

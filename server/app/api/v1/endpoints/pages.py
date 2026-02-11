@@ -18,7 +18,10 @@ from app.core import CurrentUser, get_settings, verify_user, get_rls_client
 from app.core.color_palette import ALLOWED_COLORS
 from app.db.supabase import get_user_supabase_client, get_admin_supabase_client
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=True)
+
+# Maximum length for a URL stored in custom_settings (guard against base64)
+MAX_URL_LENGTH = 2048
 
 
 # =============================================================================
@@ -33,23 +36,44 @@ def validate_custom_settings(
     Validate custom_settings against the template's config_schema.
     Returns a list of validation error strings (empty = valid).
 
-    Key rule: fields of type "color" must be in the ALLOWED_COLORS palette.
+    Key rules:
+      - Fields of type "color" must be in the ALLOWED_COLORS palette.
+      - Fields of type "image_url" must be a valid-length URL (not base64).
     """
     errors: list[str] = []
     for field_key, schema_def in config_schema.items():
         if not isinstance(schema_def, dict):
             continue
         field_type = schema_def.get("type")
-        if field_type != "color":
-            continue
-        # Only validate if the caller actually supplied a value for this field
-        value = custom_settings.get(field_key)
-        if value is None:
-            continue
-        if not isinstance(value, str) or value.upper() not in ALLOWED_COLORS:
-            errors.append(
-                f"Field '{field_key}' value '{value}' is not in the allowed color palette."
-            )
+
+        # Color validation
+        if field_type == "color":
+            value = custom_settings.get(field_key)
+            if value is None:
+                continue
+            if not isinstance(value, str) or value.upper() not in ALLOWED_COLORS:
+                errors.append(
+                    f"Field '{field_key}' value '{value}' is not in the allowed color palette."
+                )
+
+        # Image URL validation — reject base64 blobs
+        if field_type == "image_url":
+            value = custom_settings.get(field_key)
+            if value is None or value == "":
+                continue
+            if not isinstance(value, str):
+                errors.append(f"Field '{field_key}' must be a string URL.")
+                continue
+            if len(value) > MAX_URL_LENGTH:
+                errors.append(
+                    f"Field '{field_key}' value is too long ({len(value)} chars). "
+                    f"Max {MAX_URL_LENGTH}. Do not embed base64 data."
+                )
+            if value.startswith("data:"):
+                errors.append(
+                    f"Field '{field_key}' must be a URL, not an inline data URI."
+                )
+
     return errors
 
 
@@ -106,7 +130,9 @@ async def create_page(
     Create a new page.
     
     - Checks active page limit (MAX_ACTIVE_PAGES)
-    - Sets expiration (PAGE_EXPIRY_HOURS)
+    - Enforces per-template subscription policies (allowed_subscriptions)
+    - Calculates expiry from template.time_expired_config[user_tier]
+    - Validates image URLs are not base64 blobs
     - All queries run under the user's JWT (RLS enforced)
     """
     settings = get_settings()
@@ -130,9 +156,9 @@ async def create_page(
             detail="QUOTA_EXCEEDED",
         )
 
-    # 2. Get template info (include config_schema for validation)
+    # 2. Get template info (include new policy columns)
     template_result = supabase.table("templates").select(
-        "id, name_he, is_premium, config_schema"
+        "id, name_he, is_premium, config_schema, allowed_subscriptions, time_expired_config"
     ).eq("id", request.template_id).single().execute()
 
     if not template_result.data:
@@ -143,26 +169,56 @@ async def create_page(
 
     template = template_result.data
 
-    # 3. Validate custom_settings against config_schema (color palette check)
+    # 3. Validate custom_settings against config_schema (color + image_url checks)
     config_schema = template.get("config_schema", {})
     validation_errors = validate_custom_settings(request.custom_settings, config_schema)
     if validation_errors:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Invalid color values: {'; '.join(validation_errors)}",
+            detail=f"Validation errors: {'; '.join(validation_errors)}",
         )
 
-    # 4. TODO: Check premium template access (for future)
-    # if template["is_premium"]:
-    #     profile = get_user_profile(current_user.id)
-    #     if profile.subscription_type == "free":
-    #         raise HTTPException(403, "Premium template requires subscription")
+    # 4. Per-template subscription check
+    # Fetch user profile to get subscription tier
+    profile_result = supabase.table("profiles").select(
+        "subscription_type"
+    ).eq("id", current_user.id).single().execute()
 
-    # 5. Generate slug and expiration
+    user_tier = "free"
+    if profile_result.data:
+        user_tier = profile_result.data.get("subscription_type", "free")
+
+    # allowed_subscriptions is stored as JSONB array: ["free", "pro", "premium"]
+    allowed_subs_raw = template.get("allowed_subscriptions")
+    if isinstance(allowed_subs_raw, list):
+        allowed_subs = allowed_subs_raw
+    elif isinstance(allowed_subs_raw, str):
+        import json
+        try:
+            allowed_subs = json.loads(allowed_subs_raw)
+        except (json.JSONDecodeError, TypeError):
+            allowed_subs = ["free", "pro", "premium"]
+    else:
+        allowed_subs = ["free", "pro", "premium"]
+
+    if user_tier not in allowed_subs:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="TEMPLATE_NOT_ALLOWED",
+        )
+
+    # 5. Calculate expiry from per-template config (falls back to global setting)
+    time_expired_config = template.get("time_expired_config") or {}
+    expiry_seconds = time_expired_config.get(user_tier)
+    if expiry_seconds is not None:
+        expires_at = datetime.now(timezone.utc) + timedelta(seconds=int(expiry_seconds))
+    else:
+        # Fallback to global setting
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=settings.page_expiry_hours)
+
+    # 6. Generate slug and insert page
     route_slug = secrets.token_urlsafe(6)  # ~8 chars
-    expires_at = datetime.now(timezone.utc) + timedelta(hours=settings.page_expiry_hours)
 
-    # 5. Insert page
     page_result = supabase.table("user_pages").insert({
         "user_id": current_user.id,
         "template_id": request.template_id,
@@ -181,14 +237,17 @@ async def create_page(
 
     page = page_result.data[0]
 
-    # 6. Log action
+    # 7. Log action
     try:
         supabase.table("user_actions").insert({
             "user_id": current_user.id,
             "action_type": "page_created",
             "resource_type": "page",
             "resource_id": page["id"],
-            "metadata": {"template_id": request.template_id},
+            "metadata": {
+                "template_id": request.template_id,
+                "user_tier": user_tier,
+            },
         }).execute()
     except Exception:
         pass  # Non-critical, don't fail the request

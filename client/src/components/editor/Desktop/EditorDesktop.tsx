@@ -15,11 +15,13 @@ import { EditorPreview } from "../components/EditorPreview";
 import { SuccessModal } from "../components/SuccessModal";
 import { QuotaModal } from "../components/QuotaModal";
 import { EDITOR_CONFIGS } from "../configs";
-import { createUserPage } from "../api";
+import { createUserCreation } from "../api";
+import { useAuth } from "@/contexts/AuthContext";
 import type { TemplateEditorProps } from "../types";
 
 export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const config = EDITOR_CONFIGS[templateId];
   const previewRef = useRef<HTMLDivElement>(null);
   const [previewHeight, setPreviewHeight] = useState<number | null>(null);
@@ -80,12 +82,14 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const handlePublish = async () => {
     setIsPublishing(true);
     try {
-      const result = await createUserPage(templateId, data);
+      const result = await createUserCreation(templateId, data);
       setSuccessData({ url: result.url, expiresAt: result.expiresAt });
     } catch (error: unknown) {
       const apiError = error as { status?: number; detail?: string };
       if (apiError.status === 403 && apiError.detail === "QUOTA_EXCEEDED") {
         setShowQuotaModal(true);
+      } else if (apiError.status === 402 && apiError.detail === "TEMPLATE_NOT_ALLOWED") {
+        alert("תבנית זו אינה זמינה במנוי הנוכחי שלך. שדרג את המנוי כדי להשתמש בה.");
       } else {
         console.error("Failed to publish:", error);
         alert("שגיאה ביצירת הכרטיס. נסה שוב.");
@@ -134,7 +138,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
           className="w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-y-auto flex-shrink-0"
           style={{ maxHeight: previewHeight ? `${previewHeight}px` : "auto" }}
         >
-          <EditorSidebar config={config} data={data} onChange={handleChange} />
+          <EditorSidebar config={config} data={data} onChange={handleChange} userId={user?.id} />
         </aside>
       </div>
 

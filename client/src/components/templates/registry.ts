@@ -1,8 +1,9 @@
 /**
  * Template Component Registry
  *
- * Maps component_key values (from the DB) to the actual React components.
- * Used by the TemplateRenderer and the editor preview.
+ * Maps PascalCase keys to the actual React components.
+ * The DB stores kebab-case slugs (e.g. "scratch-card");
+ * use templateIdToComponentKey() to convert before lookup.
  */
 
 import type { ComponentType } from "react";
@@ -20,10 +21,10 @@ import { SteamyWindow } from "./SteamyWindow/SteamyWindow";
 export type AnyTemplateComponent = ComponentType<{ data: any }>;
 
 /**
- * Registry: component_key → React component.
+ * Registry: PascalCase key → React component.
  *
- * The keys here MUST match the `component_key` column in the
- * `templates` database table.
+ * The keys here MUST correspond to the DB `slug` column
+ * after kebab-to-PascalCase conversion.
  */
 export const TEMPLATE_REGISTRY: Record<string, AnyTemplateComponent> = {
   DateInvite: DateInvite as AnyTemplateComponent,
@@ -37,8 +38,7 @@ export const TEMPLATE_REGISTRY: Record<string, AnyTemplateComponent> = {
 };
 
 /**
- * Convert a kebab-case templateId (URL-friendly) to a PascalCase
- * component_key (DB-friendly).
+ * Convert a kebab-case slug to a PascalCase registry key.
  *
  * e.g. "date-invite" → "DateInvite"
  */
@@ -50,7 +50,7 @@ export function templateIdToComponentKey(templateId: string): string {
 }
 
 /**
- * Convert a PascalCase component_key to a kebab-case templateId.
+ * Convert a PascalCase registry key to a kebab-case slug.
  *
  * e.g. "DateInvite" → "date-invite"
  */

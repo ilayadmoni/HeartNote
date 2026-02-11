@@ -1,11 +1,11 @@
 """
 Templates API Endpoint
-Handles template listing and management.
+Handles template listing and retrieval.
+Aligned with the new `templates` table schema (005_destructive_reset).
 
-Templates are public data so most endpoints are unauthenticated.
-We use the ANON key client (not admin) to respect any RLS policies on the
-templates table.  When a user is authenticated, their JWT is forwarded so
-RLS can distinguish premium access if needed.
+Templates are public data — uses anon-key client.
+New columns: slug, category (TEXT[]), tags, config_schema, expiration_policy.
+Removed: name_he, description, description_he, component_key, example_data, sort_order.
 """
 
 from typing import Any
@@ -15,7 +15,6 @@ from pydantic import BaseModel
 from supabase import Client
 
 from app.core import CurrentUser, verify_user_optional
-from app.db.supabase import get_user_supabase_client
 from app.core.config import get_settings
 
 router = APIRouter()
@@ -28,115 +27,70 @@ def _get_anon_client() -> Client:
     return create_client(settings.supabase_url, settings.supabase_anon_key)
 
 
+# ---------------------------------------------------------------------------
+# Response models
+# ---------------------------------------------------------------------------
+
 class TemplateResponse(BaseModel):
-    """Template data for frontend"""
+    """Template data for frontend — matches new DB columns."""
     id: str
+    slug: str
     name: str
-    name_he: str | None
-    description: str | None
-    description_he: str | None
-    component_key: str
-    is_premium: bool
-    category: str | None
-    config_schema: dict[str, Any]
-    example_data: dict[str, Any]
-
-
-class TemplateSyncItem(BaseModel):
-    """Template item for sync endpoint"""
-    component_key: str
-    name: str
-    name_he: str | None = None
-    description: str | None = None
-    description_he: str | None = None
-    category: str = "general"
+    category: list[str] | None = None
+    tags: str | None = None
     is_premium: bool = False
     config_schema: dict[str, Any] = {}
-    example_data: dict[str, Any] = {}
+    is_active: bool = True
+    expiration_policy: dict[str, Any] | None = None
 
+
+# ---------------------------------------------------------------------------
+# Endpoints
+# ---------------------------------------------------------------------------
 
 @router.get("", response_model=list[TemplateResponse])
 async def get_templates(
     current_user: CurrentUser | None = Depends(verify_user_optional),
 ):
-    """
-    Get all active templates.
-    
-    Public endpoint — uses the user's RLS client when authenticated,
-    otherwise falls back to anon-key client.
-    """
-    if current_user and current_user.access_token:
-        supabase = get_user_supabase_client(current_user.access_token)
-    else:
-        supabase = _get_anon_client()
-
-    result = supabase.table("templates").select(
-        "id, name, name_he, description, description_he, "
-        "component_key, is_premium, category, config_schema, example_data"
-    ).eq(
-        "is_active", True
-    ).order(
-        "sort_order", desc=False
-    ).execute()
-
-    templates = []
-    for t in result.data or []:
-        templates.append(TemplateResponse(
-            id=t["id"],
-            name=t["name"],
-            name_he=t.get("name_he"),
-            description=t.get("description"),
-            description_he=t.get("description_he"),
-            component_key=t["component_key"],
-            is_premium=t.get("is_premium", False),
-            category=t.get("category"),
-            config_schema=t.get("config_schema", {}),
-            example_data=t.get("example_data", {}),
-        ))
-
-    return templates
-
-
-@router.get("/{template_id}", response_model=TemplateResponse)
-async def get_template(template_id: str):
-    """Get a single template by ID (public, anon client)"""
+    """Get all active templates (public)."""
     supabase = _get_anon_client()
 
-    result = supabase.table("templates").select(
-        "id, name, name_he, description, description_he, "
-        "component_key, is_premium, category, config_schema, example_data"
-    ).eq("id", template_id).eq("is_active", True).single().execute()
-
-    if not result.data:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Template not found",
-        )
-
-    t = result.data
-    return TemplateResponse(
-        id=t["id"],
-        name=t["name"],
-        name_he=t.get("name_he"),
-        description=t.get("description"),
-        description_he=t.get("description_he"),
-        component_key=t["component_key"],
-        is_premium=t.get("is_premium", False),
-        category=t.get("category"),
-        config_schema=t.get("config_schema", {}),
-        example_data=t.get("example_data", {}),
+    result = (
+        supabase.table("templates")
+        .select("id, slug, name, category, tags, is_premium, config_schema, is_active, expiration_policy")
+        .eq("is_active", True)
+        .execute()
     )
 
+    return [
+        TemplateResponse(
+            id=t["id"],
+            slug=t["slug"],
+            name=t["name"],
+            category=t.get("category"),
+            tags=t.get("tags"),
+            is_premium=t.get("is_premium", False),
+            config_schema=t.get("config_schema") or {},
+            is_active=t.get("is_active", True),
+            expiration_policy=t.get("expiration_policy"),
+        )
+        for t in (result.data or [])
+    ]
 
-@router.get("/by-key/{component_key}", response_model=TemplateResponse)
-async def get_template_by_key(component_key: str):
-    """Get a template by its component key (public, anon client)"""
+
+@router.get("/{slug}", response_model=TemplateResponse)
+async def get_template_by_slug(slug: str):
+    """Get a single template by slug (public, anon client)."""
     supabase = _get_anon_client()
 
-    result = supabase.table("templates").select(
-        "id, name, name_he, description, description_he, "
-        "component_key, is_premium, category, config_schema, example_data"
-    ).eq("component_key", component_key).eq("is_active", True).single().execute()
+    result = (
+        supabase.table("templates")
+        .select("id, slug, name, category, tags, is_premium, config_schema, is_active, expiration_policy")
+        .eq("slug", slug)
+        .eq("is_active", True)
+        .single()
+        .execute()
+    )
 
     if not result.data:
         raise HTTPException(
@@ -147,13 +101,12 @@ async def get_template_by_key(component_key: str):
     t = result.data
     return TemplateResponse(
         id=t["id"],
+        slug=t["slug"],
         name=t["name"],
-        name_he=t.get("name_he"),
-        description=t.get("description"),
-        description_he=t.get("description_he"),
-        component_key=t["component_key"],
-        is_premium=t.get("is_premium", False),
         category=t.get("category"),
-        config_schema=t.get("config_schema", {}),
-        example_data=t.get("example_data", {}),
+        tags=t.get("tags"),
+        is_premium=t.get("is_premium", False),
+        config_schema=t.get("config_schema") or {},
+        is_active=t.get("is_active", True),
+        expiration_policy=t.get("expiration_policy"),
     )

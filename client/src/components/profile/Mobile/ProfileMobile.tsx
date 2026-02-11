@@ -47,14 +47,14 @@ export function ProfileMobile({
 }: Props) {
   // Format subscription for the card
   const subscriptionData = {
-    plan: profile.subscription.plan,
-    startDate: profile.createdAt.split("T")[0],
-    expiryDate: profile.subscription.expires_at?.split("T")[0],
+    tier: profile.subscription.tier,
+    startDate: profile.createdAt?.split("T")[0],
+    expiryDate: profile.subscription.premium_expiry?.split("T")[0],
     isActive: profile.subscription.is_active,
   };
 
-  const usedCount = dashboard?.stats.used ?? 0;
-  const pages = dashboard?.pages ?? [];
+  const creationsCount = dashboard?.stats.creations_count ?? 0;
+  const creations = dashboard?.creations ?? [];
 
   return (
     <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-6 px-4">
@@ -113,7 +113,7 @@ export function ProfileMobile({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.16 }}
           >
-            <TemplateUsageCard used={usedCount} plan={profile.subscription.plan} />
+            <TemplateUsageCard used={creationsCount} tier={profile.subscription.tier} />
           </motion.div>
 
           <motion.div
@@ -134,7 +134,7 @@ export function ProfileMobile({
             transition={{ delay: 0.2 }}
           >
             <TemplatesList
-              pages={pages}
+              creations={creations}
               onView={onViewTemplate}
               onDelete={onDeleteTemplate}
             />

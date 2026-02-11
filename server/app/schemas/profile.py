@@ -1,6 +1,7 @@
 """
 Profile Schemas
 Pydantic models for profile request/response validation.
+Aligned with the new `profiles` table schema (005_destructive_reset).
 """
 
 from datetime import date, datetime
@@ -10,10 +11,9 @@ from enum import Enum
 from pydantic import BaseModel, Field, EmailStr
 
 
-class SubscriptionType(str, Enum):
-    """Subscription plan types."""
+class SubscriptionTier(str, Enum):
+    """Subscription tiers matching CHECK constraint on profiles.subscription_tier."""
     FREE = "free"
-    PRO = "pro"
     PREMIUM = "premium"
 
 
@@ -33,15 +33,27 @@ class AvatarOption(str, Enum):
 AVATAR_OPTIONS_LIST = [avatar.value for avatar in AvatarOption]
 
 
+# ---------------------------------------------------------------------------
+# Nested response models
+# ---------------------------------------------------------------------------
+
 class SubscriptionInfo(BaseModel):
-    """Subscription status information."""
-    plan: SubscriptionType = SubscriptionType.FREE
+    """Subscription status derived from profiles columns."""
+    tier: SubscriptionTier = SubscriptionTier.FREE
+    creations_count: int = 0
+    creations_left_free: int = 3
+    creations_left_pro: Optional[int] = None
+    premium_start: Optional[datetime] = None
+    premium_expiry: Optional[datetime] = None
     is_active: bool = True
-    expires_at: Optional[datetime] = None
-    
+
     class Config:
         from_attributes = True
 
+
+# ---------------------------------------------------------------------------
+# Request schemas
+# ---------------------------------------------------------------------------
 
 class ProfileBase(BaseModel):
     """Base profile fields."""
@@ -56,15 +68,18 @@ class ProfileUpdate(ProfileBase):
     pass
 
 
+# ---------------------------------------------------------------------------
+# Response schemas
+# ---------------------------------------------------------------------------
+
 class ProfileResponse(ProfileBase):
     """Full profile response with subscription info."""
     id: str
-    email: EmailStr
-    full_name: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
+    email: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     subscription: SubscriptionInfo
-    
+
     class Config:
         from_attributes = True
 

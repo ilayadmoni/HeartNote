@@ -23,7 +23,9 @@ export type TemplateComponentKey =
   | "Timeline"
   | "LoveCoupons"
   | "RelationshipQuiz"
-  | "OpenWhen";
+  | "OpenWhen"
+  | "DecisionWheel"
+  | "SteamyWindow";
 
 export type TemplateCategory =
   | "all"

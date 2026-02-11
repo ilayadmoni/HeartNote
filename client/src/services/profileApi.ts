@@ -1,32 +1,36 @@
 /**
  * Profile API Service
- * 
+ *
  * Handles all profile-related API calls to the FastAPI backend.
  * Uses the centralized fetchClient for all requests.
+ * Aligned with new DB schema (profiles table, subscription_tier).
  */
 
 import { api, fetchClient, type ApiResponse, type ApiError } from "@/lib/fetchClient";
 
 // =============================================================================
-// Types
+// Types (aligned with new DB schema)
 // =============================================================================
 
 export interface SubscriptionInfo {
-  plan: "free" | "pro" | "premium";
+  tier: "free" | "premium";
   is_active: boolean;
-  expires_at: string | null;
+  creations_count: number;
+  creations_left_free: number;
+  creations_left_pro: number | null;
+  premium_start: string | null;
+  premium_expiry: string | null;
 }
 
 export interface ProfileData {
   id: string;
-  email: string;
+  email: string | null;
   first_name: string | null;
   last_name: string | null;
-  full_name: string | null;
   date_of_birth: string | null;
   avatar_url: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
   subscription: SubscriptionInfo;
 }
 
@@ -53,32 +57,32 @@ export type { ApiError };
  */
 export async function getProfile(): Promise<ProfileData> {
   const { data, error } = await api.get<ProfileData>("/profile/me");
-  
+
   if (error) {
     throw error;
   }
-  
+
   if (!data) {
     throw { message: "No profile data returned", status: 500 };
   }
-  
+
   return data;
 }
 
 /**
- * Update the current user's profile.
+ * Update the current user's profile (PATCH).
  */
 export async function updateProfile(updateData: ProfileUpdateData): Promise<ProfileData> {
-  const { data, error } = await api.put<ProfileData>("/profile/me", updateData);
-  
+  const { data, error } = await api.patch<ProfileData>("/profile/me", updateData);
+
   if (error) {
     throw error;
   }
-  
+
   if (!data) {
     throw { message: "No profile data returned", status: 500 };
   }
-  
+
   return data;
 }
 
@@ -87,7 +91,7 @@ export async function updateProfile(updateData: ProfileUpdateData): Promise<Prof
  */
 export async function deleteAccount(): Promise<void> {
   const { error } = await api.delete<void>("/profile/me");
-  
+
   if (error) {
     throw error;
   }
@@ -101,12 +105,12 @@ export async function getAvatarOptions(): Promise<string[]> {
   const { data, error } = await fetchClient<AvatarOptions>("/profile/avatars", {
     skipAuth: true,
   });
-  
+
   if (error) {
     console.warn("[getAvatarOptions] Failed to fetch avatars:", error);
     return [];
   }
-  
+
   return data?.avatars || [];
 }
 
@@ -115,26 +119,25 @@ export async function getAvatarOptions(): Promise<string[]> {
 // =============================================================================
 
 /**
- * Format subscription plan name in Hebrew.
+ * Format subscription tier name in Hebrew.
  */
-export function formatPlanName(plan: string): string {
-  const plans: Record<string, string> = {
+export function formatTierName(tier: string): string {
+  const tiers: Record<string, string> = {
     free: "חינמי",
-    pro: "פרו",
     premium: "פרימיום",
   };
-  return plans[plan] || plan;
+  return tiers[tier] || tier;
 }
 
 /**
- * Check if subscription is expiring soon (within 7 days).
+ * Check if premium subscription is expiring soon (within 7 days).
  */
-export function isExpiringSoon(expiresAt: string | null): boolean {
-  if (!expiresAt) return false;
-  
-  const expiry = new Date(expiresAt);
+export function isExpiringSoon(premiumExpiry: string | null): boolean {
+  if (!premiumExpiry) return false;
+
+  const expiry = new Date(premiumExpiry);
   const now = new Date();
   const daysUntilExpiry = (expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-  
+
   return daysUntilExpiry > 0 && daysUntilExpiry <= 7;
 }

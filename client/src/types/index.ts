@@ -1,108 +1,123 @@
 /**
  * Global TypeScript Types
+ * Aligned with the new DB schema (profiles, templates, creations, subscription_policies)
  */
 
-// User types
-export interface User {
+// =============================================================================
+// Profile / User
+// =============================================================================
+
+export type SubscriptionTier = 'free' | 'premium'
+
+export interface SubscriptionInfo {
+  tier: SubscriptionTier
+  creations_count: number
+  creations_left_free: number
+  creations_left_pro: number | null
+  premium_start: string | null
+  premium_expiry: string | null
+  is_active: boolean
+}
+
+export interface ProfileData {
   id: string
-  email: string
-  fullName: string | null
-  role: 'user' | 'admin' | 'super_admin'
-  isActive: boolean
-  isVerified: boolean
-  avatarUrl: string | null
-  preferences: Record<string, unknown>
-  createdAt: string
-  updatedAt: string
+  email: string | null
+  first_name: string | null
+  last_name: string | null
+  date_of_birth: string | null
+  avatar_url: string | null
+  created_at: string | null
+  updated_at: string | null
+  subscription: SubscriptionInfo
 }
 
-// Card types
-export type CardType = 'text' | 'checklist' | 'image' | 'link' | 'code' | 'quote'
-export type CardStatus = 'active' | 'archived' | 'deleted'
+export interface ProfileUpdateData {
+  first_name?: string
+  last_name?: string
+  date_of_birth?: string
+  avatar_url?: string
+}
 
-export interface CardBase {
+// =============================================================================
+// Templates
+// =============================================================================
+
+export interface Template {
   id: string
-  title: string
-  cardType: CardType
-  status: CardStatus
-  position: number
-  ownerId: string
-  tags: Tag[]
-  createdAt: string
-  updatedAt: string
-}
-
-export interface TextCardContent {
-  text: string
-  format: 'markdown' | 'plain' | 'html'
-}
-
-export interface ChecklistItem {
-  text: string
-  checked: boolean
-}
-
-export interface ChecklistCardContent {
-  items: ChecklistItem[]
-}
-
-export interface ImageCardContent {
-  url: string
-  caption?: string
-  altText?: string
-}
-
-export interface LinkCardContent {
-  url: string
-  title?: string
-  description?: string
-  thumbnailUrl?: string
-}
-
-export interface CodeCardContent {
-  code: string
-  language: string
-}
-
-// Card with specific content types
-export interface TextCard extends CardBase {
-  cardType: 'text'
-  content: TextCardContent
-}
-
-export interface ChecklistCard extends CardBase {
-  cardType: 'checklist'
-  content: ChecklistCardContent
-}
-
-export interface ImageCard extends CardBase {
-  cardType: 'image'
-  content: ImageCardContent
-}
-
-export interface LinkCard extends CardBase {
-  cardType: 'link'
-  content: LinkCardContent
-}
-
-export interface CodeCard extends CardBase {
-  cardType: 'code'
-  content: CodeCardContent
-}
-
-export type Card = TextCard | ChecklistCard | ImageCard | LinkCard | CodeCard
-
-// Tag types
-export interface Tag {
-  id: string
+  slug: string
   name: string
-  color: string
-  ownerId: string
-  createdAt: string
-  updatedAt: string
+  category: string[] | null
+  tags: string | null
+  is_premium: boolean
+  config_schema: Record<string, unknown>
+  is_active: boolean
+  expiration_policy: Record<string, unknown> | null
 }
 
-// Auth types
+// =============================================================================
+// Creations (replaces old Pages / Cards)
+// =============================================================================
+
+export interface CreateCreationRequest {
+  template_id: string
+  metadata: Record<string, unknown>
+}
+
+export interface CreateCreationResponse {
+  id: string
+  expires_at: string | null
+}
+
+export interface CreationListItem {
+  id: string
+  template_slug: string
+  template_name: string
+  is_paid: boolean | null
+  expires_at: string | null
+  is_deleted: boolean
+  created_at: string
+}
+
+export interface CreationDetail {
+  id: string
+  template_slug: string
+  template_name: string
+  metadata: Record<string, unknown>
+  is_paid: boolean | null
+  expires_at: string | null
+  created_at: string
+}
+
+// =============================================================================
+// Dashboard
+// =============================================================================
+
+export interface DashboardStats {
+  creations_count: number
+  creations_left_free: number
+  creations_left_pro: number | null
+  subscription_tier: string
+}
+
+export interface DashboardCreation {
+  id: string
+  template_slug: string
+  template_name: string
+  created_at: string
+  expires_at: string | null
+  is_expired: boolean
+  is_paid: boolean | null
+}
+
+export interface DashboardData {
+  stats: DashboardStats
+  creations: DashboardCreation[]
+}
+
+// =============================================================================
+// Auth
+// =============================================================================
+
 export interface AuthTokens {
   accessToken: string
   refreshToken: string
@@ -120,7 +135,10 @@ export interface RegisterData {
   fullName?: string
 }
 
-// API Response types
+// =============================================================================
+// API
+// =============================================================================
+
 export interface PaginatedResponse<T> {
   items: T[]
   total: number

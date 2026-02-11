@@ -54,6 +54,7 @@ export function SteamyWindowDesktop({ data }: SteamyWindowViewProps) {
             revealMessage={data.revealMessage || "אני אוהב אותך! ❤️"}
             emoji={data.emoji}
             primaryColor={data.primaryColor}
+            backgroundImage={data.background_image}
           />
         </motion.div>
 

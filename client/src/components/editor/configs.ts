@@ -298,6 +298,12 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         placeholder: "הטקסט שייחשף אחרי הגירוד",
       },
       {
+        key: "background_image",
+        label: "תמונת רקע",
+        type: "image_url",
+        placeholder: "העלו תמונה לרקע",
+      },
+      {
         key: "emoji",
         label: "אימוג'י",
         type: "text",

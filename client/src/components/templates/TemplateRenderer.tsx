@@ -2,7 +2,7 @@
 
 /**
  * TemplateRenderer
- * Dynamic component loader that renders templates based on component_key.
+ * Dynamic component loader that renders templates based on PascalCase registry key.
  * Uses the centralized registry.
  */
 

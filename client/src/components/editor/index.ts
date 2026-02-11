@@ -21,4 +21,4 @@ export * from "./types";
 export { EDITOR_CONFIGS } from "./configs";
 
 // API
-export { createUserPage } from "./api";
+export { createUserCreation } from "./api";

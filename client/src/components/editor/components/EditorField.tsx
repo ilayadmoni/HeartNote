@@ -13,6 +13,7 @@ import { EnvelopesEditor } from "./EnvelopesEditor";
 import { QuestionsEditor } from "./QuestionsEditor";
 import { CouponsEditor } from "./CouponsEditor";
 import { OptionsEditor } from "./OptionsEditor";
+import { ImageUploader } from "./ImageUploader";
 import type {
   TimelineEvent,
   OpenWhenEnvelope,
@@ -24,9 +25,11 @@ interface EditorFieldProps {
   field: EditorFieldType;
   value: unknown;
   onChange: (value: unknown) => void;
+  /** Required for image_url fields */
+  userId?: string;
 }
 
-export function EditorField({ field, value, onChange }: EditorFieldProps) {
+export function EditorField({ field, value, onChange, userId }: EditorFieldProps) {
   const baseInputClass = `
     w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
     bg-white dark:bg-gray-700 text-[#2e3c52] dark:text-white
@@ -156,6 +159,15 @@ export function EditorField({ field, value, onChange }: EditorFieldProps) {
         <OptionsEditor
           options={(value as string[]) || []}
           onChange={onChange}
+        />
+      )}
+
+      {(field.type === "image_url" || field.type === "image") && userId && (
+        <ImageUploader
+          value={(value as string) || ""}
+          onChange={(url) => onChange(url)}
+          userId={userId}
+          label={field.label}
         />
       )}
     </div>

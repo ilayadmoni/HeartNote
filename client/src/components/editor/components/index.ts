@@ -10,5 +10,6 @@ export { SuccessModal } from "./SuccessModal";
 export { EnvelopesEditor } from "./EnvelopesEditor";
 export { QuestionsEditor } from "./QuestionsEditor";
 export { CouponsEditor } from "./CouponsEditor";
+export { ImageUploader } from "./ImageUploader";
 
 

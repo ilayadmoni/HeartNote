@@ -2,25 +2,25 @@
 
 /**
  * TemplatesList Component
- * Displays list of user's created pages with active/expired states.
+ * Displays list of user's created creations with active/expired states.
  */
 
 import { motion } from "framer-motion";
 import { FileText, ExternalLink, Trash2, Clock } from "lucide-react";
-import type { DashboardPage } from "@/hooks/useDashboard";
+import type { DashboardCreation } from "@/hooks/useDashboard";
 
 interface TemplatesListProps {
-  pages: DashboardPage[];
-  onView: (slug: string) => void;
-  onDelete: (slug: string) => void;
+  creations: DashboardCreation[];
+  onView: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 export function TemplatesList({
-  pages,
+  creations,
   onView,
   onDelete,
 }: TemplatesListProps) {
-  if (pages.length === 0) {
+  if (creations.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-700 text-center">
         <FileText
@@ -28,7 +28,7 @@ export function TemplatesList({
           className="mx-auto text-gray-300 dark:text-gray-600 mb-4"
         />
         <p className="text-gray-500 dark:text-gray-400 text-hebrew-body">
-          עדיין לא יצרת תבניות
+          עדיין לא יצרת כרטיסים
         </p>
       </div>
     );
@@ -37,14 +37,14 @@ export function TemplatesList({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
       <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white mb-4 text-hebrew-heading">
-        התבניות שלי ({pages.length})
+        הכרטיסים שלי ({creations.length})
       </h3>
 
       <div className="space-y-3">
-        {pages.map((page, index) => (
-          <PageRow
-            key={page.slug}
-            page={page}
+        {creations.map((creation, index) => (
+          <CreationRow
+            key={creation.id}
+            creation={creation}
             index={index}
             onView={onView}
             onDelete={onDelete}
@@ -55,16 +55,16 @@ export function TemplatesList({
   );
 }
 
-interface PageRowProps {
-  page: DashboardPage;
+interface CreationRowProps {
+  creation: DashboardCreation;
   index: number;
-  onView: (slug: string) => void;
-  onDelete: (slug: string) => void;
+  onView: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
-function PageRow({ page, index, onView, onDelete }: PageRowProps) {
-  const createdDate = new Date(page.created_at).toLocaleDateString("he-IL");
-  const isExpired = page.is_expired;
+function CreationRow({ creation, index, onView, onDelete }: CreationRowProps) {
+  const createdDate = new Date(creation.created_at).toLocaleDateString("he-IL");
+  const isExpired = creation.is_expired;
 
   return (
     <motion.div
@@ -103,7 +103,7 @@ function PageRow({ page, index, onView, onDelete }: PageRowProps) {
                   : "text-[#2e3c52] dark:text-white"
               }`}
             >
-              {page.title || page.template_name || "כרטיס"}
+              {creation.template_name || "כרטיס"}
             </p>
             {isExpired && (
               <span className="text-[10px] font-bold text-red-500 bg-red-100 dark:bg-red-900/40 px-1.5 py-0.5 rounded">
@@ -112,9 +112,8 @@ function PageRow({ page, index, onView, onDelete }: PageRowProps) {
             )}
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            {page.template_name ? `${page.template_name} • ` : ""}
+            {creation.template_name ? `${creation.template_name} • ` : ""}
             {createdDate}
-            {page.view_count > 0 && ` • ${page.view_count} צפיות`}
           </p>
         </div>
       </div>
@@ -126,17 +125,17 @@ function PageRow({ page, index, onView, onDelete }: PageRowProps) {
           </span>
         ) : (
           <button
-            onClick={() => onView(page.slug)}
+            onClick={() => onView(creation.id)}
             className="p-2 text-gray-400 hover:text-[#d4826f] transition-colors"
-            aria-label="צפייה בתבנית"
+            aria-label="צפייה בכרטיס"
           >
             <ExternalLink size={16} />
           </button>
         )}
         <button
-          onClick={() => onDelete(page.slug)}
+          onClick={() => onDelete(creation.id)}
           className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-          aria-label="מחיקת תבנית"
+          aria-label="מחיקת כרטיס"
         >
           <Trash2 size={16} />
         </button>

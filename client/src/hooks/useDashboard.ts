@@ -1,8 +1,9 @@
 /**
  * useDashboard Hook
  *
- * Fetches user dashboard stats and page history from
+ * Fetches user dashboard stats and creation history from
  * GET /api/v1/user/dashboard.
+ * Aligned with new DB schema (creations table, subscription_tier).
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -14,24 +15,25 @@ import { useAuth } from "@/contexts/AuthContext";
 // =============================================================================
 
 export interface DashboardStats {
-  used: number;
-  limit: number;
-  remaining: number;
+  creations_count: number;
+  creations_left_free: number;
+  creations_left_pro: number | null;
+  subscription_tier: string;
 }
 
-export interface DashboardPage {
-  slug: string;
-  title: string | null;
+export interface DashboardCreation {
+  id: string;
+  template_slug: string;
   template_name: string | null;
   created_at: string;
   expires_at: string | null;
   is_expired: boolean;
-  view_count: number;
+  is_paid: boolean | null;
 }
 
 export interface DashboardData {
   stats: DashboardStats;
-  pages: DashboardPage[];
+  creations: DashboardCreation[];
 }
 
 // =============================================================================

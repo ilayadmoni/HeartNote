@@ -29,6 +29,8 @@ interface SteamCanvasProps {
   fogColor?: string;
   /** Accent color */
   primaryColor?: string;
+  /** Optional background image URL from Supabase Storage */
+  backgroundImage?: string;
   /** Threshold (0-1) of erased area to auto-reveal */
   revealThreshold?: number;
 }
@@ -40,6 +42,7 @@ export function SteamCanvas({
   emoji = "💖",
   fogColor = "rgba(200, 210, 220, 0.92)",
   primaryColor = "#d4826f",
+  backgroundImage,
   revealThreshold = 0.45,
 }: SteamCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -155,6 +158,15 @@ export function SteamCanvas({
     >
       {/* Revealed content background */}
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-white dark:bg-gray-800 p-6">
+        {/* Optional background image */}
+        {backgroundImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={backgroundImage}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover opacity-30"
+          />
+        )}
         {emoji && (
           <motion.span
             initial={{ scale: 0 }}

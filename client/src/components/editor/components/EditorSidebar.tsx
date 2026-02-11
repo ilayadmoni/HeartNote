@@ -11,7 +11,7 @@ import { Sparkles } from "lucide-react";
 import { EditorField } from "./EditorField";
 import type { EditorSidebarProps } from "../types";
 
-export function EditorSidebar({ config, data, onChange }: EditorSidebarProps) {
+export function EditorSidebar({ config, data, onChange, userId }: EditorSidebarProps) {
   // Deduplicate fields by key — prevents duplicate form inputs when the
   // config_schema accidentally contains repeated keys.
   const uniqueFields = config.fields.filter(
@@ -43,6 +43,7 @@ export function EditorSidebar({ config, data, onChange }: EditorSidebarProps) {
               field={field}
               value={data[field.key]}
               onChange={(value) => onChange(field.key, value)}
+              userId={userId}
             />
           </motion.div>
         ))}

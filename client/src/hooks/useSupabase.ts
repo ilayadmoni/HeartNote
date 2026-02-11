@@ -1,6 +1,7 @@
 /**
  * useSupabase Hook
- * Supabase client hooks for data fetching
+ * Supabase client hooks for data fetching.
+ * Aligned with new DB schema (templates with slug/category[], creations table).
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -12,32 +13,25 @@ import { supabase } from "@/lib/supabase";
 
 export interface Template {
   id: string;
+  slug: string;
   name: string;
-  name_he: string | null;
-  description: string | null;
-  description_he: string | null;
-  component_key: string;
+  category: string[] | null;
+  tags: string | null;
   config_schema: Record<string, unknown>;
-  example_data: Record<string, unknown>;
-  category: string;
-  tags: string[];
   is_premium: boolean;
   is_active: boolean;
-  sort_order: number;
+  expiration_policy: Record<string, unknown> | null;
   created_at: string;
 }
 
-export interface UserPage {
+export interface Creation {
   id: string;
   user_id: string;
   template_id: string;
-  route_slug: string;
-  title: string | null;
-  custom_settings: Record<string, unknown>;
-  is_published: boolean;
+  metadata: Record<string, unknown>;
+  is_paid: boolean | null;
   is_deleted: boolean;
   expires_at: string | null;
-  view_count: number;
   created_at: string;
   updated_at: string;
   // Joined data
@@ -60,7 +54,7 @@ export function useTemplates() {
           .from("templates")
           .select("*")
           .eq("is_active", true)
-          .order("sort_order");
+          .order("name");
 
         if (error) throw error;
         setTemplates(data || []);
@@ -77,20 +71,24 @@ export function useTemplates() {
   return { templates, loading, error };
 }
 
-export function useTemplate(id: string) {
+export function useTemplate(idOrSlug: string) {
   const [template, setTemplate] = useState<Template | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (!idOrSlug) return;
 
     async function fetchTemplate() {
       try {
+        // Detect whether we got a UUID or a slug
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+        const column = isUUID ? "id" : "slug";
+
         const { data, error } = await supabase
           .from("templates")
           .select("*")
-          .eq("id", id)
+          .eq(column, idOrSlug)
           .single();
 
         if (error) throw error;
@@ -103,88 +101,82 @@ export function useTemplate(id: string) {
     }
 
     fetchTemplate();
-  }, [id]);
+  }, [idOrSlug]);
 
   return { template, loading, error };
 }
 
 // =============================================================================
-// USER PAGES HOOKS
+// CREATIONS HOOKS (replaces user_pages)
 // =============================================================================
 
-export function useUserPages() {
-  const [pages, setPages] = useState<UserPage[]>([]);
+export function useCreations() {
+  const [creations, setCreations] = useState<Creation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPages = useCallback(async () => {
+  const fetchCreations = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from("user_pages")
+        .from("creations")
         .select(`*, template:templates(*)`)
         .eq("is_deleted", false)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setPages(data || []);
+      setCreations(data || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "שגיאה בטעינת הדפים");
+      setError(err instanceof Error ? err.message : "שגיאה בטעינת היצירות");
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchPages();
-  }, [fetchPages]);
+    fetchCreations();
+  }, [fetchCreations]);
 
-  return { pages, loading, error, refetch: fetchPages };
+  return { creations, loading, error, refetch: fetchCreations };
 }
 
-export function usePublicPage(slug: string) {
-  const [page, setPage] = useState<UserPage | null>(null);
+export function usePublicCreation(id: string) {
+  const [creation, setCreation] = useState<Creation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!slug) return;
+    if (!id) return;
 
-    async function fetchPage() {
+    async function fetchCreation() {
       try {
-        // Use the RPC function for public page access
-        const { data, error } = await supabase.rpc("get_public_page", {
-          page_slug: slug,
-        });
+        const { data, error } = await supabase
+          .from("creations")
+          .select(`*, template:templates(slug, name, config_schema)`)
+          .eq("id", id)
+          .eq("is_deleted", false)
+          .single();
 
         if (error) throw error;
-        if (!data || data.length === 0) {
-          throw new Error("הדף לא נמצא או שפג תוקפו");
+        if (!data) {
+          throw new Error("היצירה לא נמצאה או שפג תוקפה");
         }
 
-        // Increment view count
-        await supabase.rpc("increment_page_view", { page_slug: slug });
+        // Check expiry
+        if (data.expires_at && new Date(data.expires_at) < new Date()) {
+          throw new Error("פג תוקף היצירה");
+        }
 
-        setPage({
-          id: data[0].id,
-          template_id: data[0].template_id,
-          custom_settings: data[0].custom_settings,
-          title: data[0].title,
-          route_slug: slug,
-          template: {
-            component_key: data[0].template_component_key,
-            config_schema: data[0].template_config_schema,
-          } as Template,
-        } as UserPage);
+        setCreation(data as Creation);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "שגיאה בטעינת הדף");
+        setError(err instanceof Error ? err.message : "שגיאה בטעינת היצירה");
       } finally {
         setLoading(false);
       }
     }
 
-    fetchPage();
-  }, [slug]);
+    fetchCreation();
+  }, [id]);
 
-  return { page, loading, error };
+  return { creation, loading, error };
 }

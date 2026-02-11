@@ -31,7 +31,7 @@ from app.schemas.profile import (
     ProfileResponse,
     ProfileUpdate,
     SubscriptionInfo,
-    SubscriptionType,
+    SubscriptionTier,
     AvatarOptionsResponse,
     AVATAR_OPTIONS_LIST,
 )
@@ -59,7 +59,7 @@ __all__ = [
     "ProfileResponse",
     "ProfileUpdate",
     "SubscriptionInfo",
-    "SubscriptionType",
+    "SubscriptionTier",
     "AvatarOptionsResponse",
     "AVATAR_OPTIONS_LIST",
 ]

@@ -18,9 +18,10 @@ class UserProfile(BaseModel):
     """User profile response"""
     id: str
     email: str | None
-    full_name: str | None
+    first_name: str | None
+    last_name: str | None
     avatar_url: str | None
-    subscription_type: str
+    subscription_tier: str
     created_at: str
 
 
@@ -34,16 +35,17 @@ async def get_current_user_profile(
     Token is verified locally, then profile is fetched with RLS enforced.
     """
     result = supabase.table("profiles").select(
-        "id, email, full_name, avatar_url, subscription_type, created_at"
+        "id, email, first_name, last_name, avatar_url, subscription_tier, created_at"
     ).eq("id", current_user.id).single().execute()
 
     if not result.data:
         return UserProfile(
             id=current_user.id,
             email=current_user.email,
-            full_name=None,
+            first_name=None,
+            last_name=None,
             avatar_url=None,
-            subscription_type="free",
+            subscription_tier="free",
             created_at="",
         )
 
@@ -51,16 +53,18 @@ async def get_current_user_profile(
     return UserProfile(
         id=profile["id"],
         email=profile.get("email"),
-        full_name=profile.get("full_name"),
+        first_name=profile.get("first_name"),
+        last_name=profile.get("last_name"),
         avatar_url=profile.get("avatar_url"),
-        subscription_type=profile.get("subscription_type", "free"),
+        subscription_tier=profile.get("subscription_tier", "free"),
         created_at=profile.get("created_at", ""),
     )
 
 
 class UpdateProfileRequest(BaseModel):
     """Request to update profile"""
-    full_name: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
     avatar_url: str | None = None
 
 
@@ -72,8 +76,10 @@ async def update_profile(
 ):
     """Update the current user's profile (RLS enforced)"""
     update_data = {}
-    if request.full_name is not None:
-        update_data["full_name"] = request.full_name
+    if request.first_name is not None:
+        update_data["first_name"] = request.first_name
+    if request.last_name is not None:
+        update_data["last_name"] = request.last_name
     if request.avatar_url is not None:
         update_data["avatar_url"] = request.avatar_url
 
@@ -91,8 +97,9 @@ async def update_profile(
     return UserProfile(
         id=profile["id"],
         email=profile.get("email"),
-        full_name=profile.get("full_name"),
+        first_name=profile.get("first_name"),
+        last_name=profile.get("last_name"),
         avatar_url=profile.get("avatar_url"),
-        subscription_type=profile.get("subscription_type", "free"),
+        subscription_tier=profile.get("subscription_tier", "free"),
         created_at=profile.get("created_at", ""),
     )

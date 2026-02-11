@@ -1,26 +1,28 @@
 /**
  * Profile Types
  * TypeScript interfaces for profile data structures.
- * These match the FastAPI backend response schemas.
+ * Aligned with new DB schema (profiles table, subscription_tier).
  */
 
 // =============================================================================
 // Subscription Types
 // =============================================================================
 
-export type PlanType = "free" | "pro" | "premium";
+export type SubscriptionTier = "free" | "premium";
 
 export interface SubscriptionInfo {
-  plan: PlanType;
+  tier: SubscriptionTier;
   is_active: boolean;
-  expires_at: string | null;
+  creations_count: number;
+  creations_left_free: number;
+  creations_left_pro: number | null;
+  premium_start: string | null;
+  premium_expiry: string | null;
 }
 
-export interface PlanConfig {
+export interface TierConfig {
   name: string;
   nameHe: string;
-  maxPages: number;
-  expiryHours: number;
   color: string;
   features: string[];
 }
@@ -31,14 +33,13 @@ export interface PlanConfig {
 
 export interface UserProfile {
   id: string;
-  email: string;
+  email: string | null;
   firstName: string | null;
   lastName: string | null;
-  fullName: string | null;
   dateOfBirth: string | null;
   avatarUrl: string | null;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | null;
+  updatedAt: string | null;
   subscription: SubscriptionInfo;
 }
 
@@ -50,15 +51,16 @@ export interface ProfileUpdateData {
 }
 
 // =============================================================================
-// Template Types
+// Creation Types (replaces UserTemplate / page types)
 // =============================================================================
 
-export interface UserTemplate {
+export interface UserCreation {
   id: string;
-  name: string;
-  nameHe?: string;
+  templateSlug: string;
+  templateName: string;
   createdAt: string;
-  viewCount: number;
+  expiresAt: string | null;
+  isPaid: boolean | null;
 }
 
 // =============================================================================
@@ -108,14 +110,13 @@ export const DEFAULT_AVATAR_OPTIONS: AvatarOption[] = [
  */
 export function mapApiProfileToUserProfile(apiProfile: {
   id: string;
-  email: string;
+  email: string | null;
   first_name: string | null;
   last_name: string | null;
-  full_name: string | null;
   date_of_birth: string | null;
   avatar_url: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
   subscription: SubscriptionInfo;
 }): UserProfile {
   return {
@@ -123,7 +124,6 @@ export function mapApiProfileToUserProfile(apiProfile: {
     email: apiProfile.email,
     firstName: apiProfile.first_name,
     lastName: apiProfile.last_name,
-    fullName: apiProfile.full_name,
     dateOfBirth: apiProfile.date_of_birth,
     avatarUrl: apiProfile.avatar_url,
     createdAt: apiProfile.created_at,

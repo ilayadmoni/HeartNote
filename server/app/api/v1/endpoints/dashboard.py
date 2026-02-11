@@ -1,6 +1,7 @@
 """
 Dashboard API Endpoint
-Serves user statistics and page history for the Profile Dashboard.
+Serves user statistics and creation history for the Profile Dashboard.
+Aligned with the new `creations` + `profiles` table schema (005_destructive_reset).
 
 Security: Uses ``get_rls_client`` so every Supabase query runs under the
 user's JWT with Postgres RLS enforced.
@@ -23,27 +24,28 @@ router = APIRouter()
 # =============================================================================
 
 class DashboardStats(BaseModel):
-    """Quota usage statistics"""
-    used: int
-    limit: int
-    remaining: int
+    """Quota usage statistics derived from profiles columns."""
+    creations_count: int
+    creations_left_free: int
+    creations_left_pro: int | None
+    subscription_tier: str
 
 
-class DashboardPage(BaseModel):
-    """Single page item in the dashboard list"""
-    slug: str
-    title: str | None
-    template_name: str | None = None
+class DashboardCreation(BaseModel):
+    """Single creation item in the dashboard list."""
+    id: str
+    template_slug: str
+    template_name: str
     created_at: str
     expires_at: str | None
     is_expired: bool
-    view_count: int = 0
+    is_paid: bool | None
 
 
 class DashboardResponse(BaseModel):
-    """Full dashboard payload"""
+    """Full dashboard payload."""
     stats: DashboardStats
-    pages: list[DashboardPage]
+    creations: list[DashboardCreation]
 
 
 # =============================================================================
@@ -56,78 +58,75 @@ async def get_dashboard(
     supabase: Client = Depends(get_rls_client),
 ):
     """
-    User Dashboard — returns quota stats and page history.
-
-    Stats:
-      • ``used``  — count of *active* (non-deleted, non-expired) pages
-      • ``limit`` — max active pages for the user's tier (hardcoded 3 for now)
-      • ``remaining`` — limit − used
-
-    Pages:
-      • All non-deleted pages for this user, sorted newest-first.
-      • ``is_expired`` is computed server-side.
+    User Dashboard — returns quota stats and creation history.
     """
-    settings = get_settings()
     now = datetime.now(timezone.utc)
-    page_limit = settings.max_active_pages  # default: 3
 
-    # ── Fetch all non-deleted pages for this user ────────────────────
-    result = supabase.table("user_pages").select(
-        "id, route_slug, title, expires_at, view_count, created_at, "
-        "templates!inner(name_he)"
-    ).eq(
-        "user_id", current_user.id
-    ).eq(
-        "is_deleted", False
-    ).order(
-        "created_at", desc=True
-    ).execute()
+    # ── Fetch profile for quota stats ────────────────────────────────
+    profile_result = (
+        supabase.table("profiles")
+        .select(
+            "subscription_tier, creations_count, "
+            "creations_left_free, creations_left_pro"
+        )
+        .eq("id", current_user.id)
+        .single()
+        .execute()
+    )
 
-    all_pages: list[dict[str, Any]] = result.data or []
+    profile = profile_result.data or {}
 
-    # ── Build page list and count active ─────────────────────────────
-    dashboard_pages: list[DashboardPage] = []
-    active_count = 0
+    stats = DashboardStats(
+        creations_count=profile.get("creations_count", 0),
+        creations_left_free=profile.get("creations_left_free", 3),
+        creations_left_pro=profile.get("creations_left_pro"),
+        subscription_tier=profile.get("subscription_tier", "free"),
+    )
 
-    for page in all_pages:
-        expires_at_str = page.get("expires_at")
+    # ── Fetch all non-deleted creations for this user ────────────────
+    result = (
+        supabase.table("creations")
+        .select(
+            "id, is_paid, expires_at, created_at, "
+            "templates!inner(slug, name)"
+        )
+        .eq("user_id", current_user.id)
+        .eq("is_deleted", False)
+        .order("created_at", desc=True)
+        .execute()
+    )
+
+    all_creations: list[dict[str, Any]] = result.data or []
+
+    dashboard_creations: list[DashboardCreation] = []
+
+    for c in all_creations:
+        expires_at_str = c.get("expires_at")
         is_expired = False
 
         if expires_at_str:
             try:
                 if "Z" in expires_at_str:
-                    exp_dt = datetime.fromisoformat(
-                        expires_at_str.replace("Z", "+00:00")
-                    )
+                    exp_dt = datetime.fromisoformat(expires_at_str.replace("Z", "+00:00"))
                 else:
                     exp_dt = datetime.fromisoformat(expires_at_str)
                 is_expired = exp_dt < now
             except (ValueError, TypeError):
                 is_expired = False
 
-        if not is_expired:
-            active_count += 1
+        tmpl = c.get("templates") or {}
 
-        template = page.get("templates", {})
-
-        dashboard_pages.append(DashboardPage(
-            slug=page["route_slug"],
-            title=page.get("title"),
-            template_name=template.get("name_he"),
-            created_at=page["created_at"],
+        dashboard_creations.append(DashboardCreation(
+            id=c["id"],
+            template_slug=tmpl.get("slug", ""),
+            template_name=tmpl.get("name", "כרטיס"),
+            created_at=c["created_at"],
             expires_at=expires_at_str,
             is_expired=is_expired,
-            view_count=page.get("view_count", 0),
+            is_paid=c.get("is_paid"),
         ))
 
-    # ── Build response ───────────────────────────────────────────────
-    remaining = max(page_limit - active_count, 0)
-
     return DashboardResponse(
-        stats=DashboardStats(
-            used=active_count,
-            limit=page_limit,
-            remaining=remaining,
-        ),
-        pages=dashboard_pages,
+        stats=stats,
+        creations=dashboard_creations,
     )
