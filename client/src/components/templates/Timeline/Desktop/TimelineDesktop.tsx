@@ -8,7 +8,10 @@
 import { motion } from "framer-motion";
 import type { TimelineDesktopProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+} from "@/components/templates/components";
 
 export function TimelineDesktop({ data }: TimelineDesktopProps) {
   const hasEvents = data.events && data.events.length > 0;
@@ -17,7 +20,7 @@ export function TimelineDesktop({ data }: TimelineDesktopProps) {
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 p-6 overflow-auto relative">
       {/* Back to Gallery */}
-      <BackToGallery className="absolute top-4 right-4 z-20" />}
+      <BackToGallery className="absolute top-4 right-4 z-20" />
 
       {/* Main Card */}
       <motion.div

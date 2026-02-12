@@ -20,7 +20,7 @@ export function TimelineMobile({ data }: TimelineMobileProps) {
   return (
     <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 px-4 py-5 overflow-auto relative">
       {/* Back to Gallery */}
-      <BackToGallery className="absolute top-3 right-3 z-20" />}
+      <BackToGallery className="absolute top-3 right-3 z-20" />
 
       {/* Main Card */}
       <motion.div
