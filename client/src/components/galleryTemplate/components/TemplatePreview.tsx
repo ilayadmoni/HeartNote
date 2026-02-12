@@ -7,6 +7,12 @@
  */
 
 import { motion } from "framer-motion";
+import {
+  DecisionWheelPreview,
+  SteamyWindowPreview,
+  SurpriseGiftPreview,
+} from "./MorePreviews";
+import { LivePreview } from "./LivePreview";
 import type { TemplateComponentKey } from "../types";
 
 interface TemplatePreviewProps {
@@ -27,8 +33,14 @@ export function TemplatePreview({ componentKey }: TemplatePreviewProps) {
       return <RelationshipQuizPreview />;
     case "OpenWhen":
       return <OpenWhenPreview />;
+    case "DecisionWheel":
+      return <DecisionWheelPreview />;
+    case "SteamyWindow":
+      return <SteamyWindowPreview />;
+    case "SurpriseGift":
+      return <SurpriseGiftPreview />;
     default:
-      return <DefaultPreview />;
+      return <LivePreview componentKey={componentKey} />;
   }
 }
 
@@ -199,12 +211,3 @@ function OpenWhenPreview() {
   );
 }
 
-function DefaultPreview() {
-  return (
-    <div className="h-full w-full flex items-center justify-center p-4">
-      <span className="text-gray-400 dark:text-gray-500 text-sm">
-        תצוגה מקדימה
-      </span>
-    </div>
-  );
-}

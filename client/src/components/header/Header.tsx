@@ -49,7 +49,7 @@ export function Header({ className = "" }: HeaderProps) {
         role="banner"
         aria-label="כותרת ראשית"
         className={`
-          sticky top-0 z-50 w-full
+          sticky top-0 z-[100] w-full
           transition-all duration-300 ease-out
           ${
             isScrolled

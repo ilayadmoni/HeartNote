@@ -116,7 +116,7 @@ Environment variables are defined in `.env.example`. Key variables:
 | `SECRET_KEY`          | Application secret key       | -                     |
 | `JWT_SECRET_KEY`      | JWT signing key              | -                     |
 | `CORS_ORIGINS`        | Allowed CORS origins         | http://localhost:3000 |
-| `NEXT_PUBLIC_API_URL` | Backend API URL              | http://localhost:8000 |
+| `NEXT_PUBLIC_SUPABASE_URL` | Backend API URL              | http://localhost:8000 |
 
 ## 📦 Adding New Card Types
 

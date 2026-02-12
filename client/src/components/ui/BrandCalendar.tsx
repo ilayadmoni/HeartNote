@@ -12,6 +12,10 @@
  *  - Shadow: shadow-lg on dropdown
  *  - Font: project hebrew font classes (text-hebrew-heading / text-hebrew-body)
  *  - RTL layout by default
+ *
+ * UX:
+ *  - Desktop: full calendar with year + month dropdowns for fast birthday selection
+ *  - Mobile: native <input type="date"> for optimal OS picker
  */
 
 import { useState, useCallback, useMemo, useRef, useEffect, useId } from "react";
@@ -33,6 +37,11 @@ const MONTHS_HE = [
   "נובמבר",
   "דצמבר",
 ];
+
+// Year range for birthday picker (allow ages ~10 – ~100)
+const CURRENT_YEAR = new Date().getFullYear();
+const MIN_YEAR = CURRENT_YEAR - 100;
+const MAX_YEAR = CURRENT_YEAR - 10;
 
 // ── Props ─────────────────────────────────────────────────────────────
 export interface BrandCalendarProps {
@@ -119,11 +128,11 @@ export function BrandCalendar({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Parse value or fall back to today for the initial view month
+  // Parse value or fall back to a sensible default for birthday views
   const parsed = useMemo(() => {
     if (value) return parseISO(value);
-    const now = new Date();
-    return { year: now.getFullYear(), month: now.getMonth(), day: now.getDate() };
+    // Default view: year 2000 so the dropdown is centred for birthday entry
+    return { year: 2000, month: 0, day: 1 };
   }, [value]);
 
   const [viewYear, setViewYear] = useState(parsed.year);
@@ -143,6 +152,13 @@ export function BrandCalendar({
   const todayISO = useMemo(() => {
     const n = new Date();
     return toISO(n.getFullYear(), n.getMonth(), n.getDate());
+  }, []);
+
+  // ── Year options (newest first for birthday UX) ─────────────────────
+  const yearOptions = useMemo(() => {
+    const years: number[] = [];
+    for (let y = MAX_YEAR; y >= MIN_YEAR; y--) years.push(y);
+    return years;
   }, []);
 
   // ── Month navigation ───────────────────────────────────────────────
@@ -209,107 +225,169 @@ export function BrandCalendar({
         </label>
       )}
 
-      {/* Trigger */}
-      <button
-        id={uid}
-        type="button"
-        onClick={() => !disabled && setIsOpen((o) => !o)}
-        disabled={disabled}
-        aria-haspopup="dialog"
-        aria-expanded={isOpen}
-        aria-invalid={error ? "true" : undefined}
-        className={`
-          w-full flex items-center gap-2 px-3 py-2.5 text-sm rounded-xl
-          bg-white dark:bg-gray-700 text-right
-          border-2 transition-all duration-200
-          disabled:opacity-50 disabled:cursor-not-allowed
-          ${error ? "border-red-400" : isOpen ? "border-[#C7CEEA] dark:border-[#B5EAD7]" : "border-gray-200 dark:border-gray-600"}
-          ${value ? "text-[#2e3c52] dark:text-white" : "text-gray-400 dark:text-gray-500"}
-        `}
-      >
-        <Calendar size={16} className="text-[#C7CEEA] dark:text-[#B5EAD7] flex-shrink-0" />
-        <span className="flex-1 text-right text-hebrew-body">{displayValue}</span>
-      </button>
-
-      {/* Dropdown calendar */}
-      {isOpen && (
-        <div
-          role="dialog"
-          aria-label="בחירת תאריך"
-          className="absolute top-full z-50 mt-1.5 right-0 w-full max-w-[280px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden"
-        >
-          {/* ── Header ────────────────────────────────────────────── */}
-          <div className="bg-gradient-to-l from-[#B5EAD7] to-[#C7CEEA] px-3 py-2 flex items-center justify-between">
-            {/* RTL: visual "right arrow" goes to next month */}
-            <button
-              type="button"
-              onClick={nextMonth}
-              className="p-1 rounded-full hover:bg-white/30 transition-colors"
-              aria-label="חודש הבא"
-            >
-              <ChevronRight size={18} className="text-[#2e3c52]" />
-            </button>
-
-            <span className="text-sm font-bold text-[#2e3c52] text-hebrew-heading select-none">
-              {MONTHS_HE[viewMonth]} {viewYear}
-            </span>
-
-            <button
-              type="button"
-              onClick={prevMonth}
-              className="p-1 rounded-full hover:bg-white/30 transition-colors"
-              aria-label="חודש קודם"
-            >
-              <ChevronLeft size={18} className="text-[#2e3c52]" />
-            </button>
-          </div>
-
-          {/* ── Day-of-week names ─────────────────────────────────── */}
-          <div className="grid grid-cols-7 px-2 pt-1.5">
-            {DAYS_HE.map((d) => (
-              <div
-                key={d}
-                className="text-center text-[10px] font-bold text-gray-400 py-1 select-none"
-              >
-                {d}
-              </div>
-            ))}
-          </div>
-
-          {/* ── Day grid ──────────────────────────────────────────── */}
-          <div className="grid grid-cols-7 px-2 pb-2 gap-0.5">
-            {days.map((day, idx) => {
-              const iso = toISO(day.year, day.month, day.day);
-              const isSelected = iso === value;
-              const isToday = iso === todayISO;
-              const outOfRange =
-                (min !== undefined && iso < min) || (max !== undefined && iso > max);
-              const isDisabled = !day.isCurrentMonth || outOfRange;
-
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => !isDisabled && handleSelect(day)}
-                  disabled={isDisabled}
-                  className={`
-                    w-7 h-7 rounded-lg text-[11px] font-medium mx-auto
-                    flex items-center justify-center transition-all
-                    ${isSelected ? "bg-[#F8BBD0] text-[#2e3c52] font-bold shadow-sm" : ""}
-                    ${isToday && !isSelected ? "ring-1 ring-[#C7CEEA] text-[#2e3c52] dark:text-white font-bold" : ""}
-                    ${!isSelected && !isToday && day.isCurrentMonth ? "text-[#2e3c52] dark:text-gray-200 hover:bg-[#F8BBD0]/30" : ""}
-                    ${!day.isCurrentMonth ? "text-gray-300 dark:text-gray-600" : ""}
-                    ${isDisabled && day.isCurrentMonth ? "opacity-40 cursor-not-allowed" : ""}
-                    ${!isDisabled ? "cursor-pointer" : ""}
-                  `}
-                >
-                  {day.day}
-                </button>
-              );
-            })}
-          </div>
+      {/* ─── Mobile: native date input (best UX on phones) ──────────── */}
+      <div className="block md:hidden">
+        <div className="relative">
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#C7CEEA] dark:text-[#B5EAD7]">
+            <Calendar size={16} />
+          </span>
+          <input
+            type="date"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            min={min ?? `${MIN_YEAR}-01-01`}
+            max={max ?? `${MAX_YEAR}-12-31`}
+            disabled={disabled}
+            aria-invalid={error ? "true" : "false"}
+            className={`
+              w-full pr-10 pl-3 py-2.5 text-sm rounded-xl
+              bg-white dark:bg-gray-700
+              text-[#2e3c52] dark:text-white
+              border-2 transition-all duration-200
+              placeholder-gray-400 dark:placeholder-gray-500
+              focus:outline-none focus:ring-0
+              disabled:opacity-50 disabled:cursor-not-allowed
+              [&::-webkit-calendar-picker-indicator]:cursor-pointer
+              [&::-webkit-calendar-picker-indicator]:opacity-60
+              [&::-webkit-calendar-picker-indicator]:hover:opacity-100
+              ${
+                error
+                  ? "border-red-400 focus:border-red-500"
+                  : "border-gray-200 dark:border-gray-600 focus:border-[#C7CEEA] dark:focus:border-[#B5EAD7]"
+              }
+            `}
+          />
         </div>
-      )}
+      </div>
+
+      {/* ─── Desktop: custom calendar with year dropdown ─────────────── */}
+      <div className="hidden md:block">
+        {/* Trigger */}
+        <button
+          id={uid}
+          type="button"
+          onClick={() => !disabled && setIsOpen((o) => !o)}
+          disabled={disabled}
+          aria-haspopup="dialog"
+          aria-expanded={isOpen}
+          aria-invalid={error ? "true" : undefined}
+          className={`
+            w-full flex items-center gap-2 px-3 py-2.5 text-sm rounded-xl
+            bg-white dark:bg-gray-700 text-right
+            border-2 transition-all duration-200
+            disabled:opacity-50 disabled:cursor-not-allowed
+            ${error ? "border-red-400" : isOpen ? "border-[#C7CEEA] dark:border-[#B5EAD7]" : "border-gray-200 dark:border-gray-600"}
+            ${value ? "text-[#2e3c52] dark:text-white" : "text-gray-400 dark:text-gray-500"}
+          `}
+        >
+          <Calendar size={16} className="text-[#C7CEEA] dark:text-[#B5EAD7] flex-shrink-0" />
+          <span className="flex-1 text-right text-hebrew-body">{displayValue}</span>
+        </button>
+
+        {/* Dropdown calendar */}
+        {isOpen && (
+          <div
+            role="dialog"
+            aria-label="בחירת תאריך"
+            className="absolute top-full z-50 mt-1.5 right-0 w-full max-w-[300px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden"
+          >
+            {/* ── Header with year + month dropdowns ──────────────── */}
+            <div className="bg-gradient-to-l from-[#B5EAD7] to-[#C7CEEA] px-3 py-2 flex items-center justify-between gap-1">
+              {/* RTL: visual "right arrow" goes to next month */}
+              <button
+                type="button"
+                onClick={nextMonth}
+                className="p-1 rounded-full hover:bg-white/30 transition-colors flex-shrink-0"
+                aria-label="חודש הבא"
+              >
+                <ChevronRight size={18} className="text-[#2e3c52]" />
+              </button>
+
+              {/* Month dropdown */}
+              <select
+                value={viewMonth}
+                onChange={(e) => setViewMonth(Number(e.target.value))}
+                className="bg-transparent text-xs font-bold text-[#2e3c52] text-hebrew-heading cursor-pointer focus:outline-none appearance-none text-center border-none px-1"
+                aria-label="חודש"
+              >
+                {MONTHS_HE.map((name, idx) => (
+                  <option key={idx} value={idx}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+
+              {/* Year dropdown */}
+              <select
+                value={viewYear}
+                onChange={(e) => setViewYear(Number(e.target.value))}
+                className="bg-transparent text-xs font-bold text-[#2e3c52] text-hebrew-heading cursor-pointer focus:outline-none appearance-none text-center border-none px-1"
+                aria-label="שנה"
+              >
+                {yearOptions.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                type="button"
+                onClick={prevMonth}
+                className="p-1 rounded-full hover:bg-white/30 transition-colors flex-shrink-0"
+                aria-label="חודש קודם"
+              >
+                <ChevronLeft size={18} className="text-[#2e3c52]" />
+              </button>
+            </div>
+
+            {/* ── Day-of-week names ─────────────────────────────────── */}
+            <div className="grid grid-cols-7 px-2 pt-1.5">
+              {DAYS_HE.map((d) => (
+                <div
+                  key={d}
+                  className="text-center text-[10px] font-bold text-gray-400 py-1 select-none"
+                >
+                  {d}
+                </div>
+              ))}
+            </div>
+
+            {/* ── Day grid ──────────────────────────────────────────── */}
+            <div className="grid grid-cols-7 px-2 pb-2 gap-0.5">
+              {days.map((day, idx) => {
+                const iso = toISO(day.year, day.month, day.day);
+                const isSelected = iso === value;
+                const isToday = iso === todayISO;
+                const outOfRange =
+                  (min !== undefined && iso < min) || (max !== undefined && iso > max);
+                const isDisabled = !day.isCurrentMonth || outOfRange;
+
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => !isDisabled && handleSelect(day)}
+                    disabled={isDisabled}
+                    className={`
+                      w-7 h-7 rounded-lg text-[11px] font-medium mx-auto
+                      flex items-center justify-center transition-all
+                      ${isSelected ? "bg-[#F8BBD0] text-[#2e3c52] font-bold shadow-sm" : ""}
+                      ${isToday && !isSelected ? "ring-1 ring-[#C7CEEA] text-[#2e3c52] dark:text-white font-bold" : ""}
+                      ${!isSelected && !isToday && day.isCurrentMonth ? "text-[#2e3c52] dark:text-gray-200 hover:bg-[#F8BBD0]/30" : ""}
+                      ${!day.isCurrentMonth ? "text-gray-300 dark:text-gray-600" : ""}
+                      ${isDisabled && day.isCurrentMonth ? "opacity-40 cursor-not-allowed" : ""}
+                      ${!isDisabled ? "cursor-pointer" : ""}
+                    `}
+                  >
+                    {day.day}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Error */}
       {error && (

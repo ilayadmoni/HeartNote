@@ -12,6 +12,7 @@ import { useDashboard } from "@/hooks/useDashboard";
 import { ProfileDesktop } from "./Desktop/ProfileDesktop";
 import { ProfileMobile } from "./Mobile/ProfileMobile";
 import { ProfileSkeleton } from "./components";
+import { ApiHealthCheck } from "@/components/debug/ApiHealthCheck";
 import type { ProfileProps } from "./types";
 
 export function Profile({ className = "" }: ProfileProps) {
@@ -39,7 +40,10 @@ export function Profile({ className = "" }: ProfileProps) {
   // Show skeleton while loading
   if (loading) {
     return (
-      <ProfileSkeleton isMobile={isMobile} />
+      <>
+        <ApiHealthCheck />
+        <ProfileSkeleton isMobile={isMobile} />
+      </>
     );
   }
 
@@ -47,6 +51,7 @@ export function Profile({ className = "" }: ProfileProps) {
   if (error || !profile) {
     return (
       <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 flex items-center justify-center p-4">
+        <ApiHealthCheck />
         <div className="text-center">
           <h2 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading">
             {error || "לא ניתן לטעון את הפרופיל"}

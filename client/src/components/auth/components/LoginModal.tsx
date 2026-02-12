@@ -46,12 +46,10 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   }, [isOpen, clearError]);
 
-  // Prevent body scroll
+  // Prevent body scroll — single source of truth
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
     }
     return () => {
       document.body.style.overflow = "";
@@ -112,29 +110,27 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const subtitle = activeTab === "login" ? LOGIN_SUBTITLE : REGISTER_SUBTITLE;
 
   return (
-    <AnimatePresence onExitComplete={() => { document.body.style.overflow = ""; }}>
+    <AnimatePresence>
       {isOpen && (
-        <motion.div
-          key="auth-modal"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50"
-        >
-          {/* Backdrop — click outside closes */}
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={onClose}
-            aria-hidden="true"
-          />
-
-          {/* Centered Modal */}
-          <FocusTrap active={isOpen} onEscape={onClose}>
+        <FocusTrap active={isOpen} onEscape={onClose}>
+          {/* Full-screen portal layer */}
+          <motion.div
+            key="auth-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50"
+          >
+            {/* Backdrop — click outside closes */}
             <div
-              className="relative flex items-center justify-center h-full p-4 py-8 md:py-4"
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
               onClick={onClose}
-            >
+              aria-hidden="true"
+            />
+
+            {/* Centered layout — clicks pass through to backdrop */}
+            <div className="relative flex items-center justify-center h-full p-4 py-8 md:py-4">
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
@@ -156,7 +152,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 </button>
 
                 {/* Scrollable Content */}
-                <div className="max-h-[85vh] overflow-y-auto scrollbar-hide">
+                <div className="max-h-[85vh] overflow-y-auto">
                 <div className="p-5 pt-8">
                   {/* Icon */}
                   <div className="flex justify-center mb-2">
@@ -275,8 +271,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <div className="h-1.5 bg-gradient-to-r from-[#d4826f] to-[#2e3c52]" />
               </motion.div>
             </div>
-          </FocusTrap>
-        </motion.div>
+          </motion.div>
+        </FocusTrap>
       )}
     </AnimatePresence>
   );

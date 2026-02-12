@@ -5,7 +5,7 @@
  * User avatar and dropdown menu when logged in
  */
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, LogOut, Settings, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -53,6 +53,7 @@ export function UserMenu() {
     user.user_metadata?.display_name?.split(" ")[0] ||
     user.email?.split("@")[0] ||
     "משתמש";
+    
 
   return (
     <div ref={menuRef} className="relative">
@@ -104,11 +105,9 @@ export function UserMenu() {
             {/* User Info */}
             <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
               <p className="text-sm font-bold text-[#2e3c52] dark:text-white text-hebrew-heading truncate">
-                {displayName}
+                {user.user_metadata?.full_name || displayName}
               </p>
-              <p className="text-xs text-gray-400 truncate" dir="ltr">
-                {user.email}
-              </p>
+            
             </div>
 
             {/* Menu Items */}
@@ -120,11 +119,6 @@ export function UserMenu() {
                   setIsOpen(false);
                   window.location.href = "/profile";
                 }}
-              />
-              <MenuItem
-                icon={<Settings size={16} />}
-                label="הגדרות"
-                onClick={() => setIsOpen(false)}
               />
               <div className="h-px bg-gray-100 dark:bg-gray-700 my-1" />
               <MenuItem

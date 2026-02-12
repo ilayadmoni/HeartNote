@@ -64,13 +64,21 @@ export function SuccessModal({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop — centered flex container */}
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm pointer-events-auto"
+          />
+
+          {/* Centered content container */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
           >
             {/* Modal Content */}
             <motion.div
@@ -79,7 +87,7 @@ export function SuccessModal({
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto pointer-events-auto"
             >
               {/* Header */}
               <div className="bg-[#d4826f] p-6 text-center relative rounded-t-xl">

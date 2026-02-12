@@ -102,6 +102,18 @@ export const TEMPLATES: Template[] = [
     link: "/create/steamy-window",
     badge: { type: "free", color: "#22c55e" },
   },
+  {
+    id: "surprise-gift",
+    title: "מתנה בהפתעה",
+    description:
+      "קופסת מתנה אינטראקטיבית — נערו אותה עד שתיפתח ותגלו את ההפתעה! 🎁",
+    category: "gifts",
+    isPremium: true,
+    componentKey: "SurpriseGift",
+    link: "/create/surprise-gift",
+    badge: { type: "new", color: "#8b5cf6" },
+    linkText: "חדש!",
+  },
 ];
 
 // Sample data for live previews
@@ -152,5 +164,13 @@ export const PREVIEW_DATA = {
     title: "יש לך הודעה...",
     revealMessage: "❤️",
     emoji: "💖",
+  },
+  SurpriseGift: {
+    title: "יש לך הפתעה! 🎁",
+    greeting: "אוהב/ת אותך מכל הלב ❤️",
+    boxColor: "#e74c5e",
+    ribbonColor: "#ffd700",
+    clicksRequired: 5,
+    primaryColor: "#d4826f",
   },
 };

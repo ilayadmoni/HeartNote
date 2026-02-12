@@ -33,9 +33,8 @@ export function SubscriptionCard({
   const startDate = subscription.startDate
     ? new Date(subscription.startDate).toLocaleDateString("he-IL")
     : "—";
-  const expiryDate = subscription.expiryDate
-    ? new Date(subscription.expiryDate).toLocaleDateString("he-IL")
-    : "—";
+  // expiryDate is now pre-formatted ("לנצח" for free, DD/MM/YYYY for premium)
+  const expiryDate = subscription.expiryDate || "—";
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">

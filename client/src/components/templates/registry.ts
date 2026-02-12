@@ -16,6 +16,7 @@ import { RelationshipQuiz } from "./RelationshipQuiz/RelationshipQuiz";
 import { OpenWhen } from "./OpenWhen/OpenWhen";
 import { DecisionWheel } from "./DecisionWheel/DecisionWheel";
 import { SteamyWindow } from "./SteamyWindow/SteamyWindow";
+import { SurpriseGift } from "./SurpriseGift/SurpriseGift";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyTemplateComponent = ComponentType<{ data: any }>;
@@ -35,6 +36,7 @@ export const TEMPLATE_REGISTRY: Record<string, AnyTemplateComponent> = {
   OpenWhen: OpenWhen as AnyTemplateComponent,
   DecisionWheel: DecisionWheel as AnyTemplateComponent,
   SteamyWindow: SteamyWindow as AnyTemplateComponent,
+  SurpriseGift: SurpriseGift as AnyTemplateComponent,
 };
 
 /**

@@ -109,7 +109,7 @@ export function ApiHealthCheck() {
             <div className="text-xs text-gray-500">
               Check that the backend is running on{" "}
               <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">
-                {process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}
+                {process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:8000"}
               </code>
             </div>
           </div>

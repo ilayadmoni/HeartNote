@@ -10,7 +10,6 @@ import {
   getProfile, 
   updateProfile as apiUpdateProfile, 
   deleteAccount as apiDeleteAccount,
-  getAvatarOptions,
   type ProfileData,
   type ProfileUpdateData as ApiProfileUpdateData,
 } from "@/services/profileApi";
@@ -19,6 +18,7 @@ import {
   type ProfileUpdateData,
   mapApiProfileToUserProfile,
   mapProfileUpdateToApi,
+  AVATAR_URLS,
 } from "@/components/profile/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
@@ -54,14 +54,11 @@ export function useProfile(): UseProfileReturn {
       setLoading(true);
       setError(null);
 
-      // Fetch profile and avatars in parallel
-      const [profileData, avatars] = await Promise.all([
-        getProfile(),
-        getAvatarOptions().catch(() => []),
-      ]);
+      const profileData = await getProfile();
 
       setProfile(mapApiProfileToUserProfile(profileData));
-      setAvatarOptions(avatars);
+      // Use static DiceBear avatar list instead of broken API
+      setAvatarOptions(AVATAR_URLS);
     } catch (err) {
       const apiError = err as { message: string; status: number };
       setError(apiError.message || "שגיאה בטעינת הפרופיל");

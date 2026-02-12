@@ -280,6 +280,48 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
       primaryColor: "#d4826f",
     },
   },
+  "surprise-gift": {
+    templateId: "surprise-gift",
+    title: "מתנה בהפתעה",
+    description: "קופסת מתנה אינטראקטיבית — נערו אותה עד שתיפתח!",
+    fields: [
+      {
+        key: "title",
+        label: "כותרת",
+        type: "text",
+        placeholder: "יש לך הפתעה! 🎁",
+      },
+      {
+        key: "greeting",
+        label: "ברכה / הודעה",
+        type: "textarea",
+        placeholder: "הטקסט שייחשף אחרי הפתיחה",
+      },
+      {
+        key: "boxColor",
+        label: "צבע קופסה",
+        type: "color",
+      },
+      {
+        key: "ribbonColor",
+        label: "צבע סרט",
+        type: "color",
+      },
+      {
+        key: "primaryColor",
+        label: "צבע ראשי",
+        type: "color",
+      },
+    ],
+    defaultData: {
+      title: "יש לך הפתעה! 🎁",
+      greeting: "אוהב/ת אותך מכל הלב ❤️",
+      boxColor: "#e74c5e",
+      ribbonColor: "#ffd700",
+      clicksRequired: 5,
+      primaryColor: "#d4826f",
+    },
+  },
   "steamy-window": {
     templateId: "steamy-window",
     title: "חלון מאודה",

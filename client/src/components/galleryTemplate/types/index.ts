@@ -25,7 +25,8 @@ export type TemplateComponentKey =
   | "RelationshipQuiz"
   | "OpenWhen"
   | "DecisionWheel"
-  | "SteamyWindow";
+  | "SteamyWindow"
+  | "SurpriseGift";
 
 export type TemplateCategory =
   | "all"

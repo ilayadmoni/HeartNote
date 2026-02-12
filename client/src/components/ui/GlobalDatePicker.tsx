@@ -6,6 +6,11 @@
  * Styled, accessible date input that replaces raw `<input type="date">` across
  * the app.  Uses HeartNote design tokens (Mint / Periwinkle accent, rounded-xl)
  * and supports RTL layout, dark mode, error states, and optional labels.
+ *
+ * UX:
+ *  - Desktop: renders a styled native <input type="date"> with year-jump support
+ *  - Mobile (< md): renders a plain native <input type="date"> that triggers the OS picker
+ *  - Both sync to the same `value` / `onChange` pair
  */
 
 import { useId } from "react";
@@ -48,6 +53,26 @@ export function GlobalDatePicker({
 }: GlobalDatePickerProps) {
   const id = useId();
 
+  // Shared input classes
+  const inputClasses = `
+    w-full pr-10 pl-3 py-2.5 text-sm
+    rounded-xl
+    bg-white dark:bg-gray-700
+    text-[#2e3c52] dark:text-white
+    border-2 transition-all duration-200
+    placeholder-gray-400 dark:placeholder-gray-500
+    focus:outline-none focus:ring-0
+    disabled:opacity-50 disabled:cursor-not-allowed
+    [&::-webkit-calendar-picker-indicator]:cursor-pointer
+    [&::-webkit-calendar-picker-indicator]:opacity-60
+    [&::-webkit-calendar-picker-indicator]:hover:opacity-100
+    ${
+      error
+        ? "border-red-400 focus:border-red-500"
+        : "border-gray-200 dark:border-gray-600 focus:border-[#C7CEEA] dark:focus:border-[#B5EAD7]"
+    }
+  `;
+
   return (
     <div className={`w-full ${className}`} dir={dir}>
       {label && (
@@ -76,24 +101,7 @@ export function GlobalDatePicker({
           disabled={disabled}
           aria-invalid={error ? "true" : "false"}
           aria-describedby={error ? `${id}-error` : undefined}
-          className={`
-            w-full pr-10 pl-3 py-2.5 text-sm
-            rounded-xl
-            bg-white dark:bg-gray-700
-            text-[#2e3c52] dark:text-white
-            border-2 transition-all duration-200
-            placeholder-gray-400 dark:placeholder-gray-500
-            focus:outline-none focus:ring-0
-            disabled:opacity-50 disabled:cursor-not-allowed
-            [&::-webkit-calendar-picker-indicator]:cursor-pointer
-            [&::-webkit-calendar-picker-indicator]:opacity-60
-            [&::-webkit-calendar-picker-indicator]:hover:opacity-100
-            ${
-              error
-                ? "border-red-400 focus:border-red-500"
-                : "border-gray-200 dark:border-gray-600 focus:border-[#C7CEEA] dark:focus:border-[#B5EAD7]"
-            }
-          `}
+          className={inputClasses}
         />
       </div>
 

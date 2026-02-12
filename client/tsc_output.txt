@@ -1,6 +1,0 @@
-
-> heartnote-client@0.1.0 type-check
-> tsc --noEmit
-
-src/components/templates/Timeline/Desktop/TimelineDesktop.tsx(20,64): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
-src/components/templates/Timeline/Mobile/TimelineMobile.tsx(23,64): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?

@@ -128,6 +128,18 @@ export interface SteamyWindowData {
 }
 
 // =============================================================================
+// 9. SURPRISE GIFT
+// =============================================================================
+export interface SurpriseGiftData {
+  title?: string;             // "יש לך הפתעה!"
+  greeting: string;           // Revealed message after opening
+  boxColor?: string;          // Gift box fill color
+  ribbonColor?: string;       // Ribbon / bow color
+  clicksRequired?: number;    // Shakes before opening (default 5)
+  primaryColor?: string;      // Accent fallback
+}
+
+// =============================================================================
 // COMPONENT PROPS
 // =============================================================================
 export interface TemplateComponentProps<T> {

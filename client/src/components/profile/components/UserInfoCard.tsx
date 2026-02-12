@@ -5,15 +5,16 @@
  * Displays user's basic information: name, email, join date, avatar
  */
 
-import { Calendar, Mail, User } from "lucide-react";
+import { Calendar, Mail, User, Cake } from "lucide-react";
 import Image from "next/image";
 
 interface UserInfoCardProps {
   firstName: string;
   lastName: string;
-  email: string;
-  joinDate: string;
+  email: string | null;
+  joinDate: string | null;
   avatarUrl?: string | null;
+  dateOfBirth?: string | null;
 }
 
 export function UserInfoCard({
@@ -22,13 +23,16 @@ export function UserInfoCard({
   email,
   joinDate,
   avatarUrl,
+  dateOfBirth,
 }: UserInfoCardProps) {
   const fullName = `${firstName} ${lastName}`.trim() || "משתמש";
-  const formattedJoinDate = new Date(joinDate).toLocaleDateString("he-IL", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  const formattedJoinDate = joinDate
+    ? new Date(joinDate).toLocaleDateString("he-IL", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : "—";
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
@@ -45,7 +49,7 @@ export function UserInfoCard({
             />
           ) : (
             <span className="text-2xl font-bold text-white">
-              {firstName.charAt(0) || email.charAt(0).toUpperCase()}
+              {firstName.charAt(0) || (email ?? "").charAt(0).toUpperCase() || "?"}
             </span>
           )}
         </div>
@@ -65,7 +69,7 @@ export function UserInfoCard({
         <InfoRow
           icon={<Mail size={16} />}
           label="אימייל"
-          value={email}
+          value={email ?? "—"}
           dir="ltr"
         />
         <InfoRow
@@ -73,6 +77,17 @@ export function UserInfoCard({
           label="תאריך הצטרפות"
           value={formattedJoinDate}
         />
+        {dateOfBirth && (
+          <InfoRow
+            icon={<Cake size={16} />}
+            label="תאריך לידה"
+            value={new Date(dateOfBirth).toLocaleDateString("he-IL", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+          />
+        )}
       </div>
     </div>
   );

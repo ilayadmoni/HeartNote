@@ -10,6 +10,7 @@
 import { motion } from "framer-motion";
 import type { UserProfile, ProfileDesktopProps } from "../types";
 import type { DashboardData } from "@/hooks/useDashboard";
+import type { SubscriptionUsage } from "../ProfileClient";
 import {
   UserInfoCard,
   SubscriptionCard,
@@ -24,6 +25,7 @@ interface Props extends ProfileDesktopProps {
   profile: UserProfile;
   avatarOptions: string[];
   dashboard: DashboardData | null;
+  subscriptionUsage: SubscriptionUsage;
   onRenew: () => void;
   onUpgrade: () => void;
   onViewTemplate: (slug: string) => void;
@@ -37,6 +39,7 @@ export function ProfileDesktop({
   profile,
   avatarOptions,
   dashboard,
+  subscriptionUsage,
   onRenew,
   onUpgrade,
   onViewTemplate,
@@ -49,11 +52,9 @@ export function ProfileDesktop({
   const subscriptionData = {
     tier: profile.subscription.tier,
     startDate: profile.createdAt?.split("T")[0],
-    expiryDate: profile.subscription.premium_expiry?.split("T")[0],
+    expiryDate: subscriptionUsage.expiryLabel,
     isActive: profile.subscription.is_active,
   };
-
-  const creationsCount = dashboard?.stats.creations_count ?? 0;
   const creations = dashboard?.creations ?? [];
 
   return (
@@ -83,6 +84,7 @@ export function ProfileDesktop({
                 email={profile.email}
                 joinDate={profile.createdAt}
                 avatarUrl={profile.avatarUrl}
+                dateOfBirth={profile.dateOfBirth}
               />
             </motion.div>
 
@@ -118,7 +120,11 @@ export function ProfileDesktop({
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <TemplateUsageCard used={creationsCount} tier={profile.subscription.tier} />
+              <TemplateUsageCard
+                used={subscriptionUsage.used}
+                limit={subscriptionUsage.limit}
+                tier={profile.subscription.tier}
+              />
             </motion.div>
 
             <motion.div

@@ -28,7 +28,7 @@ interface CreationData {
 
 // Fetch creation data from FastAPI (server-side)
 async function getCreation(id: string): Promise<CreationData | null> {
-  const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/+$/, "");
+  const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:8000").replace(/\/+$/, "");
 
   try {
     const response = await fetch(`${baseUrl}/api/v1/creations/${id}`, {
