@@ -9,8 +9,8 @@ import { motion } from "framer-motion";
 import { Crown } from "lucide-react";
 import {
   TemplatePreview,
-  type PreviewType,
 } from "@/components/galleryTemplate/components";
+import type { TemplateComponentKey } from "@/components/galleryTemplate/types";
 
 export interface TeaserCardData {
   id: number;
@@ -18,7 +18,7 @@ export interface TeaserCardData {
   description: string;
   tag?: string;
   isPremium?: boolean;
-  previewType: PreviewType;
+  componentKey: TemplateComponentKey;
 }
 
 interface GalleryTeaserCardProps {
@@ -40,7 +40,7 @@ export function GalleryTeaserCard({
     >
       {/* Preview Area */}
       <div className="h-40 w-full relative bg-[#F2E9E4] dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
-        <TemplatePreview type={template.previewType} />
+        <TemplatePreview componentKey={template.componentKey} />
 
         {template.isPremium && (
           <div className="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white p-1.5 rounded-full shadow-md z-20">

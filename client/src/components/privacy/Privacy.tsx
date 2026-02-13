@@ -40,7 +40,7 @@ export function Privacy({ className = "" }: PrivacyProps) {
 
           {/* Footer Note */}
           <p className="text-center text-xs text-gray-400 dark:text-gray-500 text-hebrew-body">
-            בשימוש בשירותי HeartNote, אתם מסכימים למדיניות פרטיות זו.
+            בשימוש באתר HeartNote, אתם מסכימים לתנאי השימוש ומדיניות הפרטיות.
           </p>
         </div>
       </div>

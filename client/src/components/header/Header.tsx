@@ -18,6 +18,7 @@ import {
   AuthButtons,
   HamburgerButton,
   MobileMenu,
+  UserMenu,
 } from "./components";
 import { LoginModal } from "@/components/auth";
 
@@ -87,23 +88,26 @@ export function Header({ className = "" }: HeaderProps) {
                 onLoginClick={openLoginModal}
               />
 
-              {/* Mobile Hamburger */}
-              <HamburgerButton
-                isOpen={isMobileMenuOpen}
-                onClick={toggleMobileMenu}
-              />
+              {/* Mobile: Avatar + Hamburger */}
+              <div className="flex items-center gap-2 lg:hidden">
+                <UserMenu />
+                <HamburgerButton
+                  isOpen={isMobileMenuOpen}
+                  onClick={toggleMobileMenu}
+                />
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        <MobileMenu
-          isOpen={isMobileMenuOpen}
-          onClose={closeMobileMenu}
-          navItems={NAV_ITEMS}
-          onLoginClick={openLoginModal}
-        />
       </header>
+
+      {/* Mobile Menu — rendered outside header so backdrop covers full page */}
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        onClose={closeMobileMenu}
+        navItems={NAV_ITEMS}
+        onLoginClick={openLoginModal}
+      />
 
       {/* Login Modal */}
       <LoginModal

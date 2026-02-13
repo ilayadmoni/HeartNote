@@ -18,10 +18,11 @@ interface GiftBoxProps {
 const lidVariants: Variants = {
   closed: { y: 0, rotate: 0, opacity: 1 },
   open: {
-    y: -120,
-    rotate: -25,
+    y: -160,
+    x: 40,
+    rotate: -35,
     opacity: 0,
-    transition: { type: "spring", stiffness: 200, damping: 15 },
+    transition: { type: "spring", stiffness: 300, damping: 12, mass: 0.8 },
   },
 };
 

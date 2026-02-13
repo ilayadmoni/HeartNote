@@ -64,11 +64,12 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
   const serialNumber = "LUV-888-WIN";
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 p-6 overflow-auto relative">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-4 right-4 z-20" />
+    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
+      {/* Content Area */}
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto px-6 py-8">
+        <BackToGallery className="mb-4" />
 
-      {/* Title */}
+        {/* Title */}
       {data.title && (
         <h1 className="text-2xl font-bold text-center text-[#5d4e37] dark:text-white mb-6 text-hebrew-heading">
           {data.title}
@@ -168,8 +169,10 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
         </motion.button>
       )}
 
+      </div>
+
       {/* Footer Credit */}
-      <FooterBranding className="absolute bottom-4" />
+      <FooterBranding className="shrink-0 pb-4" />
     </div>
   );
 }

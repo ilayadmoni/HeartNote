@@ -5,15 +5,35 @@
  * User avatar and dropdown menu when logged in
  */
 
-import { useState, useRef, useEffect, use } from "react";
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, LogOut, Settings, ChevronDown } from "lucide-react";
+import { User, LogOut, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 export function UserMenu() {
   const { user, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Fetch avatar_url from profiles table
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    supabase
+      .from("profiles")
+      .select("avatar_url")
+      .eq("id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (!cancelled && data?.avatar_url) {
+          setAvatarUrl(data.avatar_url);
+        }
+      });
+    return () => { cancelled = true; };
+  }, [user]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -71,9 +91,26 @@ export function UserMenu() {
         "
         aria-expanded={isOpen}
         aria-haspopup="true"
+        aria-label={`תפריט משתמש - ${displayName}`}
       >
+        {/* Avatar */}
+        {avatarUrl ? (
+          <Image
+            src={avatarUrl}
+            alt={displayName}
+            width={32}
+            height={32}
+            className="w-8 h-8 rounded-full object-cover"
+            unoptimized={avatarUrl.includes("dicebear.com")}
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-[#d4826f]/20 flex items-center justify-center">
+            <User size={16} className="text-[#d4826f]" />
+          </div>
+        )}
+
         {/* Name */}
-        <span className="text-sm font-medium text-[#2e3c52] dark:text-white max-w-[100px] truncate text-hebrew-body">
+        <span className="text-sm font-medium text-[#2e3c52] dark:text-white max-w-[100px] truncate text-hebrew-body hidden sm:inline">
           {displayName}
         </span>
 

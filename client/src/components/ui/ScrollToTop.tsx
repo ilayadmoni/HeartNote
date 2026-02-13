@@ -36,14 +36,14 @@ export function ScrollToTop() {
     <AnimatePresence>
       {isVisible && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.8, y: 20, x: "-50%" }}
-          animate={{ opacity: 1, scale: 1, y: 0, x: "-50%" }}
-          exit={{ opacity: 0, scale: 0.8, y: 20, x: "-50%" }}
+          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.8, y: 20 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
           onClick={scrollToTop}
           aria-label="גלול למעלה"
           className="
-            fixed top-6 left-1/2 z-50
+            fixed bottom-6 left-6 z-50
             w-12 h-12 rounded-full
             bg-[#d4826f] hover:bg-[#c4735f]
             dark:bg-[#e8917a] dark:hover:bg-[#d4826f]

@@ -12,7 +12,10 @@ import { RotateCcw } from "lucide-react";
 import confetti from "canvas-confetti";
 import type { ScratchCardProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+} from "@/components/templates/components";
 
 interface ExtendedData {
   title?: string;
@@ -40,8 +43,18 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
   // Trigger confetti when card is revealed
   useEffect(() => {
     if (isRevealed) {
-      confetti({ particleCount: 60, spread: 50, origin: { x: 0.3, y: 0.5 }, colors: [primaryColor, "#ffd700", "#ff6b8a"] });
-      confetti({ particleCount: 60, spread: 50, origin: { x: 0.7, y: 0.5 }, colors: [primaryColor, "#ffd700", "#ff6b8a"] });
+      confetti({
+        particleCount: 60,
+        spread: 50,
+        origin: { x: 0.3, y: 0.5 },
+        colors: [primaryColor, "#ffd700", "#ff6b8a"],
+      });
+      confetti({
+        particleCount: 60,
+        spread: 50,
+        origin: { x: 0.7, y: 0.5 },
+        colors: [primaryColor, "#ffd700", "#ff6b8a"],
+      });
     }
   }, [isRevealed, primaryColor]);
 
@@ -61,12 +74,9 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
     });
   }, []);
 
-  const serialNumber = "LUV-888-WIN";
-
   return (
-    <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 px-4 py-5 overflow-auto relative">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-3 right-3 z-20" />
+    <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-[#faf7f5] dark:bg-gray-900 px-4 py-5 overflow-auto relative">
+      <BackToGallery className="mb-3" />
 
       {/* Title */}
       {data.title && (
@@ -91,7 +101,7 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
         {/* Scratch Area */}
         <div
           className="relative aspect-[4/3] m-3 rounded-xl overflow-hidden"
-          style={{ backgroundColor: primaryColor + '15' }}
+          style={{ backgroundColor: primaryColor + "15" }}
         >
           {/* Prize Layer (Behind) */}
           <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-0">
@@ -151,18 +161,6 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
               className="absolute inset-0 bg-gradient-to-br from-yellow-200/60 to-transparent pointer-events-none z-20"
             />
           )}
-        </div>
-
-        {/* Serial Number Footer */}
-        <div className="bg-[#5d4e37] dark:bg-[#8b7355] py-2 px-3 flex items-center justify-center gap-2">
-          <span className="text-gray-400 text-sm">☆</span>
-          <span
-            className="text-[10px] font-bold tracking-wider"
-            style={{ color: primaryColor }}
-          >
-            {serialNumber}
-          </span>
-          <span className="text-gray-400 text-sm">☆</span>
         </div>
       </motion.div>
 

@@ -10,17 +10,20 @@ import { RotateCcw } from "lucide-react";
 import type { CouponsViewProps } from "../types";
 import { useCoupons } from "../hooks/useCoupons";
 import { CouponCard } from "../components";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+} from "@/components/templates/components";
 
 export function LoveCouponsMobile({ data }: CouponsViewProps) {
   const { coupons, handleRedeem, handleReset } = useCoupons(data.coupons);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-8 px-4 relative">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-3 right-3 z-20" />
+    <div className="min-h-[420px] bg-[#faf7f5] dark:bg-gray-900 px-4 py-6 relative flex flex-col justify-between gap-6">
+      {/* Main Content - Top */}
+      <div className="max-w-lg mx-auto w-full">
+        <BackToGallery className="mb-3" />
 
-      <div className="max-w-lg mx-auto">
         {/* Title */}
         {data.title && (
           <motion.h1
@@ -64,8 +67,8 @@ export function LoveCouponsMobile({ data }: CouponsViewProps) {
         )}
       </div>
 
-      {/* Footer Credit */}
-      <FooterBranding className="absolute bottom-3 left-1/2 -translate-x-1/2" />
+      {/* Footer Credit - Bottom */}
+      <FooterBranding className="mx-auto" />
     </div>
   );
 }

@@ -48,5 +48,6 @@ export const AUTH_VALIDATION = {
   lastNameRequired: "נא להזין שם משפחה",
   passwordMismatch: "הסיסמאות אינן תואמות",
   dateOfBirthRequired: "נא להזין תאריך לידה",
+  termsRequired: "יש לאשר את תנאי השימוש ומדיניות הפרטיות",
 } as const;
 

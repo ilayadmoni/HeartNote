@@ -218,7 +218,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
 
     ],
     defaultData: {
-      title: "...תפתחי כש",
+      title: "תפתחי כש...",
       envelopes: [
         {
           id: "env-1",
@@ -324,7 +324,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
   },
   "steamy-window": {
     templateId: "steamy-window",
-    title: "חלון מאודה",
+    title: "חלון עם אדים",
     description: "הודעה מוסתרת מאחורי אדים — העבירו אצבע כדי לגלות",
     fields: [
       {

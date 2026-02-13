@@ -52,12 +52,16 @@ export function CouponCard({ coupon, index, onRedeem }: CouponCardProps) {
 
         {/* Content — Right aligned for RTL */}
         <div className="text-right pr-2 pl-24">
-          {coupon.icon && <span className="text-2xl mb-1 block opacity-40">{coupon.icon}</span>}
-          <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
+          {coupon.icon && (
+            <span className="text-2xl mb-1 block opacity-40">
+              {coupon.icon}
+            </span>
+          )}
+          <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading break-words max-w-[200px]">
             {coupon.title}
           </h3>
           {coupon.description && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 text-hebrew-body">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 text-hebrew-body break-words max-w-[200px]">
               {coupon.description}
             </p>
           )}
@@ -88,7 +92,10 @@ function PerforatedEdge() {
   return (
     <div className="relative w-4 flex flex-col items-center justify-around py-2 bg-[#2e3c52] dark:bg-gray-700">
       {[...Array(5)].map((_, i) => (
-        <div key={i} className="w-2.5 h-2.5 rounded-full bg-white dark:bg-gray-900" />
+        <div
+          key={i}
+          className="w-2.5 h-2.5 rounded-full bg-white dark:bg-gray-900"
+        />
       ))}
     </div>
   );
@@ -103,7 +110,9 @@ function RedeemedStamp() {
       className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
     >
       <div className="px-6 py-2 border-4 border-red-500/70 rounded-lg bg-white/30 dark:bg-black/20 backdrop-blur-[1px]">
-        <span className="text-2xl font-black text-red-500/80 text-hebrew-heading">מומש</span>
+        <span className="text-2xl font-black text-red-500/80 text-hebrew-heading">
+          מומש
+        </span>
       </div>
     </motion.div>
   );

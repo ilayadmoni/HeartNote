@@ -13,6 +13,7 @@
 
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
   ProfileUpdateSchema,
@@ -166,6 +167,10 @@ export async function updateMyProfile(
         status: 500,
       };
     }
+
+    // Revalidate cached data so header/profile reflect changes instantly
+    revalidatePath("/profile");
+    revalidatePath("/", "layout");
 
     // Re-fetch after update (mirrors Python service pattern)
     return getMyProfile();

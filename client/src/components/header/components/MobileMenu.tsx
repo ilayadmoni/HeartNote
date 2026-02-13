@@ -38,7 +38,7 @@ export function MobileMenu({
       {/* Backdrop */}
       <div
         className={`
-          fixed inset-0 bg-black/20 dark:bg-black/40
+          fixed inset-0 bg-black/50 backdrop-blur-sm
           transition-opacity duration-300 lg:hidden z-40
           ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
         `}
@@ -88,17 +88,6 @@ export function MobileMenu({
                 </li>
               ))}
             </ul>
-
-            {/* Divider */}
-            <div
-              className="h-px bg-gray-100 dark:bg-[#2e3c52] my-4"
-              role="separator"
-            />
-
-            {/* Auth Buttons */}
-            <div className="space-y-3">
-              <AuthButtons variant="mobile" onLoginClick={onLoginClick} />
-            </div>
           </nav>
         </div>
       </FocusTrap>

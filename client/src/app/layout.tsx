@@ -10,6 +10,22 @@ export const metadata: Metadata = {
   title: "HeartNote - מפעל הברכות הדיגיטלי",
   description: "צור ברכות דיגיטליות מרהיבות בקלות ובמהירות",
   keywords: ["ברכות", "ברכה דיגיטלית", "אירועים", "HeartNote"],
+  icons: {
+    icon: "/assets/images/logo_heartnote.png",
+    apple: "/assets/images/logo_heartnote.png",
+    shortcut: "/assets/images/logo_heartnote.png",
+  },
+  openGraph: {
+    title: "HeartNote - מפעל הברכות הדיגיטלי",
+    description: "צור ברכות דיגיטליות מרהיבות בקלות ובמהירות",
+    images: ["/assets/images/logo_heartnote.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HeartNote - מפעל הברכות הדיגיטלי",
+    description: "צור ברכות דיגיטליות מרהיבות בקלות ובמהירות",
+    images: ["/assets/images/logo_heartnote.png"],
+  },
 };
 
 export default function RootLayout({

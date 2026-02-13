@@ -12,7 +12,7 @@ import { useDashboard } from "@/hooks/useDashboard";
 import { ProfileDesktop } from "./Desktop/ProfileDesktop";
 import { ProfileMobile } from "./Mobile/ProfileMobile";
 import { ProfileSkeleton } from "./components";
-import { ApiHealthCheck } from "@/components/debug/ApiHealthCheck";
+import type { SubscriptionUsage } from "./ProfileClient";
 import type { ProfileProps } from "./types";
 
 export function Profile({ className = "" }: ProfileProps) {
@@ -39,19 +39,13 @@ export function Profile({ className = "" }: ProfileProps) {
 
   // Show skeleton while loading
   if (loading) {
-    return (
-      <>
-        <ApiHealthCheck />
-        <ProfileSkeleton isMobile={isMobile} />
-      </>
-    );
+    return <ProfileSkeleton isMobile={isMobile} />;
   }
 
   // Show error state
   if (error || !profile) {
     return (
       <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 flex items-center justify-center p-4">
-        <ApiHealthCheck />
         <div className="text-center">
           <h2 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading">
             {error || "לא ניתן לטעון את הפרופיל"}
@@ -115,6 +109,17 @@ export function Profile({ className = "" }: ProfileProps) {
     profile,
     avatarOptions,
     dashboard,
+    subscriptionUsage: {
+      used: profile.subscription.creations_count,
+      limit:
+        profile.subscription.tier === "free"
+          ? profile.subscription.creations_left_free + profile.subscription.creations_count
+          : profile.subscription.creations_left_pro,
+      tier: profile.subscription.tier,
+      expiryLabel: profile.subscription.premium_expiry
+        ? new Date(profile.subscription.premium_expiry).toLocaleDateString("he-IL")
+        : "",
+    } satisfies SubscriptionUsage,
     onRenew: handleRenew,
     onUpgrade: handleUpgrade,
     onViewTemplate: handleViewTemplate,

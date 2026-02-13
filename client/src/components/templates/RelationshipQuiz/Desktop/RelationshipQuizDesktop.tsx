@@ -18,11 +18,10 @@ export function RelationshipQuizDesktop({ data }: QuizViewProps) {
   const scoreMsg = getScoreMessage(percentage, data.scoreMessages);
 
   return (
-    <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-12 px-6 relative">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-4 right-4 z-20" />
+    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative">
+      <div className="flex-1 w-full max-w-md mx-auto px-6 py-8">
+        <BackToGallery className="mb-4" />
 
-      <div className="max-w-lg mx-auto">
         {/* Title */}
         {data.title && (
           <h1 className="text-3xl font-bold text-center text-[#2e3c52] dark:text-white mb-8 text-hebrew-heading">
@@ -59,7 +58,7 @@ export function RelationshipQuizDesktop({ data }: QuizViewProps) {
       </div>
 
       {/* Footer Credit */}
-      <FooterBranding className="absolute bottom-4 left-1/2 -translate-x-1/2" />
+      <FooterBranding className="shrink-0 pb-4" />
     </div>
   );
 }

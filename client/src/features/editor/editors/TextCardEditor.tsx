@@ -1,6 +1,9 @@
 "use client";
 
-import { TextCardContent } from "@/types";
+/** @deprecated Legacy type — kept for backward compatibility. */
+interface TextCardContent {
+  text: string;
+}
 
 interface TextCardEditorProps {
   content: TextCardContent;

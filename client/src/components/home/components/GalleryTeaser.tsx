@@ -21,14 +21,14 @@ const FEATURED_TEMPLATES: TeaserCardData[] = [
       'כרטיס אינטראקטיבי שבו כפתור ה"לא" בורח מהאצבע. אי אפשר לסרב לזה.',
     tag: "הכי פופולרי",
     isPremium: false,
-    previewType: "viral",
+    componentKey: "DateInvite",
   },
   {
     id: 2,
     title: "כרטיס חיש-גד",
     description: "שלחו לינק לכרטיס דיגיטלי שמסתיר את ההצעה המרגשת שלכם.",
     isPremium: false,
-    previewType: "scratch",
+    componentKey: "ScratchCard",
   },
   {
     id: 3,
@@ -36,7 +36,7 @@ const FEATURED_TEMPLATES: TeaserCardData[] = [
     description:
       "מסע נוסטלגי דרך הזיכרונות החשובים: הנשיקה הראשונה, הדייט הראשון והיום.",
     isPremium: false,
-    previewType: "timeline",
+    componentKey: "Timeline",
   },
   {
     id: 4,
@@ -44,7 +44,7 @@ const FEATURED_TEMPLATES: TeaserCardData[] = [
     description:
       "קופונים דיגיטליים. כולל עדכון הקישור כשהצד השני משתמש בקופון!",
     isPremium: true,
-    previewType: "coupons",
+    componentKey: "LoveCoupons",
   },
 ];
 

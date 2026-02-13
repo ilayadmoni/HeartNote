@@ -8,21 +8,25 @@
 import { motion } from "framer-motion";
 import type { DecisionWheelViewProps } from "../types";
 import { WheelCanvas } from "../components";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+} from "@/components/templates/components";
 
 export function DecisionWheelMobile({ data }: DecisionWheelViewProps) {
-  const options = data.options?.length >= 2 ? data.options : ["אופציה 1", "אופציה 2"];
+  const options =
+    data.options?.length >= 2 ? data.options : ["אופציה 1", "אופציה 2"];
 
   return (
-    <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-8 px-4 relative overflow-hidden">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-3 right-3 z-20" />
-
+    <div className="min-h-[420px] bg-[#faf7f5] dark:bg-gray-900 px-4 relative overflow-hidden flex flex-col justify-between gap-6 py-6">
       {/* Decorative blobs */}
       <div className="absolute top-5 left-0 w-28 h-28 bg-[#F8BBD0]/20 rounded-full blur-2xl pointer-events-none" />
       <div className="absolute bottom-10 right-0 w-36 h-36 bg-[#C7CEEA]/20 rounded-full blur-2xl pointer-events-none" />
 
-      <div className="max-w-sm mx-auto flex flex-col items-center pt-6">
+      {/* Main Content - Top */}
+      <div className="max-w-sm mx-auto flex flex-col items-center w-full">
+        <BackToGallery className="mb-3" />
+
         {/* Title */}
         {data.title && (
           <motion.h1
@@ -58,12 +62,10 @@ export function DecisionWheelMobile({ data }: DecisionWheelViewProps) {
             primaryColor={data.primaryColor}
           />
         </motion.div>
-
-        {/* Branding */}
-        <div className="mt-8">
-          <FooterBranding />
-        </div>
       </div>
+
+      {/* Branding - Bottom */}
+      <FooterBranding className="mx-auto" />
     </div>
   );
 }

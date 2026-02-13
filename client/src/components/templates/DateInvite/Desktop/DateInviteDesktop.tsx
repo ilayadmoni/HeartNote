@@ -29,10 +29,7 @@ export function DateInviteDesktop({
   const hoverColor = adjustBrightness(primaryColor, -15);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 p-4 relative">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-4 right-4 z-20" />
-
+    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
       {/* Background Hearts Pattern */}
       <div className="absolute inset-0 opacity-25 pointer-events-none overflow-hidden">
         <span className="absolute top-[8%] left-[12%] text-xl opacity-40">
@@ -55,13 +52,19 @@ export function DateInviteDesktop({
         </span>
       </div>
 
-      {/* Main Card - Compact */}
-      <motion.div
+      {/* Content Area */}
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-sm mx-auto px-5 py-6 relative z-10">
+        <BackToGallery className="mb-4" />
+
+        {/* Main Card - Compact */}
+        <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="relative z-10 w-full max-w-sm bg-white dark:bg-gray-800 rounded-[24px] shadow-xl shadow-black/8 dark:shadow-black/25 p-6 flex flex-col items-center text-center overflow-hidden"
       >
+
+
         {!answered ? (
           <>
             {/* Icon Container - Smaller */}
@@ -88,17 +91,17 @@ export function DateInviteDesktop({
 
             {/* Subtitle */}
             <p className="text-xs text-gray-400 mb-6 text-hebrew-body">
-              ...כדאי לך לבחור את התשובה הנכונה
+              כדאי לך לבחור את התשובה הנכונה...
             </p>
 
             {/* Buttons - Compact */}
-            <div className="w-full flex flex-row items-center gap-3">
+            <div className="w-full flex flex-row items-center gap-3 relative">
               {/* Yes Button */}
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onYes}
-                className="flex-1 h-12 text-white text-sm font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
+                className="relative z-10 flex-1 h-12 text-white text-sm font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
                 style={{
                   backgroundColor: primaryColor,
                   boxShadow: `0 10px 25px ${primaryColor}30`,
@@ -122,12 +125,12 @@ export function DateInviteDesktop({
                 }}
                 transition={{
                   type: "spring",
-                  stiffness: 500,
-                  damping: 22,
-                  mass: 0.6,
+                  stiffness: 800,
+                  damping: 15,
+                  mass: 0.4,
                 }}
                 onHoverStart={onNoHover}
-                className="flex-1 h-12 text-sm font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-all text-hebrew-heading hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-center"
+                className="relative z-0 flex-1 h-12 text-sm font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-all text-hebrew-heading hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-center"
               >
                 {data.noText}
               </motion.button>
@@ -173,9 +176,10 @@ export function DateInviteDesktop({
           </motion.div>
         )}
       </motion.div>
+      </div>
 
       {/* Footer Credit */}
-      <FooterBranding className="absolute bottom-2" />
+      <FooterBranding className="shrink-0 pb-4 relative z-10" />
 
       {/* Background Image Overlay */}
       {data.backgroundImage && (

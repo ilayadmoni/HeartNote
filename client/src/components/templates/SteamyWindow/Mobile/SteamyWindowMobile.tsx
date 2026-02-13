@@ -8,18 +8,21 @@
 import { motion } from "framer-motion";
 import type { SteamyWindowViewProps } from "../types";
 import { SteamCanvas } from "../components";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+} from "@/components/templates/components";
 
 export function SteamyWindowMobile({ data }: SteamyWindowViewProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#e8edf2] to-[#faf7f5] dark:from-gray-800 dark:to-gray-900 py-8 px-4 relative overflow-hidden">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-3 right-3 z-20" />
-
+    <div className="min-h-[420px] bg-[#faf7f5] dark:bg-gray-900 px-4 py-6 relative overflow-hidden flex flex-col justify-between gap-6">
       {/* Decorative blob */}
-      <div className="absolute top-10 left-0 w-28 h-28 bg-[#C7CEEA]/15 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute top-5 left-0 w-28 h-28 bg-[#C7CEEA]/15 rounded-full blur-2xl pointer-events-none" />
 
-      <div className="max-w-sm mx-auto flex flex-col items-center pt-6">
+      {/* Main Content - Top */}
+      <div className="max-w-sm mx-auto flex flex-col items-center w-full">
+        <BackToGallery className="mb-3" />
+
         {/* Title */}
         {data.title && (
           <motion.h1
@@ -56,12 +59,10 @@ export function SteamyWindowMobile({ data }: SteamyWindowViewProps) {
             backgroundImage={data.background_image}
           />
         </motion.div>
-
-        {/* Branding */}
-        <div className="mt-8">
-          <FooterBranding />
-        </div>
       </div>
+
+      {/* Footer Credit - Bottom */}
+      <FooterBranding className="mx-auto" />
     </div>
   );
 }

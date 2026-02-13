@@ -9,7 +9,7 @@ export const FOOTER_LINKS: FooterLinkGroup[] = [
   {
     title: "HeartNote",
     links: [
-      { id: "gallery", label: "גלריית התבניות", href: "/gallery" },
+      { id: "privacy-terms", label: "מדיניות פרטיות ותנאי שימוש", href: "/privacy" },
       { id: "how-it-works", label: "איך זה עובד?", href: "/#how-it-works" },
       { id: "faq", label: "שאלות נפוצות", href: "/faq" },
     ],
@@ -28,7 +28,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
   {
     id: "tiktok",
     label: "TikTok",
-    href: "https://tiktok.com/@nitsanbp22",
+    href: "https://tiktok.com/@heartnote.co.il",
     icon: "tiktok",
   },
   {

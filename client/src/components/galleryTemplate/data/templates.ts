@@ -93,7 +93,7 @@ export const TEMPLATES: Template[] = [
   },
   {
     id: "steamy-window",
-    title: "חלון מאודה",
+    title: "חלון עם אדים",
     description:
       "העבירו את האצבע על החלון המאודה וגלו את ההודעה הסודית שמוסתרת מאחוריו! 🫧",
     category: "romantic",

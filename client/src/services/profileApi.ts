@@ -73,7 +73,7 @@ export async function getProfile(): Promise<ProfileData> {
  * Update the current user's profile (PATCH).
  */
 export async function updateProfile(updateData: ProfileUpdateData): Promise<ProfileData> {
-  const { data, error } = await api.patch<ProfileData>("/profile/me", updateData);
+  const { data, error } = await api.patch<ProfileData>("/profile/me", { ...updateData });
 
   if (error) {
     throw error;

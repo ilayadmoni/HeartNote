@@ -1,0 +1,23 @@
+
+> heartnote-client@0.1.0 build
+> next build
+
+   ▲ Next.js 14.1.0
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/actions/creations.ts:242:21
+Type error: Conversion of type '{ slug: any; name: any; }[]' to type 'Record<string, string>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type '{ slug: any; name: any; }[]'.
+
+[0m [90m 240 |[39m[0m
+[0m [90m 241 |[39m     [36mconst[39m items[33m:[39m [33mCreationListItem[39m[] [33m=[39m (data [33m?[39m[33m?[39m [])[33m.[39mmap((c) [33m=>[39m {[0m
+[0m[31m[1m>[22m[39m[90m 242 |[39m       [36mconst[39m tmpl [33m=[39m (c[33m.[39mtemplates [36mas[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m string[33m>[39m) [33m?[39m[33m?[39m {}[33m;[39m[0m
+[0m [90m     |[39m                     [31m[1m^[22m[39m[0m
+[0m [90m 243 |[39m       [36mreturn[39m {[0m
+[0m [90m 244 |[39m         id[33m:[39m c[33m.[39mid [36mas[39m string[33m,[39m[0m
+[0m [90m 245 |[39m         template_slug[33m:[39m tmpl[33m.[39mslug [33m?[39m[33m?[39m [32m""[39m[33m,[39m[0m

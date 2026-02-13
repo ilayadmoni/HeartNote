@@ -1,11 +1,16 @@
 "use client";
 
-import { Card as CardType } from "@/types";
 import { TextCardEditor } from "./editors/TextCardEditor";
 
+/** @deprecated Legacy card type — kept for backward compatibility. */
+interface Card {
+  cardType: string;
+  content: { text: string };
+}
+
 interface CardEditorProps {
-  card: CardType;
-  onChange: (content: CardType["content"]) => void;
+  card: Card;
+  onChange: (content: Card["content"]) => void;
 }
 
 export function CardEditor({ card, onChange }: CardEditorProps) {

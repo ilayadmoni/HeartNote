@@ -1,0 +1,24 @@
+
+> heartnote-client@0.1.0 build
+> next build
+
+   ▲ Next.js 14.1.0
+   - Environments: .env
+
+   Creating an optimized production build ...
+Compiler edge-server unexpectedly exited with code: null and signal: SIGTERM
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/components/editor/Desktop/EditorDesktop.tsx:86:41
+Type error: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+
+[0m [90m 84 |[39m     [36mtry[39m {[0m
+[0m [90m 85 |[39m       [36mconst[39m result [33m=[39m [36mawait[39m createUserCreation(templateId[33m,[39m data)[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 86 |[39m       setSuccessData({ url[33m:[39m result[33m.[39murl[33m,[39m expiresAt[33m:[39m result[33m.[39mexpiresAt })[33m;[39m[0m
+[0m [90m    |[39m                                         [31m[1m^[22m[39m[0m
+[0m [90m 87 |[39m     } [36mcatch[39m (error[33m:[39m unknown) {[0m
+[0m [90m 88 |[39m       [36mconst[39m apiError [33m=[39m error [36mas[39m { status[33m?[39m[33m:[39m number[33m;[39m detail[33m?[39m[33m:[39m string }[33m;[39m[0m
+[0m [90m 89 |[39m       [36mif[39m (apiError[33m.[39mstatus [33m===[39m [35m403[39m [33m&&[39m apiError[33m.[39mdetail [33m===[39m [32m"QUOTA_EXCEEDED"[39m) {[0m

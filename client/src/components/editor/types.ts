@@ -40,6 +40,22 @@ export interface TemplateEditorProps {
   templateId: string;
 }
 
+// =============================================================================
+// Structured Template User Data
+// =============================================================================
+
+/**
+ * Represents the complete state of a user's customised template.
+ * `userChoices` is intentionally flexible — each template populates
+ * it with its own set of fields (text, colors, arrays, booleans, etc.).
+ */
+export interface TemplateUserData {
+  /** Slug identifier of the template being edited (e.g. "date-invite") */
+  templateId: string;
+  /** Dynamic key-value map of all user-provided values for this template */
+  userChoices: Record<string, unknown>;
+}
+
 export interface EditorSidebarProps {
   config: EditorConfig;
   data: Record<string, unknown>;

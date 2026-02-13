@@ -18,17 +18,20 @@ export function TimelineDesktop({ data }: TimelineDesktopProps) {
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 p-6 overflow-auto relative">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-4 right-4 z-20" />
+    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
+      {/* Content Area */}
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto px-6 py-8">
+        <BackToGallery className="mb-4" />
 
-      {/* Main Card */}
+        {/* Main Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="relative z-10 w-full max-w-md bg-white dark:bg-gray-800 rounded-[24px] shadow-xl shadow-black/8 dark:shadow-black/25 p-6"
       >
+      
+
         {/* Title */}
         {data.title && (
           <h1 className="text-xl font-bold text-center text-[#2e3c52] dark:text-white mb-6 text-hebrew-heading">
@@ -107,11 +110,10 @@ export function TimelineDesktop({ data }: TimelineDesktopProps) {
         )}
       </motion.div>
 
-      {/* Spacer between content and footer branding */}
-      <div className="mt-8" />
+      </div>
 
       {/* Footer Credit */}
-      <FooterBranding className="absolute bottom-2" />
+      <FooterBranding className="shrink-0 pb-4" />
     </div>
   );
 }

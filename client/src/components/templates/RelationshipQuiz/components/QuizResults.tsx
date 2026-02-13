@@ -53,7 +53,7 @@ export function QuizResults({ score, total, message }: QuizResultsProps) {
       </motion.div>
 
       {/* Message */}
-      <h2 className="text-2xl font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading text-center">
+      <h2 className="text-2xl font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading text-center break-words max-w-[280px] mx-auto">
         {message.message}
       </h2>
 

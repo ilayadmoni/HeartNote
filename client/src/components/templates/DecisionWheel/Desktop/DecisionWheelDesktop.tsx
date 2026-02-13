@@ -14,15 +14,15 @@ export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
   const options = data.options?.length >= 2 ? data.options : ["אופציה 1", "אופציה 2"];
 
   return (
-    <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-12 px-6 relative overflow-hidden">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-4 right-4 z-20" />
-
+    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
       {/* Decorative blobs */}
       <div className="absolute top-10 left-10 w-40 h-40 bg-[#F8BBD0]/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-20 right-10 w-56 h-56 bg-[#C7CEEA]/20 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-lg mx-auto flex flex-col items-center">
+      {/* Content Area */}
+      <div className="flex-1 flex flex-col items-center w-full max-w-md mx-auto px-6 py-8">
+        <BackToGallery className="mb-4" />
+
         {/* Title */}
         {data.title && (
           <motion.h1
@@ -59,11 +59,10 @@ export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
           />
         </motion.div>
 
-        {/* Branding */}
-        <div className="mt-10">
-          <FooterBranding />
-        </div>
       </div>
+
+      {/* Footer Credit */}
+      <FooterBranding className="shrink-0 pb-4" />
     </div>
   );
 }

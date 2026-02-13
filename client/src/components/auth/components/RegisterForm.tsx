@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { CheckCircle } from "lucide-react";
+import Link from "next/link";
 import { AuthInput } from "./AuthInput";
 import { BrandCalendar } from "@/components/ui/BrandCalendar";
 import {
@@ -35,6 +36,7 @@ interface FormData {
   password: string;
   confirmPassword: string;
   dateOfBirth: string;
+  agreedToTerms: boolean;
 }
 
 interface FormErrors {
@@ -44,6 +46,7 @@ interface FormErrors {
   password?: string;
   confirmPassword?: string;
   dateOfBirth?: string;
+  agreedToTerms?: string;
 }
 
 // Password validation: min 8 chars, at least 1 letter and 1 number
@@ -57,6 +60,7 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
     password: "",
     confirmPassword: "",
     dateOfBirth: "",
+    agreedToTerms: false,
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSuccess, setIsSuccess] = useState(false);
@@ -64,22 +68,22 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
   // Real-time validation for individual fields
   const validateField = (
     field: keyof FormData,
-    value: string,
+    value: string | boolean,
   ): string | undefined => {
     switch (field) {
       case "firstName":
-        return !value.trim() ? AUTH_VALIDATION.firstNameRequired : undefined;
+        return !(value as string).trim() ? AUTH_VALIDATION.firstNameRequired : undefined;
       case "lastName":
-        return !value.trim() ? AUTH_VALIDATION.lastNameRequired : undefined;
+        return !(value as string).trim() ? AUTH_VALIDATION.lastNameRequired : undefined;
       case "email":
-        if (!value.trim()) return AUTH_VALIDATION.emailRequired;
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+        if (!(value as string).trim()) return AUTH_VALIDATION.emailRequired;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value as string))
           return AUTH_VALIDATION.emailInvalid;
         return undefined;
       case "password":
         if (!value) return AUTH_VALIDATION.passwordRequired;
-        if (value.length < 8) return AUTH_VALIDATION.passwordMinLength;
-        if (!PASSWORD_REGEX.test(value)) return AUTH_VALIDATION.passwordFormat;
+        if ((value as string).length < 8) return AUTH_VALIDATION.passwordMinLength;
+        if (!PASSWORD_REGEX.test(value as string)) return AUTH_VALIDATION.passwordFormat;
         return undefined;
       case "confirmPassword":
         if (value !== formData.password)
@@ -87,12 +91,14 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
         return undefined;
       case "dateOfBirth":
         return !value ? AUTH_VALIDATION.dateOfBirthRequired : undefined;
+      case "agreedToTerms":
+        return !value ? AUTH_VALIDATION.termsRequired : undefined;
       default:
         return undefined;
     }
   };
 
-  const handleFieldChange = (field: keyof FormData, value: string) => {
+  const handleFieldChange = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
     // Clear error when user starts typing, validate on blur instead
@@ -216,6 +222,38 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
         error={errors.confirmPassword}
         showPasswordToggle
       />
+
+      {/* Terms & Privacy Checkbox */}
+      <div className="mt-3 mb-1">
+        <label className="flex items-start gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={formData.agreedToTerms}
+            onChange={(e) => handleFieldChange("agreedToTerms", e.target.checked)}
+            className="
+              mt-1 h-4 w-4 rounded border-gray-300
+              text-[#2e3c52] focus:ring-[#2e3c52]
+              dark:border-gray-600 dark:bg-gray-700
+              cursor-pointer shrink-0
+            "
+          />
+          <span className="text-xs text-[#2e3c52] dark:text-gray-300 text-hebrew-body leading-relaxed">
+            קראתי ואני מאשר/ת את{" "}
+            <Link
+              href="/privacy"
+              target="_blank"
+              className="underline text-[#d4826f] hover:text-[#c4725f] dark:text-[#e8917a] dark:hover:text-[#f0a18a] font-semibold"
+            >
+              תנאי השימוש ומדיניות הפרטיות
+            </Link>
+          </span>
+        </label>
+        {errors.agreedToTerms && (
+          <p className="text-xs text-red-500 mt-1 mr-6 text-hebrew-body">
+            {errors.agreedToTerms}
+          </p>
+        )}
+      </div>
 
       {/* Submit Button */}
       <button

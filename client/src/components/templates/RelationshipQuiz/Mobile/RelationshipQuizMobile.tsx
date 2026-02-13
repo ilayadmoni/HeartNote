@@ -10,7 +10,10 @@ import type { QuizViewProps } from "../types";
 import { useQuiz } from "../hooks/useQuiz";
 import { getScoreMessage } from "../constants";
 import { QuizProgressBar, QuestionCard, QuizResults } from "../components";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+} from "@/components/templates/components";
 
 export function RelationshipQuizMobile({ data }: QuizViewProps) {
   const quiz = useQuiz(data.questions);
@@ -18,15 +21,17 @@ export function RelationshipQuizMobile({ data }: QuizViewProps) {
   const scoreMsg = getScoreMessage(percentage, data.scoreMessages);
 
   return (
-    <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-8 px-4 relative">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-3 right-3 z-20" />
+    <div className="min-h-[420px] bg-[#faf7f5] dark:bg-gray-900 px-4 py-6 relative flex flex-col justify-between gap-6">
+      {/* Main Content - Top */}
+      <div className="max-w-md mx-auto w-full">
+        <BackToGallery className="mb-3" />
 
-      <div className="max-w-md mx-auto">
         {/* Title */}
         {data.title && (
-          <h1 className="text-2xl font-bold text-center text-[#2e3c52] dark:text-white mb-10 text-hebrew-heading">
-            {data.title}
+          <h1 className="text-2xl font-bold text-center text-[#2e3c52] dark:text-white mb-10 text-hebrew-heading break-words">
+            {data.title.length > 50
+              ? `${data.title.substring(0, 50)}...`
+              : data.title}
           </h1>
         )}
 
@@ -58,8 +63,8 @@ export function RelationshipQuizMobile({ data }: QuizViewProps) {
         )}
       </div>
 
-      {/* Footer Credit */}
-      <FooterBranding className="absolute bottom-3 left-1/2 -translate-x-1/2" />
+      {/* Footer Credit - Bottom */}
+      <FooterBranding className="mx-auto" />
     </div>
   );
 }

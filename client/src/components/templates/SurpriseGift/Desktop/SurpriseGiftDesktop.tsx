@@ -60,10 +60,12 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
   }, []);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center bg-[#fdf6f3] dark:bg-gray-900 p-6 overflow-auto relative">
-      <BackToGallery className="absolute top-4 right-4 z-20" />
+    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
+      {/* Content Area */}
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto px-6 py-8">
+        <BackToGallery className="mb-4" />
 
-      {/* Title */}
+        {/* Title */}
       <h1 className="text-3xl font-bold text-[#5d4e37] dark:text-white mb-8 text-hebrew-heading text-center">
         {title}
       </h1>
@@ -97,10 +99,10 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.8 }}
+            initial={{ opacity: 0, y: 40, scale: 0.7 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ type: "spring", stiffness: 200, damping: 18 }}
+            transition={{ type: "spring", stiffness: 180, damping: 14, delay: 0.2 }}
             className="mt-8 text-center max-w-md"
           >
             <p
@@ -118,8 +120,10 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
 
-      <FooterBranding />
+      {/* Footer Credit */}
+      <FooterBranding className="shrink-0 pb-4" />
     </div>
   );
 }

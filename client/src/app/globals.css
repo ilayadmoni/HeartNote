@@ -34,16 +34,19 @@
 .text-hebrew-heading {
   font-family: 'OpenSans', sans-serif;
   font-weight: 700;
+  unicode-bidi: plaintext;
 }
 
 .text-hebrew-body {
   font-family: 'OpenSans', sans-serif;
   font-weight: 400;
+  unicode-bidi: plaintext;
 }
 
 .text-hebrew-small {
   font-family: 'OpenSans', sans-serif;
   font-weight: 400;
+  unicode-bidi: plaintext;
 }
 
 /* ====================================

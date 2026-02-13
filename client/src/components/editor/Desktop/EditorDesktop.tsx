@@ -6,7 +6,7 @@
  * Uses global Header/Footer from layout.tsx
  */
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
@@ -17,6 +17,7 @@ import { QuotaModal } from "../components/QuotaModal";
 import { EDITOR_CONFIGS } from "../configs";
 import { createUserCreation } from "../api";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTemplateData } from "@/hooks/useTemplateData";
 import type { TemplateEditorProps } from "../types";
 
 export function EditorDesktop({ templateId }: TemplateEditorProps) {
@@ -26,13 +27,12 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const previewRef = useRef<HTMLDivElement>(null);
   const [previewHeight, setPreviewHeight] = useState<number | null>(null);
 
-  const [data, setData] = useState<Record<string, unknown>>(
-    config?.defaultData || {},
-  );
+  const { userChoices: data, updateChoice: handleChange, logData } =
+    useTemplateData(templateId, config?.defaultData || {});
   const [isPublishing, setIsPublishing] = useState(false);
   const [successData, setSuccessData] = useState<{
     url: string;
-    expiresAt: string;
+    expiresAt: string | null;
   } | null>(null);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
 
@@ -75,11 +75,8 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     );
   }
 
-  const handleChange = useCallback((key: string, value: unknown) => {
-    setData((prev) => ({ ...prev, [key]: value }));
-  }, []);
-
   const handlePublish = async () => {
+    logData("שליחה");
     setIsPublishing(true);
     try {
       const result = await createUserCreation(templateId, data);
@@ -88,8 +85,13 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       const apiError = error as { status?: number; detail?: string };
       if (apiError.status === 403 && apiError.detail === "QUOTA_EXCEEDED") {
         setShowQuotaModal(true);
-      } else if (apiError.status === 402 && apiError.detail === "TEMPLATE_NOT_ALLOWED") {
-        alert("תבנית זו אינה זמינה במנוי הנוכחי שלך. שדרג את המנוי כדי להשתמש בה.");
+      } else if (
+        apiError.status === 402 &&
+        apiError.detail === "TEMPLATE_NOT_ALLOWED"
+      ) {
+        alert(
+          "תבנית זו אינה זמינה במנוי הנוכחי שלך. שדרג את המנוי כדי להשתמש בה.",
+        );
       } else {
         console.error("Failed to publish:", error);
         alert("שגיאה ביצירת הכרטיס. נסה שוב.");
@@ -100,9 +102,9 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   };
 
   return (
-    <div className="min-h-[calc(100vh-180px)] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
+    <div className="min-h-[200px] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
       {/* Compact Toolbar */}
-      <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex items-center justify-between">
+      <div className="flex-shrink-0 bg-[#faf7f5] dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex items-center justify-between">
         <h1 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
           {config.title}
         </h1>
@@ -126,19 +128,21 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       {/* Main Content - Grid layout for aligned heights */}
       <div className="flex-1 flex p-6 gap-6 items-stretch">
         {/* Preview Area - Auto height with responsive minimum */}
-        <main
-          ref={previewRef}
-          className="flex-1 min-h-[calc(100vh-250px)] flex flex-col"
-        >
+        <main ref={previewRef} className="flex-1  flex flex-col">
           <EditorPreview templateId={templateId} data={data} />
         </main>
 
         {/* Sidebar - Max height matches preview, scrolls when content exceeds */}
         <aside
-          className="w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-y-auto flex-shrink-0"
+          className="w-80 bg-[#faf7f5] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-y-auto flex-shrink-0"
           style={{ maxHeight: previewHeight ? `${previewHeight}px` : "auto" }}
         >
-          <EditorSidebar config={config} data={data} onChange={handleChange} userId={user?.id} />
+          <EditorSidebar
+            config={config}
+            data={data}
+            onChange={handleChange}
+            userId={user?.id}
+          />
         </aside>
       </div>
 

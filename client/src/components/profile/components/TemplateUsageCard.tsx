@@ -16,10 +16,18 @@ interface TemplateUsageCardProps {
   tier: SubscriptionTier;
 }
 
-export function TemplateUsageCard({ used, limit, tier }: TemplateUsageCardProps) {
+export function TemplateUsageCard({
+  used,
+  limit,
+  tier,
+}: TemplateUsageCardProps) {
   const isPremium = tier === "premium";
   const isUnlimited = limit == null;
-  const percent = isUnlimited ? 0 : limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
+  const percent = isUnlimited
+    ? 0
+    : limit > 0
+      ? Math.min((used / limit) * 100, 100)
+      : 0;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">

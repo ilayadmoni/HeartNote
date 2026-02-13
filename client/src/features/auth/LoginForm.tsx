@@ -8,11 +8,11 @@ import { useAuth } from "./useAuth";
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, isLoading, error } = useAuth();
+  const { signIn, loading, error } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login({ email, password });
+    await signIn(email, password);
   };
 
   return (
@@ -51,7 +51,7 @@ export function LoginForm() {
         />
       </div>
 
-      <Button type="submit" className="w-full mt-6" isLoading={isLoading}>
+      <Button type="submit" className="w-full mt-6" isLoading={loading}>
         Sign In
       </Button>
     </motion.form>

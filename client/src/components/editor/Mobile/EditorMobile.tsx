@@ -6,7 +6,7 @@
  * Uses global Header/Footer from layout.tsx
  */
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
 import { EditorSidebar } from "../components/EditorSidebar";
@@ -17,6 +17,7 @@ import { BottomSheet } from "@/components/ui";
 import { EDITOR_CONFIGS } from "../configs";
 import { createUserCreation } from "../api";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTemplateData } from "@/hooks/useTemplateData";
 import type { TemplateEditorProps } from "../types";
 
 export function EditorMobile({ templateId }: TemplateEditorProps) {
@@ -26,12 +27,11 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
 
-  const [data, setData] = useState<Record<string, unknown>>(
-    config?.defaultData || {},
-  );
+  const { userChoices: data, updateChoice: handleChange, logData } =
+    useTemplateData(templateId, config?.defaultData || {});
   const [successData, setSuccessData] = useState<{
     url: string;
-    expiresAt: string;
+    expiresAt: string | null;
   } | null>(null);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
 
@@ -54,11 +54,8 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
     );
   }
 
-  const handleChange = useCallback((key: string, value: unknown) => {
-    setData((prev) => ({ ...prev, [key]: value }));
-  }, []);
-
   const handlePublish = async () => {
+    logData("שליחה");
     setIsPublishing(true);
     try {
       const result = await createUserCreation(templateId, data);
@@ -67,8 +64,13 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
       const apiError = error as { status?: number; detail?: string };
       if (apiError.status === 403 && apiError.detail === "QUOTA_EXCEEDED") {
         setShowQuotaModal(true);
-      } else if (apiError.status === 402 && apiError.detail === "TEMPLATE_NOT_ALLOWED") {
-        alert("תבנית זו אינה זמינה במנוי הנוכחי שלך. שדרג את המנוי כדי להשתמש בה.");
+      } else if (
+        apiError.status === 402 &&
+        apiError.detail === "TEMPLATE_NOT_ALLOWED"
+      ) {
+        alert(
+          "תבנית זו אינה זמינה במנוי הנוכחי שלך. שדרג את המנוי כדי להשתמש בה.",
+        );
       } else {
         console.error("Failed to publish:", error);
         alert("שגיאה ביצירת הכרטיס. נסה שוב.");
@@ -79,7 +81,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   };
 
   return (
-    <div className="min-h-[calc(100vh-140px)] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
+    <div className="bg-[#faf7f5] dark:bg-gray-900">
       {/* Compact Toolbar */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-4 py-3">
         <div className="flex items-center justify-between">
@@ -102,11 +104,8 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
         </div>
       </div>
 
-      {/* Preview Area - Takes most of the screen */}
-      <div
-        className="flex-1 overflow-hidden relative"
-        style={{ paddingBottom: "80px" }}
-      >
+      {/* Preview Area - Auto height based on template */}
+      <div className="overflow-hidden relative">
         <EditorPreview templateId={templateId} data={data} isMobile />
       </div>
 
@@ -119,7 +118,12 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
         label="ערוך מאפיינים"
         expandedLabel="סגור עריכה"
       >
-        <EditorSidebar config={config} data={data} onChange={handleChange} userId={user?.id} />
+        <EditorSidebar
+          config={config}
+          data={data}
+          onChange={handleChange}
+          userId={user?.id}
+        />
       </BottomSheet>
 
       {/* Success Modal */}

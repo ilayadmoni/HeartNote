@@ -28,7 +28,8 @@ export function OptionButton({
       return "bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600";
     }
     if (isCorrect) return "bg-green-100 dark:bg-green-900/30 border-green-500";
-    if (isSelected && !isCorrect) return "bg-red-100 dark:bg-red-900/30 border-red-500";
+    if (isSelected && !isCorrect)
+      return "bg-red-100 dark:bg-red-900/30 border-red-500";
     return "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 opacity-50";
   };
 
@@ -58,7 +59,7 @@ export function OptionButton({
         )}
       </span>
 
-      <span className="text-[#2e3c52] dark:text-white text-hebrew-body">
+      <span className="text-[#2e3c52] dark:text-white text-hebrew-body break-words">
         {option}
       </span>
     </motion.button>

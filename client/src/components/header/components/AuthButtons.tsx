@@ -2,10 +2,9 @@
 
 /**
  * AuthButtons Component
- * Login and CTA buttons for the header, or UserMenu when logged in
+ * Login button for the header, or UserMenu when logged in
  */
 
-import Link from "next/link";
 import type { AuthButtonsProps } from "../types";
 import { UserMenu } from "./UserMenu";
 import { useAuth } from "@/contexts/AuthContext";
@@ -32,27 +31,11 @@ export function AuthButtons({
     return (
       <div className={`flex items-center gap-3 ${className}`}>
         <UserMenu />
-        {/* CTA Button */}
-        <Link
-          href="/create"
-          className={`
-            text-white transition-all duration-200 text-hebrew-heading
-            bg-[#d4826f] hover:bg-[#c4735f]
-            shadow-md hover:shadow-lg
-            ${
-              isDesktop
-                ? "px-5 py-2 text-sm rounded-full"
-                : "w-full py-3 text-center rounded-lg"
-            }
-          `}
-        >
-          צור ברכה בחינם
-        </Link>
       </div>
     );
   }
 
-  // Show login buttons when not logged in
+  // Show login button when not logged in
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       {/* Login Button */}
@@ -75,23 +58,6 @@ export function AuthButtons({
       >
         התחברות
       </button>
-
-      {/* CTA Button */}
-      <Link
-        href="/create"
-        className={`
-          text-white transition-all duration-200 text-hebrew-heading
-          bg-[#d4826f] hover:bg-[#c4735f]
-          shadow-md hover:shadow-lg
-          ${
-            isDesktop
-              ? "px-5 py-2 text-sm rounded-full"
-              : "w-full py-3 text-center rounded-lg"
-          }
-        `}
-      >
-        צור ברכה בחינם
-      </Link>
     </div>
   );
 }

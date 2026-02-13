@@ -26,13 +26,12 @@ export function OpenWhenDesktop({ data }: OpenWhenViewProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-12 px-6 relative">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-4 right-4 z-20" />
-
+    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative">
       <FloatingIcons />
 
-      <div className="max-w-2xl mx-auto relative z-10">
+      <div className="flex-1 w-full max-w-md mx-auto relative z-10 px-6 py-8">
+        <BackToGallery className="mb-4" />
+
         {/* Title */}
         {data.title && (
           <motion.h1
@@ -45,7 +44,7 @@ export function OpenWhenDesktop({ data }: OpenWhenViewProps) {
         )}
 
         {/* Envelopes Grid — 3 columns on desktop */}
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-2 gap-4 w-full">
           {data.envelopes.map((envelope, index) => (
             <EnvelopeCard
               key={envelope.id}
@@ -59,7 +58,7 @@ export function OpenWhenDesktop({ data }: OpenWhenViewProps) {
       </div>
 
       {/* Footer Credit */}
-      <FooterBranding className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10" />
+      <FooterBranding className="shrink-0 pb-4 z-10" />
 
       {/* Letter Modal */}
       <LetterModal

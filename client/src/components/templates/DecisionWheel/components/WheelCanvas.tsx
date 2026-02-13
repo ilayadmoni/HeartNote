@@ -120,13 +120,24 @@ export function WheelCanvas({
     setSpinning(true);
     setWinner(null);
 
-    // Random final angle: 5-8 full rotations + random segment
-    const extraRotations = 5 + Math.random() * 3;
     const targetSegment = Math.floor(Math.random() * segCount);
-    const targetAngle =
-      360 * extraRotations + (360 - targetSegment * segAngle - segAngle / 2);
+
+    // Calculate the absolute angle where target segment center aligns with pointer (top).
+    // Segment i center is at (i * segAngle + segAngle / 2) degrees from top (0°).
+    // The wheel must rotate so that this center aligns with the pointer.
+    const segmentCenterOffset = targetSegment * segAngle + segAngle / 2;
+    // We want (finalAngle mod 360) == (360 - segmentCenterOffset) so segment aligns at top
+    const desiredMod = (360 - segmentCenterOffset + 360) % 360;
 
     const start = rotation.get();
+    const currentMod = ((start % 360) + 360) % 360;
+    // How much more we need to rotate past full rotations to land on desired position
+    let delta = desiredMod - currentMod;
+    if (delta < 0) delta += 360;
+
+    // Add 5-8 full rotations for visual effect
+    const extraRotations = 5 + Math.random() * 3;
+    const targetAngle = 360 * Math.floor(extraRotations) + delta;
 
     animate(rotation, start + targetAngle, {
       duration: 4,

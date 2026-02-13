@@ -7,7 +7,7 @@ import { GalleryTemplate } from "@/components/galleryTemplate";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "גלריית התבניות | HeartNote",
+  title: "HeartNote",
   description:
     "בחרו מתוך מגוון תבניות מקוריות ליצירת ברכות דיגיטליות מרגשות לכל אירוע",
 };

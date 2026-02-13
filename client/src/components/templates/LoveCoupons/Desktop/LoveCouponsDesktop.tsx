@@ -16,11 +16,10 @@ export function LoveCouponsDesktop({ data }: CouponsViewProps) {
   const { coupons, handleRedeem, handleReset } = useCoupons(data.coupons);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-12 px-6 relative">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-4 right-4 z-20" />
+    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative">
+      <div className="flex-1 w-full max-w-md mx-auto px-6 py-8">
+        <BackToGallery className="mb-4" />
 
-      <div className="max-w-xl mx-auto">
         {/* Title */}
         {data.title && (
           <motion.h1
@@ -66,7 +65,7 @@ export function LoveCouponsDesktop({ data }: CouponsViewProps) {
       </div>
 
       {/* Footer Credit */}
-      <FooterBranding className="absolute bottom-4 left-1/2 -translate-x-1/2" />
+      <FooterBranding className="shrink-0 pb-4" />
     </div>
   );
 }

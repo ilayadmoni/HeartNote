@@ -14,7 +14,7 @@ interface SuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   url: string;
-  expiresAt: string;
+  expiresAt: string | null;
 }
 
 export function SuccessModal({
@@ -48,7 +48,8 @@ export function SuccessModal({
     window.open(`https://wa.me/?text=${text}${shareUrl}`, "_blank");
   };
 
-  const formatExpiry = (dateStr: string) => {
+  const formatExpiry = (dateStr: string | null) => {
+    if (!dateStr) return "בקרוב";
     try {
       const date = new Date(dateStr);
       return date.toLocaleTimeString("he-IL", {

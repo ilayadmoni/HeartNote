@@ -169,8 +169,8 @@ export function SteamCanvas({
         )}
         {emoji && (
           <motion.span
-            initial={{ scale: 0 }}
-            animate={revealed ? { scale: 1 } : { scale: 0.7, opacity: 0.3 }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={revealed ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 200 }}
             className="text-5xl mb-4 block"
           >
@@ -179,7 +179,7 @@ export function SteamCanvas({
         )}
         <motion.p
           initial={{ opacity: 0 }}
-          animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0.15, y: 8 }}
+          animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
           transition={{ delay: 0.15 }}
           className="text-xl font-bold text-center whitespace-pre-wrap text-hebrew-heading"
           style={{ color: primaryColor }}

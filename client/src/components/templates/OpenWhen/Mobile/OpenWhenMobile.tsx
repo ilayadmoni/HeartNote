@@ -10,7 +10,10 @@ import { motion } from "framer-motion";
 import type { OpenWhenViewProps, OpenWhenEnvelope } from "../types";
 import { EnvelopeCard, LetterModal, FloatingIcons } from "../components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+} from "@/components/templates/components";
 
 export function OpenWhenMobile({ data }: OpenWhenViewProps) {
   const [selectedEnvelope, setSelectedEnvelope] =
@@ -26,13 +29,12 @@ export function OpenWhenMobile({ data }: OpenWhenViewProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-8 px-4 relative">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-3 right-3 z-20" />
-
+    <div className="min-h-[420px] bg-[#faf7f5] dark:bg-gray-900 py-8 px-4 relative">
       <FloatingIcons />
 
       <div className="max-w-md mx-auto relative z-10">
+        <BackToGallery className="mb-3" />
+
         {/* Title */}
         {data.title && (
           <motion.h1

@@ -9,7 +9,7 @@
  * legacy fetchClient / FastAPI calls.
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ProfileDesktop } from "./Desktop/ProfileDesktop";
@@ -52,6 +52,7 @@ export function ProfileClient({
 }: ProfileClientProps) {
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const [isPending, startTransition] = useTransition();
 
   // Local state seeded from server data — lets us update optimistically
   const [profile, setProfile] = useState<UserProfile>(
@@ -65,36 +66,51 @@ export function ProfileClient({
   const handleEditProfile = useCallback(
     async (firstName: string, lastName: string): Promise<void> => {
       setError(null);
-      const result = await updateMyProfile({
-        first_name: firstName,
-        last_name: lastName,
+      // Optimistic: update UI immediately
+      setProfile((prev) => ({ ...prev, firstName, lastName }));
+
+      startTransition(async () => {
+        const result = await updateMyProfile({
+          first_name: firstName,
+          last_name: lastName,
+        });
+
+        if ("error" in result) {
+          setError(result.error);
+          // Revert on failure
+          setProfile(mapApiProfileToUserProfile(initialProfile));
+          return;
+        }
+
+        setProfile(mapApiProfileToUserProfile(result.data));
       });
-
-      if ("error" in result) {
-        setError(result.error);
-        throw new Error(result.error);
-      }
-
-      // Optimistically update local state with fresh server data
-      setProfile(mapApiProfileToUserProfile(result.data));
     },
-    [],
+    [initialProfile],
   );
 
   const handleAvatarSelect = useCallback(
     async (avatarUrl: string): Promise<boolean> => {
       setError(null);
-      const result = await updateMyProfile({ avatar_url: avatarUrl });
+      // Optimistic: update avatar immediately
+      setProfile((prev) => ({ ...prev, avatarUrl }));
 
-      if ("error" in result) {
-        setError(result.error);
-        return false;
-      }
+      return new Promise((resolve) => {
+        startTransition(async () => {
+          const result = await updateMyProfile({ avatar_url: avatarUrl });
 
-      setProfile(mapApiProfileToUserProfile(result.data));
-      return true;
+          if ("error" in result) {
+            setError(result.error);
+            setProfile(mapApiProfileToUserProfile(initialProfile));
+            resolve(false);
+            return;
+          }
+
+          setProfile(mapApiProfileToUserProfile(result.data));
+          resolve(true);
+        });
+      });
     },
-    [],
+    [initialProfile],
   );
 
   const handleDeleteAccount = useCallback(async (): Promise<void> => {

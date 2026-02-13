@@ -53,7 +53,7 @@ export async function getDashboard(): Promise<
       .eq("id", user.id)
       .single();
 
-    const profileData = profile ?? {};
+    const profileData = (profile ?? {}) as Record<string, unknown>;
 
     const stats: DashboardStats = {
       creations_count: (profileData.creations_count as number) ?? 0,
@@ -91,7 +91,7 @@ export async function getDashboard(): Promise<
         }
       }
 
-      const tmpl = (c.templates as Record<string, string>) ?? {};
+      const tmpl = (c.templates as unknown as Record<string, string>) ?? {};
 
       return {
         id: c.id as string,

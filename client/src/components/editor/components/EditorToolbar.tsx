@@ -54,7 +54,7 @@ export function EditorToolbar({ onPublish }: EditorToolbarProps) {
         whileTap={{ scale: 0.95 }}
         onClick={onPublish}
         className="w-12 h-12 mb-4 bg-gradient-to-br from-[#d4826f] to-[#e8917a] text-white rounded-xl flex items-center justify-center shadow-lg"
-        title="שליחה"
+        title="יצירה"
       >
         <Send size={20} />
       </motion.button>

@@ -12,15 +12,15 @@ import { FooterBranding, BackToGallery } from "@/components/templates/components
 
 export function SteamyWindowDesktop({ data }: SteamyWindowViewProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#e8edf2] to-[#faf7f5] dark:from-gray-800 dark:to-gray-900 py-12 px-6 relative overflow-hidden">
-      {/* Back to Gallery */}
-      <BackToGallery className="absolute top-4 right-4 z-20" />
-
+    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
       {/* Decorative blobs */}
       <div className="absolute top-20 left-16 w-48 h-48 bg-[#C7CEEA]/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-20 right-16 w-56 h-56 bg-[#B5EAD7]/15 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-lg mx-auto flex flex-col items-center">
+      {/* Content Area */}
+      <div className="flex-1 flex flex-col items-center w-full max-w-md mx-auto px-6 py-8">
+        <BackToGallery className="mb-4" />
+
         {/* Title */}
         {data.title && (
           <motion.h1
@@ -58,11 +58,10 @@ export function SteamyWindowDesktop({ data }: SteamyWindowViewProps) {
           />
         </motion.div>
 
-        {/* Branding */}
-        <div className="mt-10">
-          <FooterBranding />
-        </div>
       </div>
+
+      {/* Footer Credit */}
+      <FooterBranding className="shrink-0 pb-4" />
     </div>
   );
 }
