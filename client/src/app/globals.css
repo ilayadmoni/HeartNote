@@ -58,6 +58,7 @@
   --background-end-rgb: 248, 250, 252;
   --header-bg: rgba(250, 248, 245, 0.95);
   --header-border: #ebe7e0;
+  color-scheme: light;
 }
 
 /* ====================================

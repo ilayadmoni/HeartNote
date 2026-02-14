@@ -27,8 +27,11 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const previewRef = useRef<HTMLDivElement>(null);
   const [previewHeight, setPreviewHeight] = useState<number | null>(null);
 
-  const { userChoices: data, updateChoice: handleChange, logData } =
-    useTemplateData(templateId, config?.defaultData || {});
+  const {
+    userChoices: data,
+    updateChoice: handleChange,
+    logData,
+  } = useTemplateData(templateId, config?.defaultData || {});
   const [isPublishing, setIsPublishing] = useState(false);
   const [successData, setSuccessData] = useState<{
     url: string;
@@ -128,14 +131,14 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       {/* Main Content - Grid layout for aligned heights */}
       <div className="flex-1 flex p-6 gap-6 items-stretch">
         {/* Preview Area - Auto height with responsive minimum */}
-        <main ref={previewRef} className="flex-1  flex flex-col">
-          <EditorPreview templateId={templateId} data={data} />
+        <main className="flex-1 min-h-[390px] flex flex-col">
+          <EditorPreview ref={previewRef} templateId={templateId} data={data} />
         </main>
 
         {/* Sidebar - Max height matches preview, scrolls when content exceeds */}
         <aside
-          className="w-80 bg-[#faf7f5] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-y-auto flex-shrink-0"
-          style={{ maxHeight: previewHeight ? `${previewHeight}px` : "auto" }}
+          className="w-80 bg-faf7f5 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-y-auto flex-shrink-0"
+          style={{ height: previewHeight ? `${previewHeight}px` : "auto" }}
         >
           <EditorSidebar
             config={config}

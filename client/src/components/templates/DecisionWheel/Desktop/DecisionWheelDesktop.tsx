@@ -8,21 +8,24 @@
 import { motion } from "framer-motion";
 import type { DecisionWheelViewProps } from "../types";
 import { WheelCanvas } from "../components";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+} from "@/components/templates/components";
 
 export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
-  const options = data.options?.length >= 2 ? data.options : ["אופציה 1", "אופציה 2"];
+  const options =
+    data.options?.length >= 2 ? data.options : ["אופציה 1", "אופציה 2"];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
+    <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative">
+      <BackToGallery className="top-4 right-4 absolute" />
       {/* Decorative blobs */}
       <div className="absolute top-10 left-10 w-40 h-40 bg-[#F8BBD0]/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-20 right-10 w-56 h-56 bg-[#C7CEEA]/20 rounded-full blur-3xl pointer-events-none" />
 
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center w-full max-w-md mx-auto px-6 py-8">
-        <BackToGallery className="mb-4" />
-
         {/* Title */}
         {data.title && (
           <motion.h1
@@ -58,7 +61,6 @@ export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
             primaryColor={data.primaryColor}
           />
         </motion.div>
-
       </div>
 
       {/* Footer Credit */}

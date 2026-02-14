@@ -8,19 +8,21 @@
 import { motion } from "framer-motion";
 import type { SteamyWindowViewProps } from "../types";
 import { SteamCanvas } from "../components";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+} from "@/components/templates/components";
 
 export function SteamyWindowDesktop({ data }: SteamyWindowViewProps) {
   return (
-    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
+    <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative">
+      <BackToGallery className="top-4 right-4 absolute" />
       {/* Decorative blobs */}
       <div className="absolute top-20 left-16 w-48 h-48 bg-[#C7CEEA]/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-20 right-16 w-56 h-56 bg-[#B5EAD7]/15 rounded-full blur-3xl pointer-events-none" />
 
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center w-full max-w-md mx-auto px-6 py-8">
-        <BackToGallery className="mb-4" />
-
         {/* Title */}
         {data.title && (
           <motion.h1
@@ -57,7 +59,6 @@ export function SteamyWindowDesktop({ data }: SteamyWindowViewProps) {
             backgroundImage={data.background_image}
           />
         </motion.div>
-
       </div>
 
       {/* Footer Credit */}

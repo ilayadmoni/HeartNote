@@ -29,7 +29,7 @@ export function DateInviteDesktop({
   const hoverColor = adjustBrightness(primaryColor, -15);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
+    <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
       {/* Background Hearts Pattern */}
       <div className="absolute inset-0 opacity-25 pointer-events-none overflow-hidden">
         <span className="absolute top-[8%] left-[12%] text-xl opacity-40">
@@ -51,131 +51,129 @@ export function DateInviteDesktop({
           ❤
         </span>
       </div>
-
+      <BackToGallery className="absolute top-4 right-4" />
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-sm mx-auto px-5 py-6 relative z-10">
-        <BackToGallery className="mb-4" />
-
         {/* Main Card - Compact */}
         <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-sm bg-white dark:bg-gray-800 rounded-[24px] shadow-xl shadow-black/8 dark:shadow-black/25 p-6 flex flex-col items-center text-center overflow-hidden"
-      >
-
-
-        {!answered ? (
-          <>
-            {/* Icon Container - Smaller */}
-            <div
-              className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-md"
-              style={{
-                background: `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}10)`,
-                boxShadow: `0 4px 12px ${primaryColor}15`,
-              }}
-            >
-              <motion.span
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="text-2xl"
-              >
-                💌
-              </motion.span>
-            </div>
-
-            {/* Question - Smaller */}
-            <h1 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-1.5 text-hebrew-heading leading-tight">
-              {data.question}
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-xs text-gray-400 mb-6 text-hebrew-body">
-              כדאי לך לבחור את התשובה הנכונה...
-            </p>
-
-            {/* Buttons - Compact */}
-            <div className="w-full flex flex-row items-center gap-3 relative">
-              {/* Yes Button */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={onYes}
-                className="relative z-10 flex-1 h-12 text-white text-sm font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="relative z-10 w-full max-w-sm bg-white dark:bg-gray-800 rounded-[24px] shadow-xl shadow-black/8 dark:shadow-black/25 p-6 flex flex-col items-center text-center overflow-hidden"
+        >
+          {!answered ? (
+            <>
+              {/* Icon Container - Smaller */}
+              <div
+                className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-md"
                 style={{
-                  backgroundColor: primaryColor,
-                  boxShadow: `0 10px 25px ${primaryColor}30`,
+                  background: `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}10)`,
+                  boxShadow: `0 4px 12px ${primaryColor}15`,
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = hoverColor)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = primaryColor)
-                }
               >
-                <span>{data.yesText}</span>
-                <Heart size={16} fill="currentColor" className="opacity-80" />
-              </motion.button>
+                <motion.span
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className="text-2xl"
+                >
+                  💌
+                </motion.span>
+              </div>
 
-              {/* No Button - Enhanced evasion */}
-              <motion.button
-                animate={{
-                  x: noPosition.x,
-                  y: noPosition.y,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 800,
-                  damping: 15,
-                  mass: 0.4,
-                }}
-                onHoverStart={onNoHover}
-                className="relative z-0 flex-1 h-12 text-sm font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-all text-hebrew-heading hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-center"
-              >
-                {data.noText}
-              </motion.button>
-            </div>
-          </>
-        ) : (
-          /* Success State - Compact */
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="flex flex-col items-center w-full py-2"
-          >
+              {/* Question - Smaller */}
+              <h1 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-1.5 text-hebrew-heading leading-tight">
+                {data.question}
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-xs text-gray-400 mb-6 text-hebrew-body">
+                כדאי לך לבחור את התשובה הנכונה...
+              </p>
+
+              {/* Buttons - Compact */}
+              <div className="w-full flex flex-row items-center gap-3 relative">
+                {/* Yes Button */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={onYes}
+                  className="relative z-10 flex-1 h-12 text-white text-sm font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
+                  style={{
+                    backgroundColor: primaryColor,
+                    boxShadow: `0 10px 25px ${primaryColor}30`,
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = hoverColor)
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = primaryColor)
+                  }
+                >
+                  <span>{data.yesText}</span>
+                  <Heart size={16} fill="currentColor" className="opacity-80" />
+                </motion.button>
+
+                {/* No Button - Enhanced evasion */}
+                <motion.button
+                  animate={{
+                    x: noPosition.x,
+                    y: noPosition.y,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 800,
+                    damping: 15,
+                    mass: 0.4,
+                  }}
+                  onHoverStart={onNoHover}
+                  className="relative z-0 flex-1 h-12 text-sm font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-all text-hebrew-heading hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-center"
+                >
+                  {data.noText}
+                </motion.button>
+              </div>
+            </>
+          ) : (
+            /* Success State - Compact */
             <motion.div
-              animate={{ rotate: [0, -8, 8, 0] }}
-              transition={{ repeat: Infinity, duration: 2.5 }}
-              className="mb-4"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col items-center w-full py-2"
             >
-              <span className="text-5xl">💖</span>
+              <motion.div
+                animate={{ rotate: [0, -8, 8, 0] }}
+                transition={{ repeat: Infinity, duration: 2.5 }}
+                className="mb-4"
+              >
+                <span className="text-5xl">💖</span>
+              </motion.div>
+
+              <h2
+                className="text-xl font-bold text-hebrew-heading mb-1.5"
+                style={{ color: primaryColor }}
+              >
+                {data.successMessage}
+              </h2>
+
+              <p className="text-xs text-gray-400 mb-5 text-hebrew-body">
+                💕 מחכה לראות אותך 💕
+              </p>
+
+              <button
+                onClick={onReset}
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-gray-400 transition-all bg-gray-50 dark:bg-gray-700/50 rounded-full text-hebrew-body"
+                style={{ "--hover-color": primaryColor } as React.CSSProperties}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.color = primaryColor)
+                }
+                onMouseLeave={(e) => (e.currentTarget.style.color = "")}
+              >
+                <RotateCcw size={12} />
+                <span>שאל שוב</span>
+              </button>
             </motion.div>
-
-            <h2
-              className="text-xl font-bold text-hebrew-heading mb-1.5"
-              style={{ color: primaryColor }}
-            >
-              {data.successMessage}
-            </h2>
-
-            <p className="text-xs text-gray-400 mb-5 text-hebrew-body">
-              💕 מחכה לראות אותך 💕
-            </p>
-
-            <button
-              onClick={onReset}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-gray-400 transition-all bg-gray-50 dark:bg-gray-700/50 rounded-full text-hebrew-body"
-              style={{ "--hover-color": primaryColor } as React.CSSProperties}
-              onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "")}
-            >
-              <RotateCcw size={12} />
-              <span>שאל שוב</span>
-            </button>
-          </motion.div>
-        )}
-      </motion.div>
+          )}
+        </motion.div>
       </div>
 
       {/* Footer Credit */}

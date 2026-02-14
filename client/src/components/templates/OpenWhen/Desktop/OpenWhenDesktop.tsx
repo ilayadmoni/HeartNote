@@ -10,7 +10,10 @@ import { motion } from "framer-motion";
 import type { OpenWhenViewProps, OpenWhenEnvelope } from "../types";
 import { EnvelopeCard, LetterModal, FloatingIcons } from "../components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+} from "@/components/templates/components";
 
 export function OpenWhenDesktop({ data }: OpenWhenViewProps) {
   const [selectedEnvelope, setSelectedEnvelope] =
@@ -26,12 +29,11 @@ export function OpenWhenDesktop({ data }: OpenWhenViewProps) {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#faf7f5] dark:bg-gray-900 relative">
+    <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative">
       <FloatingIcons />
+      <BackToGallery className="top-4 right-4 absolute" />
 
       <div className="flex-1 w-full max-w-md mx-auto relative z-10 px-6 py-8">
-        <BackToGallery className="mb-4" />
-
         {/* Title */}
         {data.title && (
           <motion.h1
@@ -44,7 +46,7 @@ export function OpenWhenDesktop({ data }: OpenWhenViewProps) {
         )}
 
         {/* Envelopes Grid — 3 columns on desktop */}
-        <div className="grid grid-cols-2 gap-4 w-full">
+        <div className="grid grid-cols-3 gap-1 w-full">
           {data.envelopes.map((envelope, index) => (
             <EnvelopeCard
               key={envelope.id}

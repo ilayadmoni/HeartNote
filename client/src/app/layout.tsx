@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   title: "HeartNote - מפעל הברכות הדיגיטלי",
   description: "צור ברכות דיגיטליות מרהיבות בקלות ובמהירות",
   keywords: ["ברכות", "ברכה דיגיטלית", "אירועים", "HeartNote"],
+  themeColor: "#faf7f5",
+  other: {
+    "color-scheme": "light",
+  },
   icons: {
     icon: "/assets/images/logo_heartnote.png",
     apple: "/assets/images/logo_heartnote.png",
