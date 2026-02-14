@@ -23,8 +23,6 @@ interface SteamCanvasProps {
   height: number;
   /** The message to reveal */
   revealMessage: string;
-  /** Optional emoji shown above the message */
-  emoji?: string;
   /** Fog color (rgba) */
   fogColor?: string;
   /** Accent color */
@@ -39,7 +37,6 @@ export function SteamCanvas({
   width,
   height,
   revealMessage,
-  emoji = "💖",
   fogColor = "rgba(200, 210, 220, 0.92)",
   primaryColor = "#d4826f",
   backgroundImage,
@@ -47,6 +44,7 @@ export function SteamCanvas({
 }: SteamCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [revealed, setRevealed] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const isDrawing = useRef(false);
 
   /* ── draw initial fog ──────────────────────────────────── */
@@ -135,6 +133,7 @@ export function SteamCanvas({
   };
 
   const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!hasInteracted) setHasInteracted(true);
     isDrawing.current = true;
     const { x, y } = getPos(e);
     erase(x, y);
@@ -167,21 +166,11 @@ export function SteamCanvas({
             className="absolute inset-0 w-full h-full object-cover opacity-30"
           />
         )}
-        {emoji && (
-          <motion.span
-            initial={{ scale: 0, opacity: 0 }}
-            animate={revealed ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 200 }}
-            className="text-5xl mb-4 block"
-          >
-            {emoji}
-          </motion.span>
-        )}
         <motion.p
           initial={{ opacity: 0 }}
           animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
           transition={{ delay: 0.15 }}
-          className="text-xl font-bold text-center whitespace-pre-wrap text-hebrew-heading"
+          className="text-2xl font-bold text-center whitespace-pre-wrap text-hebrew-heading"
           style={{ color: primaryColor }}
         >
           {revealMessage}
@@ -200,7 +189,7 @@ export function SteamCanvas({
       />
 
       {/* Hint text on fog */}
-      {!revealed && (
+      {!hasInteracted && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

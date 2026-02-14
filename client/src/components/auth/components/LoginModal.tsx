@@ -152,8 +152,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 </button>
 
                 {/* Scrollable Content */}
-                <div className="max-h-[85vh] overflow-y-auto">
-                <div className="p-5 pt-8">
+                <div className="max-h-[85vh] overflow-y-auto overflow-x-hidden">
+                <div className="p-4 sm:p-5 pt-8 box-border">
                   {/* Icon */}
                   <div className="flex justify-center mb-2">
                     <div className="w-12 h-12 rounded-full bg-[#faf7f5] dark:bg-gray-700 flex items-center justify-center">
@@ -262,6 +262,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     <RegisterForm
                       onSubmit={handleRegister}
                       isSubmitting={isSubmitting}
+                      serverError={error}
                     />
                   )}
                 </div>

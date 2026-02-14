@@ -128,10 +128,6 @@ export function AvatarSelector({
                 )}
               </div>
 
-              {/* Name label */}
-              <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 text-hebrew-body truncate w-full text-center">
-                {avatar.label}
-              </span>
             </motion.button>
           );
         })}

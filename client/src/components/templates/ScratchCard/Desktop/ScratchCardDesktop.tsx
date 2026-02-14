@@ -16,6 +16,7 @@ import {
   FooterBranding,
   BackToGallery,
 } from "@/components/templates/components";
+import { FloatingIcons } from "../../OpenWhen/components";
 
 interface ExtendedData {
   title?: string;
@@ -76,15 +77,22 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
 
   const serialNumber = "LUV-888-WIN";
 
+  // Create 3-level color scale from primaryColor
+  const colorLight = adjustBrightness(primaryColor, 80); // Very light tint for background
+  const colorDark = adjustBrightness(primaryColor, -25); // Darker for border
+
   return (
     <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
+      <FloatingIcons />
       <BackToGallery className="top-4 right-4 absolute" />
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto px-6 py-8">
         {/* Title */}
         {data.title && (
-          <h1 className="text-2xl font-bold text-center text-[#5d4e37] dark:text-white mb-6 text-hebrew-heading">
-            {data.title}
+          <h1 className="text-2xl font-bold text-center text-[#5d4e37] dark:text-white mb-6 text-hebrew-heading break-words max-w-[320px]">
+            {data.title.length > 50
+              ? `${data.title.substring(0, 50)}...`
+              : data.title}
           </h1>
         )}
 
@@ -92,11 +100,18 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="relative w-full max-w-md bg-[#f5f0e8] dark:bg-gray-800 rounded-2xl border-4 border-[#5d4e37] dark:border-[#8b7355] shadow-2xl overflow-hidden"
+          className="relative w-full max-w-md rounded-2xl border-4 shadow-2xl overflow-hidden"
+          style={{
+            backgroundColor: colorLight,
+            borderColor: colorDark,
+          }}
         >
           {/* Top Badge */}
-          <div className="bg-[#5d4e37] dark:bg-[#8b7355] py-2 px-4 text-center">
-            <span className="text-xs text-yellow-300 tracking-widest text-hebrew-body">
+          <div
+            className="py-2 px-4 text-center"
+            style={{ backgroundColor: primaryColor }}
+          >
+            <span className="text-xs text-white tracking-widest text-hebrew-body">
               ✨ גרד כאן ✨
             </span>
           </div>
@@ -114,7 +129,10 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
               >
                 CONGRATULATIONS
               </p>
-              <p className="text-2xl md:text-3xl font-bold text-[#5d4e37] dark:text-white text-center text-hebrew-heading leading-relaxed">
+              <p
+                className="text-xl md:text-2xl font-bold text-center text-hebrew-heading leading-relaxed break-words max-w-[300px]"
+                style={{ color: colorDark }}
+              >
                 {getPrizeContent(data)}
               </p>
             </div>
@@ -158,7 +176,10 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
           </div>
 
           {/* Serial Number Footer */}
-          <div className="bg-[#5d4e37] dark:bg-[#8b7355] py-3 px-4 flex items-center justify-center gap-3"></div>
+          <div
+            className="py-3 px-4 flex items-center justify-center gap-3"
+            style={{ backgroundColor: primaryColor }}
+          ></div>
         </motion.div>
 
         {/* Hint Text */}
@@ -186,4 +207,25 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
       <FooterBranding className="shrink-0 pb-4" />
     </div>
   );
+}
+
+/** Adjust hex color brightness by percentage (-100 to 100) */
+function adjustBrightness(hex: string, percent: number): string {
+  const num = parseInt(hex.replace("#", ""), 16);
+  const r = Math.min(
+    255,
+    Math.max(0, (num >> 16) + ((num >> 16) * percent) / 100),
+  );
+  const g = Math.min(
+    255,
+    Math.max(
+      0,
+      ((num >> 8) & 0x00ff) + (((num >> 8) & 0x00ff) * percent) / 100,
+    ),
+  );
+  const b = Math.min(
+    255,
+    Math.max(0, (num & 0x0000ff) + ((num & 0x0000ff) * percent) / 100),
+  );
+  return `#${(0x1000000 + (Math.round(r) << 16) + (Math.round(g) << 8) + Math.round(b)).toString(16).slice(1)}`;
 }

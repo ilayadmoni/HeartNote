@@ -13,7 +13,9 @@ import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
   FooterBranding,
   BackToGallery,
+  
 } from "@/components/templates/components";
+import { FloatingIcons } from "../../OpenWhen/components";
 
 export function DateInviteMobile({
   data,
@@ -28,24 +30,7 @@ export function DateInviteMobile({
   return (
     <div className="w-full h-full min-h-[420px] flex flex-col justify-between gap-6 bg-[#faf7f5] dark:bg-gray-900 px-5 py-6 overflow-hidden relative">
       {/* Background Hearts Pattern */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none overflow-hidden">
-        <span className="absolute top-[8%] left-[10%] text-xl opacity-40"></span>
-        <span className="absolute top-[15%] right-[12%] text-lg opacity-30">
-          ❤
-        </span>
-        <span className="absolute bottom-[20%] left-[8%] text-xl opacity-35">
-          ❤
-        </span>
-        <span className="absolute bottom-[12%] right-[10%] text-lg opacity-25">
-          ❤
-        </span>
-        <span className="absolute top-[50%] left-[5%] text-sm opacity-20">
-          ❤
-        </span>
-        <span className="absolute bottom-[40%] right-[5%] text-sm opacity-25">
-          ❤
-        </span>
-      </div>
+      <FloatingIcons/>
 
       {/* Main Content - Top */}
       <div className="flex flex-col items-center w-full relative z-10">
@@ -77,8 +62,10 @@ export function DateInviteMobile({
               </div>
 
               {/* Question */}
-              <h1 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-1.5 text-hebrew-heading leading-tight">
-                {data.question}
+              <h1 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-1.5 text-hebrew-heading leading-tight break-words max-w-[260px]">
+                {data.question.length > 50
+                  ? `${data.question.substring(0, 50)}...`
+                  : data.question}
               </h1>
 
               {/* Subtitle */}
@@ -138,14 +125,16 @@ export function DateInviteMobile({
               </motion.div>
 
               <h2
-                className="text-xl font-bold text-hebrew-heading mb-1.5"
+                className="text-xl font-bold text-hebrew-heading mb-1.5 break-words max-w-[260px]"
                 style={{ color: primaryColor }}
               >
-                {data.successMessage}
+                {data.successMessage.length > 50
+                  ? `${data.successMessage.substring(0, 50)}...`
+                  : data.successMessage}
               </h2>
 
               <p className="text-xs text-gray-400 mb-5 text-hebrew-body">
-                💕 מחכה לראות אותך 💕
+                ידעתי שהתשובה שלך תהיה כן 😉
               </p>
 
               <button

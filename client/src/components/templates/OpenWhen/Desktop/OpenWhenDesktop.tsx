@@ -39,14 +39,15 @@ export function OpenWhenDesktop({ data }: OpenWhenViewProps) {
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-bold text-center text-[#2e3c52] dark:text-white mb-10 text-hebrew-heading"
+            className="text-3xl font-bold text-center dark:text-white mb-10 text-hebrew-heading"
+            style={{ color: primaryColor }}
           >
             {data.title}
           </motion.h1>
         )}
 
         {/* Envelopes Grid — 3 columns on desktop */}
-        <div className="grid grid-cols-3 gap-1 w-full">
+        <div className="grid grid-cols-3 gap-5 w-full">
           {data.envelopes.map((envelope, index) => (
             <EnvelopeCard
               key={envelope.id}

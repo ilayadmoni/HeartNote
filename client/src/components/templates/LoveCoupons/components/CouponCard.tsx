@@ -13,9 +13,15 @@ interface CouponCardProps {
   coupon: LoveCoupon;
   index: number;
   onRedeem: (id: string) => void;
+  primaryColor?: string;
 }
 
-export function CouponCard({ coupon, index, onRedeem }: CouponCardProps) {
+export function CouponCard({
+  coupon,
+  index,
+  onRedeem,
+  primaryColor,
+}: CouponCardProps) {
   const bgClass = getCouponColorClasses(coupon.color, index);
 
   return (
@@ -57,7 +63,10 @@ export function CouponCard({ coupon, index, onRedeem }: CouponCardProps) {
               {coupon.icon}
             </span>
           )}
-          <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading break-words max-w-[200px]">
+          <h3
+            className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading break-words max-w-[200px]"
+            style={primaryColor ? { color: primaryColor } : undefined}
+          >
             {coupon.title}
           </h3>
           {coupon.description && (
@@ -69,13 +78,20 @@ export function CouponCard({ coupon, index, onRedeem }: CouponCardProps) {
       </div>
 
       {/* Perforated Edge */}
-      <PerforatedEdge />
+      <PerforatedEdge primaryColor={primaryColor} />
 
       {/* COUPON Stub */}
-      <div className="w-10 bg-[#2e3c52] dark:bg-gray-700 rounded-r-xl flex items-center justify-center">
+      <div
+        className="w-10 bg-[#2e3c52] dark:bg-gray-700 rounded-r-xl flex items-center justify-center"
+        style={primaryColor ? { backgroundColor: primaryColor } : undefined}
+      >
         <span
           className="text-[10px] font-bold text-gray-400 tracking-wider text-english-heading"
-          style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+          style={{
+            writingMode: "vertical-rl",
+            transform: "rotate(180deg)",
+            color: "rgba(255,255,255,0.7)",
+          }}
         >
           COUPON
         </span>
@@ -88,9 +104,12 @@ export function CouponCard({ coupon, index, onRedeem }: CouponCardProps) {
 }
 
 /** Perforated dots between body and stub */
-function PerforatedEdge() {
+function PerforatedEdge({ primaryColor }: { primaryColor?: string }) {
   return (
-    <div className="relative w-4 flex flex-col items-center justify-around py-2 bg-[#2e3c52] dark:bg-gray-700">
+    <div
+      className="relative w-4 flex flex-col items-center justify-around py-2 bg-[#2e3c52] dark:bg-gray-700"
+      style={primaryColor ? { backgroundColor: primaryColor } : undefined}
+    >
       {[...Array(5)].map((_, i) => (
         <div
           key={i}

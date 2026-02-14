@@ -40,14 +40,15 @@ export function OpenWhenMobile({ data }: OpenWhenViewProps) {
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold text-center text-[#2e3c52] dark:text-white mb-6 text-hebrew-heading"
+            className="text-2xl font-bold text-center dark:text-white mb-6 text-hebrew-heading"
+            style={{ color: primaryColor }}
           >
             {data.title}
           </motion.h1>
         )}
 
         {/* Envelopes Grid — 2 columns on mobile */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {data.envelopes.map((envelope, index) => (
             <EnvelopeCard
               key={envelope.id}

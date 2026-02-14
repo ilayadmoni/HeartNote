@@ -3,12 +3,14 @@
 /**
  * GalleryTemplateMobile Component
  * Mobile view for the gallery template page (single/double column)
+ * Now dynamically fetches template metadata (categories, premium status) from Supabase
  */
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FilterTabs, TemplateCard } from "../components";
 import { TEMPLATES } from "../data/templates";
+import { useActiveTemplates } from "@/hooks/useActiveTemplates";
 import type { GalleryTemplateProps, TemplateCategory } from "../types";
 
 export function GalleryTemplateMobile({
@@ -17,10 +19,15 @@ export function GalleryTemplateMobile({
 }: GalleryTemplateProps) {
   const [activeTab, setActiveTab] = useState<TemplateCategory>("all");
 
-  const filteredTemplates =
-    activeTab === "all"
-      ? TEMPLATES
-      : TEMPLATES.filter((t) => t.category === activeTab);
+  // Fetch active templates with metadata from Supabase
+  const { enrichedTemplates, loading, error } = useActiveTemplates(TEMPLATES);
+
+  // Filter templates by category
+  const filteredTemplates = enrichedTemplates.filter((template) => {
+    if (activeTab === "all") return true;
+    // Check if selected category is in the template's categories array
+    return template.categories?.includes(activeTab) || template.category === activeTab;
+  });
 
   return (
     <section
@@ -87,8 +94,8 @@ export function GalleryTemplateMobile({
           </motion.div>
         </AnimatePresence>
 
-        {/* Empty State */}
-        {filteredTemplates.length === 0 && (
+        {/* Empty State - No templates for this category */}
+        {!loading && filteredTemplates.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -96,7 +103,41 @@ export function GalleryTemplateMobile({
           >
             <span className="text-4xl mb-3 block">🔜</span>
             <p className="text-gray-500 dark:text-gray-400 text-hebrew-body">
-              תבניות חדשות יגיעו בקרוב!
+              תבניות חדשות בקטגוריה זו יגיעו בקרוב!
+            </p>
+          </motion.div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <span className="text-4xl mb-3 block">⚠️</span>
+            <p className="text-red-500 dark:text-red-400 text-hebrew-body">
+              אירעה שגיאה בטעינת התבניות.
+            </p>
+          </motion.div>
+        )}
+
+        {/* Loading State */}
+        {loading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <div className="inline-block">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                className="w-8 h-8 border-3 border-[#d4826f] border-t-transparent rounded-full"
+              />
+            </div>
+            <p className="text-gray-500 dark:text-gray-400 text-hebrew-body mt-4">
+              טוען תבניות...
             </p>
           </motion.div>
         )}

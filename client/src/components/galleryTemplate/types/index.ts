@@ -8,7 +8,8 @@ export interface Template {
   title: string;
   description: string;
   imageSrc?: string;
-  category: TemplateCategory;
+  category?: TemplateCategory; // Deprecated: use categories array instead
+  categories?: string[]; // New: array of categories from DB
   badge?: TemplateBadge;
   link: string;
   linkText?: string;

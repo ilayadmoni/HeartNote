@@ -59,7 +59,7 @@ export function OptionButton({
         )}
       </span>
 
-      <span className="text-[#2e3c52] dark:text-white text-hebrew-body break-words">
+      <span className="text-[#2e3c52] dark:text-white text-hebrew-body break-words flex-1 pr-3 max-w-[85%]">
         {option}
       </span>
     </motion.button>

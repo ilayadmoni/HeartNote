@@ -32,7 +32,9 @@ export function UserMenu() {
           setAvatarUrl(data.avatar_url);
         }
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   // Close menu when clicking outside
@@ -73,7 +75,6 @@ export function UserMenu() {
     user.user_metadata?.display_name?.split(" ")[0] ||
     user.email?.split("@")[0] ||
     "משתמש";
-    
 
   return (
     <div ref={menuRef} className="relative">
@@ -130,12 +131,12 @@ export function UserMenu() {
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
             className="
-              absolute top-full right-0 left-auto mt-2
+              absolute top-full left-0 mt-2
               w-56 max-w-[calc(100vw-1rem)]
               bg-white dark:bg-gray-800
               rounded-xl shadow-lg
               border border-gray-100 dark:border-gray-700
-              overflow-hidden
+              overflow-hidden 
               z-[60]
             "
           >
@@ -144,7 +145,6 @@ export function UserMenu() {
               <p className="text-sm font-bold text-[#2e3c52] dark:text-white text-hebrew-heading truncate">
                 {user.user_metadata?.full_name || displayName}
               </p>
-            
             </div>
 
             {/* Menu Items */}

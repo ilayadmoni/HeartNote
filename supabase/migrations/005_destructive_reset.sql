@@ -62,6 +62,7 @@ BEGIN
         first_name,
         last_name,
         avatar_url,
+        date_of_birth,
         subscription_tier,
         creations_count,
         creations_left_free
@@ -72,6 +73,7 @@ BEGIN
         COALESCE(NEW.raw_user_meta_data->>'first_name', split_part(NEW.email, '@', 1)),
         COALESCE(NEW.raw_user_meta_data->>'last_name', ''),
         NEW.raw_user_meta_data->>'avatar_url',
+        (NEW.raw_user_meta_data->>'date_of_birth')::DATE,
         'free',
         0,
         3

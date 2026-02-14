@@ -9,6 +9,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BrandCalendar } from "@/components/ui/BrandCalendar";
 import type { TimelineEvent } from "@/components/templates/types";
+import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
 
 interface TimelineEventsEditorProps {
   events: TimelineEvent[];
@@ -111,21 +112,19 @@ export function TimelineEventsEditor({
             />
 
             {/* Title Input */}
-            <input
-              type="text"
+            <LimitedInput
               value={event.title}
-              onChange={(e) => updateEvent(event.id, "title", e.target.value)}
+              onChange={(v) => updateEvent(event.id, "title", v)}
+              maxLength={CHAR_LIMITS.TITLE}
               placeholder="כותרת האירוע"
               className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f]/50 text-hebrew-body"
             />
 
             {/* Description Input */}
-            <input
-              type="text"
+            <LimitedInput
               value={event.description || ""}
-              onChange={(e) =>
-                updateEvent(event.id, "description", e.target.value)
-              }
+              onChange={(v) => updateEvent(event.id, "description", v)}
+              maxLength={CHAR_LIMITS.BODY}
               placeholder="תיאור קצר (אופציונלי)"
               className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f]/50 text-hebrew-body"
             />

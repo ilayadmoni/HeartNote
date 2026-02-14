@@ -14,12 +14,17 @@ import {
   FooterBranding,
   BackToGallery,
 } from "@/components/templates/components";
+import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
+import { FloatingIcons } from "../../OpenWhen/components";
+
 
 export function LoveCouponsMobile({ data }: CouponsViewProps) {
   const { coupons, handleRedeem, handleReset } = useCoupons(data.coupons);
+  const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
     <div className="min-h-[420px] bg-[#faf7f5] dark:bg-gray-900 px-4 py-6 relative flex flex-col justify-between gap-6">
+    <FloatingIcons />
       {/* Main Content - Top */}
       <div className="max-w-lg mx-auto w-full">
         <BackToGallery className="mb-3" />
@@ -29,7 +34,8 @@ export function LoveCouponsMobile({ data }: CouponsViewProps) {
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold text-center text-[#2e3c52] dark:text-white mb-6 text-hebrew-heading"
+            className="text-2xl font-bold text-center mb-6 text-hebrew-heading break-words max-w-[280px] mx-auto"
+            style={{ color: primaryColor }}
           >
             {data.title}
           </motion.h1>
@@ -43,6 +49,7 @@ export function LoveCouponsMobile({ data }: CouponsViewProps) {
               coupon={coupon}
               index={index}
               onRedeem={handleRedeem}
+              primaryColor={primaryColor}
             />
           ))}
         </div>

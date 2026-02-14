@@ -29,11 +29,11 @@ export const AUTH_LABELS = {
 
 // Placeholders
 export const AUTH_PLACEHOLDERS = {
-  firstName: "הכניסו את שמכם הפרטי",
-  lastName: "הכניסו את שם המשפחה",
+  firstName: "משה",
+  lastName: "זוכמיר",
   email: "your@email.com",
-  password: "••••••••",
-  confirmPassword: "••••••••",
+  password: "הכניסו סיסמה",
+  confirmPassword: "הכניסו סיסמה שוב",
   dateOfBirth: "",
 } as const;
 

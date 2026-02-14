@@ -11,6 +11,7 @@ export const HERO_TITLE_LINE2 = "למפעל הרגעים שלכם.";
 export const HERO_DESCRIPTION = "צרו בקלות כרטיסים דיגיטליים, מצחיקים ומרגשים שכיף לתת למי שאוהבים.";
 export const HERO_DESCRIPTION_2 = "בחרו תבנית, התאימו אישית, ושלחו!";
 export const HERO_CTA = "התניעו את המכונה – התחילו לעצב";
+export const HERO_CTA_SECONDARY = "צפו בדוגמה";
 
 // Gallery Teaser
 export const GALLERY_TITLE = "טעימה מהגלריה";

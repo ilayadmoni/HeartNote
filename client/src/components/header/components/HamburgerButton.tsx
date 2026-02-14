@@ -16,9 +16,10 @@ export function HamburgerButton({
     <button
       onClick={onClick}
       className={`
-        p-2 rounded-lg
-        border border-navy-200 dark:border-navy-600
-        hover:bg-gray-50 dark:hover:bg-navy-800
+        flex items-center justify-center
+        w-10 h-10 rounded-lg
+        border border-gray-200 dark:border-gray-600
+        hover:bg-gray-50 dark:hover:bg-gray-800
         transition-colors duration-200
         lg:hidden
         ${className}
@@ -27,26 +28,26 @@ export function HamburgerButton({
       aria-expanded={isOpen}
       aria-controls="mobile-menu"
     >
-      <div className="w-5 h-4 relative flex flex-col justify-between">
+      <div className="w-[18px] h-[14px] relative">
         <span
           className={`
-            block h-0.5 w-full bg-navy-700 dark:bg-gray-200
-            transition-transform duration-300 origin-left
-            ${isOpen ? "rotate-45 translate-x-0.5" : ""}
+            absolute left-0 right-0 h-0.5 bg-[#2e3c52] dark:bg-gray-200
+            transition-all duration-300
+            ${isOpen ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0"}
           `}
         />
         <span
           className={`
-            block h-0.5 w-full bg-navy-700 dark:bg-gray-200
+            absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 bg-[#2e3c52] dark:bg-gray-200
             transition-opacity duration-300
             ${isOpen ? "opacity-0" : ""}
           `}
         />
         <span
           className={`
-            block h-0.5 w-full bg-navy-700 dark:bg-gray-200
-            transition-transform duration-300 origin-left
-            ${isOpen ? "-rotate-45 translate-x-0.5" : ""}
+            absolute left-0 right-0 h-0.5 bg-[#2e3c52] dark:bg-gray-200
+            transition-all duration-300
+            ${isOpen ? "top-1/2 -translate-y-1/2 -rotate-45" : "bottom-0"}
           `}
         />
       </div>

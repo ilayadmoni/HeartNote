@@ -84,16 +84,25 @@ export function WheelCanvas({
         ctx.translate(lx, ly);
         ctx.rotate(midAngle + Math.PI / 2);
         ctx.fillStyle = "#2e3c52";
-        ctx.font = `bold ${Math.max(11, Math.floor(w / 22))}px sans-serif`;
+        
+        // Dynamic font sizing based on text width
+        const label = options[i] || "";
+        const maxWidth = r * 0.3; // max width available in slice
+        let fontSize = Math.max(11, Math.floor(w / 22));
+        
+        // Measure text and shrink if needed
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        let textWidth = ctx.measureText(label).width;
+        
+        // If text is too wide, reduce font size until it fits
+        while (textWidth > maxWidth && fontSize > 8) {
+          fontSize -= 1;
+          ctx.font = `bold ${fontSize}px sans-serif`;
+          textWidth = ctx.measureText(label).width;
+        }
+        
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-
-        // Truncate long labels
-        const maxLen = 12;
-        const label =
-          options[i].length > maxLen
-            ? options[i].slice(0, maxLen - 1) + "…"
-            : options[i];
         ctx.fillText(label, 0, 0);
         ctx.restore();
       }

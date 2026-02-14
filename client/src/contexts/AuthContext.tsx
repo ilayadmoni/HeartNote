@@ -99,7 +99,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
-      const { error } = await supabase.auth.signUp({
+      console.log("[Auth] signUp attempt:", { email, firstName, lastName, dateOfBirth });
+
+      // Ensure date is in YYYY-MM-DD format for PostgreSQL DATE column
+      let formattedDob: string | undefined;
+      if (dateOfBirth) {
+        const parsed = new Date(dateOfBirth + "T00:00:00");
+        if (isNaN(parsed.getTime())) {
+          setError("תאריך לידה לא תקין");
+          throw new Error("Invalid date_of_birth format");
+        }
+        formattedDob = parsed.toISOString().split("T")[0]; // YYYY-MM-DD
+      }
+
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -107,18 +120,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             first_name: firstName,
             last_name: lastName,
             full_name: `${firstName} ${lastName}`.trim(),
-            date_of_birth: dateOfBirth,
+            date_of_birth: formattedDob,
           },
           // Don't auto-sign in - require email verification
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) {
+        console.error("[Auth] signUp Supabase error:", error.message, error);
+        console.log(data);
+
         setError(getErrorMessage(error.message));
         throw error;
       }
+      console.log("[Auth] signUp success:", data?.user?.id);
       // Don't set user - they need to verify email first
     } catch (err) {
+      console.error("[Auth] signUp caught error:", err);
       if (err instanceof Error && !error) {
         setError(getErrorMessage(err.message));
       }

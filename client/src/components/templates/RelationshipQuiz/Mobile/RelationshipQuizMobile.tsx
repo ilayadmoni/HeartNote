@@ -14,6 +14,8 @@ import {
   FooterBranding,
   BackToGallery,
 } from "@/components/templates/components";
+import { FloatingIcons } from "../../OpenWhen/components";
+
 
 export function RelationshipQuizMobile({ data }: QuizViewProps) {
   const quiz = useQuiz(data.questions);
@@ -22,13 +24,14 @@ export function RelationshipQuizMobile({ data }: QuizViewProps) {
 
   return (
     <div className="min-h-[420px] bg-[#faf7f5] dark:bg-gray-900 px-4 py-6 relative flex flex-col justify-between gap-6">
+      <FloatingIcons/>
       {/* Main Content - Top */}
       <div className="max-w-md mx-auto w-full">
         <BackToGallery className="mb-3" />
 
         {/* Title */}
         {data.title && (
-          <h1 className="text-2xl font-bold text-center text-[#2e3c52] dark:text-white mb-10 text-hebrew-heading break-words">
+          <h1 className="text-2xl font-bold text-center text-[#2e3c52] dark:text-white mb-10 text-hebrew-heading break-words max-w-[300px] mx-auto">
             {data.title.length > 50
               ? `${data.title.substring(0, 50)}...`
               : data.title}

@@ -27,6 +27,8 @@ interface RegisterFormProps {
     dateOfBirth: string,
   ) => Promise<void>;
   isSubmitting: boolean;
+  /** Server/Supabase error passed from parent */
+  serverError?: string | null;
 }
 
 interface FormData {
@@ -52,7 +54,7 @@ interface FormErrors {
 // Password validation: min 8 chars, at least 1 letter and 1 number
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
-export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
+export function RegisterForm({ onSubmit, isSubmitting, serverError }: RegisterFormProps) {
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -89,8 +91,15 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
         if (value !== formData.password)
           return AUTH_VALIDATION.passwordMismatch;
         return undefined;
-      case "dateOfBirth":
-        return !value ? AUTH_VALIDATION.dateOfBirthRequired : undefined;
+      case "dateOfBirth": {
+        if (!value) return AUTH_VALIDATION.dateOfBirthRequired;
+        // Validate YYYY-MM-DD format
+        const dateStr = value as string;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return "תאריך לא תקין";
+        const parsed = new Date(dateStr + "T00:00:00");
+        if (isNaN(parsed.getTime())) return "תאריך לא תקין";
+        return undefined;
+      }
       case "agreedToTerms":
         return !value ? AUTH_VALIDATION.termsRequired : undefined;
       default:
@@ -140,8 +149,9 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
         formData.dateOfBirth,
       );
       setIsSuccess(true);
-    } catch {
-      // Error handled by parent
+    } catch (err) {
+      console.error("[RegisterForm] Submit error:", err);
+      // Error is displayed via serverError prop from AuthContext
     }
   };
 
@@ -160,9 +170,18 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="w-full box-border">
+      {/* Server Error (Supabase) */}
+      {serverError && (
+        <div className="mb-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+          <p className="text-red-600 dark:text-red-400 text-sm text-center text-hebrew-body">
+            {serverError}
+          </p>
+        </div>
+      )}
+
       {/* Name Row - Two columns */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
         <AuthInput
           id="register-firstName"
           label={AUTH_LABELS.firstName}
@@ -226,17 +245,36 @@ export function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
       {/* Terms & Privacy Checkbox */}
       <div className="mt-3 mb-1">
         <label className="flex items-start gap-2 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={formData.agreedToTerms}
-            onChange={(e) => handleFieldChange("agreedToTerms", e.target.checked)}
-            className="
-              mt-1 h-4 w-4 rounded border-gray-300
-              text-[#2e3c52] focus:ring-[#2e3c52]
-              dark:border-gray-600 dark:bg-gray-700
-              cursor-pointer shrink-0
-            "
-          />
+          <span className="relative mt-0.5 shrink-0">
+            <input
+              type="checkbox"
+              checked={formData.agreedToTerms}
+              onChange={(e) => handleFieldChange("agreedToTerms", e.target.checked)}
+              className="peer sr-only"
+            />
+            <span
+              className="
+                block w-4 h-4 rounded border-2
+                border-gray-300 dark:border-gray-500
+                bg-white dark:bg-gray-700
+                peer-checked:bg-[#2e3c52] peer-checked:border-[#2e3c52]
+                dark:peer-checked:bg-[#d4826f] dark:peer-checked:border-[#d4826f]
+                peer-focus-visible:ring-2 peer-focus-visible:ring-[#2e3c52] peer-focus-visible:ring-offset-1
+                transition-all duration-150 cursor-pointer
+              "
+            />
+            <svg
+              className="absolute top-[3px] left-[3px] w-2.5 h-2.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M2 6l3 3 5-5" />
+            </svg>
+          </span>
           <span className="text-xs text-[#2e3c52] dark:text-gray-300 text-hebrew-body leading-relaxed">
             קראתי ואני מאשר/ת את{" "}
             <Link

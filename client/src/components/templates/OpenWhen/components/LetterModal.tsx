@@ -41,7 +41,7 @@ export function LetterModal({
             className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
           >
             <div
-              className="bg-[#fffef8] dark:bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-lg max-h-[80vh] overflow-auto relative pointer-events-auto"
+              className="bg-[#fffef8] dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] relative pointer-events-auto flex flex-col"
               style={{
                 backgroundImage: `repeating-linear-gradient(transparent, transparent 31px, #e5e5e5 31px, #e5e5e5 32px)`,
                 backgroundPosition: "0 24px",
@@ -50,35 +50,40 @@ export function LetterModal({
               {/* Close Button */}
               <button
                 onClick={onClose}
-                className="absolute top-4 left-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="absolute top-4 left-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors z-10"
                 aria-label="סגור"
               >
                 ✕
               </button>
 
-              {/* Title */}
-              <h2 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-2 text-center text-hebrew-heading">
-                {envelope.emoji} {envelope.title}
-              </h2>
+              {/* Header section (non-scrolling) */}
+              <div className="px-6 md:px-8 pt-6 md:pt-8 flex-shrink-0">
+                {/* Title */}
+                <h2 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-2 text-center text-hebrew-heading">
+                  {envelope.title}
+                </h2>
 
-              {/* Divider */}
-              <div
-                className="w-16 h-0.5 mx-auto mb-6"
-                style={{ backgroundColor: primaryColor }}
-              />
-
-              {/* Letter Content */}
-              <div
-                className="text-[#2e3c52] dark:text-gray-200 text-lg leading-relaxed whitespace-pre-wrap text-hebrew-body"
-                style={{
-                  fontFamily: "'Segoe Script', 'Brush Script MT', cursive",
-                }}
-              >
-                {envelope.content}
+                {/* Divider */}
+                <div
+                  className="w-16 h-0.5 mx-auto mb-6"
+                  style={{ backgroundColor: primaryColor }}
+                />
               </div>
 
-              {/* Heart signature */}
-              <div className="text-center mt-8 text-3xl">💕</div>
+              {/* Letter Content (scrollable) */}
+              <div className="flex-1 overflow-y-auto px-6 md:px-8 pb-6 md:pb-8">
+                <div
+                  className="text-[#2e3c52] dark:text-gray-200 text-lg leading-relaxed break-words whitespace-pre-wrap text-hebrew-body"
+                  style={{
+                    fontFamily: "'Segoe Script', 'Brush Script MT', cursive",
+                  }}
+                >
+                  {envelope.content}
+                </div>
+
+                {/* Heart signature */}
+                <div className="text-center mt-8 text-3xl">💕</div>
+              </div>
             </div>
           </motion.div>
         </>

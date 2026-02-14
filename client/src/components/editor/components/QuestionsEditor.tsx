@@ -9,6 +9,7 @@
 import { Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { QuizQuestion } from "@/components/templates/types";
+import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
 
 const MAX_QUESTIONS = 10;
 
@@ -116,13 +117,12 @@ function QuestionItem({ question, index, onRemove, onUpdateField, onUpdateOption
       </div>
 
       {/* Question text */}
-      <input
-        type="text"
+      <LimitedInput
         value={question.question}
-        onChange={(e) => onUpdateField(question.id, "question", e.target.value)}
+        onChange={(v) => onUpdateField(question.id, "question", v)}
+        maxLength={CHAR_LIMITS.QUESTION}
         placeholder="טקסט השאלה"
         className={inputClass}
-        dir="auto"
       />
 
       {/* Correct answer */}
@@ -130,13 +130,12 @@ function QuestionItem({ question, index, onRemove, onUpdateField, onUpdateOption
         <label className="text-[10px] text-green-600 dark:text-green-400 font-bold text-hebrew-body">
           ✓ תשובה נכונה
         </label>
-        <input
-          type="text"
+        <LimitedInput
           value={question.options[question.correctIndex] || ""}
-          onChange={(e) => onUpdateOption(question.id, question.correctIndex, e.target.value)}
+          onChange={(v) => onUpdateOption(question.id, question.correctIndex, v)}
+          maxLength={CHAR_LIMITS.ANSWER}
           placeholder="התשובה הנכונה"
           className={`${inputClass} border-green-300 dark:border-green-700`}
-          dir="auto"
         />
       </div>
 
@@ -148,13 +147,12 @@ function QuestionItem({ question, index, onRemove, onUpdateField, onUpdateOption
             <label className="text-[10px] text-red-400 dark:text-red-400 font-bold text-hebrew-body">
               ✗ תשובה שגויה {oi > question.correctIndex ? oi : oi + 1}
             </label>
-            <input
-              type="text"
+            <LimitedInput
               value={opt}
-              onChange={(e) => onUpdateOption(question.id, oi, e.target.value)}
+              onChange={(v) => onUpdateOption(question.id, oi, v)}
+              maxLength={CHAR_LIMITS.ANSWER}
               placeholder="תשובה שגויה"
               className={`${inputClass} border-red-200 dark:border-red-800`}
-              dir="auto"
             />
           </div>
         );

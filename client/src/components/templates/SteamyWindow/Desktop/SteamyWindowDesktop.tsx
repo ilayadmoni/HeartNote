@@ -12,10 +12,12 @@ import {
   FooterBranding,
   BackToGallery,
 } from "@/components/templates/components";
+import { FloatingIcons } from "../../OpenWhen/components";
 
 export function SteamyWindowDesktop({ data }: SteamyWindowViewProps) {
   return (
     <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative">
+      <FloatingIcons />
       <BackToGallery className="top-4 right-4 absolute" />
       {/* Decorative blobs */}
       <div className="absolute top-20 left-16 w-48 h-48 bg-[#C7CEEA]/15 rounded-full blur-3xl pointer-events-none" />
@@ -28,7 +30,8 @@ export function SteamyWindowDesktop({ data }: SteamyWindowViewProps) {
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-bold text-center text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading"
+            className="text-3xl font-bold text-center dark:text-white mb-2 text-hebrew-heading"
+            style={{ color: data.primaryColor || "#2e3c52" }}
           >
             {data.title}
           </motion.h1>
@@ -54,7 +57,6 @@ export function SteamyWindowDesktop({ data }: SteamyWindowViewProps) {
             width={400}
             height={320}
             revealMessage={data.revealMessage || "אני אוהב אותך! ❤️"}
-            emoji={data.emoji}
             primaryColor={data.primaryColor}
             backgroundImage={data.background_image}
           />

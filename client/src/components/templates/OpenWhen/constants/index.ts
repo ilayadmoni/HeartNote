@@ -1,19 +1,19 @@
 /**
  * OpenWhen Constants
- * Pastel palette, emoji options, animation variants
+ * Stationery palette, emoji options, animation variants
  */
 
 /** Maximum envelopes the user can create */
 export const MAX_ENVELOPES = 6;
 
-/** Pastel color palette for envelope cards (rotating) */
+/** Premium stationery color palette for envelopes (rotating) */
 export const ENVELOPE_COLORS = [
-  { bg: "bg-rose-50 dark:bg-rose-900/20", border: "border-rose-200 dark:border-rose-800" },
-  { bg: "bg-sky-50 dark:bg-sky-900/20", border: "border-sky-200 dark:border-sky-800" },
-  { bg: "bg-amber-50 dark:bg-amber-900/20", border: "border-amber-200 dark:border-amber-800" },
-  { bg: "bg-violet-50 dark:bg-violet-900/20", border: "border-violet-200 dark:border-violet-800" },
-  { bg: "bg-emerald-50 dark:bg-emerald-900/20", border: "border-emerald-200 dark:border-emerald-800" },
-  { bg: "bg-pink-50 dark:bg-pink-900/20", border: "border-pink-200 dark:border-pink-800" },
+  { body: "#fef2f0", flap: "#fce4e0", seal: "#e8636b", accent: "#f9d4cf" },
+  { body: "#eef6fc", flap: "#dceefb", seal: "#5b9bd5", accent: "#c5dff4" },
+  { body: "#fef9ee", flap: "#fdf0d0", seal: "#d4a33e", accent: "#f5e4b3" },
+  { body: "#f5f0fc", flap: "#ebe0fa", seal: "#9b6fd0", accent: "#d8c6f0" },
+  { body: "#eefaf3", flap: "#d6f2e2", seal: "#4caf84", accent: "#b8e8ce" },
+  { body: "#fef0f5", flap: "#fce0eb", seal: "#d4688a", accent: "#f5c6d7" },
 ];
 
 /** Floating background emojis */

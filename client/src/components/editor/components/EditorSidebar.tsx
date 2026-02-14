@@ -9,6 +9,7 @@
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { EditorField } from "./EditorField";
+import { ExpirationBanner } from "./ExpirationBanner";
 import type { EditorSidebarProps } from "../types";
 
 export function EditorSidebar({ config, data, onChange, userId }: EditorSidebarProps) {
@@ -21,7 +22,7 @@ export function EditorSidebar({ config, data, onChange, userId }: EditorSidebarP
   return (
     <div className="flex flex-col h-full">
       {/* Compact Header - Fixed */}
-      <div className="flex-shrink-0 px-5 pt-2 pb-3 border-b border-gray-100 dark:border-gray-700">
+      <div className="flex-shrink-0 px-4 sm:px-5 pt-2 pb-3 border-b border-gray-100 dark:border-gray-700">
         <h2 className="text-base font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
           מאפיינים
         </h2>
@@ -31,7 +32,8 @@ export function EditorSidebar({ config, data, onChange, userId }: EditorSidebarP
       </div>
 
       {/* Form Fields - Scrollable */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-5 py-4 space-y-5">
+        <ExpirationBanner slug={config.templateId} />
         {uniqueFields.map((field, index) => (
           <motion.div
             key={field.key}
@@ -50,7 +52,7 @@ export function EditorSidebar({ config, data, onChange, userId }: EditorSidebarP
       </div>
 
       {/* Footer Hint - Fixed */}
-      <div className="flex-shrink-0 px-5 py-3 border-t border-gray-50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/50">
+      <div className="flex-shrink-0 px-4 sm:px-5 py-3 border-t border-gray-50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/50">
         <p className="text-[11px] text-gray-400 dark:text-gray-500 text-center text-hebrew-body flex items-center justify-center gap-1.5">
           <Sparkles size={12} className="text-[#d4826f]" />
           <span>התצוגה מתעדכנת בזמן אמת</span>

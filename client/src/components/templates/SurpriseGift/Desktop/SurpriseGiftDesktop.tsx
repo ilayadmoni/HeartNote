@@ -16,6 +16,8 @@ import {
   BackToGallery,
 } from "@/components/templates/components";
 import type { SurpriseGiftProps } from "../types";
+import { FloatingIcons } from "../../OpenWhen/components";
+
 
 const DEFAULT_CLICKS = 5;
 
@@ -65,33 +67,34 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
 
   return (
     <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative">
+      <FloatingIcons />
       <BackToGallery className="top-4 right-4 absolute" />
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto px-6 py-8">
         {/* Title */}
-        <h1 className="text-3xl font-bold text-[#5d4e37] dark:text-white mb-8 text-hebrew-heading text-center">
+        <h1 className="text-3xl font-bold dark:text-white mb-8 text-hebrew-heading text-center" style={{ color: primaryColor }}>
           {title}
         </h1>
 
-        {/* Gift Box – clickable, shakes */}
-        <motion.button
-          onClick={handleClick}
-          animate={shaking ? { rotate: [0, -8, 8, -6, 6, -3, 3, 0] } : {}}
-          transition={{ duration: 0.4 }}
-          whileHover={!isOpen ? { scale: 1.05 } : {}}
-          className="cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
-          style={{ focusVisibleRingColor: primaryColor } as React.CSSProperties}
-          aria-label={
-            isOpen ? "המתנה נפתחה" : `לחצו לנער את המתנה (${clicks}/${needed})`
-          }
-        >
-          <GiftBox
-            boxColor={boxColor}
-            ribbonColor={ribbonColor}
-            isOpen={isOpen}
-            size={220}
-          />
-        </motion.button>
+        {/* Gift Box – clickable, shakes - hide when opened */}
+        {!isOpen && (
+          <motion.button
+            onClick={handleClick}
+            animate={shaking ? { rotate: [0, -8, 8, -6, 6, -3, 3, 0] } : {}}
+            transition={{ duration: 0.4 }}
+            whileHover={{ scale: 1.05 }}
+            className="cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
+            style={{ focusVisibleRingColor: primaryColor } as React.CSSProperties}
+            aria-label={`לחצו לנער את המתנה (${clicks}/${needed})`}
+          >
+            <GiftBox
+              boxColor={boxColor}
+              ribbonColor={ribbonColor}
+              isOpen={false}
+              size={220}
+            />
+          </motion.button>
+        )}
 
         {/* Revealed greeting */}
         <AnimatePresence>
@@ -106,17 +109,19 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
                 damping: 14,
                 delay: 0.2,
               }}
-              className="mt-8 text-center max-w-md"
+              className="w-full max-w-md rounded-2xl shadow-lg bg-white dark:bg-gray-800 p-6 md:p-8"
             >
-              <p
-                className="text-2xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-line"
-                style={{ color: primaryColor }}
-              >
-                {greeting}
-              </p>
+              <div className="max-h-[60vh] overflow-y-auto">
+                <p
+                  className="text-2xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words"
+                  style={{ color: primaryColor }}
+                >
+                  {greeting}
+                </p>
+              </div>
               <button
                 onClick={handleReset}
-                className="mt-6 text-sm underline text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                className="w-full mt-6 text-sm font-medium underline text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
               >
                 נסו שוב
               </button>

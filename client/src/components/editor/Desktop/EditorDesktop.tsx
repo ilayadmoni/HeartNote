@@ -14,6 +14,7 @@ import { EditorSidebar } from "../components/EditorSidebar";
 import { EditorPreview } from "../components/EditorPreview";
 import { SuccessModal } from "../components/SuccessModal";
 import { QuotaModal } from "../components/QuotaModal";
+import { CreationConfirmModal } from "../components/CreationConfirmModal";
 import { EDITOR_CONFIGS } from "../configs";
 import { createUserCreation } from "../api";
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,6 +34,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     logData,
   } = useTemplateData(templateId, config?.defaultData || {});
   const [isPublishing, setIsPublishing] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [successData, setSuccessData] = useState<{
     url: string;
     expiresAt: string | null;
@@ -78,16 +80,24 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     );
   }
 
-  const handlePublish = async () => {
+  // Show confirmation modal instead of immediately creating
+  const handlePublish = () => {
+    setShowConfirmModal(true);
+  };
+
+  // Handle the actual creation after confirmation
+  const handleConfirmCreation = async () => {
     logData("שליחה");
     setIsPublishing(true);
     try {
       const result = await createUserCreation(templateId, data);
       setSuccessData({ url: result.url, expiresAt: result.expiresAt });
+      setShowConfirmModal(false); // Close modal on success
     } catch (error: unknown) {
       const apiError = error as { status?: number; detail?: string };
       if (apiError.status === 403 && apiError.detail === "QUOTA_EXCEEDED") {
         setShowQuotaModal(true);
+        setShowConfirmModal(false); // Close confirmation modal
       } else if (
         apiError.status === 402 &&
         apiError.detail === "TEMPLATE_NOT_ALLOWED"
@@ -95,9 +105,11 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         alert(
           "תבנית זו אינה זמינה במנוי הנוכחי שלך. שדרג את המנוי כדי להשתמש בה.",
         );
+        setShowConfirmModal(false); // Close confirmation modal
       } else {
         console.error("Failed to publish:", error);
         alert("שגיאה ביצירת הכרטיס. נסה שוב.");
+        // Keep confirmation modal open so user can retry
       }
     } finally {
       setIsPublishing(false);
@@ -124,7 +136,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
           ) : (
             <Send size={16} />
           )}
-          <span>{isPublishing ? "יוצר..." : "שליחה"}</span>
+          <span>{isPublishing ? "יוצר..." : "יצירה"}</span>
         </motion.button>
       </div>
 
@@ -161,6 +173,16 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       <QuotaModal
         isOpen={showQuotaModal}
         onClose={() => setShowQuotaModal(false)}
+      />
+
+      {/* Creation Confirmation Modal */}
+      <CreationConfirmModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmCreation}
+        templateSlug={templateId}
+        templateName={config.title}
+        isLoading={isPublishing}
       />
     </div>
   );

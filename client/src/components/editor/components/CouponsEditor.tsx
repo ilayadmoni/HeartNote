@@ -9,6 +9,7 @@
 import { Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { LoveCoupon } from "@/components/templates/types";
+import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
 
 const EMOJI_OPTIONS = [
   "💆", "🍽️", "🎬", "🧹", "💤", "🍫",
@@ -152,23 +153,21 @@ function CouponItem({ coupon, index, onRemove, onUpdate }: CouponItemProps) {
       </div>
 
       {/* Title */}
-      <input
-        type="text"
+      <LimitedInput
         value={coupon.title}
-        onChange={(e) => onUpdate(coupon.id, "title", e.target.value)}
+        onChange={(v) => onUpdate(coupon.id, "title", v)}
+        maxLength={CHAR_LIMITS.TITLE}
         placeholder="כותרת הקופון"
         className={inputClass}
-        dir="auto"
       />
 
       {/* Description */}
-      <input
-        type="text"
+      <LimitedInput
         value={coupon.description || ""}
-        onChange={(e) => onUpdate(coupon.id, "description", e.target.value)}
+        onChange={(v) => onUpdate(coupon.id, "description", v)}
+        maxLength={CHAR_LIMITS.BODY}
         placeholder="תיאור קצר (אופציונלי)"
         className={inputClass}
-        dir="auto"
       />
     </motion.div>
   );

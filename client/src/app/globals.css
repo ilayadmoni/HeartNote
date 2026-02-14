@@ -201,7 +201,8 @@ html {
   
   .animate-spin-slow,
   .animate-spin-slow-reverse,
-  .animate-float {
+  .animate-float,
+  .hero-float {
     animation: none !important;
   }
 }
@@ -409,6 +410,16 @@ html {
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+/* Hero hand + phone floating animation */
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.hero-float {
+  animation: hero-float 5s ease-in-out infinite;
 }
 
 .conveyor-belt {

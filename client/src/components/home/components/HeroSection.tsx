@@ -15,17 +15,16 @@ import {
   HERO_DESCRIPTION,
   HERO_DESCRIPTION_2,
   HERO_CTA,
+  HERO_CTA_SECONDARY,
 } from "../constants";
-import { FactoryIllustration } from "./FactoryIllustration";
+import { HeroVisual } from "./HeroVisual";
 import type { HeroSectionProps } from "../types";
 
 export function HeroSection({ className = "" }: HeroSectionProps) {
   return (
-    <section
-      className={`relative py-16 lg:py-24 px-4 overflow-hidden ${className}`}
-    >
+    <section className={`relative py-8  px-4 overflow-hidden ${className}`}>
       {/* Background Decorative Gears */}
-      <div className="absolute top-0 left-0 -ml-20 -mt-20 opacity-15">
+      <div className="absolute top-0  left-0 -ml-20 -mt-20 opacity-15">
         <Settings size={300} className="animate-spin-slow text-[#415A77]" />
       </div>
       <div className="absolute bottom-0 right-0 -mr-20 -mb-20 opacity-15">
@@ -36,7 +35,7 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
       </div>
 
       <div className="container mx-auto max-w-7xl">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-16">
           {/* Right Side: Text Content (RTL) */}
           <div className="flex-1 text-center lg:text-right z-10">
             {/* Badge */}
@@ -93,11 +92,12 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
               {HERO_DESCRIPTION_2}
             </motion.p>
 
-            {/* CTA Button */}
+            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
             >
               <Link
                 href="/gallery"
@@ -106,12 +106,18 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
                 {HERO_CTA}
                 <ArrowLeft size={20} />
               </Link>
+              <Link
+                href="/gallery#examples"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-bold text-[#d4826f] dark:text-[#e8917a] border-2 border-[#d4826f] dark:border-[#e8917a] hover:bg-[#d4826f]/10 transition-all duration-300 text-hebrew-heading"
+              >
+                {HERO_CTA_SECONDARY}
+              </Link>
             </motion.div>
           </div>
 
-          {/* Left Side: Factory Illustration */}
-          <div className="flex-1 w-full max-w-lg lg:max-w-xl">
-            <FactoryIllustration />
+          {/* Left Side: Hand + Phone Visual */}
+          <div className="flex-1 w-full max-w-[360px] mx-auto lg:mx-0">
+            <HeroVisual />
           </div>
         </div>
       </div>

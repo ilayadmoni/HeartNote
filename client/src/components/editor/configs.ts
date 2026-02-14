@@ -34,11 +34,11 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
       },
     ],
     defaultData: {
-      question: "האם תצא/י איתי לדייט?",
-      yesText: "כן!",
+      question: "האם תרצה לצאת איתי לדייט?",
+      yesText: "כן",
       noText: "לא",
-      successMessage: "!יש! איזה כיף",
-      primaryColor: "#C7CEEA",
+      successMessage: "יש איזה כיף!",
+      primaryColor: "#d4826f",
     },
   },
   "scratch-card": {
@@ -67,7 +67,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
     defaultData: {
       title: "גרד וגלה את ההפתעה",
       prizeContent: "🎁 זכית בהפתעה מיוחדת!",
-      primaryColor: "#FFB7B2",
+      primaryColor: "#d4826f",
     },
   },
   timeline: {
@@ -95,7 +95,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
     defaultData: {
       title: "הסיפור שלנו",
       events: [],
-      primaryColor: "#B5EAD7",
+      primaryColor: "#d4826f",
     },
   },
   "love-coupons": {
@@ -148,7 +148,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
           isRedeemed: false,
         },
       ],
-      primaryColor: "#E1BEE7",
+      primaryColor: "#d4826f",
     },
   },
   "relationship-quiz": {
@@ -196,7 +196,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         { minScore: 50, message: "כמעט מושלם..." },
         { minScore: 0, message: "כל הכבוד על הניסיון!" },
       ],
-      primaryColor: "#38b6ff",
+      primaryColor: "#d4826f",
     },
   },
   "open-when": {
@@ -211,11 +211,15 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         placeholder: "מכתבים מיוחדים",
       },
       {
+        key: "primaryColor",
+        label: "צבע ראשי",
+        type: "color",
+      },
+      {
         key: "envelopes",
         label: "מעטפות",
         type: "envelopes",
       },
-
     ],
     defaultData: {
       title: "תפתחי כש...",
@@ -223,19 +227,17 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         {
           id: "env-1",
           title: "כשאת מתגעגעת",
-          emoji: "💖",
           dateOpen: new Date().toISOString().split("T")[0],
           content: "את תמיד בלב שלי, גם כשאנחנו רחוקים...",
         },
         {
           id: "env-2",
           title: "כשאת עצובה",
-          emoji: "😢",
           dateOpen: new Date().toISOString().split("T")[0],
           content: "תזכרי שאני כאן בשבילך, תמיד.",
         },
       ],
-      primaryColor: "#F8BBD0",
+      primaryColor: "#d4826f",
     },
   },
   "decision-wheel": {
@@ -338,18 +340,13 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         label: "הודעה מוסתרת",
         type: "textarea",
         placeholder: "הטקסט שייחשף אחרי הגירוד",
+        maxLength: 18,
       },
       {
         key: "background_image",
         label: "תמונת רקע",
         type: "image_url",
         placeholder: "העלו תמונה לרקע",
-      },
-      {
-        key: "emoji",
-        label: "אימוג'י",
-        type: "text",
-        placeholder: "💖",
       },
       {
         key: "primaryColor",
@@ -360,7 +357,6 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
     defaultData: {
       title: "יש לך הודעה...",
       revealMessage: "אני אוהב אותך! ❤️",
-      emoji: "💖",
       primaryColor: "#d4826f",
     },
   },

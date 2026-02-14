@@ -12,6 +12,8 @@ import {
   FooterBranding,
   BackToGallery,
 } from "@/components/templates/components";
+import { FloatingIcons } from "../../OpenWhen/components";
+
 
 export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
   const options =
@@ -19,6 +21,7 @@ export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
 
   return (
     <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative">
+      <FloatingIcons/>
       <BackToGallery className="top-4 right-4 absolute" />
       {/* Decorative blobs */}
       <div className="absolute top-10 left-10 w-40 h-40 bg-[#F8BBD0]/20 rounded-full blur-3xl pointer-events-none" />
@@ -31,7 +34,8 @@ export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-bold text-center text-[#2e3c52] dark:text-white mb-3 text-hebrew-heading"
+            className="text-3xl font-bold text-center dark:text-white mb-3 text-hebrew-heading"
+            style={{ color: data.primaryColor || "#2e3c52" }}
           >
             {data.title}
           </motion.h1>

@@ -16,6 +16,8 @@ import {
   BackToGallery,
 } from "@/components/templates/components";
 import type { SurpriseGiftProps } from "../types";
+import { FloatingIcons } from "../../OpenWhen/components";
+
 
 const DEFAULT_CLICKS = 5;
 
@@ -65,34 +67,33 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
 
   return (
     <div className="min-h-[420px] w-full flex flex-col justify-between gap-6 bg-[#faf7f5] dark:bg-gray-900 px-4 py-6 overflow-auto relative">
+      <FloatingIcons />
       {/* Main Content - Top */}
       <div className="flex flex-col items-center w-full">
         <BackToGallery className="mb-3" />
 
         {/* Title */}
-        <h1 className="text-2xl font-bold text-[#5d4e37] dark:text-white mb-6 text-hebrew-heading text-center">
+        <h1 className="text-2xl font-bold dark:text-white mb-6 text-hebrew-heading text-center" style={{ color: primaryColor }}>
           {title}
         </h1>
 
         {/* Gift Box – only show when not opened */}
         {!isOpen && (
-          <>
-            <motion.button
-              onClick={handleTap}
-              animate={shaking ? { rotate: [0, -10, 10, -7, 7, -3, 3, 0] } : {}}
-              transition={{ duration: 0.4 }}
-              whileTap={{ scale: 0.95 }}
-              className="cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
-              aria-label={`הקישו לנער (${clicks}/${needed})`}
-            >
-              <GiftBox
-                boxColor={boxColor}
-                ribbonColor={ribbonColor}
-                isOpen={false}
-                size={180}
-              />
-            </motion.button>
-          </>
+          <motion.button
+            onClick={handleTap}
+            animate={shaking ? { rotate: [0, -10, 10, -7, 7, -3, 3, 0] } : {}}
+            transition={{ duration: 0.4 }}
+            whileTap={{ scale: 0.95 }}
+            className="cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
+            aria-label={`הקישו לנער (${clicks}/${needed})`}
+          >
+            <GiftBox
+              boxColor={boxColor}
+              ribbonColor={ribbonColor}
+              isOpen={false}
+              size={180}
+            />
+          </motion.button>
         )}
 
         {/* Revealed greeting - only show text when opened */}
@@ -108,17 +109,19 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
                 damping: 14,
                 delay: 0.2,
               }}
-              className="mt-6 text-center max-w-xs px-2"
+              className="w-full rounded-2xl shadow-lg bg-white dark:bg-gray-800 p-4 sm:p-6"
             >
-              <p
-                className="text-xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-line"
-                style={{ color: primaryColor }}
-              >
-                {greeting}
-              </p>
+              <div className="max-h-[50vh] overflow-y-auto">
+                <p
+                  className="text-lg sm:text-xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words"
+                  style={{ color: primaryColor }}
+                >
+                  {greeting}
+                </p>
+              </div>
               <button
                 onClick={handleReset}
-                className="mt-5 text-sm underline text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                className="w-full mt-5 text-sm font-medium underline text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
               >
                 נסו שוב
               </button>

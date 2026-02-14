@@ -8,6 +8,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
 
 const MAX_OPTIONS = 8;
 const MIN_OPTIONS = 2;
@@ -52,13 +53,13 @@ export function OptionsEditor({ options = [], onChange }: OptionsEditorProps) {
             <span className="text-xs font-bold text-gray-400 w-5 text-center flex-shrink-0">
               {index + 1}
             </span>
-            <input
-              type="text"
+            <LimitedInput
               value={opt}
-              onChange={(e) => updateOption(index, e.target.value)}
+              onChange={(v) => updateOption(index, v)}
+              maxLength={CHAR_LIMITS.OPTION}
               placeholder={`אופציה ${index + 1}`}
-              className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f]/50 text-hebrew-body"
-              dir="auto"
+              className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f]/50 text-hebrew-body"
+              wrapperClassName="flex-1 min-w-0"
             />
             {canRemove && (
               <button

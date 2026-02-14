@@ -16,6 +16,8 @@ import {
   FooterBranding,
   BackToGallery,
 } from "@/components/templates/components";
+import { FloatingIcons } from "../../OpenWhen/components";
+
 
 interface ExtendedData {
   title?: string;
@@ -74,14 +76,21 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
     });
   }, []);
 
+  // Create 3-level color scale from primaryColor
+  const colorLight = adjustBrightness(primaryColor, 80); // Very light tint for background
+  const colorDark = adjustBrightness(primaryColor, -25); // Darker for border
+
   return (
     <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-[#faf7f5] dark:bg-gray-900 px-4 py-5 overflow-auto relative">
+      <FloatingIcons />
       <BackToGallery className="mb-3" />
 
       {/* Title */}
       {data.title && (
-        <h1 className="text-xl font-bold text-center text-[#5d4e37] dark:text-white mb-4 text-hebrew-heading">
-          {data.title}
+        <h1 className="text-xl font-bold text-center text-[#5d4e37] dark:text-white mb-4 text-hebrew-heading break-words max-w-[280px]">
+          {data.title.length > 50
+            ? `${data.title.substring(0, 50)}...`
+            : data.title}
         </h1>
       )}
 
@@ -89,18 +98,25 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative w-full max-w-[320px] bg-[#f5f0e8] dark:bg-gray-800 rounded-2xl border-4 border-[#5d4e37] dark:border-[#8b7355] shadow-xl overflow-hidden"
+        className="relative w-full max-w-[320px] rounded-2xl border-4 shadow-xl overflow-hidden"
+        style={{
+          backgroundColor: colorLight,
+          borderColor: colorDark,
+        }}
       >
         {/* Top Badge */}
-        <div className="bg-[#5d4e37] dark:bg-[#8b7355] py-2 px-3 text-center">
-          <span className="text-[10px] text-yellow-300 tracking-widest text-hebrew-body">
+        <div
+          className="py-2 px-3 text-center"
+          style={{ backgroundColor: primaryColor }}
+        >
+          <span className="text-[10px] text-white tracking-widest text-hebrew-body">
             ✨ גרד כאן ✨
           </span>
         </div>
 
         {/* Scratch Area */}
         <div
-          className="relative aspect-[4/3] m-3 rounded-xl overflow-hidden"
+          className="relative min-h-[180px] m-3 rounded-xl overflow-hidden"
           style={{ backgroundColor: primaryColor + "15" }}
         >
           {/* Prize Layer (Behind) */}
@@ -111,7 +127,10 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
             >
               CONGRATULATIONS
             </p>
-            <p className="text-xl font-bold text-[#5d4e37] dark:text-white text-center text-hebrew-heading leading-relaxed">
+            <p
+              className="text-base font-bold text-center text-hebrew-heading leading-relaxed break-words max-w-[240px]"
+              style={{ color: colorDark }}
+            >
               {getPrizeContent(data)}
             </p>
           </div>
@@ -191,4 +210,25 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
       <FooterBranding className="absolute bottom-2" />
     </div>
   );
+}
+
+/** Adjust hex color brightness by percentage (-100 to 100) */
+function adjustBrightness(hex: string, percent: number): string {
+  const num = parseInt(hex.replace("#", ""), 16);
+  const r = Math.min(
+    255,
+    Math.max(0, (num >> 16) + ((num >> 16) * percent) / 100),
+  );
+  const g = Math.min(
+    255,
+    Math.max(
+      0,
+      ((num >> 8) & 0x00ff) + (((num >> 8) & 0x00ff) * percent) / 100,
+    ),
+  );
+  const b = Math.min(
+    255,
+    Math.max(0, (num & 0x0000ff) + ((num & 0x0000ff) * percent) / 100),
+  );
+  return `#${(0x1000000 + (Math.round(r) << 16) + (Math.round(g) << 8) + Math.round(b)).toString(16).slice(1)}`;
 }

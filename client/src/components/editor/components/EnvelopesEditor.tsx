@@ -3,29 +3,19 @@
 /**
  * EnvelopesEditor Component
  * Timeline-style editor for OpenWhen envelopes — up to 6 items
- * Each item: emoji, title (headline), dateOpen, content (textarea)
+ * Each item: title (headline), dateOpen, content (textarea)
  */
 
 import { Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BrandCalendar } from "@/components/ui/BrandCalendar";
 import type { OpenWhenEnvelope } from "@/components/templates/types";
-
-const EMOJI_OPTIONS = [
-  "💌", "😢", "😊", "💪", "🎉", "💖",
-  "🌟", "🏠", "🌧️", "☀️", "🎂", "✈️",
-];
-
-const COLOR_OPTIONS = [
-  { key: "rose", label: "ורוד", dot: "bg-rose-400" },
-  { key: "sky", label: "כחול", dot: "bg-sky-400" },
-  { key: "amber", label: "כתום", dot: "bg-amber-400" },
-  { key: "violet", label: "סגול", dot: "bg-violet-400" },
-  { key: "emerald", label: "ירוק", dot: "bg-emerald-400" },
-  { key: "pink", label: "פינק", dot: "bg-pink-400" },
-];
+import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
 
 const MAX_ENVELOPES = 6;
+
+/** Default emoji choices for new envelopes (internal, not shown to user) */
+const FALLBACK_EMOJIS = ["💌", "😢", "😊", "💪", "🎉", "💖"];
 
 interface EnvelopesEditorProps {
   envelopes: OpenWhenEnvelope[];
@@ -41,7 +31,6 @@ export function EnvelopesEditor({ envelopes = [], onChange }: EnvelopesEditorPro
       id: `env-${Date.now()}`,
       title: "",
       content: "",
-      emoji: EMOJI_OPTIONS[envelopes.length % EMOJI_OPTIONS.length],
       dateOpen: new Date().toISOString().split("T")[0],
     };
     onChange([...envelopes, newEnvelope]);
@@ -118,64 +107,31 @@ function EnvelopeItem({ envelope, index, onRemove, onUpdate }: EnvelopeItemProps
         </button>
       </div>
 
-      {/* Emoji Picker */}
-      <div className="flex gap-1 flex-wrap">
-        {EMOJI_OPTIONS.map((emoji) => (
-          <button
-            key={emoji}
-            onClick={() => onUpdate(envelope.id, "emoji", emoji)}
-            className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center transition-all ${
-              envelope.emoji === emoji
-                ? "bg-[#d4826f] shadow-sm scale-110"
-                : "bg-white dark:bg-gray-600 hover:bg-gray-100 dark:hover:bg-gray-500"
-            }`}
-          >
-            {emoji}
-          </button>
-        ))}
-      </div>
-
-      {/* Card Color Picker */}
-      <div className="flex gap-1.5 flex-wrap">
-        {COLOR_OPTIONS.map((c) => (
-          <button
-            key={c.key}
-            onClick={() => onUpdate(envelope.id, "color", c.key)}
-            className={`w-6 h-6 rounded-full ${c.dot} transition-all ${
-              envelope.color === c.key
-                ? "ring-2 ring-[#d4826f] ring-offset-1 scale-110"
-                : "opacity-60 hover:opacity-100"
-            }`}
-            title={c.label}
-          />
-        ))}
-      </div>
-
       {/* Title */}
-      <input
-        type="text"
+      <LimitedInput
         value={envelope.title}
-        onChange={(e) => onUpdate(envelope.id, "title", e.target.value)}
+        onChange={(v) => onUpdate(envelope.id, "title", v)}
+        maxLength={CHAR_LIMITS.ENVELOPE_TITLE}
         placeholder="כותרת (למשל: כשאת עצובה)"
         className={inputClass}
-        dir="auto"
       />
 
       {/* Date Open */}
       <BrandCalendar
         value={envelope.dateOpen}
         onChange={(val) => onUpdate(envelope.id, "dateOpen", val)}
-        className="max-w-[200px] mx-auto"
+        className="w-full min-w-0 box-border"
       />
 
       {/* Content */}
-      <textarea
+      <LimitedInput
         value={envelope.content}
-        onChange={(e) => onUpdate(envelope.id, "content", e.target.value)}
+        onChange={(v) => onUpdate(envelope.id, "content", v)}
+        maxLength={CHAR_LIMITS.BODY}
         placeholder="תוכן המכתב..."
-        rows={3}
         className={`${inputClass} resize-none`}
-        dir="auto"
+        multiline
+        rows={3}
       />
     </motion.div>
   );

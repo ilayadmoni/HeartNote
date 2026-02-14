@@ -12,10 +12,13 @@ import {
   FooterBranding,
   BackToGallery,
 } from "@/components/templates/components";
+import { FloatingIcons } from "../../OpenWhen/components";
+
 
 export function SteamyWindowMobile({ data }: SteamyWindowViewProps) {
   return (
     <div className="min-h-[420px] bg-[#faf7f5] dark:bg-gray-900 px-4 py-6 relative overflow-hidden flex flex-col justify-between gap-6">
+      <FloatingIcons/>
       {/* Decorative blob */}
       <div className="absolute top-5 left-0 w-28 h-28 bg-[#C7CEEA]/15 rounded-full blur-2xl pointer-events-none" />
 
@@ -28,7 +31,8 @@ export function SteamyWindowMobile({ data }: SteamyWindowViewProps) {
           <motion.h1
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold text-center text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading"
+            className="text-2xl font-bold text-center dark:text-white mb-2 text-hebrew-heading"
+            style={{ color: data.primaryColor || "#2e3c52" }}
           >
             {data.title}
           </motion.h1>
@@ -54,7 +58,6 @@ export function SteamyWindowMobile({ data }: SteamyWindowViewProps) {
             width={320}
             height={280}
             revealMessage={data.revealMessage || "אני אוהב אותך! ❤️"}
-            emoji={data.emoji}
             primaryColor={data.primaryColor}
             backgroundImage={data.background_image}
           />

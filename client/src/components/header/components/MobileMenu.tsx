@@ -9,8 +9,8 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import type { MobileMenuProps } from "../types";
-import { AuthButtons } from "./AuthButtons";
 import { FocusTrap } from "@/components/accessibility";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function MobileMenu({
   isOpen,
@@ -19,6 +19,7 @@ export function MobileMenu({
   onLoginClick,
 }: MobileMenuProps) {
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
+  const { user, loading } = useAuth();
 
   // Focus first link when menu opens
   useEffect(() => {
@@ -88,6 +89,28 @@ export function MobileMenu({
                 </li>
               ))}
             </ul>
+
+            {/* Login/Register — only when not logged in */}
+            {!loading && !user && onLoginClick && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onLoginClick();
+                }}
+                className="
+                  w-full py-3 text-center rounded-lg
+                  bg-[#2e3c52] dark:bg-[#d4826f]
+                  text-white font-bold text-sm
+                  transition-all duration-200
+                  text-hebrew-heading
+                  hover:bg-[#1B263B] dark:hover:bg-[#c4735f]
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f] focus-visible:ring-offset-2
+                "
+              >
+                התחברות / הרשמה
+              </button>
+            )}
           </nav>
         </div>
       </FocusTrap>

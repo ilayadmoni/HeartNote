@@ -25,6 +25,8 @@ export interface EditorField {
   placeholder?: string;
   options?: { value: string; label: string }[];
   defaultValue?: unknown;
+  /** Custom character limit for text/textarea fields (overrides default) */
+  maxLength?: number;
 }
 
 export interface EditorConfig {

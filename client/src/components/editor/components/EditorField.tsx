@@ -14,6 +14,7 @@ import { QuestionsEditor } from "./QuestionsEditor";
 import { CouponsEditor } from "./CouponsEditor";
 import { OptionsEditor } from "./OptionsEditor";
 import { ImageUploader } from "./ImageUploader";
+import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
 import type {
   TimelineEvent,
   OpenWhenEnvelope,
@@ -45,24 +46,24 @@ export function EditorField({ field, value, onChange, userId }: EditorFieldProps
       </label>
 
       {field.type === "text" && (
-        <input
-          type="text"
+        <LimitedInput
           value={(value as string) || ""}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(v) => onChange(v)}
+          maxLength={field.maxLength || CHAR_LIMITS.TITLE}
           placeholder={field.placeholder}
           className={baseInputClass}
-          dir="auto"
         />
       )}
 
       {field.type === "textarea" && (
-        <textarea
+        <LimitedInput
           value={(value as string) || ""}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(v) => onChange(v)}
+          maxLength={field.maxLength || CHAR_LIMITS.BODY}
           placeholder={field.placeholder}
-          rows={3}
           className={`${baseInputClass} resize-none`}
-          dir="auto"
+          multiline
+          rows={3}
         />
       )}
 

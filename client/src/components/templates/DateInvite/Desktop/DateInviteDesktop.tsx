@@ -14,6 +14,7 @@ import {
   FooterBranding,
   BackToGallery,
 } from "@/components/templates/components";
+import { FloatingIcons } from "../../OpenWhen/components";
 
 export function DateInviteDesktop({
   data,
@@ -30,27 +31,7 @@ export function DateInviteDesktop({
 
   return (
     <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
-      {/* Background Hearts Pattern */}
-      <div className="absolute inset-0 opacity-25 pointer-events-none overflow-hidden">
-        <span className="absolute top-[8%] left-[12%] text-xl opacity-40">
-          ❤
-        </span>
-        <span className="absolute top-[15%] right-[15%] text-lg opacity-30">
-          ❤
-        </span>
-        <span className="absolute bottom-[22%] left-[10%] text-xl opacity-35">
-          ❤
-        </span>
-        <span className="absolute bottom-[12%] right-[12%] text-lg opacity-25">
-          ❤
-        </span>
-        <span className="absolute top-[45%] left-[6%] text-sm opacity-20">
-          ❤
-        </span>
-        <span className="absolute bottom-[40%] right-[6%] text-sm opacity-25">
-          ❤
-        </span>
-      </div>
+     <FloatingIcons/>
       <BackToGallery className="absolute top-4 right-4" />
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-sm mx-auto px-5 py-6 relative z-10">
@@ -156,7 +137,7 @@ export function DateInviteDesktop({
               </h2>
 
               <p className="text-xs text-gray-400 mb-5 text-hebrew-body">
-                💕 מחכה לראות אותך 💕
+                      ידעתי שהתשובה שלך תהיה כן 😉
               </p>
 
               <button

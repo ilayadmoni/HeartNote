@@ -34,6 +34,9 @@ export function GiftBox({
 }: GiftBoxProps) {
   const half = size / 2;
 
+  /* Hide box completely when opened */
+  if (isOpen) return null;
+
   return (
     <svg
       viewBox="0 0 200 220"
