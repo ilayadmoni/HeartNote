@@ -49,6 +49,7 @@ export function CreationConfirmModal({
 
   // Calculate remaining creations
   const subscriptionTier = profile?.subscription.tier || "free";
+
   const currentCreations =
     subscriptionTier === "premium"
       ? profile?.subscription.creations_left_pro || 0
@@ -85,7 +86,7 @@ export function CreationConfirmModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-[200] flex items-center justify-center backdrop-blur-sm bg-black/50"
           onClick={onClose}
         >
           {/* Modal Container */}
@@ -95,7 +96,7 @@ export function CreationConfirmModal({
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md mx-4 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden"
+            className="relative w-full h-auto max-h-[90vh] max-w-md mx-4 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-y-auto"
           >
             {/* Close button */}
             <button
@@ -108,10 +109,10 @@ export function CreationConfirmModal({
             </button>
 
             {/* Content */}
-            <div className="pt-12 px-6 pb-6">
+            <div className="pt-8 px-5 pb-5">
               {/* Loading State */}
               {loading ? (
-                <div className="text-center py-12">
+                <div className="text-center py-8">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{
@@ -132,17 +133,17 @@ export function CreationConfirmModal({
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.1, type: "spring", stiffness: 300 }}
-                    className="flex justify-center mb-6"
+                    className="flex justify-center mb-4"
                   >
                     {avatar ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={avatar}
                         alt="Profile"
-                        className="w-20 h-20 rounded-full object-cover border-4 border-[#d4826f]/30 shadow-lg"
+                        className="w-14 h-14 rounded-full object-cover border-4 border-[#d4826f]/30 shadow-lg"
                       />
                     ) : (
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#d4826f] to-[#c4735f] flex items-center justify-center text-3xl font-bold text-white shadow-lg border-4 border-[#d4826f]/30">
+                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#d4826f] to-[#c4735f] flex items-center justify-center text-xl font-bold text-white shadow-lg border-4 border-[#d4826f]/30">
                         {initials}
                       </div>
                     )}
@@ -153,9 +154,9 @@ export function CreationConfirmModal({
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.15 }}
-                    className="text-center mb-8"
+                    className="text-center mb-4"
                   >
-                    <h2 className="text-2xl font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading">
+                    <h2 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-1 text-hebrew-heading">
                       אישור יצירה
                     </h2>
                     <p className="text-sm text-gray-600 dark:text-gray-400 text-hebrew-body">
@@ -168,7 +169,7 @@ export function CreationConfirmModal({
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-5 mb-6 space-y-4"
+                    className="bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-3 mb-4 space-y-2"
                   >
                     {/* Template Name */}
                     <div className="flex items-start justify-between gap-3">
@@ -193,7 +194,7 @@ export function CreationConfirmModal({
                     {/* Remaining Creations */}
                     <div className="flex items-start justify-between gap-3 pt-2 border-t border-gray-200 dark:border-gray-600">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400 text-hebrew-body">
-                        יצירות שנותרו:
+                        יצירות שנותרנו לאחר היצירה:
                       </span>
                       <motion.span
                         key={remainingCreations}
@@ -207,11 +208,19 @@ export function CreationConfirmModal({
 
                     {/* Subscription Tier Badge */}
                     <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-200 dark:border-gray-600">
-                      <span className="px-3 py-1 text-xs font-bold rounded-full text-hebrew-body" style={{
-                        backgroundColor: subscriptionTier === "premium" ? "#f59e0b" : "#22c55e",
-                        color: "white",
-                      }}>
-                        {subscriptionTier === "premium" ? "פרימיום ⭐" : "חינם ✨"}
+                      <span
+                        className="px-3 py-1 text-xs font-bold rounded-full text-hebrew-body"
+                        style={{
+                          backgroundColor:
+                            subscriptionTier === "premium"
+                              ? "#f59e0b"
+                              : "#22c55e",
+                          color: "white",
+                        }}
+                      >
+                        {subscriptionTier === "premium"
+                          ? "פרימיום ⭐"
+                          : "חינם ✨"}
                       </span>
                     </div>
                   </motion.div>
@@ -234,7 +243,7 @@ export function CreationConfirmModal({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.25 }}
-                    className="text-center text-sm font-medium text-[#2e3c52] dark:text-gray-300 mb-6 text-hebrew-heading"
+                    className="text-center text-sm font-medium text-[#2e3c52] dark:text-gray-300 mb-4 text-hebrew-heading"
                   >
                     האם אתה בטוח שברצונך ליצור את הברכה?
                   </motion.p>
@@ -259,8 +268,12 @@ export function CreationConfirmModal({
 
                     {/* Create Button */}
                     <motion.button
-                      whileHover={{ scale: !isSubmitting && !isLoading ? 1.02 : 1 }}
-                      whileTap={{ scale: !isSubmitting && !isLoading ? 0.98 : 1 }}
+                      whileHover={{
+                        scale: !isSubmitting && !isLoading ? 1.02 : 1,
+                      }}
+                      whileTap={{
+                        scale: !isSubmitting && !isLoading ? 0.98 : 1,
+                      }}
                       onClick={handleConfirm}
                       disabled={isSubmitting || isLoading}
                       className="flex-1 py-3 px-4 bg-gradient-to-r from-[#d4826f] to-[#c4735f] hover:from-[#c4735f] hover:to-[#b4635f] text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed text-hebrew-heading shadow-lg hover:shadow-xl"
@@ -281,9 +294,9 @@ export function CreationConfirmModal({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.35 }}
-                    className="text-xs text-center text-gray-500 dark:text-gray-400 mt-4 text-hebrew-body"
+                    className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2 text-hebrew-body"
                   >
-                    הערה: תוכל לערוך את הברכה לאחר יצירתה
+                    הערה: לא תוכל לערוך את הברכה לאחר יצירתה
                   </motion.p>
                 </>
               )}

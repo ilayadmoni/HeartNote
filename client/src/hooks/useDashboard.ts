@@ -1,13 +1,13 @@
 /**
  * useDashboard Hook
  *
- * Fetches user dashboard stats and creation history from
- * GET /api/v1/user/dashboard.
+ * Fetches user dashboard stats and creation history using
+ * server actions.
  * Aligned with new DB schema (creations table, subscription_tier).
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { api } from "@/lib/fetchClient";
+import { getDashboard } from "@/actions/dashboard";
 import { useAuth } from "@/contexts/AuthContext";
 
 // =============================================================================
@@ -64,19 +64,13 @@ export function useDashboard(): UseDashboardReturn {
       setLoading(true);
       setError(null);
 
-      const { data, error: apiErr } = await api.get<DashboardData>(
-        "/user/dashboard",
-      );
+      const result = await getDashboard();
 
-      if (apiErr) {
-        throw apiErr;
+      if ("error" in result) {
+        throw { message: result.error, status: result.status };
       }
 
-      if (!data) {
-        throw { message: "No dashboard data returned", status: 500 };
-      }
-
-      setDashboard(data);
+      setDashboard(result.data);
     } catch (err: unknown) {
       const apiError = err as { message?: string };
       setError(apiError.message || "שגיאה בטעינת הנתונים");

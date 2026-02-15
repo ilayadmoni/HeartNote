@@ -6,7 +6,7 @@
  * Uses global Header/Footer from layout.tsx
  */
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
 import { EditorSidebar } from "../components/EditorSidebar";
@@ -37,6 +37,16 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   } | null>(null);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
 
+  // Store the deferred upload function from ImageUploader (via sidebar)
+  const pendingUploadRef = useRef<(() => Promise<string | null>) | null>(null);
+
+  const handleFileReady = useCallback(
+    (uploadFn: (() => Promise<string | null>) | null) => {
+      pendingUploadRef.current = uploadFn;
+    },
+    [],
+  );
+
   if (!config) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900 p-4">
@@ -66,7 +76,27 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
     logData("שליחה");
     setIsPublishing(true);
     try {
-      const result = await createUserCreation(templateId, data);
+      // Step 2: If there's a pending image upload, do it now before creation
+      let finalData = { ...data };
+      if (pendingUploadRef.current) {
+        const publicUrl = await pendingUploadRef.current();
+        if (!publicUrl) {
+          alert("שגיאה בהעלאת התמונה. נסה שוב.");
+          setIsPublishing(false);
+          return;
+        }
+        // Replace the blob preview URL with the real Supabase public URL
+        for (const key of Object.keys(finalData)) {
+          if (
+            typeof finalData[key] === "string" &&
+            (finalData[key] as string).startsWith("blob:")
+          ) {
+            finalData[key] = publicUrl;
+          }
+        }
+        pendingUploadRef.current = null;
+      }
+      const result = await createUserCreation(templateId, finalData);
       setSuccessData({ url: result.url, expiresAt: result.expiresAt });
       setShowConfirmModal(false); // Close modal on success
     } catch (error: unknown) {
@@ -135,6 +165,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
           data={data}
           onChange={handleChange}
           userId={user?.id}
+          onFileReady={handleFileReady}
         />
       </BottomSheet>
 

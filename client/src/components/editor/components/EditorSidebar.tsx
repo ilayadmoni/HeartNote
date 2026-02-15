@@ -12,12 +12,13 @@ import { EditorField } from "./EditorField";
 import { ExpirationBanner } from "./ExpirationBanner";
 import type { EditorSidebarProps } from "../types";
 
-export function EditorSidebar({ config, data, onChange, userId }: EditorSidebarProps) {
+export function EditorSidebar({ config, data, onChange, userId, onFileReady }: EditorSidebarProps) {
   // Deduplicate fields by key — prevents duplicate form inputs when the
   // config_schema accidentally contains repeated keys.
   const uniqueFields = config.fields.filter(
     (field, index, arr) => arr.findIndex((f) => f.key === field.key) === index,
   );
+  console.log("Rendering EditorSidebar with config:", data);
 
   return (
     <div className="flex flex-col h-full">
@@ -46,6 +47,7 @@ export function EditorSidebar({ config, data, onChange, userId }: EditorSidebarP
               value={data[field.key]}
               onChange={(value) => onChange(field.key, value)}
               userId={userId}
+              onFileReady={onFileReady}
             />
           </motion.div>
         ))}

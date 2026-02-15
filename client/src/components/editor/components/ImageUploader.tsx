@@ -2,8 +2,14 @@
 
 /**
  * ImageUploader Component
+ *
  * Drag-and-drop / click-to-upload image field for the editor.
- * Uses the useImageUpload hook under the hood.
+ *
+ * Two-step flow:
+ *  1. On file select → validate, resize, generate a LOCAL blob preview.
+ *     No Supabase interaction at this point.
+ *  2. The parent retrieves the `uploadPreparedFile` function (via
+ *     `onFileReady`) and calls it only when the user confirms creation.
  */
 
 import { useRef, useState, useCallback } from "react";
@@ -12,36 +18,51 @@ import { Upload, X, ImageIcon, Loader2 } from "lucide-react";
 import { useImageUpload } from "@/hooks/useImageUpload";
 
 interface ImageUploaderProps {
-  /** Current image URL (from form state) */
+  /** Current image URL (blob preview or remote URL from form state) */
   value: string | undefined;
-  /** Called with the public URL (or empty string to clear) */
+  /** Called with the local blob URL (or empty string to clear) */
   onChange: (url: string) => void;
   /** Supabase user ID */
   userId: string;
   /** Label shown above the uploader */
   label?: string;
+  /**
+   * Called when a file is prepared and ready for deferred upload.
+   * The parent should store the returned `uploadFn` and call it
+   * during the creation flow to get the final Supabase public URL.
+   */
+  onFileReady?: (uploadFn: (() => Promise<string | null>) | null) => void;
 }
 
 export function ImageUploader({
   value,
   onChange,
   userId,
-  label = "תמונת רקע",
+  label = " ",
+  onFileReady,
 }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  const { upload, isUploading, error } = useImageUpload({
-    userId,
-    onUploadComplete: (url) => onChange(url),
-  });
+  const { prepareFile, uploadPreparedFile, isUploading, error, reset } =
+    useImageUpload({
+      userId,
+      onPreviewReady: (localUrl) => {
+        // Set the local blob URL as the value for the preview
+        onChange(localUrl);
+        // Expose the deferred upload function to the parent
+        onFileReady?.(uploadPreparedFile);
+      },
+    });
 
   // ── Handlers ────────────────────────────────────────────────────
   const handleFile = useCallback(
     async (file: File) => {
-      await upload(file);
+      // Step 1 only: validate, resize, generate local preview.
+      // NO Supabase interaction.
+      await prepareFile(file);
     },
-    [upload]
+    [prepareFile],
   );
 
   const handleDrop = useCallback(
@@ -51,7 +72,7 @@ export function ImageUploader({
       const file = e.dataTransfer.files?.[0];
       if (file) handleFile(file);
     },
-    [handleFile]
+    [handleFile],
   );
 
   const handleInputChange = useCallback(
@@ -61,12 +82,14 @@ export function ImageUploader({
       // Reset the input so re-selecting the same file works
       e.target.value = "";
     },
-    [handleFile]
+    [handleFile],
   );
 
   const handleClear = useCallback(() => {
+    reset();
     onChange("");
-  }, [onChange]);
+    onFileReady?.(null);
+  }, [onChange, reset, onFileReady]);
 
   // ── Render ──────────────────────────────────────────────────────
   return (
@@ -128,10 +151,7 @@ export function ImageUploader({
             `}
           >
             {isUploading ? (
-              <Loader2
-                size={28}
-                className="text-[#d4826f] animate-spin"
-              />
+              <Loader2 size={28} className="text-[#d4826f] animate-spin" />
             ) : (
               <>
                 <div className="p-2 rounded-full bg-gray-100 dark:bg-gray-700">
@@ -142,9 +162,7 @@ export function ImageUploader({
                   )}
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 text-center text-hebrew-body">
-                  {isDragging
-                    ? "שחררו כאן"
-                    : "גררו תמונה או לחצו לבחירה"}
+                  {isDragging ? "שחררו כאן" : "גררו תמונה או לחצו לבחירה"}
                 </p>
                 <p className="text-xs text-gray-400">
                   JPEG, PNG, WebP, GIF — עד 2MB

@@ -28,9 +28,11 @@ interface EditorFieldProps {
   onChange: (value: unknown) => void;
   /** Required for image_url fields */
   userId?: string;
+  /** Called when an image file is prepared for deferred upload */
+  onFileReady?: (uploadFn: (() => Promise<string | null>) | null) => void;
 }
 
-export function EditorField({ field, value, onChange, userId }: EditorFieldProps) {
+export function EditorField({ field, value, onChange, userId, onFileReady }: EditorFieldProps) {
   const baseInputClass = `
     w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
     bg-white dark:bg-gray-700 text-[#2e3c52] dark:text-white
@@ -168,7 +170,8 @@ export function EditorField({ field, value, onChange, userId }: EditorFieldProps
           value={(value as string) || ""}
           onChange={(url) => onChange(url)}
           userId={userId}
-          label={field.label}
+          
+          onFileReady={onFileReady}
         />
       )}
     </div>

@@ -128,7 +128,9 @@ export function SteamCanvas({
 
   /* ── pointer handlers ───────────────────────────────────── */
   const getPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const rect = canvasRef.current!.getBoundingClientRect();
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
     return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   };
 
@@ -155,8 +157,8 @@ export function SteamCanvas({
       className="relative rounded-2xl overflow-hidden shadow-xl select-none"
       style={{ width, height }}
     >
-      {/* Revealed content background */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white dark:bg-gray-800 p-6">
+      {/* Revealed content background (Layer 1 - Bottom) */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white dark:bg-gray-800 p-6 z-0">
         {/* Optional background image */}
         {backgroundImage && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -166,22 +168,37 @@ export function SteamCanvas({
             className="absolute inset-0 w-full h-full object-cover opacity-30"
           />
         )}
+
+        {/* Main visible text that is ALWAYS hidden by fog initially */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
           transition={{ delay: 0.15 }}
-          className="text-2xl font-bold text-center whitespace-pre-wrap text-hebrew-heading"
+          className="relative text-2xl font-bold text-center whitespace-pre-wrap text-hebrew-heading z-10"
           style={{ color: primaryColor }}
         >
           {revealMessage}
         </motion.p>
       </div>
 
-      {/* Fog overlay canvas */}
+      {/* Dedication Text Overlay (Layer 2 - Middle) 
+          Using z-10 to stay above background but below canvas (z-20) 
+      */}
+      {revealMessage && (
+        <div className="absolute bottom-4 right-4 z-10 max-w-[80%] pointer-events-none">
+          <div className="bg-[#2e3c52]/90 backdrop-blur-md text-white px-3 py-2 rounded-lg shadow-lg border border-white/10">
+            <p className="text-sm sm:text-base font-normal leading-relaxed text-right dir-rtl">
+              {revealMessage}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Fog overlay canvas (Layer 3 - Top) */}
       <canvas
         ref={canvasRef}
         style={{ width, height, touchAction: "none" }}
-        className="absolute inset-0 cursor-pointer"
+        className="absolute inset-0 cursor-pointer z-20"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -194,7 +211,8 @@ export function SteamCanvas({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+          // z-30 to stay above the canvas so user sees it clearly
+          className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-30"
         >
           <span className="text-3xl mb-2">🫧</span>
           <p className="text-sm font-medium text-[#2e3c52]/70 text-hebrew-body">

@@ -64,6 +64,8 @@ export interface EditorSidebarProps {
   onChange: (key: string, value: unknown) => void;
   /** User ID — forwarded to image upload fields */
   userId?: string;
+  /** Called when an image field has a file prepared for deferred upload */
+  onFileReady?: (uploadFn: (() => Promise<string | null>) | null) => void;
 }
 
 export interface EditorPreviewProps {

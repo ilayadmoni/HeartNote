@@ -1,12 +1,16 @@
 /**
  * Profile API Service
  *
- * Handles all profile-related API calls to the FastAPI backend.
- * Uses the centralized fetchClient for all requests.
+ * Handles all profile-related data calls using server actions.
  * Aligned with new DB schema (profiles table, subscription_tier).
  */
 
-import { api, fetchClient, type ApiResponse, type ApiError } from "@/lib/fetchClient";
+import {
+  getMyProfile,
+  updateMyProfile,
+  deleteMyAccount,
+  getAvatarOptions as getAvatarOptionsAction,
+} from "@/actions/profile";
 
 // =============================================================================
 // Types (aligned with new DB schema)
@@ -46,7 +50,11 @@ export interface AvatarOptions {
 }
 
 // Re-export ApiError for convenience
-export type { ApiError };
+export interface ApiError {
+  message: string;
+  detail?: string;
+  status: number;
+}
 
 // =============================================================================
 // Profile API Functions
@@ -56,44 +64,35 @@ export type { ApiError };
  * Fetch the current user's profile from the backend.
  */
 export async function getProfile(): Promise<ProfileData> {
-  const { data, error } = await api.get<ProfileData>("/profile/me");
+  const result = await getMyProfile();
 
-  if (error) {
-    throw error;
+  if ("error" in result) {
+    throw { message: result.error, status: result.status };
   }
 
-  if (!data) {
-    throw { message: "No profile data returned", status: 500 };
-  }
-
-  return data;
+  return result.data;
 }
 
 /**
  * Update the current user's profile (PATCH).
  */
 export async function updateProfile(updateData: ProfileUpdateData): Promise<ProfileData> {
-  const { data, error } = await api.patch<ProfileData>("/profile/me", { ...updateData });
+  const result = await updateMyProfile({ ...updateData });
 
-  if (error) {
-    throw error;
+  if ("error" in result) {
+    throw { message: result.error, status: result.status };
   }
 
-  if (!data) {
-    throw { message: "No profile data returned", status: 500 };
-  }
-
-  return data;
+  return result.data;
 }
 
 /**
  * Delete the current user's account.
  */
 export async function deleteAccount(): Promise<void> {
-  const { error } = await api.delete<void>("/profile/me");
-
-  if (error) {
-    throw error;
+  const result = await deleteMyAccount();
+  if ("error" in result) {
+    throw { message: result.error, status: result.status };
   }
 }
 
@@ -102,16 +101,8 @@ export async function deleteAccount(): Promise<void> {
  * This endpoint doesn't require authentication.
  */
 export async function getAvatarOptions(): Promise<string[]> {
-  const { data, error } = await fetchClient<AvatarOptions>("/profile/avatars", {
-    skipAuth: true,
-  });
-
-  if (error) {
-    console.warn("[getAvatarOptions] Failed to fetch avatars:", error);
-    return [];
-  }
-
-  return data?.avatars || [];
+  const result = await getAvatarOptionsAction();
+  return result.avatars;
 }
 
 // =============================================================================
