@@ -16,7 +16,7 @@ import { SuccessModal } from "../components/SuccessModal";
 import { QuotaModal } from "../components/QuotaModal";
 import { CreationConfirmModal } from "../components/CreationConfirmModal";
 import { EDITOR_CONFIGS } from "../configs";
-import { createUserCreation } from "../api";
+import { submitGenericCreation } from "@/actions/creations";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTemplateData } from "@/hooks/useTemplateData";
 import type { TemplateEditorProps } from "../types";
@@ -100,47 +100,56 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     logData("שליחה");
     setIsPublishing(true);
     try {
-      // Step 2: If there's a pending image upload, do it now before creation
-      let finalData = { ...data };
-      if (pendingUploadRef.current) {
-        const publicUrl = await pendingUploadRef.current();
-        if (!publicUrl) {
-          alert("שגיאה בהעלאת התמונה. נסה שוב.");
-          setIsPublishing(false);
+      const formData = new FormData();
+      formData.append("templateSlug", templateId);
+      formData.append("metadata", JSON.stringify(data));
+
+      const blobUrl = Object.values(data).find(
+        (value) => typeof value === "string" && value.startsWith("blob:"),
+      ) as string | undefined;
+
+      if (blobUrl) {
+        const response = await fetch(blobUrl);
+        const blob = await response.blob();
+        const ext = blob.type.split("/")[1] || "jpeg";
+        const file = new File([blob], `upload.${ext}`, {
+          type: blob.type || "image/jpeg",
+        });
+        formData.append("file", file);
+        formData.append("bucketName", "card-assets");
+      }
+
+      const result = await submitGenericCreation(formData);
+
+      if ("error" in result) {
+        if (result.status === 403 && result.error === "QUOTA_EXCEEDED") {
+          setShowQuotaModal(true);
+          setShowConfirmModal(false);
           return;
         }
-        // Replace the blob preview URL with the real Supabase public URL
-        for (const key of Object.keys(finalData)) {
-          if (
-            typeof finalData[key] === "string" &&
-            (finalData[key] as string).startsWith("blob:")
-          ) {
-            finalData[key] = publicUrl;
-          }
+
+        if (result.status === 402 && result.error === "TEMPLATE_NOT_ALLOWED") {
+          alert(
+            "תבנית זו אינה זמינה במנוי הנוכחי שלך. שדרג את המנוי כדי להשתמש בה.",
+          );
+          setShowConfirmModal(false);
+          return;
         }
-        pendingUploadRef.current = null;
-      }
-      const result = await createUserCreation(templateId, finalData);
-      setSuccessData({ url: result.url, expiresAt: result.expiresAt });
-      setShowConfirmModal(false); // Close modal on success
-    } catch (error: unknown) {
-      const apiError = error as { status?: number; detail?: string };
-      if (apiError.status === 403 && apiError.detail === "QUOTA_EXCEEDED") {
-        setShowQuotaModal(true);
-        setShowConfirmModal(false); // Close confirmation modal
-      } else if (
-        apiError.status === 402 &&
-        apiError.detail === "TEMPLATE_NOT_ALLOWED"
-      ) {
-        alert(
-          "תבנית זו אינה זמינה במנוי הנוכחי שלך. שדרג את המנוי כדי להשתמש בה.",
-        );
-        setShowConfirmModal(false); // Close confirmation modal
-      } else {
-        console.error("Failed to publish:", error);
+
         alert("שגיאה ביצירת הכרטיס. נסה שוב.");
-        // Keep confirmation modal open so user can retry
+        return;
       }
+
+
+      // Show success modal with shareable link instead of redirecting
+      setShowConfirmModal(false);
+      setSuccessData({
+        url: `${window.location.origin}/p/${result.creationId}`,
+        expiresAt: null,
+      });
+    } catch (error: unknown) {
+      console.error("Failed to publish:", error);
+      alert("שגיאה ביצירת הכרטיס. נסה שוב.");
     } finally {
       setIsPublishing(false);
     }
@@ -213,7 +222,6 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         onConfirm={handleConfirmCreation}
         templateSlug={templateId}
         templateName={config.title}
-        isLoading={isPublishing}
       />
     </div>
   );

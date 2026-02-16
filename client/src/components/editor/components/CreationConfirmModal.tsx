@@ -23,8 +23,6 @@ export interface CreationConfirmModalProps {
   templateSlug: string;
   /** The display name of the template (e.g., "הזמנה לדייט") */
   templateName: string;
-  /** Whether the creation is in progress */
-  isLoading?: boolean;
 }
 
 export function CreationConfirmModal({
@@ -33,7 +31,6 @@ export function CreationConfirmModal({
   onConfirm,
   templateSlug,
   templateName,
-  isLoading = false,
 }: CreationConfirmModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -260,7 +257,7 @@ export function CreationConfirmModal({
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={onClose}
-                      disabled={isSubmitting || isLoading}
+                      disabled={isSubmitting || loading}
                       className="flex-1 py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-xl font-bold text-sm text-[#2e3c52] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-hebrew-heading"
                     >
                       חזור
@@ -269,16 +266,16 @@ export function CreationConfirmModal({
                     {/* Create Button */}
                     <motion.button
                       whileHover={{
-                        scale: !isSubmitting && !isLoading ? 1.02 : 1,
+                        scale: !isSubmitting && !loading ? 1.02 : 1,
                       }}
                       whileTap={{
-                        scale: !isSubmitting && !isLoading ? 0.98 : 1,
+                        scale: !isSubmitting && !loading ? 0.98 : 1,
                       }}
                       onClick={handleConfirm}
-                      disabled={isSubmitting || isLoading}
+                      disabled={isSubmitting || loading}
                       className="flex-1 py-3 px-4 bg-gradient-to-r from-[#d4826f] to-[#c4735f] hover:from-[#c4735f] hover:to-[#b4635f] text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed text-hebrew-heading shadow-lg hover:shadow-xl"
                     >
-                      {isSubmitting || isLoading ? (
+                      {isSubmitting || loading ? (
                         <div className="flex items-center justify-center gap-2">
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                           <span>יוצר...</span>

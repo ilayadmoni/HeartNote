@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme";
@@ -10,10 +10,6 @@ export const metadata: Metadata = {
   title: "HeartNote - מפעל הברכות הדיגיטלי",
   description: "צור ברכות דיגיטליות מרהיבות בקלות ובמהירות",
   keywords: ["ברכות", "ברכה דיגיטלית", "אירועים", "HeartNote"],
-  themeColor: "#faf7f5",
-  other: {
-    "color-scheme": "light",
-  },
   icons: {
     icon: "/assets/images/logo_heartnote.png",
     apple: "/assets/images/logo_heartnote.png",
@@ -30,6 +26,11 @@ export const metadata: Metadata = {
     description: "צור ברכות דיגיטליות מרהיבות בקלות ובמהירות",
     images: ["/assets/images/logo_heartnote.png"],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#faf7f5",
+  colorScheme: "light",
 };
 
 export default function RootLayout({

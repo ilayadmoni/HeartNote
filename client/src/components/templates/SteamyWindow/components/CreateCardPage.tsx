@@ -203,22 +203,6 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
     setIsCropping(false);
   }, [rawImageUrl]);
 
-  /** Final confirmation inside the modal */
-  const handleConfirm = useCallback(() => {
-    if (!previewUrl) return;
-
-    const formData = new FormData();
-    formData.append("imageUrl", previewUrl);
-    formData.append("revealMessage", dedicationText);
-    formData.append("templateType", "steamy-window");
-    if (user?.id) formData.append("userId", user.id);
-
-    // TODO: call your Server Action here, e.g.
-    // await createSteamyWindowCard(formData);
-
-    setIsModalOpen(false);
-  }, [previewUrl, dedicationText, user]);
-
   const isReady = !!previewUrl && dedicationText.trim().length > 0;
 
   /* ── Render ─────────────────────────────────────────────────────── */
@@ -389,7 +373,11 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onConfirm={handleConfirm}
+        templateSlug="steamy-window"
+        creationMetadata={{ revealMessage: dedicationText }}
+        previewUrl={previewUrl}
+        bucketName="image_steamy_Window"
+        creationType="חלון מאודה"
         user={user}
         isLoadingUser={isLoadingUser}
       />

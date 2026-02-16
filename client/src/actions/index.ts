@@ -13,6 +13,7 @@ export {
 // Creations
 export {
   createCreation,
+  submitGenericCreation,
   getMyCreations,
   getCreation,
   deleteCreation,

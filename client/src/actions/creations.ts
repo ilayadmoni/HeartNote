@@ -450,3 +450,206 @@ export async function redeemCoupon(
     };
   }
 }
+
+// ---------------------------------------------------------------------------
+// GENERIC CREATION (file upload + insert for ANY template)
+// ---------------------------------------------------------------------------
+
+/**
+ * submitGenericCreation(formData)
+ *
+ * Generic server action for creating a card from ANY template.
+ * Accepts dynamic templateSlug, metadata JSON, and optional file + bucket.
+ *
+ * FormData keys:
+ *   - templateSlug  (string, required)
+ *   - metadata      (JSON string, required)
+ *   - file          (File, optional)  — image or asset to upload
+ *   - bucketName    (string, optional) — Supabase Storage bucket name
+ *
+ * Flow:
+ *  1. Authenticate user
+ *  2. Parse metadata JSON
+ *  3. If file + bucketName provided → upload, inject publicUrl into metadata
+ *  4. Fetch template_id by slug
+ *  5. Quota & premium guard
+ *  6. Insert creation row
+ *  7. Decrement quota
+ *  8. Return { success, creationId }
+ */
+export async function submitGenericCreation(
+  formData: FormData,
+): Promise<
+  { success: true; creationId: string } | { error: string; status: number }
+> {
+  try {
+    const supabase = await createClient();
+
+    // ── 1. Authenticate ────────────────────────────────────────────
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return { error: "Unauthorized", status: 401 };
+    }
+
+    // ── Extract form fields ────────────────────────────────────────
+    const templateSlug = formData.get("templateSlug") as string | null;
+    const metadataRaw = formData.get("metadata") as string | null;
+    const file = formData.get("file") as File | null;
+    const bucketName = formData.get("bucketName") as string | null;
+
+    if (!templateSlug?.trim()) {
+      return { error: "templateSlug is required", status: 422 };
+    }
+
+    if (!metadataRaw) {
+      return { error: "metadata is required", status: 422 };
+    }
+
+    // ── 2. Parse metadata JSON ─────────────────────────────────────
+    let parsedMetadata: Record<string, unknown>;
+    try {
+      parsedMetadata = JSON.parse(metadataRaw);
+    } catch {
+      return { error: "metadata must be valid JSON", status: 422 };
+    }
+
+    // ── 3. Optional file upload ────────────────────────────────────
+    if (file && file.size > 0 && bucketName?.trim()) {
+      const fileExt = file.type.split("/")[1] || "jpeg";
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const storagePath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(bucketName)
+        .upload(storagePath, file, {
+          contentType: file.type,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        return {
+          error: `Image upload failed: ${uploadError.message}`,
+          status: 500,
+        };
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from(bucketName).getPublicUrl(storagePath);
+
+      // Inject the public URL into metadata
+      parsedMetadata.imageUrl = publicUrl;
+    }
+
+    // ── 4. Fetch template by slug ──────────────────────────────────
+    const { data: template, error: tmplErr } = await supabase
+      .from("templates")
+      .select("id, is_premium, expiration_policy")
+      .eq("slug", templateSlug)
+      .eq("is_active", true)
+      .single();
+
+    if (tmplErr || !template) {
+      return { error: "Template not found", status: 404 };
+    }
+
+    // ── 5. Quota & premium guard ───────────────────────────────────
+    const { data: profile, error: profErr } = await supabase
+      .from("profiles")
+      .select(
+        "subscription_tier, creations_count, creations_left_free, creations_left_pro",
+      )
+      .eq("id", user.id)
+      .single();
+
+    if (profErr || !profile) {
+      return {
+        error: "Profile not found. Please complete registration.",
+        status: 404,
+      };
+    }
+
+    const userTier: string = profile.subscription_tier ?? "free";
+
+    if (template.is_premium && userTier === "free") {
+      return { error: "TEMPLATE_NOT_ALLOWED", status: 402 };
+    }
+
+    if (userTier === "free") {
+      const creationsLeft: number = profile.creations_left_free ?? 0;
+      if (creationsLeft <= 0) {
+        return { error: "QUOTA_EXCEEDED", status: 403 };
+      }
+    } else if (userTier === "premium") {
+      const creationsLeft: number | null = profile.creations_left_pro;
+      if (creationsLeft !== null && creationsLeft <= 0) {
+        return { error: "QUOTA_EXCEEDED", status: 403 };
+      }
+    }
+
+    // ── 6. Expiry calculation ──────────────────────────────────────
+    const isPaid = userTier === "premium";
+    const expirationPolicy =
+      (template.expiration_policy as Record<string, unknown>) ?? {};
+    const expiryDays = isPaid
+      ? Number(expirationPolicy.paid_days ?? 14)
+      : Number(expirationPolicy.free_days ?? 1);
+    const expiresAt = new Date(
+      Date.now() + expiryDays * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    // ── 7. Insert creation ─────────────────────────────────────────
+    const { data: creation, error: insertErr } = await supabase
+      .from("creations")
+      .insert({
+        user_id: user.id,
+        template_id: template.id,
+        metadata: parsedMetadata,
+        is_paid: isPaid,
+        expires_at: expiresAt,
+      })
+      .select("id")
+      .single();
+
+    if (insertErr || !creation) {
+      return {
+        error: `Failed to create card: ${insertErr?.message ?? "Unknown error"}`,
+        status: 500,
+      };
+    }
+
+    // ── 8. Decrement quota & increment count ───────────────────────
+    const updateDict: Record<string, number> = {
+      creations_count: (profile.creations_count ?? 0) + 1,
+    };
+
+    if (userTier === "free") {
+      updateDict.creations_left_free = Math.max(
+        (profile.creations_left_free ?? 0) - 1,
+        0,
+      );
+    } else if (
+      userTier === "premium" &&
+      profile.creations_left_pro !== null
+    ) {
+      updateDict.creations_left_pro = Math.max(
+        (profile.creations_left_pro ?? 0) - 1,
+        0,
+      );
+    }
+
+    await supabase.from("profiles").update(updateDict).eq("id", user.id);
+
+    // ── 9. Return success ──────────────────────────────────────────
+    return { success: true, creationId: creation.id as string };
+  } catch (e) {
+    return {
+      error: `Failed to create card: ${e instanceof Error ? e.message : String(e)}`,
+      status: 500,
+    };
+  }
+}

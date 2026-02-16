@@ -1,15 +1,16 @@
 /**
  * Public Creation View
  * Displays user-created cards by ID — NO main site header/nav.
- * Fetches from FastAPI /api/v1/creations/{id} (public endpoint).
+ * Fetches directly from Supabase using the server client.
  *
- * Routing: unknown ID → redirect('/').
+ * Routing: unknown ID → notFound().
  * Expired: custom branded UI.
  * Valid: template + share buttons + footer.
  */
 
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
 import { UserPageClient } from "./client";
 
 interface PageProps {
@@ -26,27 +27,36 @@ interface CreationData {
   created_at: string;
 }
 
-// Fetch creation data from FastAPI (server-side)
+// Fetch creation data directly from Supabase (server-side)
 async function getCreation(id: string): Promise<CreationData | null> {
-  const baseUrl = (
-    process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:8000"
-  ).replace(/\/+$/, "");
-
   try {
-    const response = await fetch(`${baseUrl}/api/v1/creations/${id}`, {
-      cache: "no-store",
-    });
+    const supabase = await createClient();
 
-    if (response.status === 404 || response.status === 410) {
+    const { data, error } = await supabase
+      .from("creations")
+      .select(
+        "id, metadata, is_paid, expires_at, is_deleted, created_at, templates!inner(slug, name)"
+      )
+      .eq("id", id)
+      .eq("is_deleted", false)
+      .single();
+
+    if (error || !data) {
+      console.error("Failed to fetch creation:", error?.message);
       return null;
     }
 
-    if (!response.ok) {
-      console.error("Failed to fetch creation:", response.status);
-      return null;
-    }
+    const tmpl = (data.templates as unknown as { slug: string; name: string }) ?? {};
 
-    return response.json();
+    return {
+      id: data.id as string,
+      template_slug: tmpl.slug ?? "",
+      template_name: tmpl.name ?? "כרטיס",
+      metadata: (data.metadata as Record<string, unknown>) ?? {},
+      is_paid: (data.is_paid as boolean) ?? null,
+      expires_at: (data.expires_at as string) ?? null,
+      created_at: data.created_at as string,
+    };
   } catch (error) {
     console.error("Error fetching creation:", error);
     return null;
@@ -80,9 +90,9 @@ export default async function PublicPage({ params }: PageProps) {
   const { slug } = await params;
   const creation = await getCreation(slug);
 
-  // ── 404 → redirect home ──────────────────────────────────────────
+  // ── 404 → show not found page ───────────────────────────────────
   if (!creation) {
-    redirect("/");
+    notFound();
   }
 
   // ── Expired → branded UI ─────────────────────────────────────────
