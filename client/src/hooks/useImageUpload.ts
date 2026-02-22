@@ -5,7 +5,7 @@
  *  Step 1 (immediate): Validate file, resize client-side, return a local
  *          blob URL for preview. NO Supabase interaction.
  *  Step 2 (deferred):  Upload the prepared blob to Supabase Storage
- *          (`card-assets` bucket) only when explicitly called.
+ *          (`image_steamy_Window` bucket) only when explicitly called.
  *
  * This prevents "bucket not found" errors during file selection and
  * ensures the upload only happens when the user confirms creation.
@@ -14,7 +14,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-const BUCKET = "card-assets";
+const BUCKET = "image_steamy_Window";
 const MAX_DIMENSION = 1200; // px – longest side
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB (matches bucket policy)
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];

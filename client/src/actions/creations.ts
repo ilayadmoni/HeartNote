@@ -531,6 +531,13 @@ export async function submitGenericCreation(
         });
 
       if (uploadError) {
+        console.error("[submitGenericCreation] Upload error", {
+          bucketName,
+          storagePath,
+          fileType: file.type,
+          fileSize: file.size,
+          error: uploadError,
+        });
         return {
           error: `Image upload failed: ${uploadError.message}`,
           status: 500,
@@ -542,7 +549,7 @@ export async function submitGenericCreation(
       } = supabase.storage.from(bucketName).getPublicUrl(storagePath);
 
       // Inject the public URL into metadata
-      parsedMetadata.imageUrl = publicUrl;
+      parsedMetadata.background_image = publicUrl;
     }
 
     // ── 4. Fetch template by slug ──────────────────────────────────
@@ -647,6 +654,7 @@ export async function submitGenericCreation(
     // ── 9. Return success ──────────────────────────────────────────
     return { success: true, creationId: creation.id as string };
   } catch (e) {
+    console.error("[submitGenericCreation] Unexpected error", e);
     return {
       error: `Failed to create card: ${e instanceof Error ? e.message : String(e)}`,
       status: 500,

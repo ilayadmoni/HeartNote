@@ -116,7 +116,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
           type: blob.type || "image/jpeg",
         });
         formData.append("file", file);
-        formData.append("bucketName", "card-assets");
+        formData.append("bucketName", "image_steamy_Window");
       }
 
       const result = await submitGenericCreation(formData);

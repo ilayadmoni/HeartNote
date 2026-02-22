@@ -93,7 +93,7 @@ export function CreationConfirmModal({
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full h-auto max-h-[90vh] max-w-md mx-4 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-y-auto"
+            className="relative w-full h-auto md:max-h-[90vh] max-h-[85dvh] max-w-md mx-4 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-y-auto"
           >
             {/* Close button */}
             <button

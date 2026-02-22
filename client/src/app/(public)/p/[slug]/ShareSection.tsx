@@ -48,7 +48,7 @@ export function ShareSection() {
         </p>
 
         {/* Buttons row */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1"> 
           {/* WhatsApp Share — Primary CTA */}
           <motion.button
             whileHover={{ scale: 1.02 }}

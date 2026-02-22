@@ -58,6 +58,7 @@
   --background-end-rgb: 248, 250, 252;
   --header-bg: rgba(250, 248, 245, 0.95);
   --header-border: #ebe7e0;
+  --a11y-font-scale: 1;
   color-scheme: light;
 }
 
@@ -84,6 +85,7 @@
 html {
   overflow-x: hidden;
   scroll-behavior: smooth;
+  font-size: calc(16px * var(--a11y-font-scale));
 }
 
 body {
@@ -102,6 +104,42 @@ body {
   );
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ====================================
+   Accessibility Modes
+   ==================================== */
+.a11y-high-contrast {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+  --header-bg: #000;
+  --header-border: #fff;
+  color-scheme: dark;
+}
+
+.a11y-high-contrast body {
+  background: #000;
+  color: #fff;
+}
+
+.a11y-high-contrast a {
+  color: #ffd400;
+}
+
+.a11y-grayscale body {
+  filter: grayscale(1);
+}
+
+.a11y-highlight-links a {
+  color: #c2410c;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+.a11y-readable-font body {
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 
 /* ====================================

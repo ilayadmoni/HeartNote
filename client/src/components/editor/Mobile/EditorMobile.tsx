@@ -93,7 +93,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
           type: blob.type || "image/jpeg",
         });
         formData.append("file", file);
-        formData.append("bucketName", "card-assets");
+        formData.append("bucketName", "image_steamy_Window");
       }
 
       const result = await submitGenericCreation(formData);
@@ -165,7 +165,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
         isOpen={isFormOpen}
         onOpenChange={setIsFormOpen}
         collapsedHeight={72}
-        expandedHeight={65}
+        expandedHeight={75}
         label="ערוך מאפיינים"
         expandedLabel="סגור עריכה"
       >
