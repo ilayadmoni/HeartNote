@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { QueryProvider } from "@/providers/QueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,7 +43,9 @@ export default function RootLayout({
     <html lang="he" dir="rtl" suppressHydrationWarning>
       <body className={`${inter.className} overflow-x-hidden`}>
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <QueryProvider>{children}</QueryProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

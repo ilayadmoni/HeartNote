@@ -31,6 +31,7 @@ interface AuthContextType {
     dateOfBirth?: string,
   ) => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -99,7 +100,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
-      console.log("[Auth] signUp attempt:", { email, firstName, lastName, dateOfBirth });
+      console.log("[Auth] signUp attempt:", {
+        email,
+        firstName,
+        lastName,
+        dateOfBirth,
+      });
 
       // Ensure date is in YYYY-MM-DD format for PostgreSQL DATE column
       let formattedDob: string | undefined;
@@ -165,6 +171,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Reset password
+  const resetPassword = async (email: string) => {
+    try {
+      setError(null);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+      });
+      if (error) {
+        setError(getErrorMessage(error.message));
+        throw error;
+      }
+    } catch (err) {
+      if (err instanceof Error && !error) {
+        setError(getErrorMessage(err.message));
+      }
+      throw err;
+    }
+  };
+
   // Clear error
   const clearError = () => setError(null);
 
@@ -178,6 +203,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         signOut,
+        resetPassword,
         clearError,
       }}
     >

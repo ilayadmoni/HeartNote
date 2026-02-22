@@ -51,3 +51,11 @@ export const AUTH_VALIDATION = {
   termsRequired: "יש לאשר את תנאי השימוש ומדיניות הפרטיות",
 } as const;
 
+// Forgot Password
+export const FORGOT_PASSWORD_TITLE = "שחזור סיסמה";
+export const FORGOT_PASSWORD_SUBTITLE = "הזינו את כתובת האימייל שלכם ונשלח לכם קישור לאיפוס הסיסמה";
+export const FORGOT_PASSWORD_BUTTON = "שליחת קישור איפוס";
+export const FORGOT_PASSWORD_SUCCESS = "קישור לאיפוס הסיסמה נשלח לאימייל שלכם. בדקו את תיבת הדואר הנכנס.";
+export const FORGOT_PASSWORD_BACK = "חזרה להתחברות";
+export const FORGOT_PASSWORD_LINK = "שכחתם את הסיסמה?";
+

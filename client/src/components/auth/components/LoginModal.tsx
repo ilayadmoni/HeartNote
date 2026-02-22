@@ -2,7 +2,7 @@
 
 /**
  * LoginModal Component
- * Modal dialog for user login and registration
+ * Modal dialog for user login, registration, and password reset.
  */
 
 import { useState, useEffect } from "react";
@@ -11,6 +11,7 @@ import { X, LogIn } from "lucide-react";
 import { AuthInput } from "./AuthInput";
 import { AuthTabs } from "./AuthTabs";
 import { RegisterForm } from "./RegisterForm";
+import { ForgotPasswordForm } from "./ForgotPasswordForm";
 import { FocusTrap } from "@/components/accessibility";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -22,12 +23,14 @@ import {
   AUTH_LABELS,
   AUTH_PLACEHOLDERS,
   AUTH_VALIDATION,
+  FORGOT_PASSWORD_LINK,
 } from "../constants";
 import type { LoginModalProps, LoginFormData } from "../types";
 
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { signIn, signUp, error, clearError } = useAuth();
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -41,6 +44,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setFormData({ email: "", password: "" });
       setErrors({});
       setActiveTab("login");
+      setShowForgotPassword(false);
       setIsSubmitting(false);
       clearError();
     }
@@ -106,6 +110,11 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   };
 
+  const handleBackFromForgot = () => {
+    setShowForgotPassword(false);
+    clearError();
+  };
+
   const title = activeTab === "login" ? LOGIN_TITLE : REGISTER_TITLE;
   const subtitle = activeTab === "login" ? LOGIN_SUBTITLE : REGISTER_SUBTITLE;
 
@@ -153,119 +162,148 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
                 {/* Scrollable Content */}
                 <div className="max-h-[85vh] overflow-y-auto overflow-x-hidden">
-                <div className="p-4 sm:p-5 pt-8 box-border">
-                  {/* Icon */}
-                  <div className="flex justify-center mb-2">
-                    <div className="w-12 h-12 rounded-full bg-[#faf7f5] dark:bg-gray-700 flex items-center justify-center">
-                      <LogIn
-                        size={20}
-                        className="text-[#2e3c52] dark:text-white"
-                      />
-                    </div>
-                  </div>
+                  <div className="p-4 sm:p-5 pt-8 box-border">
+                    {/* Forgot Password View */}
+                    {showForgotPassword ? (
+                      <ForgotPasswordForm onBack={handleBackFromForgot} />
+                    ) : (
+                      <>
+                        {/* Icon */}
+                        <div className="flex justify-center mb-2">
+                          <div className="w-12 h-12 rounded-full bg-[#faf7f5] dark:bg-gray-700 flex items-center justify-center">
+                            <LogIn
+                              size={20}
+                              className="text-[#2e3c52] dark:text-white"
+                            />
+                          </div>
+                        </div>
 
-                  {/* Title */}
-                  <h2
-                    id="auth-title"
-                    className="text-xl font-black text-center text-[#2e3c52] dark:text-white mb-1"
-                  >
-                    {title}
-                  </h2>
-                  <p className="text-center text-gray-500 dark:text-gray-400 mb-3 text-hebrew-body text-xs">
-                    {subtitle}
-                  </p>
+                        {/* Title */}
+                        <h2
+                          id="auth-title"
+                          className="text-xl font-black text-center text-[#2e3c52] dark:text-white mb-1"
+                        >
+                          {title}
+                        </h2>
+                        <p className="text-center text-gray-500 dark:text-gray-400 mb-3 text-hebrew-body text-xs">
+                          {subtitle}
+                        </p>
 
-                  {/* Tabs */}
-                  <AuthTabs activeTab={activeTab} onTabChange={setActiveTab} />
+                        {/* Tabs */}
+                        <AuthTabs
+                          activeTab={activeTab}
+                          onTabChange={setActiveTab}
+                        />
 
-                  {/* Error Message */}
-                  {error && (
-                    <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                      <p className="text-red-600 dark:text-red-400 text-sm text-center text-hebrew-body">
-                        {error}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Login Form */}
-                  {activeTab === "login" && (
-                    <form onSubmit={handleLogin}>
-                      <AuthInput
-                        id="login-email"
-                        label={AUTH_LABELS.email}
-                        type="email"
-                        placeholder={AUTH_PLACEHOLDERS.email}
-                        value={formData.email}
-                        onChange={(value) =>
-                          setFormData({ ...formData, email: value })
-                        }
-                        error={errors.email}
-                      />
-
-                      <AuthInput
-                        id="login-password"
-                        label={AUTH_LABELS.password}
-                        type="password"
-                        placeholder={AUTH_PLACEHOLDERS.password}
-                        value={formData.password}
-                        onChange={(value) =>
-                          setFormData({ ...formData, password: value })
-                        }
-                        error={errors.password}
-                      />
-
-                      {/* Submit Button */}
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="
-                          w-full py-2.5 px-4 mt-2 rounded-lg
-                          bg-[#2e3c52] hover:bg-[#1B263B]
-                          text-white font-bold text-base
-                          transition-all duration-200
-                          disabled:opacity-50 disabled:cursor-not-allowed
-                          text-hebrew-heading
-                          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52] focus-visible:ring-offset-2
-                        "
-                      >
-                        {isSubmitting ? (
-                          <span className="flex items-center justify-center gap-2">
-                            <svg
-                              className="animate-spin h-5 w-5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              />
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                              />
-                            </svg>
-                          </span>
-                        ) : (
-                          LOGIN_BUTTON
+                        {/* Error Message */}
+                        {error && (
+                          <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                            <p className="text-red-600 dark:text-red-400 text-sm text-center text-hebrew-body">
+                              {error}
+                            </p>
+                          </div>
                         )}
-                      </button>
-                    </form>
-                  )}
 
-                  {/* Register Form */}
-                  {activeTab === "register" && (
-                    <RegisterForm
-                      onSubmit={handleRegister}
-                      isSubmitting={isSubmitting}
-                      serverError={error}
-                    />
-                  )}
-                </div>
+                        {/* Login Form */}
+                        {activeTab === "login" && (
+                          <form onSubmit={handleLogin}>
+                            <AuthInput
+                              id="login-email"
+                              label={AUTH_LABELS.email}
+                              type="email"
+                              placeholder={AUTH_PLACEHOLDERS.email}
+                              value={formData.email}
+                              onChange={(value) =>
+                                setFormData({ ...formData, email: value })
+                              }
+                              error={errors.email}
+                            />
+
+                            <AuthInput
+                              id="login-password"
+                              label={AUTH_LABELS.password}
+                              type="password"
+                              placeholder={AUTH_PLACEHOLDERS.password}
+                              value={formData.password}
+                              onChange={(value) =>
+                                setFormData({ ...formData, password: value })
+                              }
+                              error={errors.password}
+                            />
+
+                            {/* Forgot Password Link */}
+                            <div className="flex justify-start mb-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  clearError();
+                                  setShowForgotPassword(true);
+                                }}
+                                className="
+                                text-xs text-[#d4826f] hover:text-[#c4735f]
+                                dark:text-[#e8917a] dark:hover:text-[#d4826f]
+                                transition-colors text-hebrew-body
+                                hover:underline
+                              "
+                              >
+                                {FORGOT_PASSWORD_LINK}
+                              </button>
+                            </div>
+
+                            {/* Submit Button */}
+                            <button
+                              type="submit"
+                              disabled={isSubmitting}
+                              className="
+                              w-full py-2.5 px-4 mt-2 rounded-lg
+                              bg-[#2e3c52] hover:bg-[#1B263B]
+                              text-white font-bold text-base
+                              transition-all duration-200
+                              disabled:opacity-50 disabled:cursor-not-allowed
+                              text-hebrew-heading
+                              focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52] focus-visible:ring-offset-2
+                            "
+                            >
+                              {isSubmitting ? (
+                                <span className="flex items-center justify-center gap-2">
+                                  <svg
+                                    className="animate-spin h-5 w-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <circle
+                                      className="opacity-25"
+                                      cx="12"
+                                      cy="12"
+                                      r="10"
+                                      stroke="currentColor"
+                                      strokeWidth="4"
+                                    />
+                                    <path
+                                      className="opacity-75"
+                                      fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                                    />
+                                  </svg>
+                                </span>
+                              ) : (
+                                LOGIN_BUTTON
+                              )}
+                            </button>
+                          </form>
+                        )}
+
+                        {/* Register Form */}
+                        {activeTab === "register" && (
+                          <RegisterForm
+                            onSubmit={handleRegister}
+                            isSubmitting={isSubmitting}
+                            serverError={error}
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 {/* Bottom Accent */}

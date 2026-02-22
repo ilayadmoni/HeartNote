@@ -5,19 +5,20 @@
  *
  * Client-side interactive wrapper for the profile page.
  * Receives server-fetched profile + dashboard data as props (from the RSC page).
- * Uses server actions (updateMyProfile, deleteMyAccount) for mutations — no
- * legacy fetchClient / FastAPI calls.
+ * Uses useMutation (React Query v5) for profile updates so the Header
+ * syncs instantly via queryClient.invalidateQueries(["profile"]).
  */
 
-import { useState, useCallback, useTransition } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { PROFILE_QUERY_KEY } from "@/hooks/useProfileQuery";
 import { ProfileDesktop } from "./Desktop/ProfileDesktop";
 import { ProfileMobile } from "./Mobile/ProfileMobile";
-import { ProfileSkeleton } from "./components";
 import { updateMyProfile, deleteMyAccount } from "@/actions/profile";
 import { mapApiProfileToUserProfile, AVATAR_URLS } from "./types";
-import type { UserProfile, ProfileUpdateData } from "./types";
+import type { UserProfile } from "./types";
 import type { ProfileResponse } from "@/lib/validations";
 import type { DashboardData } from "@/hooks/useDashboard";
 
@@ -27,7 +28,7 @@ import type { DashboardData } from "@/hooks/useDashboard";
 
 export interface SubscriptionUsage {
   used: number;
-  limit: number | null;   // null = unlimited
+  limit: number | null; // null = unlimited
   tier: "free" | "premium";
   expiryLabel: string;
 }
@@ -51,8 +52,8 @@ export function ProfileClient({
   subscriptionUsage,
 }: ProfileClientProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const [isPending, startTransition] = useTransition();
 
   // Local state seeded from server data — lets us update optimistically
   const [profile, setProfile] = useState<UserProfile>(
@@ -61,68 +62,89 @@ export function ProfileClient({
   const [dashboard] = useState<DashboardData | null>(initialDashboard);
   const [error, setError] = useState<string | null>(null);
 
-  // ── Mutations via server actions ──────────────────────────────────────
+  // ── Mutation: edit profile (name) ─────────────────────────────────────
+
+  const editProfileMutation = useMutation({
+    mutationFn: async ({
+      firstName,
+      lastName,
+    }: {
+      firstName: string;
+      lastName: string;
+    }) => {
+      const result = await updateMyProfile({
+        first_name: firstName,
+        last_name: lastName,
+      });
+      if ("error" in result) throw new Error(result.error);
+      return result.data;
+    },
+    onMutate: async ({ firstName, lastName }) => {
+      // Optimistic update
+      setError(null);
+      setProfile((prev) => ({ ...prev, firstName, lastName }));
+    },
+    onSuccess: (data) => {
+      setProfile(mapApiProfileToUserProfile(data));
+      // Invalidate React Query cache → Header updates instantly
+      queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
+    },
+    onError: (err: Error) => {
+      setError(err.message);
+      setProfile(mapApiProfileToUserProfile(initialProfile));
+    },
+  });
+
+  // ── Mutation: avatar select ───────────────────────────────────────────
+
+  const avatarMutation = useMutation({
+    mutationFn: async (avatarUrl: string) => {
+      const result = await updateMyProfile({ avatar_url: avatarUrl });
+      if ("error" in result) throw new Error(result.error);
+      return result.data;
+    },
+    onMutate: async (avatarUrl) => {
+      setError(null);
+      setProfile((prev) => ({ ...prev, avatarUrl }));
+    },
+    onSuccess: (data) => {
+      setProfile(mapApiProfileToUserProfile(data));
+      queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
+    },
+    onError: (err: Error) => {
+      setError(err.message);
+      setProfile(mapApiProfileToUserProfile(initialProfile));
+    },
+  });
+
+  // ── Handlers ──────────────────────────────────────────────────────────
 
   const handleEditProfile = useCallback(
     async (firstName: string, lastName: string): Promise<void> => {
-      setError(null);
-      // Optimistic: update UI immediately
-      setProfile((prev) => ({ ...prev, firstName, lastName }));
-
-      startTransition(async () => {
-        const result = await updateMyProfile({
-          first_name: firstName,
-          last_name: lastName,
-        });
-
-        if ("error" in result) {
-          setError(result.error);
-          // Revert on failure
-          setProfile(mapApiProfileToUserProfile(initialProfile));
-          return;
-        }
-
-        setProfile(mapApiProfileToUserProfile(result.data));
-      });
+      editProfileMutation.mutate({ firstName, lastName });
     },
-    [initialProfile],
+    [editProfileMutation],
   );
 
   const handleAvatarSelect = useCallback(
     async (avatarUrl: string): Promise<boolean> => {
-      setError(null);
-      // Optimistic: update avatar immediately
-      setProfile((prev) => ({ ...prev, avatarUrl }));
-
-      return new Promise((resolve) => {
-        startTransition(async () => {
-          const result = await updateMyProfile({ avatar_url: avatarUrl });
-
-          if ("error" in result) {
-            setError(result.error);
-            setProfile(mapApiProfileToUserProfile(initialProfile));
-            resolve(false);
-            return;
-          }
-
-          setProfile(mapApiProfileToUserProfile(result.data));
-          resolve(true);
-        });
-      });
+      try {
+        await avatarMutation.mutateAsync(avatarUrl);
+        return true;
+      } catch {
+        return false;
+      }
     },
-    [initialProfile],
+    [avatarMutation],
   );
 
   const handleDeleteAccount = useCallback(async (): Promise<void> => {
     setError(null);
     const result = await deleteMyAccount();
-
     if ("error" in result) {
       setError(result.error);
       throw new Error(result.error);
     }
-
-    // Account deleted — redirect to home
     router.push("/");
   }, [router]);
 

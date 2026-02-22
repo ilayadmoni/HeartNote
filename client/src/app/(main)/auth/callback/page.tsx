@@ -39,6 +39,17 @@ export default function AuthCallbackPage() {
             return;
           }
 
+          // Check if this is a password recovery flow
+          const type = searchParams.get("type");
+          if (type === "recovery") {
+            setStatus("success");
+            setMessage("מעבירים לעמוד שינוי סיסמה...");
+            setTimeout(() => {
+              router.push("/auth/reset-password");
+            }, 1500);
+            return;
+          }
+
           setStatus("success");
           setMessage("האימייל אומת בהצלחה! מעבירים לעמוד הבית...");
 

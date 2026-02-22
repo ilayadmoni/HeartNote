@@ -2,7 +2,9 @@
 
 /**
  * UserMenu Component
- * User avatar and dropdown menu when logged in
+ * User avatar and dropdown menu when logged in.
+ * Fetches first_name, last_name, avatar_url from the profiles table
+ * via useProfileQuery (React Query) so changes propagate instantly.
  */
 
 import { useState, useRef, useEffect } from "react";
@@ -10,32 +12,13 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, LogOut, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabase";
+import { useProfileQuery } from "@/hooks/useProfileQuery";
 
 export function UserMenu() {
   const { user, signOut } = useAuth();
+  const { data: profile } = useProfileQuery();
   const [isOpen, setIsOpen] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  // Fetch avatar_url from profiles table
-  useEffect(() => {
-    if (!user) return;
-    let cancelled = false;
-    supabase
-      .from("profiles")
-      .select("avatar_url")
-      .eq("id", user.id)
-      .single()
-      .then(({ data }) => {
-        if (!cancelled && data?.avatar_url) {
-          setAvatarUrl(data.avatar_url);
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -68,13 +51,15 @@ export function UserMenu() {
 
   if (!user) return null;
 
-  // Display first name only, with fallbacks
-  const displayName =
-    user.user_metadata?.first_name ||
-    user.user_metadata?.full_name?.split(" ")[0] ||
-    user.user_metadata?.display_name?.split(" ")[0] ||
-    user.email?.split("@")[0] ||
-    "משתמש";
+  // Build display name from profiles table data
+  const firstName = profile?.first_name;
+  const lastName = profile?.last_name;
+  const displayName = firstName || user.email?.split("@")[0] || "משתמש";
+  const fullName =
+    firstName && lastName
+      ? `${firstName} ${lastName}`
+      : firstName || displayName;
+  const avatarUrl = profile?.avatar_url ?? null;
 
   return (
     <div ref={menuRef} className="relative">
@@ -143,7 +128,7 @@ export function UserMenu() {
             {/* User Info */}
             <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
               <p className="text-sm font-bold text-[#2e3c52] dark:text-white text-hebrew-heading truncate">
-                {user.user_metadata?.full_name || displayName}
+                {fullName}
               </p>
             </div>
 
