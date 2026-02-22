@@ -1,69 +1,55 @@
 /**
- * Accessibility Page Constants
+ * Accessibility Statement Page Constants
+ * Content from the official legal document (Feb 2026).
  */
 
-import type { AccessibilityFeature, ContactInfo } from "../types";
+import type { AccessibilitySection } from "../types";
 
-// Page Header Content
+// Page Header
 export const ACCESSIBILITY_TITLE = "הצהרת נגישות";
-export const ACCESSIBILITY_SUBTITLE = "HeartNote מחויבת לספק חוויה נגישה לכלל המשתמשים";
+export const LAST_UPDATED = "11.2.2026";
 
-// Introduction Text
-export const ACCESSIBILITY_INTRO = `
-אנו ב-HeartNote מאמינים שלכל אדם מגיעה הזכות ליצור ולשתף רגעים מרגשים. 
-לכן, אנו פועלים להנגשת האתר שלנו בהתאם לתקן הישראלי (ת"י 5568) 
-ולהנחיות WCAG 2.1 ברמה AA.
-`;
-
-// Accessibility Features
-export const ACCESSIBILITY_FEATURES: AccessibilityFeature[] = [
+// Accessibility Sections
+export const ACCESSIBILITY_SECTIONS: AccessibilitySection[] = [
   {
-    id: "keyboard",
-    title: "ניווט במקלדת",
-    description: "ניתן לנווט בכל האתר באמצעות מקלדת בלבד, כולל קישורי דילוג לתוכן הראשי",
-    icon: "keyboard",
+    id: "intro",
+    title: "",
+    content: [
+      "אנו רואים חשיבות רבה בהנגשת האתר והפיכתו לזמין עבור כלל המשתמשים, לרבות אנשים עם מוגבלויות.",
+      "אנו משקיעים משאבים רבים על מנת להבטיח חוויית גלישה נגישה, נוחה ושוויונית.",
+    ],
   },
   {
-    id: "screen-reader",
-    title: "תמיכה בקורא מסך",
-    description: "האתר תומך בקוראי מסך פופולריים כמו NVDA, JAWS ו-VoiceOver",
-    icon: "volume",
+    id: "standards",
+    title: "עמידה בתקני נגישות",
+    content: [
+      "אתר זה נבנה והותאם בהתאם להנחיות התקן הישראלי ת\"י 5568 ולתקן הבינלאומי WCAG 2.1 לרמה AA.",
+    ],
   },
   {
-    id: "contrast",
-    title: "ניגודיות גבוהה",
-    description: "תמיכה במצב ניגודיות גבוהה ומצב כהה להקלה על הקריאה",
-    icon: "eye",
+    id: "features",
+    title: "התאמות עיקריות באתר",
+    content: [
+      "שימוש בטכנולוגיות התומכות בתוכנות קוראות מסך.",
+      "אפשרות ניווט באתר בעזרת מקלדת בלבד.",
+      "שימוש בצבעים עם ניגודיות גבוהה והאפשרות להתאמת צבעים והגדלת טקסט.",
+      "הדגשה והבהרה של פוקוס עבור רכיבי הדף.",
+      "שימוש בטקסטים חלופיים (Alt) לתמונות ולאלמנטים גרפיים.",
+    ],
   },
   {
-    id: "reduced-motion",
-    title: "הפחתת אנימציות",
-    description: "האתר מכבד את העדפות המשתמש להפחתת תנועה ואנימציות",
-    icon: "monitor",
+    id: "disclaimer",
+    title: "הבהרה והחרגות",
+    content: [
+      "על אף המאמצים והמשאבים הרבים שאנחנו משקיעים, ייתכנו חלקים באתר שטרם הונגשו במלואם, כתוצאה מפתרונות צד שלישי המשתלבים באתר (כגון יישומונים חיצוניים). נמשיך לפעול לשיפור הנגישות והסרת החסמים הקיימים.",
+    ],
   },
   {
-    id: "touch",
-    title: "התאמה למובייל",
-    description: "אזורי לחיצה גדולים ונוחים למגע בכל המכשירים",
-    icon: "smartphone",
-  },
-  {
-    id: "focus",
-    title: "מיקוד ברור",
-    description: "סימון ויזואלי ברור של האלמנט הממוקד לניווט נוח",
-    icon: "mouse",
+    id: "contact",
+    title: "משוב ופנייה בנושא נגישות",
+    content: [
+      "נשמח לקבל הערות והצעות לשיפור הנגישות באתר.",
+      "ליצירת קשר בנושא נגישות, אנא פנו אלינו בדוא\"ל: heartnote.web@gmail.com",
+    ],
   },
 ];
-
-// Contact Information
-export const ACCESSIBILITY_CONTACT: ContactInfo = {
-  email: "accessibility@heartnote.co.il",
-  phone: "03-1234567",
-};
-
-// Additional Text
-export const LAST_UPDATED = "פברואר 2026";
-export const COMMITMENT_TEXT = `
-אנו ממשיכים לעבוד על שיפור הנגישות באתר. אם נתקלתם בבעיית נגישות, 
-אנא פנו אלינו ונשמח לסייע.
-`;

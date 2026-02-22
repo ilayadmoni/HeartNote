@@ -1,7 +1,7 @@
 /**
- * Accessibility Page Components Barrel Export
+ * Accessibility Components
+ * Export all accessibility page components
  */
 
 export { AccessibilityHeader } from "./AccessibilityHeader";
-export { FeatureCard } from "./FeatureCard";
-export { ContactSection } from "./ContactSection";
+export { AccessibilitySection } from "./AccessibilitySection";

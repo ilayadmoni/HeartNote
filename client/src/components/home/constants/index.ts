@@ -10,7 +10,7 @@ export const HERO_TITLE_LINE1 = "ברוכים הבאים";
 export const HERO_TITLE_LINE2 = "למפעל הרגעים שלכם.";
 export const HERO_DESCRIPTION = "צרו בקלות כרטיסים דיגיטליים, מצחיקים ומרגשים שכיף לתת למי שאוהבים.";
 export const HERO_DESCRIPTION_2 = "בחרו תבנית, התאימו אישית, ושלחו!";
-export const HERO_CTA = "התניעו את המכונה – התחילו לעצב";
+export const HERO_CTA = "התניעו את המכונה – התחילו לעצב"
 export const HERO_CTA_SECONDARY = "צפו בדוגמה";
 
 // Gallery Teaser
@@ -28,25 +28,25 @@ export const PRICING_CTA = "לכל החבילות והמחירים";
 
 // How It Works
 export const HOW_IT_WORKS_TITLE = "איך זה עובד?";
-export const HOW_IT_WORKS_SUBTITLE = "שלושה צעדים פשוטים ליצירת הברכה המושלמת";
+export const HOW_IT_WORKS_SUBTITLE = "שלושה צעדים פשוטים ליצירת המתנה המושלמת";
 
 export const STEPS: StepItem[] = [
   {
     id: 1,
     icon: "click",
     title: "בוחרים תבנית",
-    description: "בחרו תבנית מהמבס היצירה שלנו – יש לנו עשרות אפשרויות יצירתיות",
+    description: "בחרו תבנית מגלריית התבניות, יש לנו המון אפשרויות מגניבות",
   },
   {
     id: 2,
     icon: "settings",
     title: "מתאימים אישית",
-    description: "הוסיפו טקסט, תמונות והתאמות אישיות בממשק העריכה הפשוט שלנו",
+    description: "הוסיפו טקסט, תמונות והתאימו אישית את העיצוב שלכם",
   },
   {
     id: 3,
     icon: "send",
-    title: "משגרים בוואטסאפ",
-    description: "לחצו שלח וקבלו קישור מיידי לשיתוף ישר לוואטסאפ",
+    title: "שולחים למי שאוהבים",
+    description: "לחצו 'יצירה' וקבלו קישור מיידי לשיתוף",
   },
 ];

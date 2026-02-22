@@ -9,17 +9,19 @@ export const FOOTER_LINKS: FooterLinkGroup[] = [
   {
     title: "HeartNote",
     links: [
-      { id: "privacy-terms", label: "מדיניות פרטיות ותנאי שימוש", href: "/privacy" },
       { id: "how-it-works", label: "איך זה עובד?", href: "/#how-it-works" },
       { id: "faq", label: "שאלות נפוצות", href: "/faq" },
+      { id: "contact", label: "יצירת קשר", href: "/contact" },
+
     ],
   },
   {
     title: "משפטי",
     links: [
       { id: "privacy", label: "מדיניות פרטיות", href: "/privacy" },
+      { id: "terms", label: "תנאי שימוש", href: "/terms" },
       { id: "accessibility", label: "נגישות", href: "/accessibility" },
-      { id: "contact", label: "צרו קשר איתנו", href: "/contact" },
+
     ],
   },
 ];
@@ -42,5 +44,5 @@ export const SOCIAL_LINKS: SocialLink[] = [
 export const FOOTER_DESCRIPTION =
   "מפעל הרגעים הדיגיטלי שלכם. יוצרים אהבה, חיוכים וזיכרונות בלחיצת כפתור";
 
-export const COPYRIGHT_TEXT = "© 2026 HeartNote . כל הזכויות שמורות. נבנה באהבה.";
+export const COPYRIGHT_TEXT = "© 2026 HeartNote . כל הזכויות שמורות.";
 export const SECURITY_TEXT = "";

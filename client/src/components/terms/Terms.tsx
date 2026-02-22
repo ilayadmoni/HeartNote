@@ -1,16 +1,16 @@
 "use client";
 
 /**
- * Accessibility Component
- * Main accessibility statement page content
+ * Terms Component
+ * Main terms of use page content
  */
 
 import { Settings } from "lucide-react";
-import { AccessibilityHeader, AccessibilitySection } from "./components";
-import { ACCESSIBILITY_SECTIONS } from "./constants";
-import type { AccessibilityProps } from "./types";
+import { TermsHeader, TermsSection } from "./components";
+import { TERMS_SECTIONS } from "./constants";
+import type { TermsProps } from "./types";
 
-export function Accessibility({ className = "" }: AccessibilityProps) {
+export function Terms({ className = "" }: TermsProps) {
   return (
     <section
       className={`relative py-12 lg:py-20 px-4 min-h-screen bg-[#faf7f5] dark:bg-gray-900 ${className}`}
@@ -27,16 +27,12 @@ export function Accessibility({ className = "" }: AccessibilityProps) {
       </div>
 
       <div className="container mx-auto max-w-3xl relative z-10">
-        <AccessibilityHeader />
+        <TermsHeader />
 
-        {/* Accessibility Content */}
+        {/* Terms Content */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 lg:p-10 shadow-lg">
-          {ACCESSIBILITY_SECTIONS.map((section, index) => (
-            <AccessibilitySection
-              key={section.id}
-              section={section}
-              index={index}
-            />
+          {TERMS_SECTIONS.map((section, index) => (
+            <TermsSection key={section.id} section={section} index={index} />
           ))}
 
           {/* Divider */}

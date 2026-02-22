@@ -1,19 +1,15 @@
 "use client";
 
 /**
- * AccessibilityHeader Component
- * Header section for accessibility statement page
+ * TermsHeader Component
+ * Header section for terms of use page
  */
 
 import { motion } from "framer-motion";
-import { Accessibility as AccessibilityIcon } from "lucide-react";
-import {
-  ACCESSIBILITY_TITLE,
-  ACCESSIBILITY_SUBTITLE,
-  LAST_UPDATED,
-} from "../constants";
+import { FileText } from "lucide-react";
+import { TERMS_TITLE, TERMS_SUBTITLE, LAST_UPDATED } from "../constants";
 
-export function AccessibilityHeader() {
+export function TermsHeader() {
   return (
     <div className="text-center mb-10">
       <motion.div
@@ -22,10 +18,7 @@ export function AccessibilityHeader() {
         transition={{ duration: 0.5 }}
         className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#d4826f]/10 dark:bg-[#e8917a]/10 mb-5"
       >
-        <AccessibilityIcon
-          size={32}
-          className="text-[#d4826f] dark:text-[#e8917a]"
-        />
+        <FileText size={32} className="text-[#d4826f] dark:text-[#e8917a]" />
       </motion.div>
 
       <motion.h1
@@ -34,7 +27,7 @@ export function AccessibilityHeader() {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="text-3xl lg:text-4xl font-black text-[#2e3c52] dark:text-white mb-3 text-hebrew-heading"
       >
-        {ACCESSIBILITY_TITLE}
+        {TERMS_TITLE}
       </motion.h1>
 
       <motion.p
@@ -43,7 +36,7 @@ export function AccessibilityHeader() {
         transition={{ duration: 0.5, delay: 0.2 }}
         className="text-base text-[#2e3c52] dark:text-gray-300 text-hebrew-body"
       >
-        {ACCESSIBILITY_SUBTITLE}
+        {TERMS_SUBTITLE}
       </motion.p>
 
       <motion.p

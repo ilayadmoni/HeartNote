@@ -7,8 +7,8 @@ import { Metadata } from "next";
 import { Privacy } from "@/components/privacy";
 
 export const metadata: Metadata = {
-  title: "תנאי שימוש ומדיניות פרטיות | HeartNote",
-  description: "תנאי שימוש, מדיניות פרטיות ונגישות באתר HeartNote",
+  title: "מדיניות פרטיות | HeartNote",
+  description: "מדיניות הפרטיות של HeartNote - התחייבותנו לפרטיותך ואבטחת המידע",
 };
 
 export default function PrivacyPage() {

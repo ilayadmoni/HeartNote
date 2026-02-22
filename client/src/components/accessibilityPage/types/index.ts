@@ -6,14 +6,9 @@ export interface AccessibilityProps {
   className?: string;
 }
 
-export interface AccessibilityFeature {
+export interface AccessibilitySection {
   id: string;
   title: string;
-  description: string;
-  icon: "keyboard" | "eye" | "mouse" | "volume" | "monitor" | "smartphone";
+  content: string[];
 }
 
-export interface ContactInfo {
-  email: string;
-  phone: string;
-}

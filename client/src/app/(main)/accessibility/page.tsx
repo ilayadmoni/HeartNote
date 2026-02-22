@@ -8,8 +8,7 @@ import { Accessibility } from "@/components/accessibilityPage";
 
 export const metadata: Metadata = {
   title: "הצהרת נגישות | HeartNote",
-  description:
-    "הצהרת הנגישות של HeartNote - מחויבותנו לנגישות דיגיטלית לכלל המשתמשים",
+  description: "הצהרת הנגישות של HeartNote - מחויבותנו להנגשת האתר לכלל המשתמשים",
 };
 
 export default function AccessibilityPage() {

@@ -16,10 +16,10 @@ export const PRICING_PLANS: PricingPlan[] = [
     price: 0,
     period: "",
     features: [
-      { id: "s1", text: "גישה ל-5 תבניות בסיס", included: true },
+      { id: "s1", text: "גישה ל-3 תבניות בסיס", included: true },
       { id: "s2", text: "עריכת טקסט מלאה", included: true },
       { id: "s3", text: "לוגו HeartNote על הכרטיס", included: false },
-      { id: "s4", text: "ללא תמונות אישיות", included: false },
+      { id: "s4", text: "ללא תמונות", included: false },
     ],
     ctaText: "בחר מסלול חינם",
     isFeatured: false,
