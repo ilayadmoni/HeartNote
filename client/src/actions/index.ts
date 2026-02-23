@@ -20,7 +20,7 @@ export {
 } from "./creations";
 
 // Templates
-export { getTemplates, getTemplateBySlug } from "./templates";
+export { getTemplates, getTemplateBySlug, getPopularTemplates } from "./templates";
 
 // Dashboard
 export { getDashboard } from "./dashboard";

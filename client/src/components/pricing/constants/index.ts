@@ -23,7 +23,7 @@ export const PRICING_PLANS: PricingPlan[] = [
       { id: "s5", text: "זמינות הקישור: 24 שעות", included: false },
 
     ],
-    ctaText: "בחירת מסלול חינם",
+    ctaText: "צור ברכה בחינם",
     isFeatured: true,
   },
   {

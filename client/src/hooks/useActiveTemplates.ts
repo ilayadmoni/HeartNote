@@ -84,6 +84,7 @@ export function useActiveTemplates(
   }, []);
 
   // Merge DB metadata with UI templates by matching slug to id
+  // Sort: free templates first, then premium
   const enrichedTemplates = uiTemplates
     .map((template) => {
       const dbData = metadata.find((m) => m.slug === template.id);
@@ -103,7 +104,12 @@ export function useActiveTemplates(
       } as Template & { categories: string[] };
     })
     .filter((t) => t !== null) as (Template & { categories: string[] })[];
-    
+
+  // Sort: free first, premium last
+  enrichedTemplates.sort((a, b) => {
+    if (a.isPremium === b.isPremium) return 0;
+    return a.isPremium ? 1 : -1;
+  });
 
   return { metadata, loading, error, enrichedTemplates };
 }

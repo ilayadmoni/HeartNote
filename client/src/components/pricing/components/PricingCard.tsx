@@ -5,11 +5,15 @@
  * Individual pricing plan card with features
  */
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Check, Lock } from "lucide-react";
 import type { PricingCardProps } from "../types";
 
 export function PricingCard({ plan, index }: PricingCardProps) {
+  const isComingSoon = !!plan.badge;
+  const isFree = plan.price === 0;
+
   const baseCardStyles = plan.isFeatured
     ? "bg-[#d4826f] text-white shadow-2xl scale-105 z-10"
     : "bg-white dark:bg-gray-800 text-[#2e3c52] dark:text-white shadow-lg";
@@ -27,12 +31,13 @@ export function PricingCard({ plan, index }: PricingCardProps) {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.15 }}
-      className={`relative rounded-3xl p-8 transition-all duration-300 ${baseCardStyles}`}
+      className={`relative rounded-3xl p-8 transition-all duration-300 ${baseCardStyles} ${isComingSoon ? "opacity-60" : ""}`}
     >
-      {/* Featured Badge */}
-      {plan.badge && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#2e3c52] text-white px-4 py-1 rounded-full text-sm font-bold text-hebrew-heading">
-          {plan.badge}
+      {/* Coming Soon Badge */}
+      {isComingSoon && (
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-bold text-hebrew-heading shadow-lg flex items-center gap-1.5 border border-amber-400/30 z-10">
+          <span>🔒</span>
+          <span>{plan.badge}</span>
         </div>
       )}
 
@@ -77,11 +82,24 @@ export function PricingCard({ plan, index }: PricingCardProps) {
       </ul>
 
       {/* CTA Button */}
-      <button
-        className={`w-full py-3 px-6 rounded-full font-bold transition-all duration-200 text-hebrew-heading ${buttonStyles}`}
-      >
-        {plan.ctaText}
-      </button>
+      {isFree ? (
+        <Link href="/gallery" className="block w-full">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`w-full py-3 px-6 rounded-full font-bold transition-all duration-200 text-hebrew-heading ${buttonStyles}`}
+          >
+            {plan.ctaText}
+          </motion.button>
+        </Link>
+      ) : (
+        <button
+          disabled
+          className="w-full py-3 px-6 rounded-full font-bold text-hebrew-heading bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+        >
+          {plan.ctaText}
+        </button>
+      )}
     </motion.div>
   );
 }

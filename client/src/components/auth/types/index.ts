@@ -6,6 +6,8 @@ export interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToRegister?: () => void;
+  /** URL to redirect to after successful login (deep linking) */
+  redirectTo?: string | null;
 }
 
 export interface RegisterModalProps {

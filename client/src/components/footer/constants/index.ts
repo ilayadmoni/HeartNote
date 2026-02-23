@@ -44,5 +44,5 @@ export const SOCIAL_LINKS: SocialLink[] = [
 export const FOOTER_DESCRIPTION =
   "מפעל הרגעים הדיגיטלי שלכם. יוצרים אהבה, חיוכים וזיכרונות בלחיצת כפתור";
 
-export const COPYRIGHT_TEXT = "© 2026 HeartNote . כל הזכויות שמורות.";
+export const COPYRIGHT_TEXT = "© 2026 HeartNote כל הזכויות שמורות";
 export const SECURITY_TEXT = "";

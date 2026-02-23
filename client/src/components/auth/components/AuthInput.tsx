@@ -40,7 +40,7 @@ export function AuthInput({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className={`
-            w-full px-3 py-2.5 rounded-lg text-sm box-border
+            w-full px-3 py-2.5 rounded-lg text-base box-border
             bg-white dark:bg-gray-700
             border-2 transition-all duration-200
             text-[#2e3c52] dark:text-white text-right

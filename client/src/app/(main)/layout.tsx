@@ -2,6 +2,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { SkipLinks } from "@/components/accessibility";
 import { ScrollToTop } from "@/components/ui";
+import { WelcomeSplash } from "@/components/welcomeSplash";
 
 export default function MainLayout({
   children,
@@ -17,6 +18,7 @@ export default function MainLayout({
       </main>
       <Footer />
       <ScrollToTop />
+      <WelcomeSplash />
     </>
   );
 }

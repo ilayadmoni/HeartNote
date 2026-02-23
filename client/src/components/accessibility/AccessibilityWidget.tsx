@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { PersonStanding } from "lucide-react";
+
 import { FocusTrap } from "@/components/accessibility";
 import { useAccessibility } from "@/components/accessibility/AccessibilityProvider";
 import { KEYS } from "@/components/accessibility/constants";
@@ -33,31 +36,32 @@ export function AccessibilityWidget() {
       className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 md:bottom-6 md:right-6"
       dir="rtl"
     >
-      <button
+      <motion.button
         ref={triggerRef}
         type="button"
         aria-label="פתח תפריט נגישות"
         onClick={toggle}
-        className="h-12 w-12 rounded-full bg-[#d4826f] hover:bg-[#c4735f] dark:bg-[#b87156] dark:hover:bg-[#a85f42] text-white shadow-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b5a47]"
+        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.8, y: 20 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        className="
+          w-12 h-12 rounded-full
+          bg-[#d4826f] hover:bg-[#c4735f]
+          dark:bg-[#e8917a] dark:hover:bg-[#d4826f]
+          text-white
+          shadow-lg shadow-[#d4826f]/30 dark:shadow-[#e8917a]/30
+          hover:shadow-xl hover:shadow-[#d4826f]/40
+          flex items-center justify-center
+          transition-all duration-200
+          backdrop-blur-sm
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b5a47]
+        "
       >
-        <span className="sr-only">נגישות</span>
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          className="mx-auto h-6 w-6"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="12" cy="4" r="2" />
-          <path d="M6 22l2-7h8l2 7" />
-          <path d="M4 10h16" />
-          <path d="M9 10l-2 7" />
-          <path d="M15 10l2 7" />
-        </svg>
-      </button>
+        <PersonStanding  size={24} strokeWidth={2.5} />
+      </motion.button>
 
       {isOpen && (
         <div className="fixed inset-0 z-50">

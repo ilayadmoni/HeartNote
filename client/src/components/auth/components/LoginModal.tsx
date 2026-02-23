@@ -5,15 +5,17 @@
  * Modal dialog for user login, registration, and password reset.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, LogIn } from "lucide-react";
+import { X, LogIn, AlertTriangle } from "lucide-react";
 import { AuthInput } from "./AuthInput";
 import { AuthTabs } from "./AuthTabs";
 import { RegisterForm } from "./RegisterForm";
 import { ForgotPasswordForm } from "./ForgotPasswordForm";
 import { FocusTrap } from "@/components/accessibility";
 import { useAuth } from "@/contexts/AuthContext";
+import { SPLASH_STORAGE_KEY } from "@/components/welcomeSplash";
 import {
   LOGIN_TITLE,
   LOGIN_SUBTITLE,
@@ -27,8 +29,10 @@ import {
 } from "../constants";
 import type { LoginModalProps, LoginFormData } from "../types";
 
-export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export function LoginModal({ isOpen, onClose, redirectTo }: LoginModalProps) {
+  const router = useRouter();
   const { signIn, signUp, error, clearError } = useAuth();
+  const savedOverflow = useRef<string>("");
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [formData, setFormData] = useState<LoginFormData>({
@@ -37,6 +41,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   });
   const [errors, setErrors] = useState<Partial<LoginFormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [shakeKey, setShakeKey] = useState(0);
 
   // Reset form when modal closes
   useEffect(() => {
@@ -50,15 +55,22 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   }, [isOpen, clearError]);
 
-  // Prevent body scroll — single source of truth
+  // Prevent body scroll — save original value, restore on cleanup
   useEffect(() => {
     if (isOpen) {
+      savedOverflow.current = document.body.style.overflow;
       document.body.style.overflow = "hidden";
     }
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = savedOverflow.current;
     };
   }, [isOpen]);
+
+  // Safety-net: always restore overflow when modal closes
+  const handleClose = useCallback(() => {
+    document.body.style.overflow = savedOverflow.current;
+    onClose();
+  }, [onClose]);
 
   const validate = (): boolean => {
     const newErrors: Partial<LoginFormData> = {};
@@ -79,14 +91,24 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate()) {
+      setShakeKey((k) => k + 1);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
       await signIn(formData.email, formData.password);
-      onClose();
+      sessionStorage.setItem(SPLASH_STORAGE_KEY, "true");
+      handleClose();
+
+      // Intent-based redirect: navigate to originally intended page
+      if (redirectTo) {
+        router.push(redirectTo);
+      }
     } catch {
-      // Error is handled by AuthContext
+      // Error is handled by AuthContext — trigger shake
+      setShakeKey((k) => k + 1);
     } finally {
       setIsSubmitting(false);
     }
@@ -121,7 +143,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <FocusTrap active={isOpen} onEscape={onClose}>
+        <FocusTrap active={isOpen} onEscape={handleClose}>
           {/* Full-screen portal layer */}
           <motion.div
             key="auth-modal"
@@ -129,17 +151,17 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50"
+            className="fixed inset-0 z-[200]"
           >
             {/* Backdrop — click outside closes */}
             <div
               className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={onClose}
+              onClick={handleClose}
               aria-hidden="true"
             />
 
             {/* Centered layout — clicks pass through to backdrop */}
-            <div className="relative flex items-center justify-center h-full p-4 py-8 md:py-4">
+            <div className="relative flex items-center justify-center h-[100dvh] p-4 py-6 md:py-4">
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
@@ -153,7 +175,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               >
                 {/* Close Button */}
                 <button
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors z-10"
                   aria-label="סגור"
                 >
@@ -195,27 +217,51 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                           onTabChange={setActiveTab}
                         />
 
-                        {/* Error Message */}
-                        {error && (
-                          <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                            <p className="text-red-600 dark:text-red-400 text-sm text-center text-hebrew-body">
-                              {error}
-                            </p>
-                          </div>
-                        )}
+                        {/* Animated Error Message */}
+                        <AnimatePresence mode="wait">
+                          {error && (
+                            <motion.div
+                              key="auth-error"
+                              initial={{ opacity: 0, y: -8 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -8 }}
+                              transition={{ duration: 0.25 }}
+                              className="mb-4 p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800/60"
+                              role="alert"
+                            >
+                              <div className="flex items-center justify-center gap-2">
+                                <AlertTriangle
+                                  size={16}
+                                  className="text-red-500 dark:text-red-400 shrink-0"
+                                />
+                                <p className="text-red-500 dark:text-red-400 text-sm font-semibold text-hebrew-body">
+                                  {error}
+                                </p>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
 
-                        {/* Login Form */}
+                        {/* Login Form with Shake Animation */}
                         {activeTab === "login" && (
-                          <form onSubmit={handleLogin}>
+                          <motion.form
+                            key={shakeKey}
+                            animate={
+                              shakeKey > 0 ? { x: [-10, 10, -10, 10, 0] } : {}
+                            }
+                            transition={{ duration: 0.4, ease: "easeInOut" }}
+                            onSubmit={handleLogin}
+                          >
                             <AuthInput
                               id="login-email"
                               label={AUTH_LABELS.email}
                               type="email"
                               placeholder={AUTH_PLACEHOLDERS.email}
                               value={formData.email}
-                              onChange={(value) =>
-                                setFormData({ ...formData, email: value })
-                              }
+                              onChange={(value) => {
+                                setFormData({ ...formData, email: value });
+                                if (error) clearError();
+                              }}
                               error={errors.email}
                             />
 
@@ -225,9 +271,10 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                               type="password"
                               placeholder={AUTH_PLACEHOLDERS.password}
                               value={formData.password}
-                              onChange={(value) =>
-                                setFormData({ ...formData, password: value })
-                              }
+                              onChange={(value) => {
+                                setFormData({ ...formData, password: value });
+                                if (error) clearError();
+                              }}
                               error={errors.password}
                             />
 
@@ -290,7 +337,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                 LOGIN_BUTTON
                               )}
                             </button>
-                          </form>
+                          </motion.form>
                         )}
 
                         {/* Register Form */}

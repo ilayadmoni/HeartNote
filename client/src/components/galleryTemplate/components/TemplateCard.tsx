@@ -15,96 +15,111 @@ export function TemplateCard({
   className = "",
   onClick,
 }: TemplateCardProps) {
+  const isPremiumLocked = !!template.isPremium;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
+      whileHover={isPremiumLocked ? undefined : { y: -4 }}
       transition={{ duration: 0.3 }}
       className={`
-        group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden
-        shadow-sm hover:shadow-xl transition-all duration-300
+        relative group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden
+        shadow-sm transition-all duration-300
         border border-gray-100 dark:border-gray-700
+        ${isPremiumLocked ? "cursor-not-allowed" : "hover:shadow-xl"}
         ${className}
       `}
     >
-      {/* Preview Container */}
-      <div className="relative aspect-[7/3] bg-gradient-to-br from-[#faf7f5] to-[#f5f0eb] dark:from-gray-700 dark:to-gray-800 overflow-hidden">
-        {/* Badges */}
-        <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
-          {/* Premium/Free Badge */}
-          {template.isPremium ? (
-            <span className="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full shadow-md text-hebrew-body flex items-center gap-1">
-              ⭐ פרימיום
-            </span>
-          ) : template.isFree ? (
-            <span className="px-2.5 py-1 bg-green-500 text-white text-xs font-bold rounded-full shadow-md text-hebrew-body">
-              חינם
-            </span>
-          ) : (
-            <span />
-          )}
+      {/* Coming Soon Overlay for Premium Templates */}
+      {isPremiumLocked && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-black/5 dark:bg-black/20">
+          <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-xl flex items-center gap-2 text-hebrew-heading border border-amber-400/30">
+            <span>🔒</span>
+            <span>בקרוב</span>
+          </div>
+        </div>
+      )}
 
-          {/* Category Badge */}
-          {template.badge && template.badge.type === "heart" && (
-            <span
-              className="w-8 h-8 rounded-full flex items-center justify-center shadow-md"
-              style={{ backgroundColor: template.badge.color }}
-            >
-              💕
-            </span>
-          )}
+      {/* Card Content - dimmed for premium */}
+      <div className={isPremiumLocked ? "grayscale-[60%] opacity-50 pointer-events-none select-none" : ""}>
+        {/* Preview Container */}
+        <div className="relative aspect-[7/3] bg-gradient-to-br from-[#faf7f5] to-[#f5f0eb] dark:from-gray-700 dark:to-gray-800 overflow-hidden">
+          {/* Badges */}
+          <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
+            {/* Premium/Free Badge */}
+            {template.isPremium ? (
+              <span className="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full shadow-md text-hebrew-body flex items-center gap-1">
+                ⭐ פרימיום
+              </span>
+            ) : template.isFree ? (
+              <span className="px-2.5 py-1 bg-green-500 text-white text-xs font-bold rounded-full shadow-md text-hebrew-body">
+                חינם
+              </span>
+            ) : (
+              <span />
+            )}
+
+            {/* Category Badge */}
+            {template.badge && template.badge.type === "heart" && (
+              <span
+                className="w-8 h-8 rounded-full flex items-center justify-center shadow-md"
+                style={{ backgroundColor: template.badge.color }}
+              >
+                💕
+              </span>
+            )}
+          </div>
+
+          {/* Animated Preview */}
+          <div className="w-full h-full flex items-center justify-center">
+            <TemplatePreview componentKey={template.componentKey} />
+          </div>
+
+          {/* Hover Overlay */}
+          <div className="absolute inset-0 bg-[#2e3c52]/0 group-hover:bg-[#2e3c52]/10 transition-colors duration-300" />
         </div>
 
-        {/* Animated Preview */}
-        <div className="w-full h-full flex items-center justify-center">
-          <TemplatePreview componentKey={template.componentKey} />
-        </div>
+        {/* Content */}
+        <div className="p-4 md:p-5">
+          <h3 className="text-lg md:text-xl font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading group-hover:text-[#d4826f] transition-colors duration-300">
+            {template.title}
+          </h3>
 
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-[#2e3c52]/0 group-hover:bg-[#2e3c52]/10 transition-colors duration-300" />
-      </div>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-hebrew-body leading-relaxed">
+            {template.description}
+          </p>
 
-      {/* Content */}
-      <div className="p-4 md:p-5">
-        <h3 className="text-lg md:text-xl font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading group-hover:text-[#d4826f] transition-colors duration-300">
-          {template.title}
-        </h3>
-
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-hebrew-body leading-relaxed">
-          {template.description}
-        </p>
-
-        {/* CTA Button */}
-        <div className="w-full">
-          {onClick ? (
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onClick(template)}
-              className={`w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-hebrew-heading ${
-                template.isPremium
-                  ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600"
-                  : "bg-[#d4826f] text-white hover:bg-[#c4735f]"
-              }`}
-            >
-              {template.isPremium ? "שדרגו ליצירה" : "התחילו ליצור"}
-            </motion.button>
-          ) : (
-            <Link href={template.link} className="block w-full">
+          {/* CTA Button */}
+          <div className="w-full">
+            {isPremiumLocked ? (
+              <button
+                disabled
+                className="w-full py-2.5 rounded-xl font-bold text-sm text-hebrew-heading bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-400 cursor-not-allowed"
+              >
+                בקרוב
+              </button>
+            ) : onClick ? (
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={`w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-hebrew-heading ${
-                  template.isPremium
-                    ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600"
-                    : "bg-[#d4826f] text-white hover:bg-[#c4735f]"
-                }`}
+                onClick={() => onClick(template)}
+                className="w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-hebrew-heading bg-[#d4826f] text-white hover:bg-[#c4735f]"
               >
-                {template.isPremium ? "שדרגו ליצירה" : "התחילו ליצור"}
+                התחילו ליצור
               </motion.button>
-            </Link>
-          )}
+            ) : (
+              <Link href={template.link} className="block w-full">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-hebrew-heading bg-[#d4826f] text-white hover:bg-[#c4735f]"
+                >
+                  התחילו ליצור
+                </motion.button>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>

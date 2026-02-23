@@ -50,6 +50,9 @@ export function GalleryTemplate(props: GalleryTemplateProps) {
   }, [user, pendingLink, router]);
 
   const handleTemplateClick = (template: Template) => {
+    // Don't navigate for premium (locked) templates
+    if (template.isPremium) return;
+
     if (user) {
       router.push(template.link);
     } else {
@@ -80,9 +83,7 @@ export function GalleryTemplate(props: GalleryTemplateProps) {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={handleLoginClose}
-        onSwitchToRegister={() => {
-          // Register handling if needed
-        }}
+        redirectTo={pendingLink}
       />
     </>
   );

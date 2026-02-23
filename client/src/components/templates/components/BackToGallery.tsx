@@ -6,6 +6,7 @@
  */
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 
 interface BackToGalleryProps {
@@ -13,6 +14,11 @@ interface BackToGalleryProps {
 }
 
 export function BackToGallery({ className = "" }: BackToGalleryProps) {
+  const pathname = usePathname();
+
+  // Hide on published public links (/p/[slug])
+  if (pathname?.startsWith("/p/")) return null;
+
   return (
     <Link
       href="/gallery"
