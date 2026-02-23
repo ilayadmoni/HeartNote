@@ -15,7 +15,7 @@ export const HERO_CTA_SECONDARY = "צפו בדוגמה";
 
 // Gallery Teaser
 export const GALLERY_TITLE = "טעימה מהגלריה";
-export const GALLERY_SUBTITLE = "הנה כמה מהעיצובים הכי פופולריים שלנו. יש עוד הרבה בפנים!";
+export const GALLERY_SUBTITLE = "הנה כמה מהעיצובים הכי פופולריים שלנו. יש עוד הרבה בגלריית התבניות!";
 export const GALLERY_CTA = "לכל התבניות בגלריה";
 
 // Pricing Teaser
@@ -23,7 +23,7 @@ export const PRICING_BADGE = "שדרגו את החוויה";
 export const PRICING_TITLE_HIGHLIGHT = "המסלול המושלם";
 export const PRICING_TITLE = "מצאו את";
 export const PRICING_TITLE_END = "עבורכם";
-export const PRICING_DESCRIPTION = "ממנוי חינם להתנסות ועד לחבילת \"בעל מפעל\" שנותנת לכם הכל. הצטרפו לאלפי יוצרים שכבר שדרגו.";
+export const PRICING_DESCRIPTION = "ממנוי חינם להתנסות ועד לחבילת פרימיום שנותנת לכם הכל. הצטרפו לאלפי יוצרים שכבר שדרגו.";
 export const PRICING_CTA = "לכל החבילות והמחירים";
 
 // How It Works

@@ -95,7 +95,7 @@ export const TEMPLATES: Template[] = [
     id: "steamy-window",
     title: "חלון עם אדים",
     description:
-      "העבירו את האצבע על החלון המאודה וגלו את ההודעה הסודית שמוסתרת מאחוריו! 🫧",
+      "העבירו את האצבע על החלון וגלו את ההודעה הסודית שמוסתרת מאחוריו! 🫧",
     category: "romantic",
     isFree: true,
     componentKey: "SteamyWindow",
@@ -106,7 +106,7 @@ export const TEMPLATES: Template[] = [
     id: "surprise-gift",
     title: "מתנה בהפתעה",
     description:
-      "קופסת מתנה אינטראקטיבית — נערו אותה עד שתיפתח ותגלו את ההפתעה! 🎁",
+      "קופסת מתנה אינטראקטיבית, נערו אותה עד שתיפתח ותגלו את ההפתעה! 🎁",
     category: "gifts",
     isPremium: true,
     componentKey: "SurpriseGift",
