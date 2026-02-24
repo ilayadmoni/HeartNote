@@ -20,7 +20,7 @@ export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
     data.options?.length >= 2 ? data.options : ["אופציה 1", "אופציה 2"];
 
   return (
-    <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative">
+    <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
       <FloatingIcons/>
       <BackToGallery className="top-4 right-4 absolute" />
       {/* Decorative blobs */}

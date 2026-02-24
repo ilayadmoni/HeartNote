@@ -34,8 +34,8 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
         />
       </div>
 
-      <div className="container mx-auto max-w-7xl">
-        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-16">
+      <div className="w-full px-4 lg:px-8">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12 lg:justify-between">
           {/* Right Side: Text Content (RTL) */}
           <div className="flex-1 text-center lg:text-right z-10">
             {/* Badge */}
@@ -116,7 +116,7 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
           </div>
 
           {/* Left Side: Hand + Phone Visual */}
-          <div className="flex-1 w-full max-w-[360px] mx-auto lg:mx-0">
+          <div className="flex-1 w-full max-w-[360px] mx-auto lg:mx-0 lg:max-w-none lg:flex lg:justify-start">
             <HeroVisual />
           </div>
         </div>

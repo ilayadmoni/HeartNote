@@ -25,7 +25,7 @@ export function FooterMobile({ className = "" }: FooterProps) {
       className={`bg-[#252d3b] text-white pt-10 pb-6 ${className}`}
       dir="rtl"
     >
-      <div className="container mx-auto px-6">
+      <div className="w-full px-4">
         {/* Top Section: Logo, Description & Social */}
         <div className="text-center mb-8">
           {/* Logo - Always dark mode, centered */}

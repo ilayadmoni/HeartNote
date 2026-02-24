@@ -132,6 +132,7 @@ export default async function PublicPage({ params }: PageProps) {
     <UserPageClient
       templateKey={creation.template_slug}
       contentData={creation.metadata}
+      isPaid={!!creation.is_paid}
     />
   );
 }

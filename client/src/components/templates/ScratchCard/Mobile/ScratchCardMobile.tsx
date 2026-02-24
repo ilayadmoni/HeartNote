@@ -81,7 +81,7 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
   const colorDark = adjustBrightness(primaryColor, -25); // Darker for border
 
   return (
-    <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-[#faf7f5] dark:bg-gray-900 px-4 py-5 overflow-auto relative">
+    <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-transparent px-4 py-5 overflow-auto relative isolate">
       <FloatingIcons />
       <BackToGallery className="mb-3" />
 

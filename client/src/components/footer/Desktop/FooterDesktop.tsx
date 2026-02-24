@@ -25,7 +25,7 @@ export function FooterDesktop({ className = "" }: FooterProps) {
       className={`bg-[#252d3b] text-white pt-12 pb-6 ${className}`}
       dir="rtl"
     >
-      <div className="container mx-auto px-6 lg:px-12">
+      <div className="w-full px-4 lg:px-8">
         {/* Main Footer Content */}
         <div className="flex justify-between items-start gap-8">
           {/* Right Side: Brand & Description (RTL) */}

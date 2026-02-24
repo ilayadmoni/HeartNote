@@ -64,20 +64,20 @@ export function Header({ className = "" }: HeaderProps) {
           borderColor: isScrolled ? undefined : "var(--header-border)",
         }}
       >
-        <div className="container mx-auto px-4">
-          <div className="relative flex items-center justify-center h-16 lg:h-18">
-            {/* Right Side: Logo (RTL) - Absolute positioned */}
-            <div className="absolute right-0 flex-shrink-0">
+        <div className="w-full px-4 lg:px-8">
+          <div className="flex items-center justify-between h-16 lg:h-18">
+            {/* Right Side: Logo (RTL) */}
+            <div className="flex-shrink-0">
               <Logo />
             </div>
 
-            {/* Center: Desktop Navigation - Centered */}
+            {/* Center: Desktop Navigation */}
             <div className="hidden lg:block">
               <NavLinks items={NAV_ITEMS} />
             </div>
 
-            {/* Left Side: Actions (RTL) - Absolute positioned */}
-            <div className="absolute left-0 flex items-center gap-2 flex-shrink-0">
+            {/* Left Side: Actions (RTL) */}
+            <div className="flex items-center gap-2 flex-shrink-0">
               {/* Theme Toggle */}
               <ThemeToggle />
 

@@ -124,5 +124,9 @@ export default function PreviewFramePage() {
     );
   }
 
-  return <Component data={data} />;
+  return (
+    <div className="bg-[#faf7f5] min-h-screen">
+      <Component data={data} />
+    </div>
+  );
 }

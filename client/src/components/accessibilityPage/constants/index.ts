@@ -9,6 +9,17 @@ import type { AccessibilitySection } from "../types";
 export const ACCESSIBILITY_TITLE = "הצהרת נגישות";
 export const LAST_UPDATED = "11.2.2026";
 
+// Contact Information
+export const ACCESSIBILITY_CONTACT = {
+  email: "heartnote.web@gmail.com",
+  phone: "050-123-4567",
+};
+
+// Commitment Text
+export const COMMITMENT_TEXT = `אנו מחויבים להבטיח שהאתר יהיה נגיש ושימושי עבור כולם.
+אם נתקלתם בבעיית נגישות או שיש לכם הצעות לשיפור, נשמח לשמוע מכם.
+אנו נעשה כל מאמץ לטפל בפנייתכם בהקדם האפשרי.`;
+
 // Accessibility Sections
 export const ACCESSIBILITY_SECTIONS: AccessibilitySection[] = [
   {

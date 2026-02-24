@@ -66,7 +66,7 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
   }, []);
 
   return (
-    <div className="min-h-[420px] w-full flex flex-col justify-between gap-6 bg-[#faf7f5] dark:bg-gray-900 px-4 py-6 overflow-auto relative">
+    <div className="min-h-[420px] w-full flex flex-col justify-between gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate">
       <FloatingIcons />
       {/* Main Content - Top */}
       <div className="flex flex-col items-center w-full">

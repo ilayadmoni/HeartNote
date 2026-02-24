@@ -23,7 +23,7 @@ export function RelationshipQuizDesktop({ data }: QuizViewProps) {
   const scoreMsg = getScoreMessage(percentage, data.scoreMessages);
 
   return (
-    <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative">
+    <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
       <FloatingIcons/>
       <BackToGallery className="top-4 right-4 absolute" />
       <div className="flex-1 w-full max-w-md mx-auto px-6 py-8">

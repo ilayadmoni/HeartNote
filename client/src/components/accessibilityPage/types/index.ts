@@ -12,3 +12,8 @@ export interface AccessibilitySection {
   content: string[];
 }
 
+export interface AccessibilityFeature {
+  icon: "keyboard" | "eye" | "mouse" | "volume" | "monitor" | "smartphone";
+  title: string;
+  description: string;
+}

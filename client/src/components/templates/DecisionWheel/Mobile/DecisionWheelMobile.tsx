@@ -21,7 +21,7 @@ export function DecisionWheelMobile({ data }: DecisionWheelViewProps) {
     data.options?.length >= 2 ? data.options : ["אופציה 1", "אופציה 2"];
 
   return (
-    <div className="min-h-[420px] bg-[#faf7f5] dark:bg-gray-900 px-4 relative overflow-hidden flex flex-col justify-between gap-6 py-6">
+    <div className="min-h-[420px] bg-transparent px-4 relative isolate overflow-hidden flex flex-col justify-between gap-6 py-6">
       <FloatingIcons/>
       {/* Decorative blobs */}
       <div className="absolute top-5 left-0 w-28 h-28 bg-[#F8BBD0]/20 rounded-full blur-2xl pointer-events-none" />

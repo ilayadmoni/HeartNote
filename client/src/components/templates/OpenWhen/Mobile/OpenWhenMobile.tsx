@@ -29,7 +29,7 @@ export function OpenWhenMobile({ data }: OpenWhenViewProps) {
   }, []);
 
   return (
-    <div className="min-h-[420px] bg-[#faf7f5] dark:bg-gray-900 py-8 px-4 relative">
+    <div className="min-h-[420px] bg-transparent py-8 px-4 relative isolate">
       <FloatingIcons />
 
       <div className="max-w-md mx-auto relative z-10">

@@ -30,7 +30,7 @@ export function DateInviteDesktop({
   const hoverColor = adjustBrightness(primaryColor, -15);
 
   return (
-    <div className="flex flex-col min-h-[390px] bg-[#faf7f5] dark:bg-gray-900 relative overflow-hidden">
+    <div className="flex flex-col min-h-[390px] bg-transparent relative isolate overflow-hidden">
      <FloatingIcons/>
       <BackToGallery className="absolute top-4 right-4" />
       {/* Content Area */}

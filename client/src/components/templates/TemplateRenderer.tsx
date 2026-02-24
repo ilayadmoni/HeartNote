@@ -22,7 +22,7 @@ export function TemplateRenderer({
 
   if (!Component) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
         <div className="text-center p-8">
           <p className="text-xl text-red-500 mb-2">❌</p>
           <p className="text-gray-600 dark:text-gray-400">
@@ -42,7 +42,7 @@ export function TemplateRenderer({
 
 function TemplateLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-transparent">
       <div className="text-center">
         <div className="w-12 h-12 border-4 border-[#d4826f] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-gray-500 dark:text-gray-400 text-hebrew-body">

@@ -28,7 +28,7 @@ export function DateInviteMobile({
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
-    <div className="w-full h-full min-h-[420px] flex flex-col justify-between gap-6 bg-[#faf7f5] dark:bg-gray-900 px-5 py-6 overflow-hidden relative">
+    <div className="w-full h-full min-h-[420px] flex flex-col justify-between gap-6 bg-transparent px-5 py-6 overflow-hidden relative isolate">
       {/* Background Hearts Pattern */}
       <FloatingIcons/>
 

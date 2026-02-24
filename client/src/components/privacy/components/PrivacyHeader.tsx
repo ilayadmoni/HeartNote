@@ -7,7 +7,7 @@
 
 import { motion } from "framer-motion";
 import { Shield } from "lucide-react";
-import { PRIVACY_TITLE, PRIVACY_SUBTITLE, LAST_UPDATED } from "../constants";
+import { PRIVACY_TITLE, LAST_UPDATED } from "../constants";
 
 export function PrivacyHeader() {
   return (
@@ -25,19 +25,10 @@ export function PrivacyHeader() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-3xl lg:text-4xl font-black text-[#2e3c52] dark:text-white mb-3 text-hebrew-heading"
+        className="text-3xl lg:text-4xl font-black text-[#2e3c52] dark:text-white mb-5 text-hebrew-heading"
       >
         {PRIVACY_TITLE}
       </motion.h1>
-
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="text-base text-[#2e3c52] dark:text-gray-300 text-hebrew-body"
-      >
-        {PRIVACY_SUBTITLE}
-      </motion.p>
 
       <motion.p
         initial={{ opacity: 0 }}

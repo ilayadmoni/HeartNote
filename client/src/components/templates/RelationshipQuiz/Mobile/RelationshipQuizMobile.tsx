@@ -23,7 +23,7 @@ export function RelationshipQuizMobile({ data }: QuizViewProps) {
   const scoreMsg = getScoreMessage(percentage, data.scoreMessages);
 
   return (
-    <div className="min-h-[420px] bg-[#faf7f5] dark:bg-gray-900 px-4 py-6 relative flex flex-col justify-between gap-6">
+    <div className="min-h-[420px] bg-transparent px-4 py-6 relative isolate flex flex-col justify-between gap-6">
       <FloatingIcons/>
       {/* Main Content - Top */}
       <div className="max-w-md mx-auto w-full">

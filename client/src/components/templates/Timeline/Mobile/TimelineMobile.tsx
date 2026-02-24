@@ -12,13 +12,16 @@ import {
   FooterBranding,
   BackToGallery,
 } from "@/components/templates/components";
+import { FloatingIcons } from "../../OpenWhen/components";
+
 
 export function TimelineMobile({ data }: TimelineMobileProps) {
   const hasEvents = data.events && data.events.length > 0;
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
-    <div className="w-full h-full min-h-[420px] flex flex-col justify-between gap-6 bg-[#faf7f5] dark:bg-gray-900 px-4 py-6 overflow-auto relative">
+    <div className="w-full h-full min-h-[420px] flex flex-col justify-between gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate">
+       <FloatingIcons />
       {/* Main Content - Top */}
       <div className="flex flex-col items-center w-full">
         <BackToGallery className="mb-3" />
