@@ -43,9 +43,9 @@ export default function AuthCallbackPage() {
           const type = searchParams.get("type");
           if (type === "recovery") {
             setStatus("success");
-            setMessage("מעבירים לעמוד שינוי סיסמה...");
+            setMessage("מעבירים לשינוי סיסמה...");
             setTimeout(() => {
-              router.push("/auth/reset-password");
+              router.push("/?reset_password=true");
             }, 1500);
             return;
           }

@@ -32,6 +32,7 @@ interface AuthContextType {
   ) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -190,6 +191,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Update password (user is already authenticated via recovery link)
+  const updatePassword = async (password: string) => {
+    try {
+      setError(null);
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) {
+        setError(getErrorMessage(error.message));
+        throw error;
+      }
+    } catch (err) {
+      if (err instanceof Error && !error) {
+        setError(getErrorMessage(err.message));
+      }
+      throw err;
+    }
+  };
+
   // Clear error
   const clearError = () => setError(null);
 
@@ -204,6 +222,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signUp,
         signOut,
         resetPassword,
+        updatePassword,
         clearError,
       }}
     >

@@ -6,8 +6,8 @@
  * Supports desktop, tablet (iPad), and mobile (iPhone) layouts
  */
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { HeaderProps } from "./types";
 import { NAV_ITEMS } from "./constants";
 import { useHeader } from "./hooks/useHeader";
@@ -27,6 +27,22 @@ export function Header({ className = "" }: HeaderProps) {
   const { isMobileMenuOpen, isScrolled, toggleMobileMenu, closeMobileMenu } =
     useHeader();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [loginModalView, setLoginModalView] = useState<
+    "login" | "update-password"
+  >("login");
+  const searchParams = useSearchParams();
+
+  // Auto-open modal in update-password mode when coming from recovery link
+  useEffect(() => {
+    if (searchParams.get("reset_password") === "true") {
+      setLoginModalView("update-password");
+      setIsLoginModalOpen(true);
+      // Clean the URL without triggering a navigation
+      const url = new URL(window.location.href);
+      url.searchParams.delete("reset_password");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
+  }, [searchParams]);
 
   // Hide header only on preview frame (iframe content)
   if (pathname?.startsWith("/preview-frame")) {
@@ -35,11 +51,13 @@ export function Header({ className = "" }: HeaderProps) {
 
   const openLoginModal = () => {
     closeMobileMenu();
+    setLoginModalView("login");
     setIsLoginModalOpen(true);
   };
 
   const closeLoginModal = () => {
     setIsLoginModalOpen(false);
+    setLoginModalView("login");
   };
 
   return (
@@ -113,6 +131,7 @@ export function Header({ className = "" }: HeaderProps) {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={closeLoginModal}
+        initialView={loginModalView}
         onSwitchToRegister={() => {
           // TODO: Implement register modal switch
           console.log("Switch to register");

@@ -18,6 +18,7 @@ import { AuthInput } from "./AuthInput";
 import { AuthTabs } from "./AuthTabs";
 import { RegisterForm } from "./RegisterForm";
 import { ForgotPasswordForm } from "./ForgotPasswordForm";
+import { UpdatePasswordForm } from "./UpdatePasswordForm";
 import { FocusTrap } from "@/components/accessibility";
 import { useAuth } from "@/contexts/AuthContext";
 import { SPLASH_STORAGE_KEY } from "@/components/welcomeSplash";
@@ -38,13 +39,19 @@ import type { LoginModalProps, LoginFormData } from "../types";
 /* ------------------------------------------------------------------ */
 /*  LoginModal                                                         */
 /* ------------------------------------------------------------------ */
-export function LoginModal({ isOpen, onClose, redirectTo }: LoginModalProps) {
+export function LoginModal({
+  isOpen,
+  onClose,
+  redirectTo,
+  initialView,
+}: LoginModalProps) {
   const router = useRouter();
   const { signIn, signUp, error: authError, clearError } = useAuth();
   const savedOverflow = useRef<string>("");
 
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showUpdatePassword, setShowUpdatePassword] = useState(false);
 
   // Controlled inputs for client-side validation
   const [formData, setFormData] = useState<LoginFormData>({
@@ -64,12 +71,20 @@ export function LoginModal({ isOpen, onClose, redirectTo }: LoginModalProps) {
   const [shakeKey, setShakeKey] = useState(0);
 
   // ── Reset form when modal closes ─────────────────────────────────
+  // Open in update-password mode when coming from recovery link
+  useEffect(() => {
+    if (isOpen && initialView === "update-password") {
+      setShowUpdatePassword(true);
+    }
+  }, [isOpen, initialView]);
+
   useEffect(() => {
     if (!isOpen) {
       setFormData({ email: "", password: "" });
       setErrors({});
       setActiveTab("login");
       setShowForgotPassword(false);
+      setShowUpdatePassword(false);
       setIsSubmitting(false);
       setIsRegisterSubmitting(false);
       setLoginError(null);
@@ -220,8 +235,16 @@ export function LoginModal({ isOpen, onClose, redirectTo }: LoginModalProps) {
                 {/* Scrollable Content */}
                 <div className="max-h-[85vh] overflow-y-auto overflow-x-hidden">
                   <div className="p-4 sm:p-5 pt-8 box-border">
-                    {/* Forgot Password View */}
-                    {showForgotPassword ? (
+                    {/* Update Password View (from recovery link) */}
+                    {showUpdatePassword ? (
+                      <UpdatePasswordForm
+                        onComplete={() => {
+                          setShowUpdatePassword(false);
+                          handleClose();
+                        }}
+                      />
+                    ) : /* Forgot Password View */
+                    showForgotPassword ? (
                       <ForgotPasswordForm onBack={handleBackFromForgot} />
                     ) : (
                       <>
@@ -284,9 +307,7 @@ export function LoginModal({ isOpen, onClose, redirectTo }: LoginModalProps) {
                           <motion.form
                             key={shakeKey}
                             animate={
-                              shakeKey > 0
-                                ? { x: [-10, 10, -10, 10, 0] }
-                                : {}
+                              shakeKey > 0 ? { x: [-10, 10, -10, 10, 0] } : {}
                             }
                             transition={{ duration: 0.4, ease: "easeInOut" }}
                             onSubmit={handleLogin}
@@ -303,7 +324,10 @@ export function LoginModal({ isOpen, onClose, redirectTo }: LoginModalProps) {
                                 setFormData({ ...formData, email: value });
                                 setLoginError(null);
                                 if (errors.email) {
-                                  setErrors((prev) => ({ ...prev, email: undefined }));
+                                  setErrors((prev) => ({
+                                    ...prev,
+                                    email: undefined,
+                                  }));
                                 }
                               }}
                               error={errors.email}

@@ -59,6 +59,13 @@ export const FORGOT_PASSWORD_SUCCESS = "קישור לאיפוס הסיסמה נ�
 export const FORGOT_PASSWORD_BACK = "חזרה להתחברות";
 export const FORGOT_PASSWORD_LINK = "שכחתם את הסיסמה?";
 
+// Update Password (after recovery link click)
+export const UPDATE_PASSWORD_TITLE = "הגדרת סיסמה חדשה";
+export const UPDATE_PASSWORD_SUBTITLE = "הזינו את הסיסמה החדשה שלכם";
+export const UPDATE_PASSWORD_BUTTON = "עדכון סיסמה";
+export const UPDATE_PASSWORD_SUCCESS = "הסיסמה שונתה בהצלחה!";
+export const UPDATE_PASSWORD_SUCCESS_SUBTITLE = "תוכלו להתחבר עם הסיסמה החדשה";
+
 // Login Error
 export const LOGIN_ERROR_MESSAGE = "שם משתמש או סיסמה שגויים";
 

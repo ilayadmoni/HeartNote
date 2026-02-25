@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { SkipLinks } from "@/components/accessibility";
@@ -12,7 +13,9 @@ export default function MainLayout({
   return (
     <>
       <SkipLinks />
-      <Header />
+      <Suspense>
+        <Header />
+      </Suspense>
       <main id="main-content" role="main" tabIndex={-1}>
         {children}
       </main>
