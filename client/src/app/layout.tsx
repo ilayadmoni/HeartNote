@@ -8,6 +8,7 @@ import {
 } from "@/components/accessibility";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { QueryProvider } from "@/providers/QueryProvider";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -74,6 +75,12 @@ export default function RootLayout({
             <AccessibilityWidget />
           </AccessibilityProvider>
         </ThemeProvider>
+        <Toaster
+          position="bottom-right"
+          richColors
+          duration={4000}
+          closeButton
+        />
       </body>
     </html>
   );

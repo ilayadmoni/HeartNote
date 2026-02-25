@@ -54,7 +54,11 @@ interface FormErrors {
 // Password validation: min 8 chars, at least 1 letter and 1 number
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
-export function RegisterForm({ onSubmit, isSubmitting, serverError }: RegisterFormProps) {
+export function RegisterForm({
+  onSubmit,
+  isSubmitting,
+  serverError,
+}: RegisterFormProps) {
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -74,9 +78,13 @@ export function RegisterForm({ onSubmit, isSubmitting, serverError }: RegisterFo
   ): string | undefined => {
     switch (field) {
       case "firstName":
-        return !(value as string).trim() ? AUTH_VALIDATION.firstNameRequired : undefined;
+        return !(value as string).trim()
+          ? AUTH_VALIDATION.firstNameRequired
+          : undefined;
       case "lastName":
-        return !(value as string).trim() ? AUTH_VALIDATION.lastNameRequired : undefined;
+        return !(value as string).trim()
+          ? AUTH_VALIDATION.lastNameRequired
+          : undefined;
       case "email":
         if (!(value as string).trim()) return AUTH_VALIDATION.emailRequired;
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value as string))
@@ -84,8 +92,10 @@ export function RegisterForm({ onSubmit, isSubmitting, serverError }: RegisterFo
         return undefined;
       case "password":
         if (!value) return AUTH_VALIDATION.passwordRequired;
-        if ((value as string).length < 8) return AUTH_VALIDATION.passwordMinLength;
-        if (!PASSWORD_REGEX.test(value as string)) return AUTH_VALIDATION.passwordFormat;
+        if ((value as string).length < 8)
+          return AUTH_VALIDATION.passwordMinLength;
+        if (!PASSWORD_REGEX.test(value as string))
+          return AUTH_VALIDATION.passwordFormat;
         return undefined;
       case "confirmPassword":
         if (value !== formData.password)
@@ -107,7 +117,10 @@ export function RegisterForm({ onSubmit, isSubmitting, serverError }: RegisterFo
     }
   };
 
-  const handleFieldChange = (field: keyof FormData, value: string | boolean) => {
+  const handleFieldChange = (
+    field: keyof FormData,
+    value: string | boolean,
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
     // Clear error when user starts typing, validate on blur instead
@@ -244,27 +257,59 @@ export function RegisterForm({ onSubmit, isSubmitting, serverError }: RegisterFo
 
       {/* Terms & Privacy Checkbox */}
       <div className="mt-3 mb-1">
-        <label className="flex items-start gap-2 cursor-pointer select-none">
-          <span className="relative mt-0.5 shrink-0">
-            <input
-              type="checkbox"
-              checked={formData.agreedToTerms}
-              onChange={(e) => handleFieldChange("agreedToTerms", e.target.checked)}
-              className="peer sr-only"
-            />
-            <span
-              className="
-                block w-4 h-4 rounded border-2
-                border-gray-300 dark:border-gray-500
-                bg-white dark:bg-gray-700
-                peer-checked:bg-[#2e3c52] peer-checked:border-[#2e3c52]
-                dark:peer-checked:bg-[#d4826f] dark:peer-checked:border-[#d4826f]
-                peer-focus-visible:ring-2 peer-focus-visible:ring-[#2e3c52] peer-focus-visible:ring-offset-1
-                transition-all duration-150 cursor-pointer
-              "
-            />
+        {/*
+          Pure custom checkbox — no native <input> to avoid double-render.
+          handleSubmit reads from formData React state, so no native form
+          serialization is needed. Full keyboard support via onKeyDown.
+        */}
+        <div
+          role="checkbox"
+          aria-checked={formData.agreedToTerms}
+          tabIndex={0}
+          onClick={() =>
+            handleFieldChange("agreedToTerms", !formData.agreedToTerms)
+          }
+          onKeyDown={(e) => {
+            if (e.key === " " || e.key === "Enter") {
+              e.preventDefault();
+              handleFieldChange("agreedToTerms", !formData.agreedToTerms);
+            }
+          }}
+          className="flex items-center gap-2 cursor-pointer select-none outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52] focus-visible:ring-offset-1 rounded"
+          dir="rtl"
+        >
+          {/* Label text — on the RIGHT in RTL */}
+          <span className="text-xs text-[#2e3c52] dark:text-gray-300 text-hebrew-body leading-relaxed">
+            קראתי ואני מאשר/ת את{" "}
+            <Link
+              href="/privacy"
+              target="_blank"
+              onClick={(e) => e.stopPropagation()}
+              className="underline text-[#d4826f] hover:text-[#c4725f] dark:text-[#e8917a] dark:hover:text-[#f0a18a] font-semibold"
+            >
+              תנאי השימוש ומדיניות הפרטיות
+            </Link>
+          </span>
+
+          {/* Custom visual box — on the LEFT in RTL */}
+          <span
+            className={`
+              shrink-0 flex items-center justify-center
+              w-[18px] h-[18px] rounded-[4px] border-2
+              transition-all duration-150
+              ${
+                formData.agreedToTerms
+                  ? "bg-[#2e3c52] border-[#2e3c52] dark:bg-[#d4826f] dark:border-[#d4826f]"
+                  : "bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-500"
+              }
+            `}
+          >
             <svg
-              className="absolute top-[3px] left-[3px] w-2.5 h-2.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"
+              className={`w-[11px] h-[11px] text-white pointer-events-none transition-all duration-150 ${
+                formData.agreedToTerms
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-50"
+              }`}
               viewBox="0 0 12 12"
               fill="none"
               stroke="currentColor"
@@ -275,19 +320,10 @@ export function RegisterForm({ onSubmit, isSubmitting, serverError }: RegisterFo
               <path d="M2 6l3 3 5-5" />
             </svg>
           </span>
-          <span className="text-xs text-[#2e3c52] dark:text-gray-300 text-hebrew-body leading-relaxed">
-            קראתי ואני מאשר/ת את{" "}
-            <Link
-              href="/privacy"
-              target="_blank"
-              className="underline text-[#d4826f] hover:text-[#c4725f] dark:text-[#e8917a] dark:hover:text-[#f0a18a] font-semibold"
-            >
-              תנאי השימוש ומדיניות הפרטיות
-            </Link>
-          </span>
-        </label>
+        </div>
+
         {errors.agreedToTerms && (
-          <p className="text-xs text-red-500 mt-1 mr-6 text-hebrew-body">
+          <p className="text-xs text-red-500 mt-1 text-hebrew-body text-right">
             {errors.agreedToTerms}
           </p>
         )}

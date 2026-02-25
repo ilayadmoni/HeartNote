@@ -89,7 +89,7 @@ export function TemplatesList({
           className="mx-auto text-gray-300 dark:text-gray-600 mb-4"
         />
         <p className="text-gray-500 dark:text-gray-400 text-hebrew-body">
-          עדיין לא יצרת כרטיסים
+          עדיין לא יצרת יצירות
         </p>
       </div>
     );
@@ -99,7 +99,7 @@ export function TemplatesList({
     <>
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
         <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white mb-4 text-hebrew-heading">
-          הכרטיסים שלי ({activeCount})
+          היצירות שלי ({activeCount})
         </h3>
 
         <div

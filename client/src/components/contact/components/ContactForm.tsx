@@ -19,9 +19,11 @@ import type { ContactFormData } from "../types";
 
 interface ContactFormProps {
   onSubmit: (data: ContactFormData) => Promise<void>;
+  /** Forwarded from the parent's useTransition — covers the server round-trip */
+  isPending?: boolean;
 }
 
-export function ContactForm({ onSubmit }: ContactFormProps) {
+export function ContactForm({ onSubmit, isPending = false }: ContactFormProps) {
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -158,7 +160,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
       {/* Submit Button */}
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={isSubmitting || isPending}
         className="
           w-full py-4 px-6 rounded-xl
           bg-[#d4826f] hover:bg-[#c4735f]
@@ -170,7 +172,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
           focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f] focus-visible:ring-offset-2
         "
       >
-        {isSubmitting ? (
+        {isSubmitting || isPending ? (
           <>
             <svg
               className="animate-spin h-5 w-5"

@@ -9,12 +9,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { KeyRound, CheckCircle, XCircle } from "lucide-react";
+import { KeyRound, CheckCircle, XCircle, Eye, EyeOff } from "lucide-react";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [status, setStatus] = useState<
     "form" | "loading" | "success" | "error"
   >("form");
@@ -117,14 +119,25 @@ export default function ResetPasswordPage() {
                 >
                   סיסמה חדשה
                 </label>
-                <input
-                  id="new-password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="הכניסו סיסמה חדשה"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-[#2e3c52] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f] text-hebrew-body"
-                />
+                <div className="relative">
+                  <input
+                    id="new-password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="הכניסו סיסמה חדשה"
+                    className="w-full px-4 py-2.5 pl-10 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-[#2e3c52] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f] text-hebrew-body"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#d4826f] dark:hover:text-[#e8917a] transition-colors"
+                    aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -134,14 +147,25 @@ export default function ResetPasswordPage() {
                 >
                   אימות סיסמה
                 </label>
-                <input
-                  id="confirm-password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="הכניסו סיסמה שוב"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-[#2e3c52] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f] text-hebrew-body"
-                />
+                <div className="relative">
+                  <input
+                    id="confirm-password"
+                    type={showConfirm ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="הכניסו סיסמה שוב"
+                    className="w-full px-4 py-2.5 pl-10 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-[#2e3c52] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f] text-hebrew-body"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#d4826f] dark:hover:text-[#e8917a] transition-colors"
+                    aria-label={showConfirm ? "הסתר סיסמה" : "הצג סיסמה"}
+                    tabIndex={-1}
+                  >
+                    {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <button

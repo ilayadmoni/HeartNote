@@ -3,13 +3,16 @@
 /**
  * UpdatePasswordForm Component
  * Allows users to set a new password after clicking the recovery email link.
- * Rendered inside the LoginModal when ?reset_password=true is detected.
+ * Rendered inside the LoginModal when ?modal=reset-password is detected.
+ * Uses the updatePassword server action which also resets reset_attempts to 0.
  */
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { KeyRound, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
 import { AuthInput } from "./AuthInput";
-import { useAuth } from "@/contexts/AuthContext";
+import { updatePassword } from "@/actions/password";
 import {
   UPDATE_PASSWORD_TITLE,
   UPDATE_PASSWORD_SUBTITLE,
@@ -26,11 +29,14 @@ interface UpdatePasswordFormProps {
 }
 
 export function UpdatePasswordForm({ onComplete }: UpdatePasswordFormProps) {
-  const { updatePassword, error, clearError } = useAuth();
+  const router = useRouter();
+  const completedRef = useRef(false);
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmError, setConfirmError] = useState("");
+  const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -55,21 +61,55 @@ export function UpdatePasswordForm({ onComplete }: UpdatePasswordFormProps) {
     return valid;
   };
 
+  /** Close the modal, show a toast, and navigate to home. */
+  const finishAndRedirect = () => {
+    // Guard against being called twice (setTimeout + catch-up)
+    if (completedRef.current) return;
+    completedRef.current = true;
+
+    onComplete();                       // close modal
+    toast.success(UPDATE_PASSWORD_SUCCESS, { duration: 3500 });
+    router.push("/");                   // navigate home
+    router.refresh();                   // refresh server components / session
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearError();
+    setServerError(null);
     if (!validate()) return;
 
     setIsSubmitting(true);
+
+    // Safety-net: if the server action never resolves (session rotation
+    // can cause the fetch to hang), force-close after 8 s.
+    const safetyTimer = setTimeout(() => {
+      if (!completedRef.current) finishAndRedirect();
+    }, 8000);
+
     try {
-      await updatePassword(password);
+      const fd = new FormData();
+      fd.append("password", password);
+
+      const result = await updatePassword(fd);
+
+      clearTimeout(safetyTimer);
+
+      if (result.error) {
+        setServerError(result.error);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Show the in-modal success state briefly, then redirect
       setIsSuccess(true);
-      // Auto-close after success
-      setTimeout(() => onComplete(), 2500);
-    } catch {
-      // Error is handled by AuthContext
-    } finally {
       setIsSubmitting(false);
+      setTimeout(() => finishAndRedirect(), 2000);
+    } catch {
+      clearTimeout(safetyTimer);
+      // If the action threw (e.g. network/session issue) but the password
+      // was likely changed, still close gracefully.
+      setIsSubmitting(false);
+      setServerError("שגיאה בלתי צפויה. נסו שוב מאוחר יותר.");
     }
   };
 
@@ -114,10 +154,10 @@ export function UpdatePasswordForm({ onComplete }: UpdatePasswordFormProps) {
       </p>
 
       {/* Server Error */}
-      {error && (
+      {serverError && (
         <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
           <p className="text-red-600 dark:text-red-400 text-sm text-center text-hebrew-body">
-            {error}
+            {serverError}
           </p>
         </div>
       )}

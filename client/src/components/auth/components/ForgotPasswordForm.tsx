@@ -2,13 +2,14 @@
 
 /**
  * ForgotPasswordForm Component
- * Allows users to request a password reset email via Supabase resetPasswordForEmail.
+ * Allows users to request a password reset email via the
+ * requestPasswordReset server action (3-strike limit).
  */
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { KeyRound, ArrowRight, CheckCircle } from "lucide-react";
 import { AuthInput } from "./AuthInput";
-import { useAuth } from "@/contexts/AuthContext";
+import { requestPasswordReset } from "@/actions/password";
 import {
   FORGOT_PASSWORD_TITLE,
   FORGOT_PASSWORD_SUBTITLE,
@@ -25,11 +26,11 @@ interface ForgotPasswordFormProps {
 }
 
 export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
-  const { resetPassword, error, clearError } = useAuth();
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const validate = (): boolean => {
     if (!email.trim()) {
@@ -44,20 +45,37 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
     return true;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    clearError();
-    if (!validate()) return;
+    console.log("[ForgotPassword] Form submitted, email:", email);
+    setServerError(null);
 
-    setIsSubmitting(true);
-    try {
-      await resetPassword(email);
-      setIsSuccess(true);
-    } catch {
-      // Error is handled by AuthContext
-    } finally {
-      setIsSubmitting(false);
+    if (!validate()) {
+      console.log("[ForgotPassword] Validation failed");
+      return;
     }
+
+    console.log("[ForgotPassword] Validation passed, calling server action...");
+
+    startTransition(async () => {
+      try {
+        const fd = new FormData();
+        fd.append("email", email);
+
+        console.log("[ForgotPassword] Calling requestPasswordReset...");
+        const result = await requestPasswordReset(fd);
+        console.log("[ForgotPassword] Server action result:", result);
+
+        if (result.error) {
+          setServerError(result.error);
+        } else {
+          setIsSuccess(true);
+        }
+      } catch (err) {
+        console.error("[ForgotPassword] Unexpected error:", err);
+        setServerError("שגיאה בלתי צפויה. נסו שוב מאוחר יותר.");
+      }
+    });
   };
 
   // ── Success State ─────────────────────────────────────────────────────
@@ -114,10 +132,10 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
       </p>
 
       {/* Server Error */}
-      {error && (
+      {serverError && (
         <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
           <p className="text-red-600 dark:text-red-400 text-sm text-center text-hebrew-body">
-            {error}
+            {serverError}
           </p>
         </div>
       )}
@@ -135,7 +153,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isPending}
           className="
             w-full py-2.5 px-4 mt-2 rounded-lg
             bg-[#2e3c52] hover:bg-[#1B263B]
@@ -146,7 +164,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
             focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52] focus-visible:ring-offset-2
           "
         >
-          {isSubmitting ? (
+          {isPending ? (
             <span className="flex items-center justify-center gap-2">
               <svg
                 className="animate-spin h-5 w-5"

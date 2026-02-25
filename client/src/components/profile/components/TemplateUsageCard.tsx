@@ -37,7 +37,7 @@ export function TemplateUsageCard({
           <FileText size={20} className="text-[#d4826f]" />
         </div>
         <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
-          הכרטיסים שלי
+          יתרת היצירות שלי
         </h3>
       </div>
 

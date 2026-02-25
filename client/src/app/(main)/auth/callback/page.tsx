@@ -45,7 +45,7 @@ export default function AuthCallbackPage() {
             setStatus("success");
             setMessage("מעבירים לשינוי סיסמה...");
             setTimeout(() => {
-              router.push("/?reset_password=true");
+              router.push("/?modal=reset-password");
             }, 1500);
             return;
           }

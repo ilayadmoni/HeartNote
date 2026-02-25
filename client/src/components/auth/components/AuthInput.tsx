@@ -2,7 +2,7 @@
 
 /**
  * AuthInput Component
- * Styled input field for auth forms with optional password visibility toggle
+ * Styled input field for auth forms with automatic password visibility toggle
  */
 
 import { useState } from "react";
@@ -18,9 +18,12 @@ export function AuthInput({
   value,
   onChange,
   error,
-  showPasswordToggle = false,
+  showPasswordToggle = true,
 }: AuthInputProps) {
   const [showPassword, setShowPassword] = useState(false);
+
+  // Whether to actually render the eye toggle
+  const hasToggle = type === "password" && showPasswordToggle;
 
   // Determine the actual input type
   const inputType = type === "password" && showPassword ? "text" : type;
@@ -50,7 +53,7 @@ export function AuthInput({
             text-hebrew-body
             focus:outline-none focus:ring-0
             min-w-0
-            ${type === "password" && showPasswordToggle ? "pl-10" : ""}
+            ${hasToggle ? "pl-10" : ""}
             ${
               error
                 ? "border-red-400 focus:border-red-500"
@@ -63,12 +66,13 @@ export function AuthInput({
         />
 
         {/* Password Toggle Button */}
-        {type === "password" && showPasswordToggle && (
+        {hasToggle && (
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#d4826f] dark:hover:text-[#e8917a] transition-colors"
             aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+            tabIndex={-1}
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>

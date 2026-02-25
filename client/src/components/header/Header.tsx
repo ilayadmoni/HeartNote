@@ -33,13 +33,18 @@ export function Header({ className = "" }: HeaderProps) {
   const searchParams = useSearchParams();
 
   // Auto-open modal in update-password mode when coming from recovery link
+  // Supports both: ?reset_password=true (legacy) and ?modal=reset-password (new)
   useEffect(() => {
-    if (searchParams.get("reset_password") === "true") {
+    if (
+      searchParams.get("reset_password") === "true" ||
+      searchParams.get("modal") === "reset-password"
+    ) {
       setLoginModalView("update-password");
       setIsLoginModalOpen(true);
       // Clean the URL without triggering a navigation
       const url = new URL(window.location.href);
       url.searchParams.delete("reset_password");
+      url.searchParams.delete("modal");
       window.history.replaceState({}, "", url.pathname + url.search);
     }
   }, [searchParams]);
