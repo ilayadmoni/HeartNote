@@ -24,3 +24,7 @@ export { getTemplates, getTemplateBySlug, getPopularTemplates } from "./template
 
 // Dashboard
 export { getDashboard } from "./dashboard";
+
+// Auth
+export { loginAction } from "./auth";
+export { type LoginState, initialLoginState } from "./auth.types";

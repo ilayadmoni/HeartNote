@@ -63,14 +63,13 @@ export async function getDashboard(): Promise<
         (profileData.subscription_tier as string) ?? "free",
     };
 
-    // ── Fetch all non-deleted creations for this user ──────────────
+    // ── Fetch all creations for this user (including soft-deleted) ───
     const { data: rawCreations, error: crErr } = await supabase
       .from("creations")
       .select(
-        "id, is_paid, expires_at, created_at, templates!inner(slug, name)",
+        "id, is_paid, expires_at, created_at, is_deleted, templates!inner(slug, name)",
       )
       .eq("user_id", user.id)
-      .eq("is_deleted", false)
       .order("created_at", { ascending: false });
 
     const allCreations = rawCreations ?? [];
@@ -101,6 +100,7 @@ export async function getDashboard(): Promise<
         expires_at: expiresAtStr ?? null,
         is_expired: isExpired,
         is_paid: (c.is_paid as boolean) ?? null,
+        is_deleted: (c.is_deleted as boolean) ?? false,
       };
     });
 

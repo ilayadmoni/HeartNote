@@ -1,13 +1,27 @@
 "use client";
 
 /**
- * TemplatesList Component
- * Displays list of user's created creations with active/expired states.
+ * TemplatesList — Displays user creations with hard-lock delete strategy.
+ *
+ * Data flows from React Query cache (via ProfileClient useQuery → props).
+ * The useDeleteCreation mutation updates THE SAME cache key, so cache
+ * changes propagate through useQuery → props → this component instantly.
+ *
+ * Hard-lock: Module-level Map in useDeleteCreation ensures deleted items
+ * stay deleted for 5 seconds, even if a background refetch returns stale data.
+ *
+ * NO local useState for creations — React Query cache is the sole truth.
  */
 
-import { motion } from "framer-motion";
-import { FileText, ExternalLink, Trash2, Clock } from "lucide-react";
+import { useState, useMemo, useCallback } from "react";
+import { AnimatePresence } from "framer-motion";
+import { FileText } from "lucide-react";
+import { useDeleteCreation, applyDeleteLocks } from "../hooks/useDeleteCreation";
+import { DeleteConfirmModal } from "./DeleteConfirmModal";
+import { CreationRow } from "./CreationRow";
 import type { DashboardCreation } from "@/hooks/useDashboard";
+
+// ─── Props ──────────────────────────────────────────────────────────────────
 
 interface TemplatesListProps {
   creations: DashboardCreation[];
@@ -15,12 +29,59 @@ interface TemplatesListProps {
   onDelete: (id: string) => void;
 }
 
+// ─── Stable sort: Active → Expired → Deleted, newest first ─────────────────
+
+function sortCreations(list: DashboardCreation[]): DashboardCreation[] {
+  return [...list].sort((a, b) => {
+    const rankOf = (c: DashboardCreation) =>
+      c.is_deleted ? 2 : c.is_expired ? 1 : 0;
+    const diff = rankOf(a) - rankOf(b);
+    if (diff !== 0) return diff;
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+
 export function TemplatesList({
   creations,
   onView,
   onDelete,
 }: TemplatesListProps) {
-  if (creations.length === 0) {
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const deleteMutation = useDeleteCreation();
+
+  // ── Handlers ──────────────────────────────────────────────────────────
+  const handleDeleteClick = useCallback((id: string) => {
+    setPendingDeleteId(id);
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (!pendingDeleteId) return;
+    deleteMutation.mutate(pendingDeleteId);
+    onDelete(pendingDeleteId);
+    setPendingDeleteId(null);
+  }, [pendingDeleteId, deleteMutation, onDelete]);
+
+  const handleCancelDelete = useCallback(() => {
+    setPendingDeleteId(null);
+  }, []);
+
+  // ── MEMOIZED: apply hard-locks then sort ──────────────────────────────
+  // applyDeleteLocks checks module-level Map for any ID locked in the
+  // last 5 seconds, enforcing is_deleted: true regardless of server data.
+  const sorted = useMemo(
+    () => sortCreations(applyDeleteLocks(creations)),
+    [creations],
+  );
+
+  const activeCount = useMemo(
+    () => sorted.filter((c) => !c.is_deleted).length,
+    [sorted],
+  );
+
+  // ── Empty state ───────────────────────────────────────────────────────
+  if (sorted.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-700 text-center">
         <FileText
@@ -35,111 +96,48 @@ export function TemplatesList({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-      <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white mb-4 text-hebrew-heading">
-        הכרטיסים שלי ({creations.length})
-      </h3>
+    <>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+        <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white mb-4 text-hebrew-heading">
+          הכרטיסים שלי ({activeCount})
+        </h3>
 
-      <div className="space-y-3">
-        {creations.map((creation, index) => (
-          <CreationRow
-            key={creation.id}
-            creation={creation}
-            index={index}
-            onView={onView}
-            onDelete={onDelete}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-interface CreationRowProps {
-  creation: DashboardCreation;
-  index: number;
-  onView: (id: string) => void;
-  onDelete: (id: string) => void;
-}
-
-function CreationRow({ creation, index, onView, onDelete }: CreationRowProps) {
-  const createdDate = new Date(creation.created_at).toLocaleDateString("he-IL");
-  const isExpired = creation.is_expired;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.1 }}
-      className={`
-        flex items-center justify-between p-3 rounded-xl transition-colors
-        ${
-          isExpired
-            ? "border-l-4 border-red-500 opacity-75 bg-red-50/50 dark:bg-red-950/20"
-            : "border-l-4 border-green-500 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700"
-        }
-      `}
-    >
-      <div className="flex items-center gap-3">
         <div
-          className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-            isExpired
-              ? "bg-red-100 dark:bg-red-900/30"
-              : "bg-[#d4826f]/10"
-          }`}
+          className="
+            max-h-[340px] overflow-y-auto
+            [&::-webkit-scrollbar]:w-2
+            [&::-webkit-scrollbar-track]:bg-transparent
+            [&::-webkit-scrollbar-thumb]:bg-gray-300
+            [&::-webkit-scrollbar-thumb]:dark:bg-gray-600
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb]:hover:bg-gray-400
+            [&::-webkit-scrollbar-thumb]:dark:hover:bg-gray-500
+          "
         >
-          {isExpired ? (
-            <Clock size={18} className="text-red-500" />
-          ) : (
-            <FileText size={18} className="text-[#d4826f]" />
-          )}
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <p
-              className={`text-sm font-medium text-hebrew-body ${
-                isExpired
-                  ? "text-gray-400 dark:text-gray-500"
-                  : "text-[#2e3c52] dark:text-white"
-              }`}
-            >
-              {creation.template_name || "כרטיס"}
-            </p>
-            {isExpired && (
-              <span className="text-[10px] font-bold text-red-500 bg-red-100 dark:bg-red-900/40 px-1.5 py-0.5 rounded">
-                פג תוקף
-              </span>
-            )}
+          <div className="space-y-3 pr-1">
+            {sorted.map((creation, index) => (
+              <CreationRow
+                key={creation.id}
+                creation={creation}
+                index={index}
+                onView={onView}
+                onDelete={handleDeleteClick}
+              />
+            ))}
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {creation.template_name ? `${creation.template_name} • ` : ""}
-            {createdDate}
-          </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        {isExpired ? (
-          <span className="text-xs text-gray-400 dark:text-gray-500 font-medium px-3 py-1.5">
-            בארכיון
-          </span>
-        ) : (
-          <button
-            onClick={() => onView(creation.id)}
-            className="p-2 text-gray-400 hover:text-[#d4826f] transition-colors"
-            aria-label="צפייה בכרטיס"
-          >
-            <ExternalLink size={16} />
-          </button>
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {pendingDeleteId && (
+          <DeleteConfirmModal
+            isPending={deleteMutation.isPending}
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+          />
         )}
-        <button
-          onClick={() => onDelete(creation.id)}
-          className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-          aria-label="מחיקת כרטיס"
-        >
-          <Trash2 size={16} />
-        </button>
-      </div>
-    </motion.div>
+      </AnimatePresence>
+    </>
   );
 }

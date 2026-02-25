@@ -11,16 +11,20 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { PROFILE_QUERY_KEY } from "@/hooks/useProfileQuery";
 import { ProfileDesktop } from "./Desktop/ProfileDesktop";
 import { ProfileMobile } from "./Mobile/ProfileMobile";
-import { updateMyProfile, deleteMyAccount } from "@/actions/profile";
+import { updateMyProfile } from "@/actions/profile";
+import { getDashboard } from "@/actions/dashboard";
 import { mapApiProfileToUserProfile, AVATAR_URLS } from "./types";
 import type { UserProfile } from "./types";
 import type { ProfileResponse } from "@/lib/validations";
 import type { DashboardData } from "@/hooks/useDashboard";
+
+/** Shared query key — must match TemplatesList mutation key exactly. */
+export const DASHBOARD_QUERY_KEY = ["dashboard"];
 
 // ---------------------------------------------------------------------------
 // Props — everything the RSC page passes down
@@ -59,8 +63,22 @@ export function ProfileClient({
   const [profile, setProfile] = useState<UserProfile>(
     mapApiProfileToUserProfile(initialProfile),
   );
-  const [dashboard] = useState<DashboardData | null>(initialDashboard);
   const [error, setError] = useState<string | null>(null);
+
+  // ── Dashboard: SOURCE OF TRUTH via React Query cache ──────────────
+  // Seeded with server data via initialData. The mutation in TemplatesList
+  // updates this same cache key, so the UI stays in sync.
+  const { data: dashboard = null } = useQuery<DashboardData | null>({
+    queryKey: DASHBOARD_QUERY_KEY,
+    queryFn: async () => {
+      const result = await getDashboard();
+      if ("error" in result) throw new Error(result.error);
+      return result.data;
+    },
+    initialData: initialDashboard,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
 
   // ── Mutation: edit profile (name) ─────────────────────────────────────
 
@@ -138,16 +156,6 @@ export function ProfileClient({
     [avatarMutation],
   );
 
-  const handleDeleteAccount = useCallback(async (): Promise<void> => {
-    setError(null);
-    const result = await deleteMyAccount();
-    if ("error" in result) {
-      setError(result.error);
-      throw new Error(result.error);
-    }
-    router.push("/");
-  }, [router]);
-
   // ── Simple navigations ────────────────────────────────────────────────
 
   const handleRenew = () => {
@@ -180,7 +188,6 @@ export function ProfileClient({
     onDeleteTemplate: handleDeleteTemplate,
     onEditProfile: handleEditProfile,
     onAvatarSelect: handleAvatarSelect,
-    onDeleteAccount: handleDeleteAccount,
     className: "",
   };
 

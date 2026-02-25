@@ -107,6 +107,7 @@ export interface DashboardCreation {
   expires_at: string | null
   is_expired: boolean
   is_paid: boolean | null
+  is_deleted: boolean
 }
 
 export interface DashboardData {

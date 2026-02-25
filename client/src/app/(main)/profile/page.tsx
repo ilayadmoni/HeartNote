@@ -134,9 +134,8 @@ export default async function ProfilePage() {
 
   const { data: rawCreations } = await supabase
     .from("creations")
-    .select("id, is_paid, expires_at, created_at, templates!inner(slug, name)")
+    .select("id, is_paid, expires_at, created_at, is_deleted, templates!inner(slug, name)")
     .eq("user_id", user.id)
-    .eq("is_deleted", false)
     .order("created_at", { ascending: false });
 
   const creations: DashboardCreation[] = (rawCreations ?? []).map((c) => {
@@ -158,6 +157,7 @@ export default async function ProfilePage() {
       expires_at: expiresAt ?? null,
       is_expired: isExpired,
       is_paid: (c.is_paid as boolean) ?? null,
+      is_deleted: (c.is_deleted as boolean) ?? false,
     };
   });
 

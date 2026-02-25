@@ -367,10 +367,23 @@ export async function deleteCreation(
       return { error: "Creation not found", status: 404 };
     }
 
-    await supabase
+    // Execute the update and wait for it to complete
+    const { error: updateErr } = await supabase
       .from("creations")
       .update({ is_deleted: true })
       .eq("id", creationId);
+
+    if (updateErr) {
+      return {
+        error: `Failed to delete: ${updateErr.message}`,
+        status: 500,
+      };
+    }
+
+    // CRITICAL: Safety delay (300ms) to ensure Supabase read replica is
+    // consistent before the client refetches. This prevents the flicker
+    // caused by a refetch returning stale pre-update data.
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     return { success: true };
   } catch (e) {

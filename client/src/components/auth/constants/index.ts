@@ -3,7 +3,7 @@
  */
 
 // Login Modal
-export const LOGIN_TITLE = "Welcome Back";
+export const LOGIN_TITLE = "התחברו למפעל ";
 export const LOGIN_SUBTITLE = "היכנסו למפעל כדי להמשיך ליצור";
 export const LOGIN_BUTTON = "התחברות";
 export const LOGIN_REGISTER_PROMPT = "אין לכם חשבון?";
@@ -58,4 +58,7 @@ export const FORGOT_PASSWORD_BUTTON = "שליחת קישור איפוס";
 export const FORGOT_PASSWORD_SUCCESS = "קישור לאיפוס הסיסמה נשלח לאימייל שלכם. בדקו את תיבת הדואר הנכנס.";
 export const FORGOT_PASSWORD_BACK = "חזרה להתחברות";
 export const FORGOT_PASSWORD_LINK = "שכחתם את הסיסמה?";
+
+// Login Error
+export const LOGIN_ERROR_MESSAGE = "שם משתמש או סיסמה שגויים";
 

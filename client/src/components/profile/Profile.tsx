@@ -23,7 +23,6 @@ export function Profile({ className = "" }: ProfileProps) {
     loading: profileLoading,
     error: profileError,
     updateProfile,
-    deleteAccount,
     refresh: refreshProfile,
   } = useProfile();
 
@@ -98,13 +97,6 @@ export function Profile({ className = "" }: ProfileProps) {
     return updateProfile({ avatarUrl });
   };
 
-  const handleDeleteAccount = async (): Promise<void> => {
-    const success = await deleteAccount();
-    if (!success) {
-      throw new Error("Failed to delete account");
-    }
-  };
-
   const props = {
     profile,
     avatarOptions,
@@ -126,7 +118,6 @@ export function Profile({ className = "" }: ProfileProps) {
     onDeleteTemplate: handleDeleteTemplate,
     onEditProfile: handleEditProfile,
     onAvatarSelect: handleAvatarSelect,
-    onDeleteAccount: handleDeleteAccount,
     className,
   };
 

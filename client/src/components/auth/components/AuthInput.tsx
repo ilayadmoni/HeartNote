@@ -11,6 +11,7 @@ import type { AuthInputProps } from "../types";
 
 export function AuthInput({
   id,
+  name,
   label,
   type = "text",
   placeholder,
@@ -35,6 +36,7 @@ export function AuthInput({
       <div className="relative">
         <input
           id={id}
+          name={name}
           type={inputType}
           value={value}
           onChange={(e) => onChange(e.target.value)}

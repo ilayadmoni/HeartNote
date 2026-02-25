@@ -32,6 +32,8 @@ export interface RegisterFormData {
 
 export interface AuthInputProps {
   id: string;
+  /** HTML name attribute — required for FormData / useFormState */
+  name?: string;
   label: string;
   type?: "text" | "email" | "password" | "date";
   placeholder: string;

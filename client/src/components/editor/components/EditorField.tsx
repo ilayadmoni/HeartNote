@@ -170,7 +170,6 @@ export function EditorField({ field, value, onChange, userId, onFileReady }: Edi
           value={(value as string) || ""}
           onChange={(url) => onChange(url)}
           userId={userId}
-          
           onFileReady={onFileReady}
         />
       )}
