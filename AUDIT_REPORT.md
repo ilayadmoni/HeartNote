@@ -150,7 +150,9 @@ The variable is declared twice. While not a security issue, it indicates sloppy 
 
 ## 2. 🗃️ Unused Assets & Dead Code
 
-### 🔴 DEAD-1: Legacy FastAPI API Client — **Priority: HIGH**
+### ✅ COMPLETED DEAD-1: Legacy FastAPI API Client — **Priority: HIGH**
+
+_(Completed: 2026-02-26 18:50:00+02:00)_
 
 | File                                       | Status                                                                                    |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------- |
@@ -165,7 +167,11 @@ The project has fully migrated to **Server Actions** as the data layer, but thes
 
 ---
 
-### 🟡 DEAD-2: Unused npm Dependencies — **Priority: MEDIUM**
+### ✅ COMPLETED DEAD-2: Unused npm Dependencies — **Priority: MEDIUM**
+
+_(Completed: 2026-02-26 19:05:00+02:00)_
+**Zod**: Kept, found imports in `/lib/validations`.
+**@types/canvas-confetti**: Moved to devDependencies.
 
 | Package                  | Reason                                                                                                                                                                    |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -179,7 +185,9 @@ The project has fully migrated to **Server Actions** as the data layer, but thes
 
 ---
 
-### 🟡 DEAD-3: Unused Hooks — **Priority: MEDIUM**
+### ✅ COMPLETED DEAD-3: Unused Hooks — **Priority: MEDIUM**
+
+_(Completed: 2026-02-26 19:05:00+02:00)_
 
 | Hook              | File                       | Issue                                                                 |
 | ----------------- | -------------------------- | --------------------------------------------------------------------- |
@@ -190,7 +198,9 @@ The project has fully migrated to **Server Actions** as the data layer, but thes
 
 ---
 
-### 🟡 DEAD-4: Orphaned Directories & Files — **Priority: MEDIUM**
+### ✅ COMPLETED DEAD-4: Orphaned Directories & Files — **Priority: MEDIUM**
+
+_(Completed: 2026-02-26 19:20:00+02:00)_
 
 | Path                                                      | Issue                                                                                                     |
 | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -206,7 +216,9 @@ The project has fully migrated to **Server Actions** as the data layer, but thes
 
 ---
 
-### 🟢 DEAD-5: Duplicate Supabase Client Exports — **Priority: LOW**
+### ✅ COMPLETED DEAD-5: Duplicate Supabase Client Exports — **Priority: LOW**
+
+_(Completed: 2026-02-26 19:20:00+02:00)_
 
 | File                       | Export                           |
 | -------------------------- | -------------------------------- |
@@ -219,49 +231,40 @@ Both serve the same purpose (browser Supabase client). The `supabase.ts` singlet
 
 ## 3. 📐 File Architecture & Code Splitting
 
-### 🔴 ARCH-1: `creations.ts` is 677 Lines — **Priority: HIGH**
+### ✅ ARCH-1: `creations.ts` is 677 Lines — **COMPLETED**
 
-**File:** `client/src/actions/creations.ts` — **677 lines** (project rule: max 150 lines)
+**File:** `client/src/actions/creations.ts` — **677 lines** → Split into modular files (all ≤150 lines)
 
-This single file contains 5 server actions with significant duplicated logic:
-
-- `createCreation()` — 200 lines
-- `getMyCreations()` — 50 lines
-- `getCreation()` — 65 lines
-- `deleteCreation()` — 50 lines
-- `redeemCoupon()` — 55 lines
-- `submitGenericCreation()` — 180 lines
-
-**Key Issue:** `createCreation()` and `submitGenericCreation()` share ~80% identical logic (quota check, premium guard, expiry calculation, quota decrement). This is a major DRY violation.
-
-**Remediation:** Split into:
+**Resolution:** The monolithic file was split into the following structure:
 
 ```
 actions/creations/
-  ├── create.ts           # createCreation + submitGenericCreation (shared helpers)
-  ├── read.ts             # getMyCreations, getCreation
-  ├── delete.ts           # deleteCreation
-  ├── redeem.ts           # redeemCoupon
+  ├── create.ts           # createCreation (115 lines)
+  ├── submit.ts           # submitGenericCreation (139 lines)
+  ├── read.ts             # getMyCreations, getCreation (118 lines)
+  ├── delete.ts           # deleteCreation (50 lines)
+  ├── redeem.ts           # redeemCoupon (64 lines)
   ├── helpers/
-  │   ├── quotaCheck.ts   # Shared quota/premium guard logic
-  │   └── expiryCalc.ts   # Shared expiry calculation
-  └── index.ts            # Barrel export
+  │   ├── quotaCheck.ts   # Shared quota/premium guard logic (109 lines)
+  │   └── expiryCalc.ts   # Shared expiry calculation (30 lines)
+  └── index.ts            # Barrel export (11 lines)
 ```
+
+Shared logic (quota checks, premium guards, expiry calculations) extracted into helpers, eliminating the DRY violation. Barrel `index.ts` maintains backward compatibility for all existing imports.
 
 ---
 
-### 🟡 ARCH-2: `globals.css` is 474 Lines — **Priority: MEDIUM**
+### ✅ ARCH-2: `globals.css` is 474 Lines — **COMPLETED**
 
-**File:** `client/src/app/globals.css` — 474 lines
+**File:** `client/src/app/globals.css` — **474 lines** → Split into modular partials (all ≤150 lines)
 
-Contains font declarations, CSS variables, accessibility styles, scrollbar styles, animations, and utility classes all in one file.
+**Resolution:** CSS was split into logical partials imported via `@import`:
 
-**Remediation:** Split into logical partials:
-
-- `fonts.css` — @font-face declarations
-- `accessibility.css` — High contrast, reduced motion, focus styles
-- `scrollbar.css` — Custom scrollbar styles
-- `animations.css` — @keyframes and animation utilities
+- `fonts.css` — @font-face declarations (43 lines)
+- `accessibility.css` — High contrast, reduced motion, focus styles (149 lines)
+- `scrollbar.css` — Custom scrollbar styles (44 lines)
+- `animations.css` — @keyframes and animation utilities (63 lines)
+- `globals.css` — Tailwind directives, CSS variables, base styles, utility classes (117 lines)
 
 ---
 
@@ -463,8 +466,8 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 | Priority      | Count  | Categories                                     |
 | ------------- | ------ | ---------------------------------------------- |
-| 🔴 **HIGH**   | 3      | SEC-1, SEC-2, ARCH-1                           |
-| 🟡 **MEDIUM** | 14     | SEC-3–6, DEAD-2–4, ARCH-2–4, SMELL-1–3, DB-1–2 |
+| 🔴 **HIGH**   | 3      | SEC-1, SEC-2, ~~ARCH-1~~ ✅                     |
+| 🟡 **MEDIUM** | 14     | SEC-3–6, DEAD-2–4, ~~ARCH-2~~ ✅, ARCH-3–4, SMELL-1–3, DB-1–2 |
 | 🟢 **LOW**    | 6      | SEC-7–8, DEAD-5, SMELL-5–6, DB-3               |
 | **Total**     | **23** |                                                |
 
@@ -478,7 +481,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 4. **This Sprint:** Delete all dead code: `lib/api.ts`, `lib/api/`, `lib/config.ts`, `features/`, `server/`, `components/examples/`, `components/landing/FAQ.tsx` (DEAD-1, DEAD-4).
 5. **This Sprint:** Remove unused npm packages: `axios`, `clsx`, `tailwind-merge` (DEAD-2).
 6. **This Sprint:** Resolve double quota decrement (SMELL-1).
-7. **Next Sprint:** Refactor `creations.ts` into sub-modules (ARCH-1).
+7. ~~**Next Sprint:** Refactor `creations.ts` into sub-modules (ARCH-1).~~ ✅ COMPLETED
 8. **Next Sprint:** Add rate limiting to contact form (SEC-4).
 9. **Next Sprint:** Remove client-side `resetPassword` from AuthContext (SEC-5).
 10. **Backlog:** File length refactoring, CSS splitting, index optimizations.

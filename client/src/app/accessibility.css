@@ -1,0 +1,171 @@
+/* ====================================
+   Accessibility Modes
+   ==================================== */
+
+.a11y-high-contrast {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+  --header-bg: #000;
+  --header-border: #fff;
+  color-scheme: dark;
+}
+
+.a11y-high-contrast body {
+  background: #000;
+  color: #fff;
+}
+
+.a11y-high-contrast a {
+  color: #ffd400;
+}
+
+.a11y-grayscale body {
+  filter: grayscale(1);
+}
+
+.a11y-highlight-links a {
+  color: #c2410c;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+.a11y-readable-font body {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+/* ====================================
+   Focus Styles & Accessibility
+   ==================================== */
+
+*:focus-visible {
+  outline: 2px solid rgb(212, 130, 111);
+  outline-offset: 2px;
+}
+
+/* Focus within for containers */
+.focus-within-ring:focus-within {
+  outline: 2px solid rgb(212, 130, 111);
+  outline-offset: 2px;
+}
+
+/* Skip to content focus styles */
+.skip-link:focus {
+  position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 9999;
+  padding: 1rem 2rem;
+  background-color: #2e3c52;
+  color: white;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-spin-slow,
+  .animate-spin-slow-reverse,
+  .animate-float,
+  .hero-float {
+    animation: none !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 255, 255, 255;
+    --background-end-rgb: 255, 255, 255;
+  }
+
+  .dark {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+
+  *:focus-visible {
+    outline: 3px solid currentColor !important;
+    outline-offset: 3px !important;
+  }
+
+  a, button {
+    text-decoration: underline;
+  }
+}
+
+/* Screen Reader Only (visually hidden but accessible) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Make sr-only visible on focus (for skip links) */
+.sr-only:focus,
+.sr-only:focus-within {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Not sr-only (utility to override) */
+.not-sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Forced Colors Mode (Windows High Contrast) */
+@media (forced-colors: active) {
+  .btn-primary,
+  .btn-outline {
+    border: 2px solid currentColor;
+  }
+
+  a:focus,
+  button:focus {
+    outline: 3px solid currentColor;
+  }
+}
+
+/* Touch target sizing for mobile accessibility */
+@media (pointer: coarse) {
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

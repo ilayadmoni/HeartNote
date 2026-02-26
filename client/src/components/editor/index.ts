@@ -20,5 +20,3 @@ export { SuccessModal } from "./components/SuccessModal";
 export * from "./types";
 export { EDITOR_CONFIGS } from "./configs";
 
-// API
-export { createUserCreation } from "./api";

@@ -79,3 +79,4 @@ yarn-error.log*
 # Docker
 # -----------------
 *.pid
+client/build_log_*.txt

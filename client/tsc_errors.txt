@@ -1,0 +1,1 @@
+src/lib/utils/image-utils.ts(97,48): error TS2345: Argument of type 'string' is not assignable to parameter of type '"image/jpeg" | "image/png" | "image/webp" | "image/gif"'.

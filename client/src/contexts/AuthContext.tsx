@@ -2,8 +2,11 @@
 
 /**
  * AuthContext
- * Provides authentication state and methods throughout the app
- * Uses Supabase Auth with backend sync
+ * Provides authentication state and methods throughout the app.
+ * Uses Supabase Auth with backend sync.
+ *
+ * Auth methods live in ./useAuthActions.ts.
+ * Error translation lives in ./auth-helpers.ts.
  */
 
 import {
@@ -13,9 +16,8 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { useRouter } from "next/navigation";
-import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
+import type { User, Session } from "@supabase/supabase-js";
+import { supabase, useAuthActions } from "./useAuthActions";
 
 interface AuthContextType {
   user: User | null;
@@ -39,176 +41,38 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const router = useRouter(); // Initialize router
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Listen to auth state changes
+  const { signIn, signUp, signOut, resetPassword, updatePassword, router } =
+    useAuthActions({
+      setError,
+      setUser,
+      setSession: () => setSession(null),
+      error,
+    });
+
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-
-      // Force Next.js to re-render server components when auth state
-      // changes (login / logout).  Without this the header buttons stay
-      // "locked" until a manual page refresh.
       router.refresh();
     });
 
     return () => subscription.unsubscribe();
   }, [router]);
 
-  // Sign in with email/password
-  const signIn = async (email: string, password: string) => {
-    try {
-      setError(null);
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) {
-        setError(getErrorMessage(error.message));
-        throw error;
-      }
-    } catch (err) {
-      if (err instanceof Error && !error) {
-        setError(getErrorMessage(err.message));
-      }
-      throw err;
-    }
-  };
-
-  // Sign up with email/password
-  const signUp = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-    dateOfBirth?: string,
-  ) => {
-    try {
-      setError(null);
-      console.log("[Auth] signUp attempt:", {
-        email,
-        firstName,
-        lastName,
-        dateOfBirth,
-      });
-
-      // Ensure date is in YYYY-MM-DD format for PostgreSQL DATE column
-      let formattedDob: string | undefined;
-      if (dateOfBirth) {
-        const parsed = new Date(dateOfBirth + "T00:00:00");
-        if (isNaN(parsed.getTime())) {
-          setError("תאריך לידה לא תקין");
-          throw new Error("Invalid date_of_birth format");
-        }
-        formattedDob = parsed.toISOString().split("T")[0]; // YYYY-MM-DD
-      }
-
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            full_name: `${firstName} ${lastName}`.trim(),
-            date_of_birth: formattedDob,
-          },
-          // Don't auto-sign in - require email verification
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) {
-        console.error("[Auth] signUp Supabase error:", error.message, error);
-        console.log(data);
-
-        setError(getErrorMessage(error.message));
-        throw error;
-      }
-      console.log("[Auth] signUp success:", data?.user?.id);
-      // Don't set user - they need to verify email first
-    } catch (err) {
-      console.error("[Auth] signUp caught error:", err);
-      if (err instanceof Error && !error) {
-        setError(getErrorMessage(err.message));
-      }
-      throw err;
-    }
-  };
-
-  // Sign out
-  const signOut = async () => {
-    try {
-      setError(null);
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        setError(getErrorMessage(error.message));
-        throw error;
-      }
-      setUser(null);
-      setSession(null);
-      router.refresh();
-      router.push("/");
-    } catch (err) {
-      if (err instanceof Error && !error) {
-        setError(getErrorMessage(err.message));
-      }
-      throw err;
-    }
-  };
-
-  // Reset password
-  const resetPassword = async (email: string) => {
-    try {
-      setError(null);
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
-      });
-      if (error) {
-        setError(getErrorMessage(error.message));
-        throw error;
-      }
-    } catch (err) {
-      if (err instanceof Error && !error) {
-        setError(getErrorMessage(err.message));
-      }
-      throw err;
-    }
-  };
-
-  // Update password (user is already authenticated via recovery link)
-  const updatePassword = async (password: string) => {
-    try {
-      setError(null);
-      const { error } = await supabase.auth.updateUser({ password });
-      if (error) {
-        setError(getErrorMessage(error.message));
-        throw error;
-      }
-    } catch (err) {
-      if (err instanceof Error && !error) {
-        setError(getErrorMessage(err.message));
-      }
-      throw err;
-    }
-  };
-
-  // Clear error
   const clearError = () => setError(null);
 
   return (
@@ -231,52 +95,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Custom hook to use auth context
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-}
-
-// Helper: Convert Supabase errors to Hebrew messages
-function getErrorMessage(errorMessage: string): string {
-  const lowerMessage = errorMessage.toLowerCase();
-
-  if (
-    lowerMessage.includes("email already registered") ||
-    lowerMessage.includes("user already registered")
-  ) {
-    return "כתובת האימייל כבר בשימוש";
-  }
-  if (lowerMessage.includes("invalid email")) {
-    return "כתובת אימייל לא תקינה";
-  }
-  if (lowerMessage.includes("password") && lowerMessage.includes("weak")) {
-    return "הסיסמה חלשה מדי";
-  }
-  if (lowerMessage.includes("password") && lowerMessage.includes("short")) {
-    return "הסיסמה קצרה מדי (מינימום 6 תווים)";
-  }
-  if (
-    lowerMessage.includes("invalid login credentials") ||
-    lowerMessage.includes("invalid credentials")
-  ) {
-    return "פרטי ההתחברות שגויים";
-  }
-  if (lowerMessage.includes("email not confirmed")) {
-    return "יש לאמת את כתובת האימייל";
-  }
-  if (lowerMessage.includes("user not found")) {
-    return "משתמש לא נמצא";
-  }
-  if (lowerMessage.includes("too many requests")) {
-    return "יותר מדי ניסיונות. נסו שוב מאוחר יותר";
-  }
-  if (lowerMessage.includes("network")) {
-    return "שגיאת רשת. בדקו את החיבור לאינטרנט";
-  }
-
-  return "אירעה שגיאה. נסו שנית";
 }

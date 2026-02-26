@@ -8,7 +8,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 import { KeyRound, CheckCircle, XCircle, Eye, EyeOff } from "lucide-react";
 
 export default function ResetPasswordPage() {

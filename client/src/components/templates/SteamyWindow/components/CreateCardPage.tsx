@@ -24,7 +24,9 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 import Cropper from "react-easy-crop";
 import type { Area } from "react-easy-crop";
 import { SteamyWindowPreview } from "./SteamyWindowPreview";
