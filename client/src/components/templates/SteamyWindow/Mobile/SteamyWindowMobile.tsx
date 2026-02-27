@@ -14,16 +14,15 @@ import {
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
 
-
 export function SteamyWindowMobile({ data }: SteamyWindowViewProps) {
   return (
-    <div className="min-h-[420px] bg-transparent px-4 py-6 relative isolate overflow-hidden flex flex-col justify-between gap-6">
-      <FloatingIcons/>
+    <div className="min-h-[680px] bg-transparent px-4 py-6 relative isolate overflow-hidden flex flex-col justify-between items-center gap-6">
+      <FloatingIcons />
       {/* Decorative blob */}
       <div className="absolute top-5 left-0 w-28 h-28 bg-[#C7CEEA]/15 rounded-full blur-2xl pointer-events-none" />
 
       {/* Main Content - Top */}
-      <div className="max-w-sm mx-auto flex flex-col items-center w-full">
+      <div className="flex-1 max-w-sm mx-auto flex flex-col items-center justify-center w-full">
         <BackToGallery className="mb-3" />
 
         {/* Title */}

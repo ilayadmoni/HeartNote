@@ -58,7 +58,7 @@ export const TEMPLATES: Template[] = [
   },
   {
     id: "relationship-quiz",
-    title: "חידון זוגיות",
+    title: "חידון חברות",
     description:
       "כמה את/ה באמת מכיר/ה אותי? חידון אינטראקטיבי עם ציון בסוף! 🧠",
     category: "fun",

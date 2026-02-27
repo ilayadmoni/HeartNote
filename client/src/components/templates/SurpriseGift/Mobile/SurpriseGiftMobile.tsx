@@ -18,7 +18,6 @@ import {
 import type { SurpriseGiftProps } from "../types";
 import { FloatingIcons } from "../../OpenWhen/components";
 
-
 const DEFAULT_CLICKS = 5;
 
 export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
@@ -66,14 +65,17 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
   }, []);
 
   return (
-    <div className="min-h-[420px] w-full flex flex-col justify-between gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate">
+    <div className="min-h-[680px] w-full flex flex-col justify-between items-center gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate">
       <FloatingIcons />
       {/* Main Content - Top */}
-      <div className="flex flex-col items-center w-full">
+      <div className="flex-1 flex flex-col items-center justify-center w-full">
         <BackToGallery className="mb-3" />
 
         {/* Title */}
-        <h1 className="text-2xl font-bold dark:text-white mb-6 text-hebrew-heading text-center" style={{ color: primaryColor }}>
+        <h1
+          className="text-2xl font-bold dark:text-white mb-6 text-hebrew-heading text-center"
+          style={{ color: primaryColor }}
+        >
           {title}
         </h1>
 

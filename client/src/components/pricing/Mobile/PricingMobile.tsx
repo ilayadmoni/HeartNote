@@ -11,8 +11,8 @@ import { PRICING_PLANS } from "../constants";
 import type { PricingProps } from "../types";
 
 export function PricingMobile({ className = "" }: PricingProps) {
-  // Order for mobile: Featured first (manager), then starter, then owner
-  const orderedPlans = [PRICING_PLANS[1], PRICING_PLANS[0], PRICING_PLANS[2]];
+  // Order for mobile: Free (starter), then Lite (manager), then Premium (owner)
+  const orderedPlans = [PRICING_PLANS[0], PRICING_PLANS[1], PRICING_PLANS[2]];
 
   return (
     <section

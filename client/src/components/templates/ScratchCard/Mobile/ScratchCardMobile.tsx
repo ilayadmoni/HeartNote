@@ -18,7 +18,6 @@ import {
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
 
-
 interface ExtendedData {
   title?: string;
   prizeContent?: string;
@@ -81,7 +80,7 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
   const colorDark = adjustBrightness(primaryColor, -25); // Darker for border
 
   return (
-    <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-transparent px-4 py-5 overflow-auto relative isolate">
+    <div className="w-full h-full min-h-[680px] flex flex-col items-center justify-center bg-transparent px-4 py-5 overflow-auto relative isolate">
       <FloatingIcons />
       <BackToGallery className="mb-3" />
 

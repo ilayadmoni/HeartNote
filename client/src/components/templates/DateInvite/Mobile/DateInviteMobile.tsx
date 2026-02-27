@@ -13,7 +13,6 @@ import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
   FooterBranding,
   BackToGallery,
-  
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
 
@@ -28,12 +27,12 @@ export function DateInviteMobile({
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
-    <div className="w-full h-full min-h-[420px] flex flex-col justify-between gap-6 bg-transparent px-5 py-6 overflow-hidden relative isolate">
+    <div className="w-full h-full min-h-[680px] flex flex-col justify-between gap-6 bg-transparent px-5 py-6 overflow-hidden relative isolate">
       {/* Background Hearts Pattern */}
-      <FloatingIcons/>
+      <FloatingIcons />
 
       {/* Main Content - Top */}
-      <div className="flex flex-col items-center w-full relative z-10">
+      <div className="flex-1 flex flex-col items-center justify-center w-full relative z-10">
         <BackToGallery className="mb-3" />
 
         {/* Main Card */}

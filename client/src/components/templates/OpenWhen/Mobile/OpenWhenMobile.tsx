@@ -29,10 +29,10 @@ export function OpenWhenMobile({ data }: OpenWhenViewProps) {
   }, []);
 
   return (
-    <div className="min-h-[420px] bg-transparent py-8 px-4 relative isolate">
+    <div className="min-h-[680px] bg-transparent py-8 px-4 relative isolate flex flex-col justify-between items-center">
       <FloatingIcons />
 
-      <div className="max-w-md mx-auto relative z-10">
+      <div className="flex-1 max-w-md mx-auto relative z-10 flex flex-col justify-center items-center">
         <BackToGallery className="mb-3" />
 
         {/* Title */}

@@ -1,0 +1,1 @@
+export { ConsentButtons } from "./ConsentButtons";

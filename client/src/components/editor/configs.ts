@@ -153,7 +153,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
   },
   "relationship-quiz": {
     templateId: "relationship-quiz",
-    title: "חידון זוגיות",
+    title: "חידון חברות",
     description: "צרו חידון לבדיקת כמה מכירים אתכם",
     fields: [
       {

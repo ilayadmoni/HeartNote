@@ -17,16 +17,15 @@ import {
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import { FloatingIcons } from "../../OpenWhen/components";
 
-
 export function LoveCouponsMobile({ data }: CouponsViewProps) {
   const { coupons, handleRedeem, handleReset } = useCoupons(data.coupons);
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
-    <div className="min-h-[420px] bg-transparent px-4 py-6 relative isolate flex flex-col justify-between gap-6">
-    <FloatingIcons />
+    <div className="min-h-[680px] bg-transparent px-4 py-6 relative isolate flex flex-col justify-between items-center gap-6">
+      <FloatingIcons />
       {/* Main Content - Top */}
-      <div className="max-w-lg mx-auto w-full">
+      <div className="flex-1 max-w-lg mx-auto w-full flex flex-col justify-center">
         <BackToGallery className="mb-3" />
 
         {/* Title */}

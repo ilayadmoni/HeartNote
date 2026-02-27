@@ -16,17 +16,16 @@ import {
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
 
-
 export function RelationshipQuizMobile({ data }: QuizViewProps) {
   const quiz = useQuiz(data.questions);
   const percentage = Math.round((quiz.score / data.questions.length) * 100);
   const scoreMsg = getScoreMessage(percentage, data.scoreMessages);
 
   return (
-    <div className="min-h-[420px] bg-transparent px-4 py-6 relative isolate flex flex-col justify-between gap-6">
-      <FloatingIcons/>
+    <div className="min-h-[680px] bg-transparent px-4 py-6 relative isolate flex flex-col justify-between items-center gap-6">
+      <FloatingIcons />
       {/* Main Content - Top */}
-      <div className="max-w-md mx-auto w-full">
+      <div className="flex-1 max-w-md mx-auto w-full flex flex-col justify-center">
         <BackToGallery className="mb-3" />
 
         {/* Title */}

@@ -134,7 +134,7 @@ const TEMPLATES: { key: TemplateKey; name: string }[] = [
   { key: "ScratchCard", name: "כרטיס גירוד" },
   { key: "Timeline", name: "ציר זמן" },
   { key: "LoveCoupons", name: "קופוני אהבה" },
-  { key: "RelationshipQuiz", name: "חידון זוגיות" },
+  { key: "RelationshipQuiz", name: "חידון חברות" },
   { key: "OpenWhen", name: "פתח כש..." },
 ];
 
