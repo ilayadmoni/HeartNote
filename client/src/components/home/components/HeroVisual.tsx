@@ -49,13 +49,13 @@ export function HeroVisual() {
       {/* Hand image — bottom-left, overlapping phone, larger and entering from corner */}
       <motion.div
         animate={poking ? HAND_POKE : HAND_FLOAT}
-        className="absolute bottom-[-20px] -left-[130%] w-[280%] z-20"
+        className="absolute bottom-[-170px] md:bottom-[-170px] -left-[90%] md:-left-[110%] w-[160%] md:w-[180%] z-20 pointer-events-none"
       >
         <Image
-          src="/assets/images/hand-pointer.png"
+          src="/assets/images/hand.svg"
           alt="Pointing hand"
           width={400}
-          height={700}
+          height={100}
           priority
           className="w-full h-auto drop-shadow-lg"
         />

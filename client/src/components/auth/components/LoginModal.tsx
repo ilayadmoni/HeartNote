@@ -210,8 +210,8 @@ export function LoginModal({
               aria-hidden="true"
             />
 
-            {/* Centered layout — clicks pass through to backdrop */}
-            <div className="relative flex items-center justify-center h-[100dvh] p-4 py-6 md:py-4">
+            {/* Top-aligned on mobile to prevent layout jumping, centered on desktop — clicks pass through to backdrop */}
+            <div className="relative flex items-start md:items-center justify-center h-[100dvh] p-4 pt-[5dvh] md:p-4">
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
@@ -233,8 +233,8 @@ export function LoginModal({
                 </button>
 
                 {/* Scrollable Content */}
-                <div className="max-h-[85vh] overflow-y-auto overflow-x-hidden">
-                  <div className="p-4 sm:p-5 pt-8 box-border">
+                <div className="h-[540px] md:h-auto max-h-[85vh] overflow-y-auto">
+                  <div className="p-4 sm:p-5 pt-8 pb-12 sm:pb-6 box-border">
                     {/* Update Password View (from recovery link) */}
                     {showUpdatePassword ? (
                       <UpdatePasswordForm

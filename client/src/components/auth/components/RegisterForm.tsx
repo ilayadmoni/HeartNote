@@ -256,7 +256,7 @@ export function RegisterForm({
       />
 
       {/* Terms & Privacy Checkbox */}
-      <div className="mt-3 mb-1">
+      <div className="mt-4 mb-3">
         {/*
           Pure custom checkbox — no native <input> to avoid double-render.
           handleSubmit reads from formData React state, so no native form
@@ -334,7 +334,7 @@ export function RegisterForm({
         type="submit"
         disabled={isSubmitting}
         className="
-          w-full py-2.5 px-4 mt-2 rounded-lg
+          w-full py-2.5 px-4 mt-4 rounded-lg
           bg-[#2e3c52] hover:bg-[#1B263B]
           text-white font-bold text-base
           transition-all duration-200

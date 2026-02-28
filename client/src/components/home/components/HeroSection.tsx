@@ -24,10 +24,10 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
   return (
     <section className={`relative py-8  px-4 overflow-hidden ${className}`}>
       {/* Background Decorative Gears */}
-      <div className="absolute top-0  left-0 -ml-20 -mt-20 opacity-15">
+      <div className="absolute top-0  left-0 -ml-20 -mt-20 opacity-15 pointer-events-none">
         <Settings size={300} className="animate-spin-slow text-[#415A77]" />
       </div>
-      <div className="absolute bottom-0 right-0 -mr-20 -mb-20 opacity-15">
+      <div className="absolute bottom-0 right-0 -mr-20 -mb-20 opacity-15 pointer-events-none">
         <Settings
           size={250}
           className="animate-spin-slow-reverse text-[#1B263B]"
@@ -37,7 +37,7 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
       <div className="w-full px-4 lg:px-8">
         <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12 lg:justify-between">
           {/* Right Side: Text Content (RTL) */}
-          <div className="flex-1 text-center lg:text-right z-10">
+          <div className="flex-1 text-center lg:text-right relative z-30 mb-12 lg:mb-0">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -97,16 +97,15 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
+              className="flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start relative z-20"
             >
-                <Link
-                  href="/gallery"
-                  className="inline-flex items-center gap-3 sm:gap-2 px-7 sm:px-8 py-4 sm:py-4 rounded-full text-base sm:text-lg font-bold text-white bg-[#d4826f] hover:bg-[#c4735f] shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-hebrew-heading whitespace-nowrap"
-                >
-                  {HERO_CTA}
-                  <ArrowLeft size={20} />
-                </Link>
-    
+              <Link
+                href="/gallery"
+                className="flex items-center justify-center gap-4 sm:gap-6 w-full sm:w-auto px-8 sm:px-10 py-4 rounded-full text-lg font-bold text-white bg-[#d4826f] hover:bg-[#c4735f] shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-hebrew-heading whitespace-nowrap"
+              >
+                {HERO_CTA}
+                <ArrowLeft size={20} />
+              </Link>
             </motion.div>
           </div>
 
