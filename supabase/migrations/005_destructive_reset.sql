@@ -205,6 +205,7 @@ CREATE POLICY "Users can update their own profile"
 -- Service-role inserts profiles via the trigger; users cannot self-insert.
 CREATE POLICY "Service role can insert profiles"
     ON public.profiles FOR INSERT
+    TO service_role
     WITH CHECK (true);
 
 -- ─────────────────────────────────────────────

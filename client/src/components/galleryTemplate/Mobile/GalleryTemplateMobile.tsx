@@ -62,13 +62,15 @@ export function GalleryTemplateMobile({
           </p>
         </motion.div>
 
-        {/* Filter Tabs - Scrollable on mobile */}
-        <div className="mb-6 -mx-4 px-4 overflow-x-auto">
-          <FilterTabs
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            className="min-w-max"
-          />
+        {/* Filter Tabs - Two rows on mobile */}
+        <div className="mb-6 -mx-4 px-4">
+          <div className="flex flex-wrap gap-2">
+            <FilterTabs
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              className="flex flex-wrap gap-2"
+            />
+          </div>
         </div>
 
         {/* Templates Grid */}

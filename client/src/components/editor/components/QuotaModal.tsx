@@ -75,13 +75,13 @@ export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
                 className="text-xl font-bold text-white mb-1"
                 style={{ fontFamily: "'Open Sans', sans-serif" }}
               >
-                הגעת למגבלת הכרטיסים!
+                הגעת למגבלת היצירות!
               </h2>
               <p
                 className="text-white/70 text-sm"
                 style={{ fontFamily: "'Open Sans', sans-serif" }}
               >
-                חשבון חינמי מוגבל ל-3 כרטיסים פעילים
+                חשבון חינמי מוגבל ל-3 יצירות פעילים
               </p>
             </div>
 

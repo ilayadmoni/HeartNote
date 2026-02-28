@@ -78,18 +78,9 @@ export function useAuthActions({ setError, setUser, setSession, error }: AuthAct
     }
   }, [setError, setUser, setSession, router, error]);
 
-  const resetPassword = useCallback(async (email: string) => {
-    try {
-      setError(null);
-      const { error: authErr } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
-      });
-      if (authErr) { setError(getErrorMessage(authErr.message)); throw authErr; }
-    } catch (err) {
-      if (err instanceof Error && !error) setError(getErrorMessage(err.message));
-      throw err;
-    }
-  }, [setError, error]);
+  // NOTE: resetPassword was removed (SEC-5). All password reset flows
+  // must go through the server action requestPasswordReset() in actions/password.ts
+  // which enforces the 3-strike rate limit.
 
   const updatePassword = useCallback(async (password: string) => {
     try {
@@ -102,5 +93,5 @@ export function useAuthActions({ setError, setUser, setSession, error }: AuthAct
     }
   }, [setError, error]);
 
-  return { signIn, signUp, signOut, resetPassword, updatePassword, router };
+  return { signIn, signUp, signOut, updatePassword, router };
 }

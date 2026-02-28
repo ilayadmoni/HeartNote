@@ -99,19 +99,14 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
             >
-              <Link
-                href="/gallery"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-bold text-white bg-[#d4826f] hover:bg-[#c4735f] shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-hebrew-heading"
-              >
-                {HERO_CTA}
-                <ArrowLeft size={20} />
-              </Link>
-              <Link
-                href="/gallery#examples"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-bold text-[#d4826f] dark:text-[#e8917a] border-2 border-[#d4826f] dark:border-[#e8917a] hover:bg-[#d4826f]/10 transition-all duration-300 text-hebrew-heading"
-              >
-                {HERO_CTA_SECONDARY}
-              </Link>
+                <Link
+                  href="/gallery"
+                  className="inline-flex items-center gap-3 sm:gap-2 px-7 sm:px-8 py-4 sm:py-4 rounded-full text-base sm:text-lg font-bold text-white bg-[#d4826f] hover:bg-[#c4735f] shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-hebrew-heading whitespace-nowrap"
+                >
+                  {HERO_CTA}
+                  <ArrowLeft size={20} />
+                </Link>
+    
             </motion.div>
           </div>
 

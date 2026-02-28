@@ -91,35 +91,8 @@ export function checkQuotaLimit(
   return null;
 }
 
-// ── Decrement Quota ──────────────────────────────────────────────────────
+// ── Note ─────────────────────────────────────────────────────────────────
+// Quota decrement is handled exclusively by the database trigger
+// `trg_handle_new_creation_quota` (see 012_creation_quota_trigger.sql).
+// No application-level decrement logic should exist here.
 
-/**
- * Decrements the creation quota counter and increments the total count.
- */
-export async function decrementQuota(
-  supabase: SupabaseClient,
-  userId: string,
-  profile: ProfileQuotaData,
-  userTier: string,
-): Promise<void> {
-  const updateDict: Record<string, number> = {
-    creations_count: (profile.creations_count ?? 0) + 1,
-  };
-
-  if (userTier === "free") {
-    updateDict.creations_left_free = Math.max(
-      (profile.creations_left_free ?? 0) - 1,
-      0,
-    );
-  } else if (
-    userTier === "premium" &&
-    profile.creations_left_pro !== null
-  ) {
-    updateDict.creations_left_pro = Math.max(
-      (profile.creations_left_pro ?? 0) - 1,
-      0,
-    );
-  }
-
-  await supabase.from("profiles").update(updateDict).eq("id", userId);
-}

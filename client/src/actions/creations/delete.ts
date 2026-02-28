@@ -4,6 +4,7 @@
 
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -48,8 +49,8 @@ export async function deleteCreation(
       };
     }
 
-    // Safety delay for Supabase read replica consistency
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    // Invalidate cached data so subsequent reads reflect the deletion
+    revalidatePath("/", "layout");
 
     return { success: true };
   } catch (e) {

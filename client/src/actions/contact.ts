@@ -2,16 +2,36 @@
 
 /**
  * Contact Form Server Action
+ * ──────────────────────────
  * Sends an email via Resend when a user submits the contact form.
+ *
+ * SEC-3: All user input is HTML-escaped before template interpolation.
+ * SEC-4: IP-based sliding-window rate limiting (5 req / 60 s).
  */
 
+import { headers } from "next/headers";
 import { Resend } from "resend";
+import { escapeHtml } from "@/lib/utils/sanitize";
+import { createRateLimiter } from "@/lib/utils/rate-limiter";
 
 const resend = new Resend(process.env.RESEND_KEY);
+
+/** 5 requests per minute per IP */
+const limiter = createRateLimiter({ maxRequests: 5, windowMs: 60_000 });
 
 interface ContactActionResult {
   success?: string;
   error?: string;
+}
+
+/** Extract the caller's IP from request headers */
+async function getClientIp(): Promise<string> {
+  const h = await headers();
+  return (
+    h.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    h.get("x-real-ip") ||
+    "unknown"
+  );
 }
 
 export async function sendContactEmail(
@@ -32,12 +52,25 @@ export async function sendContactEmail(
     return { error: "כתובת האימייל אינה תקינה." };
   }
 
+  // ── Rate limiting (SEC-4) ─────────────────────────────────────────
+  const ip = await getClientIp();
+  if (!limiter.check(ip)) {
+    console.warn(`[contact] Rate-limited IP: ${ip}`);
+    return { error: "שלחת יותר מדי הודעות. אנא נסה שוב בעוד דקה." };
+  }
+
+  // ── Sanitise user input (SEC-3) ───────────────────────────────────
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeSubject = subject ? escapeHtml(subject) : "";
+  const safeMessage = escapeHtml(message);
+
   // ── Send email via Resend ─────────────────────────────────────────
   try {
     const { error } = await resend.emails.send({
       from: "HeartNote <contact@heartnote.co.il>",
       to: process.env.MAIL_HEART_NOTE!,
-      subject: subject || `הודעה חדשה מ-${name}`,
+      subject: safeSubject || `הודעה חדשה מ-${safeName}`,
       replyTo: email,
       html: `
         <div dir="rtl" style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
@@ -48,19 +81,19 @@ export async function sendContactEmail(
           <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
             <tr>
               <td style="padding: 8px 12px; font-weight: bold; color: #2e3c52; width: 100px;">שם:</td>
-              <td style="padding: 8px 12px;">${name}</td>
+              <td style="padding: 8px 12px;">${safeName}</td>
             </tr>
             <tr>
               <td style="padding: 8px 12px; font-weight: bold; color: #2e3c52;">אימייל:</td>
               <td style="padding: 8px 12px;">
-                <a href="mailto:${email}" style="color: #d4826f;">${email}</a>
+                <a href="mailto:${safeEmail}" style="color: #d4826f;">${safeEmail}</a>
               </td>
             </tr>
             ${
-              subject
+              safeSubject
                 ? `<tr>
               <td style="padding: 8px 12px; font-weight: bold; color: #2e3c52;">נושא:</td>
-              <td style="padding: 8px 12px;">${subject}</td>
+              <td style="padding: 8px 12px;">${safeSubject}</td>
             </tr>`
                 : ""
             }
@@ -68,11 +101,11 @@ export async function sendContactEmail(
 
           <div style="margin-top: 20px; padding: 16px; background-color: #faf7f5; border-radius: 8px; border-right: 4px solid #d4826f;">
             <p style="margin: 0; font-weight: bold; color: #2e3c52;">הודעה:</p>
-            <p style="margin: 8px 0 0; white-space: pre-wrap; line-height: 1.6;">${message}</p>
+            <p style="margin: 8px 0 0; white-space: pre-wrap; line-height: 1.6;">${safeMessage}</p>
           </div>
 
           <p style="margin-top: 24px; font-size: 12px; color: #888;">
-            ניתן להשיב ישירות למייל זה — התשובה תגיע ל-${email}
+            ניתן להשיב ישירות למייל זה — התשובה תגיע ל-${safeEmail}
           </p>
         </div>
       `,

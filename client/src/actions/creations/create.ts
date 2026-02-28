@@ -5,10 +5,12 @@
  *  1. Zod-validate input
  *  2. Fetch template (config_schema, expiration_policy, is_premium)
  *  3. Validate metadata against config_schema
- *  4. Quota & premium guard (via helpers)
+ *  4. Quota & premium guard (via helpers — fast-fail check only)
  *  5. Calculate expiry (via helper)
  *  6. Insert creation row
- *  7. Decrement quota (via helper)
+ *
+ * Note: Quota decrement is handled by the DB trigger
+ * `trg_handle_new_creation_quota` — no application-level decrement.
  */
 
 "use server";
@@ -24,7 +26,6 @@ import {
   fetchProfileForQuota,
   checkPremiumAccess,
   checkQuotaLimit,
-  decrementQuota,
 } from "./helpers/quotaCheck";
 import { calculateExpiry } from "./helpers/expiryCalc";
 
@@ -115,8 +116,7 @@ export async function createCreation(
       return { error: "Failed to create card", status: 500 };
     }
 
-    // ── Step 7: Decrement quota ────────────────────────────────────
-    await decrementQuota(supabase, user.id, profile, userTier);
+    // Quota decrement handled by DB trigger `trg_handle_new_creation_quota`
 
     return {
       data: {

@@ -8,10 +8,12 @@
  *  2. Parse metadata JSON
  *  3. If file + bucketName provided → upload, inject publicUrl into metadata
  *  4. Fetch template_id by slug
- *  5. Quota & premium guard (via helpers)
- *  6. Calculate expiry & insert creation (via helper)
- *  7. Decrement quota (via helper)
- *  8. Return { success, creationId }
+ *  5. Quota & premium guard (via helpers — fast-fail check only)
+ *  6. Calculate expiry & insert creation
+ *  7. Return { success, creationId }
+ *
+ * Note: Quota decrement is handled by the DB trigger
+ * `trg_handle_new_creation_quota` — no application-level decrement.
  */
 
 "use server";
@@ -21,7 +23,6 @@ import {
   fetchProfileForQuota,
   checkPremiumAccess,
   checkQuotaLimit,
-  decrementQuota,
 } from "./helpers/quotaCheck";
 import { calculateExpiry } from "./helpers/expiryCalc";
 
@@ -150,8 +151,7 @@ export async function submitGenericCreation(
       };
     }
 
-    // ── 7. Decrement quota ─────────────────────────────────────────
-    await decrementQuota(supabase, user.id, profile, userTier);
+    // Quota decrement handled by DB trigger `trg_handle_new_creation_quota`
 
     return { success: true, creationId: creation.id as string };
   } catch (e) {

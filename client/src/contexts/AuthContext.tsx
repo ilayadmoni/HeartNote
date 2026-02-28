@@ -33,7 +33,6 @@ interface AuthContextType {
     dateOfBirth?: string,
   ) => Promise<void>;
   signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
   updatePassword: (password: string) => Promise<void>;
   clearError: () => void;
 }
@@ -46,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { signIn, signUp, signOut, resetPassword, updatePassword, router } =
+  const { signIn, signUp, signOut, updatePassword, router } =
     useAuthActions({
       setError,
       setUser,
@@ -85,7 +84,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         signOut,
-        resetPassword,
         updatePassword,
         clearError,
       }}

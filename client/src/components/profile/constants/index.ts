@@ -12,7 +12,7 @@ export const TIER_CONFIGS: Record<SubscriptionTier, TierConfig> = {
     name: "Free",
     nameHe: "חינמי",
     color: "#6b7280", // gray
-    features: ["3 כרטיסים חינם"],
+    features: ["3 יצירות חינם"],
   },
   premium: {
     name: "Premium",

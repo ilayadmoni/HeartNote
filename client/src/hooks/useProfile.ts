@@ -55,7 +55,7 @@ export function useProfile(): UseProfileReturn {
       setError(null);
 
       const profileData = await getProfile();
-      console.log("Fetched profile data:", profileData);
+     
 
       setProfile(mapApiProfileToUserProfile(profileData));
       // Use static DiceBear avatar list instead of broken API
