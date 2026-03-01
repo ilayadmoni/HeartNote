@@ -81,7 +81,7 @@ export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
                 className="text-white/70 text-sm"
                 style={{ fontFamily: "'Open Sans', sans-serif" }}
               >
-                חשבון חינמי מוגבל ל-3 יצירות פעילים
+              חשבון חינמי מוגבל ל-3 יצירות 
               </p>
             </div>
 
@@ -95,13 +95,13 @@ export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
                 >
                   משתמשים חינמיים יכולים ליצור עד 3 ברכות.
                   <br />
-                  שדרגו ל-Pro ליצירת עוד ברכות
+                  שדרגו לפרימיום ליצירת עוד ברכות
                 </p>
               </div>
 
               {/* Pro features teaser */}
               <div className="space-y-2.5">
-                {["תוקף ארוך יותר (24 שעות+)", "תמיכה בתבניות פרימיום"].map(
+                {["תוקף ארוך יותר (יותר מ24 שעות)", "תמיכה בתבניות פרימיום"].map(
                   (feature) => (
                     <div key={feature} className="flex items-center gap-2.5">
                       <Sparkles
@@ -130,7 +130,7 @@ export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
                 style={{ fontFamily: "'Open Sans', sans-serif" }}
               >
                 <Crown size={16} />
-                שדרגו ל-Pro
+                שדרגו לפרימיום
               </Link>
 
               {/* Dismiss → close modal & navigate home */}

@@ -61,10 +61,8 @@ export function DateInviteMobile({
               </div>
 
               {/* Question */}
-              <h1 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-1.5 text-hebrew-heading leading-tight break-words max-w-[260px]">
-                {data.question.length > 50
-                  ? `${data.question.substring(0, 50)}...`
-                  : data.question}
+              <h1 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-1.5 text-hebrew-heading leading-tight break-words w-full overflow-hidden">
+                {data.question}
               </h1>
 
               {/* Subtitle */}
@@ -84,8 +82,8 @@ export function DateInviteMobile({
                     boxShadow: `0 10px 25px ${primaryColor}30`,
                   }}
                 >
-                  <span>{data.yesText}</span>
-                  <Heart size={16} fill="currentColor" className="opacity-80" />
+                  <span className="truncate">{data.yesText}</span>
+                  <Heart size={16} fill="currentColor" className="opacity-80 shrink-0" />
                 </motion.button>
 
                 {/* No Button - Enhanced evasion */}
@@ -101,9 +99,9 @@ export function DateInviteMobile({
                     mass: 0.4,
                   }}
                   onTouchStart={onNoHover}
-                  className="relative z-0 flex-1 h-12 text-sm font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-colors text-hebrew-heading flex items-center justify-center"
+                  className="relative z-0 flex-1 h-12 text-sm font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-colors text-hebrew-heading flex items-center justify-center overflow-hidden"
                 >
-                  {data.noText}
+                  <span className="truncate px-2">{data.noText}</span>
                 </motion.button>
               </div>
             </>
@@ -124,12 +122,10 @@ export function DateInviteMobile({
               </motion.div>
 
               <h2
-                className="text-xl font-bold text-hebrew-heading mb-1.5 break-words max-w-[260px]"
+                className="text-xl font-bold text-hebrew-heading mb-1.5 break-words w-full overflow-hidden"
                 style={{ color: primaryColor }}
               >
-                {data.successMessage.length > 50
-                  ? `${data.successMessage.substring(0, 50)}...`
-                  : data.successMessage}
+                {data.successMessage}
               </h2>
 
               <p className="text-xs text-gray-400 mb-5 text-hebrew-body">

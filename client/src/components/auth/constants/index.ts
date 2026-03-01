@@ -15,7 +15,7 @@ export const REGISTER_SUBTITLE = "צרו חשבון והתחילו ליצור ב
 export const REGISTER_BUTTON = "הרשמה";
 export const REGISTER_LOGIN_PROMPT = "כבר יש לכם חשבון?";
 export const REGISTER_LOGIN_LINK = "התחברו";
-export const REGISTER_SUCCESS_MESSAGE = "ההרשמה הושלמה בהצלחה! נא לבדוק את האימייל לאימות החשבון.";
+export const REGISTER_SUCCESS_MESSAGE = "אם האימייל תקין, בדקו את תיבת הדואר שלכם.";
 
 // Form Labels
 export const AUTH_LABELS = {
@@ -44,6 +44,7 @@ export const AUTH_VALIDATION = {
   passwordRequired: "נא להזין סיסמה",
   passwordMinLength: "הסיסמה חייבת להכיל לפחות 8 תווים",
   passwordFormat: "הסיסמה חייבת להכיל לפחות אות אחת ומספר אחד",
+  passwordHebrew: "הסיסמה חייבת להכיל אותיות באנגלית ומספרים בלבד. אין להשתמש בתווים בעברית.",
   firstNameRequired: "נא להזין שם פרטי",
   lastNameRequired: "נא להזין שם משפחה",
   passwordMismatch: "הסיסמאות אינן תואמות",
@@ -55,7 +56,7 @@ export const AUTH_VALIDATION = {
 export const FORGOT_PASSWORD_TITLE = "שחזור סיסמה";
 export const FORGOT_PASSWORD_SUBTITLE = "הזינו את כתובת האימייל שלכם ונשלח לכם קישור לאיפוס הסיסמה";
 export const FORGOT_PASSWORD_BUTTON = "שליחת קישור איפוס";
-export const FORGOT_PASSWORD_SUCCESS = "קישור לאיפוס הסיסמה נשלח לאימייל שלכם. בדקו את תיבת הדואר הנכנס.";
+export const FORGOT_PASSWORD_SUCCESS = "אם הכתובת רשומה ופעילה במערכת, נשלח אליך קישור לאיפוס הסיסמה.";
 export const FORGOT_PASSWORD_BACK = "חזרה להתחברות";
 export const FORGOT_PASSWORD_LINK = "שכחתם את הסיסמה?";
 

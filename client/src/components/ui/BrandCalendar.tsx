@@ -301,53 +301,72 @@ export function BrandCalendar({
             className="absolute top-full z-50 mt-1.5 right-0 w-full max-w-[300px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden"
           >
             {/* ── Header with year + month dropdowns ──────────────── */}
-            <div className="bg-gradient-to-l from-[#B5EAD7] to-[#C7CEEA] px-3 py-2 flex items-center justify-between gap-1">
-              {/* RTL: visual "right arrow" goes to next month */}
-              <button
-                type="button"
-                onClick={nextMonth}
-                className="p-1 rounded-full hover:bg-white/30 transition-colors flex-shrink-0"
-                aria-label="חודש הבא"
-              >
-                <ChevronRight size={18} className="text-[#2e3c52]" />
-              </button>
+            <div className="bg-gradient-to-l from-[#B5EAD7] to-[#C7CEEA] px-4 py-4 space-y-3">
+              {/* Top row: Navigation buttons */}
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={nextMonth}
+                  className="p-2 rounded-full hover:bg-white/30 transition-colors flex-shrink-0"
+                  aria-label="חודש הבא"
+                >
+                  <ChevronRight size={20} className="text-[#2e3c52]" />
+                </button>
 
-              {/* Month dropdown */}
-              <select
-                value={viewMonth}
-                onChange={(e) => setViewMonth(Number(e.target.value))}
-                className="bg-transparent text-xs font-bold text-[#2e3c52] text-hebrew-heading cursor-pointer focus:outline-none appearance-none text-center border-none px-1"
-                aria-label="חודש"
-              >
-                {MONTHS_HE.map((name, idx) => (
-                  <option key={idx} value={idx}>
-                    {name}
-                  </option>
-                ))}
-              </select>
+                <span className="text-xs font-semibold text-[#2e3c52] text-hebrew-heading">
+                  בחר תאריך לידה
+                </span>
 
-              {/* Year dropdown */}
-              <select
-                value={viewYear}
-                onChange={(e) => setViewYear(Number(e.target.value))}
-                className="bg-transparent text-xs font-bold text-[#2e3c52] text-hebrew-heading cursor-pointer focus:outline-none appearance-none text-center border-none px-1"
-                aria-label="שנה"
-              >
-                {yearOptions.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </select>
+                <button
+                  type="button"
+                  onClick={prevMonth}
+                  className="p-2 rounded-full hover:bg-white/30 transition-colors flex-shrink-0"
+                  aria-label="חודש קודם"
+                >
+                  <ChevronLeft size={20} className="text-[#2e3c52]" />
+                </button>
+              </div>
 
-              <button
-                type="button"
-                onClick={prevMonth}
-                className="p-1 rounded-full hover:bg-white/30 transition-colors flex-shrink-0"
-                aria-label="חודש קודם"
-              >
-                <ChevronLeft size={18} className="text-[#2e3c52]" />
-              </button>
+              {/* Bottom row: Month and Year dropdowns */}
+              <div className="grid grid-cols-2 gap-2">
+                {/* Month dropdown */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-[#2e3c52] text-hebrew-heading">
+                    חודש
+                  </label>
+                  <select
+                    value={viewMonth}
+                    onChange={(e) => setViewMonth(Number(e.target.value))}
+                    className="w-full bg-white/80 hover:bg-white text-sm font-semibold text-[#2e3c52] text-hebrew-heading cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2e3c52] rounded-lg border border-white/40 px-2 py-1.5 appearance-none transition-all"
+                    aria-label="חודש"
+                  >
+                    {MONTHS_HE.map((name, idx) => (
+                      <option key={idx} value={idx}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Year dropdown */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-[#2e3c52] text-hebrew-heading">
+                    שנה
+                  </label>
+                  <select
+                    value={viewYear}
+                    onChange={(e) => setViewYear(Number(e.target.value))}
+                    className="w-full bg-white/80 hover:bg-white text-sm font-semibold text-[#2e3c52] text-hebrew-heading cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2e3c52] rounded-lg border border-white/40 px-2 py-1.5 appearance-none transition-all"
+                    aria-label="שנה"
+                  >
+                    {yearOptions.map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
 
             {/* ── Day-of-week names ─────────────────────────────────── */}

@@ -112,12 +112,14 @@ export default function RootLayout({
 
         <ThemeProvider>
           <AccessibilityProvider>
-            <AuthProvider>
-              <QueryProvider>{children}</QueryProvider>
-            </AuthProvider>
+            <div id="a11y-content">
+              <AuthProvider>
+                <QueryProvider>{children}</QueryProvider>
+              </AuthProvider>
+              <CookieBanner />
+            </div>
             <AccessibilityWidget />
           </AccessibilityProvider>
-          <CookieBanner />
         </ThemeProvider>
         <Toaster
           position="bottom-right"

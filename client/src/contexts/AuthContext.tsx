@@ -31,7 +31,7 @@ interface AuthContextType {
     firstName: string,
     lastName: string,
     dateOfBirth?: string,
-  ) => Promise<void>;
+  ) => Promise<{ error?: string; success?: boolean | string }>;
   signOut: () => Promise<void>;
   updatePassword: (password: string) => Promise<void>;
   clearError: () => void;
@@ -45,13 +45,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { signIn, signUp, signOut, updatePassword, router } =
-    useAuthActions({
-      setError,
-      setUser,
-      setSession: () => setSession(null),
-      error,
-    });
+  const { signIn, signUp, signOut, updatePassword, router } = useAuthActions({
+    setError,
+    setUser,
+    setSession: () => setSession(null),
+    error,
+  });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

@@ -17,16 +17,23 @@ export function DeleteAccountCard({ onDelete }: DeleteAccountCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmText, setConfirmText] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const handleDelete = async () => {
     if (confirmText !== "מחק" || isDeleting) return;
 
     setIsDeleting(true);
+    setError(null);
     try {
       await onDelete();
       // Success - user will be logged out and redirected
-    } catch {
+    } catch (err) {
       setIsDeleting(false);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "אירעה שגיאה בעת מחיקת החשבון"
+      );
     }
   };
 
@@ -34,6 +41,7 @@ export function DeleteAccountCard({ onDelete }: DeleteAccountCardProps) {
     if (isDeleting) return;
     setIsModalOpen(false);
     setConfirmText("");
+    setError(null);
   };
 
   return (
@@ -113,6 +121,13 @@ export function DeleteAccountCard({ onDelete }: DeleteAccountCardProps) {
 
                 {/* Content */}
                 <div className="p-6">
+                  {error && (
+                    <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                      <p className="text-sm text-red-600 dark:text-red-400 text-hebrew-body">
+                        {error}
+                      </p>
+                    </div>
+                  )}
                   <label className="block text-sm text-gray-600 dark:text-gray-300 mb-2 text-hebrew-body">
                     הקלידו <strong className="text-red-500">מחק</strong> לאישור:
                   </label>

@@ -62,7 +62,7 @@ export function DateInviteDesktop({
               </div>
 
               {/* Question - Smaller */}
-              <h1 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-1.5 text-hebrew-heading leading-tight">
+              <h1 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-1.5 text-hebrew-heading leading-tight break-words w-full overflow-hidden">
                 {data.question}
               </h1>
 
@@ -90,8 +90,8 @@ export function DateInviteDesktop({
                     (e.currentTarget.style.backgroundColor = primaryColor)
                   }
                 >
-                  <span>{data.yesText}</span>
-                  <Heart size={16} fill="currentColor" className="opacity-80" />
+                  <span className="truncate">{data.yesText}</span>
+                  <Heart size={16} fill="currentColor" className="opacity-80 shrink-0" />
                 </motion.button>
 
                 {/* No Button - Enhanced evasion */}
@@ -107,9 +107,9 @@ export function DateInviteDesktop({
                     mass: 0.4,
                   }}
                   onHoverStart={onNoHover}
-                  className="relative z-0 flex-1 h-12 text-sm font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-all text-hebrew-heading hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-center"
+                  className="relative z-0 flex-1 h-12 text-sm font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-all text-hebrew-heading hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-center overflow-hidden"
                 >
-                  {data.noText}
+                  <span className="truncate px-2">{data.noText}</span>
                 </motion.button>
               </div>
             </>
@@ -130,7 +130,7 @@ export function DateInviteDesktop({
               </motion.div>
 
               <h2
-                className="text-xl font-bold text-hebrew-heading mb-1.5"
+                className="text-xl font-bold text-hebrew-heading mb-1.5 break-words w-full overflow-hidden"
                 style={{ color: primaryColor }}
               >
                 {data.successMessage}

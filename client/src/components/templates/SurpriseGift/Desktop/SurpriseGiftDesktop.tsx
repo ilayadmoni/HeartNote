@@ -18,7 +18,6 @@ import {
 import type { SurpriseGiftProps } from "../types";
 import { FloatingIcons } from "../../OpenWhen/components";
 
-
 const DEFAULT_CLICKS = 5;
 
 export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
@@ -72,7 +71,10 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto px-6 py-8">
         {/* Title */}
-        <h1 className="text-3xl font-bold dark:text-white mb-8 text-hebrew-heading text-center" style={{ color: primaryColor }}>
+        <h1
+          className="text-3xl font-bold dark:text-white mb-8 text-hebrew-heading text-center"
+          style={{ color: primaryColor }}
+        >
           {title}
         </h1>
 
@@ -84,7 +86,9 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
             transition={{ duration: 0.4 }}
             whileHover={{ scale: 1.05 }}
             className="cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
-            style={{ focusVisibleRingColor: primaryColor } as React.CSSProperties}
+            style={
+              { focusVisibleRingColor: primaryColor } as React.CSSProperties
+            }
             aria-label={`לחצו לנער את המתנה (${clicks}/${needed})`}
           >
             <GiftBox
@@ -111,9 +115,9 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
               }}
               className="w-full max-w-md rounded-2xl shadow-lg bg-white dark:bg-gray-800 p-6 md:p-8"
             >
-              <div className="max-h-[60vh] overflow-y-auto">
+              <div className="max-h-[60vh] overflow-y-auto w-full flex justify-center text-center">
                 <p
-                  className="text-2xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words"
+                  className="text-center text-2xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words w-full"
                   style={{ color: primaryColor }}
                 >
                   {greeting}

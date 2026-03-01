@@ -2,8 +2,12 @@
  * useAuthActions Hook
  *
  * Contains all Supabase auth method implementations
- * (signIn, signUp, signOut, resetPassword, updatePassword).
+ * (signIn, signUp, signOut, updatePassword).
  * Extracted from AuthContext to keep files under 150 lines.
+ *
+ * SEC-2: signUp now delegates to the registerUser server action
+ * so banned-email checks happen server-side before any account
+ * is created. The client always sees a generic success message.
  */
 
 import { useCallback } from "react";
@@ -11,6 +15,7 @@ import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { getErrorMessage, formatDateOfBirth } from "./auth-helpers";
+import { registerUser } from "@/actions/registration";
 
 const supabase = createClient();
 
@@ -41,27 +46,31 @@ export function useAuthActions({ setError, setUser, setSession, error }: AuthAct
     email: string, password: string,
     firstName: string, lastName: string, dateOfBirth?: string,
   ) => {
+    setError(null);
     try {
-      setError(null);
       let formattedDob: string | undefined;
       if (dateOfBirth) {
         const dob = formatDateOfBirth(dateOfBirth);
-        if (!dob) { setError("תאריך לידה לא תקין"); throw new Error("Invalid date_of_birth format"); }
+        if (!dob) { 
+          setError("תאריך לידה לא תקין"); 
+          return { error: "תאריך לידה לא תקין" }; 
+        }
         formattedDob = dob;
       }
-      const { error: authErr } = await supabase.auth.signUp({
-        email, password,
-        options: {
-          data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}`.trim(), date_of_birth: formattedDob },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (authErr) { setError(getErrorMessage(authErr.message)); throw authErr; }
+      const result = await registerUser(firstName, lastName, email, password, formattedDob);
+      if (result.error) {
+        // Server errors are already in Hebrew — set directly, don't translate
+        setError(result.error);
+        return { error: result.error };
+      }
+      // result.success → caller shows generic success UI
+      return { success: result.success || true };
     } catch (err) {
-      if (err instanceof Error && !error) setError(getErrorMessage(err.message));
-      throw err;
+      const msg = err instanceof Error ? getErrorMessage(err.message) : "שגיאה פנימית";
+      setError(msg);
+      return { error: msg };
     }
-  }, [setError, error]);
+  }, [setError]);
 
   const signOut = useCallback(async () => {
     try {

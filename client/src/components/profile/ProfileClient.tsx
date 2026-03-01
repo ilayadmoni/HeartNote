@@ -16,7 +16,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { PROFILE_QUERY_KEY } from "@/hooks/useProfileQuery";
 import { ProfileDesktop } from "./Desktop/ProfileDesktop";
 import { ProfileMobile } from "./Mobile/ProfileMobile";
-import { updateMyProfile } from "@/actions/profile";
+import { updateMyProfile, deleteMyAccount } from "@/actions/profile";
 import { getDashboard } from "@/actions/dashboard";
 import { mapApiProfileToUserProfile, AVATAR_URLS } from "./types";
 import type { UserProfile } from "./types";
@@ -175,6 +175,16 @@ export function ProfileClient({
     console.log("Delete template:", slug);
   };
 
+  const handleDeleteAccount = useCallback(async (): Promise<void> => {
+    const result = await deleteMyAccount();
+    if ("error" in result) {
+      setError(result.error);
+      throw new Error(result.error);
+    }
+    // Account deleted — redirect to home
+    router.push("/");
+  }, [router]);
+
   // ── Render ────────────────────────────────────────────────────────────
 
   const props = {
@@ -186,6 +196,7 @@ export function ProfileClient({
     onUpgrade: handleUpgrade,
     onViewTemplate: handleViewTemplate,
     onDeleteTemplate: handleDeleteTemplate,
+    onDeleteAccount: handleDeleteAccount,
     onEditProfile: handleEditProfile,
     onAvatarSelect: handleAvatarSelect,
     className: "",

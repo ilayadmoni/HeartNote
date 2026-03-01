@@ -3,9 +3,11 @@
 /**
  * Auth Server Actions
  * Handles authentication via Supabase on the server side.
+ * SEC-2: Checks banned_users before authenticating.
  */
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { LoginState } from "./auth.types";
 
 /**
@@ -21,6 +23,24 @@ export async function loginAction(
 
   if (!email?.trim() || !password) {
     return { error: "שם משתמש או סיסמה שגויים", success: false };
+  }
+
+  // Check banned_users — same generic error (no enumeration)
+  try {
+    const admin = createAdminClient();
+    const { data: banned } = await admin
+      .from("banned_users")
+      .select("id")
+      .eq("email", email.trim().toLowerCase())
+      .maybeSingle();
+
+    if (banned) {
+      console.log(`[loginAction] Banned email attempted login: ${email}`);
+      return { error: "שם משתמש או סיסמה שגויים", success: false };
+    }
+  } catch (err) {
+    console.error("[loginAction] Banned check error:", err);
+    // Continue — don't block login if the check fails
   }
 
   const supabase = await createClient();

@@ -25,7 +25,7 @@ interface RegisterFormProps {
     email: string,
     password: string,
     dateOfBirth: string,
-  ) => Promise<void>;
+  ) => Promise<{ error?: string; success?: boolean | string } | void>;
   isSubmitting: boolean;
   /** Server/Supabase error passed from parent */
   serverError?: string | null;
@@ -53,6 +53,8 @@ interface FormErrors {
 
 // Password validation: min 8 chars, at least 1 letter and 1 number
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+// Hebrew character range — used to block Hebrew input in passwords
+const HEBREW_REGEX = /[\u0590-\u05FF]/;
 
 export function RegisterForm({
   onSubmit,
@@ -70,6 +72,7 @@ export function RegisterForm({
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Real-time validation for individual fields
   const validateField = (
@@ -92,6 +95,8 @@ export function RegisterForm({
         return undefined;
       case "password":
         if (!value) return AUTH_VALIDATION.passwordRequired;
+        if (HEBREW_REGEX.test(value as string))
+          return AUTH_VALIDATION.passwordHebrew;
         if ((value as string).length < 8)
           return AUTH_VALIDATION.passwordMinLength;
         if (!PASSWORD_REGEX.test(value as string))
@@ -153,14 +158,24 @@ export function RegisterForm({
     e.preventDefault();
     if (!validate()) return;
 
+    // Clear any previous submit error
+    setSubmitError(null);
+
     try {
-      await onSubmit(
+      const result = await onSubmit(
         formData.firstName,
         formData.lastName,
         formData.email,
         formData.password,
         formData.dateOfBirth,
       );
+
+      // Inspect the returned object for errors
+      if (result && "error" in result && result.error) {
+        setSubmitError(result.error);
+        return;
+      }
+
       setIsSuccess(true);
     } catch (err) {
       console.error("[RegisterForm] Submit error:", err);
@@ -184,11 +199,20 @@ export function RegisterForm({
 
   return (
     <form onSubmit={handleSubmit} className="w-full box-border">
-      {/* Server Error (Supabase) */}
-      {serverError && (
+      {/* Server Error (generic — not email-specific) */}
+      {serverError && serverError !== "מייל לא חוקי" && (
         <div className="mb-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
           <p className="text-red-600 dark:text-red-400 text-sm text-center text-hebrew-body">
             {serverError}
+          </p>
+        </div>
+      )}
+
+      {/* Submit Error (returned from onSubmit result, e.g. banned email) */}
+      {submitError && (
+        <div className="mb-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+          <p className="text-red-600 dark:text-red-400 text-sm text-center text-hebrew-body">
+            {submitError}
           </p>
         </div>
       )}
@@ -223,7 +247,10 @@ export function RegisterForm({
         placeholder={AUTH_PLACEHOLDERS.email}
         value={formData.email}
         onChange={(value) => handleFieldChange("email", value)}
-        error={errors.email}
+        error={
+          errors.email ||
+          (serverError === "מייל לא חוקי" ? serverError : undefined)
+        }
       />
 
       <BrandCalendar

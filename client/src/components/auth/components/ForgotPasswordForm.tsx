@@ -91,7 +91,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
           </div>
         </div>
         <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading">
-          הקישור נשלח!
+          בקשה התקבלה
         </h3>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 text-hebrew-body leading-relaxed">
           {FORGOT_PASSWORD_SUCCESS}

@@ -173,10 +173,15 @@ export function LoginModal({
   ) => {
     setIsRegisterSubmitting(true);
     try {
-      await signUp(email, password, firstName, lastName, dateOfBirth);
-      // Don't close modal – RegisterForm will show success message
-    } catch {
-      // Error handled by AuthContext
+      const result = await signUp(
+        email,
+        password,
+        firstName,
+        lastName,
+        dateOfBirth,
+      );
+      return result;
+      // Don't close modal – RegisterForm will show success message if result.success
     } finally {
       setIsRegisterSubmitting(false);
     }
@@ -275,10 +280,10 @@ export function LoginModal({
                           onTabChange={setActiveTab}
                         />
 
-                        {/* Register error banner (from AuthContext) */}
+                        {/* Register error banner (from AuthContext) — skip email-specific errors */}
                         {activeTab === "register" && (
                           <AnimatePresence mode="wait">
-                            {authError && (
+                            {authError && authError !== "מייל לא חוקי" && (
                               <motion.div
                                 key="register-error"
                                 initial={{ opacity: 0, y: -8 }}

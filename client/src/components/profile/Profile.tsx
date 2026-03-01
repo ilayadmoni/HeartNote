@@ -9,6 +9,7 @@
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useProfile } from "@/hooks/useProfile";
 import { useDashboard } from "@/hooks/useDashboard";
+import { deleteMyAccount } from "@/actions/profile";
 import { ProfileDesktop } from "./Desktop/ProfileDesktop";
 import { ProfileMobile } from "./Mobile/ProfileMobile";
 import { ProfileSkeleton } from "./components";
@@ -83,6 +84,14 @@ export function Profile({ className = "" }: ProfileProps) {
     console.log("Delete template:", slug);
   };
 
+  const handleDeleteAccount = async (): Promise<void> => {
+    const result = await deleteMyAccount();
+    if ("error" in result) {
+      throw new Error(result.error);
+    }
+    window.location.href = "/";
+  };
+
   const handleEditProfile = async (
     firstName: string,
     lastName: string,
@@ -116,6 +125,7 @@ export function Profile({ className = "" }: ProfileProps) {
     onUpgrade: handleUpgrade,
     onViewTemplate: handleViewTemplate,
     onDeleteTemplate: handleDeleteTemplate,
+    onDeleteAccount: handleDeleteAccount,
     onEditProfile: handleEditProfile,
     onAvatarSelect: handleAvatarSelect,
     className,

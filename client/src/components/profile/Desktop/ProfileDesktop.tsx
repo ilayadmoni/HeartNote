@@ -18,6 +18,7 @@ import {
   TemplatesList,
   EditProfileCard,
   AvatarSelector,
+  DeleteAccountCard,
 } from "../components";
 
 interface Props extends ProfileDesktopProps {
@@ -31,6 +32,7 @@ interface Props extends ProfileDesktopProps {
   onDeleteTemplate: (slug: string) => void;
   onEditProfile: (firstName: string, lastName: string) => Promise<void>;
   onAvatarSelect: (avatarUrl: string) => Promise<boolean>;
+  onDeleteAccount: () => Promise<void>;
 }
 
 export function ProfileDesktop({
@@ -44,6 +46,7 @@ export function ProfileDesktop({
   onDeleteTemplate,
   onEditProfile,
   onAvatarSelect,
+  onDeleteAccount,
 }: Props) {
   // Format subscription for the card
   const subscriptionData = {
@@ -146,6 +149,14 @@ export function ProfileDesktop({
                 onView={onViewTemplate}
                 onDelete={onDeleteTemplate}
               />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.25 }}
+            >
+              <DeleteAccountCard onDelete={onDeleteAccount} />
             </motion.div>
           </div>
         </div>

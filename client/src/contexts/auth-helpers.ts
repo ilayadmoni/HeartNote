@@ -46,11 +46,23 @@ export function getErrorMessage(errorMessage: string): string {
   return "אירעה שגיאה. נסו שנית";
 }
 
-/** Format a date-of-birth string to YYYY-MM-DD for PostgreSQL */
+/** Format a date-of-birth string to YYYY-MM-DD for PostgreSQL.
+ *  Validates the date without converting through local→UTC (avoids off-by-one). */
 export function formatDateOfBirth(dateOfBirth: string): string | null {
-  const parsed = new Date(dateOfBirth + "T00:00:00");
-  if (isNaN(parsed.getTime())) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)) return null;
+
+  const [y, m, d] = dateOfBirth.split("-").map(Number);
+  const utc = new Date(Date.UTC(y, m - 1, d));
+
+  // Ensure the components round-trip (catches Feb 30, etc.)
+  if (
+    isNaN(utc.getTime()) ||
+    utc.getUTCFullYear() !== y ||
+    utc.getUTCMonth() !== m - 1 ||
+    utc.getUTCDate() !== d
+  ) {
     return null;
   }
-  return parsed.toISOString().split("T")[0];
+
+  return dateOfBirth;
 }

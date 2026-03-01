@@ -18,6 +18,7 @@ import {
   TemplatesList,
   EditProfileCard,
   AvatarSelector,
+  DeleteAccountCard,
 } from "../components";
 
 interface Props extends ProfileMobileProps {
@@ -31,6 +32,7 @@ interface Props extends ProfileMobileProps {
   onDeleteTemplate: (slug: string) => void;
   onEditProfile: (firstName: string, lastName: string) => Promise<void>;
   onAvatarSelect: (avatarUrl: string) => Promise<boolean>;
+  onDeleteAccount: () => Promise<void>;
 }
 
 export function ProfileMobile({
@@ -44,6 +46,7 @@ export function ProfileMobile({
   onDeleteTemplate,
   onEditProfile,
   onAvatarSelect,
+  onDeleteAccount,
 }: Props) {
   // Format subscription for the card
   const subscriptionData = {
@@ -141,6 +144,14 @@ export function ProfileMobile({
               onView={onViewTemplate}
               onDelete={onDeleteTemplate}
             />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.22 }}
+          >
+            <DeleteAccountCard onDelete={onDeleteAccount} />
           </motion.div>
         </div>
       </div>

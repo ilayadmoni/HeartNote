@@ -1,12 +1,14 @@
 "use server";
 
 /**
- * Password Reset Server Actions
- * ─────────────────────────────
- * requestPasswordReset – sends the recovery email (with 3-strike limit)
- * updatePassword       – saves the new password and resets the counter
+ * Password Server Actions
+ * ───────────────────────
+ * requestPasswordReset – sends recovery email with:
+ *   • banned_users check (silent abort)
+ *   • 3-strike auto-ban via password_reset_attempts table
+ *   • Anti-enumeration: always returns the same generic success string
  *
- * Both use the server-side Supabase client created via @supabase/ssr.
+ * updatePassword – saves the new password after clicking the recovery link
  *
  * SEC-2 COMPLIANT: All detailed errors are logged server-side only.
  *   Client responses use generic Hebrew strings — no internal details leak.
@@ -14,7 +16,7 @@
 
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 interface ActionResult {
   success?: string;
@@ -22,31 +24,17 @@ interface ActionResult {
 }
 
 const MAX_RESET_ATTEMPTS = 3;
+const RATE_WINDOW_HOURS = 24;
 
-/* ── Generic client-facing error messages (Hebrew) ────────── */
+/** Generic success message — shown regardless of email status */
+const GENERIC_SUCCESS =
+  "אם הכתובת רשומה ופעילה במערכת, נשלח אליך קישור לאיפוס הסיסמה.";
+
+/** Generic internal error */
 const ERR_INTERNAL =
   "אירעה שגיאה פנימית במערכת. אנא נסה שוב מאוחר יותר.";
-const ERR_USER_VERIFICATION =
-  "לא הצלחנו לאמת את פרטי המשתמש. אנא פנה לתמיכה.";
 const ERR_RESET_PROCESS =
   "שגיאה בתהליך איפוס הסיסמה. ייתכן שהקישור פג תוקף.";
-
-/** Create a service-role admin client that bypasses RLS */
-function getAdminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !serviceRoleKey) {
-    console.error(
-      "[getAdminClient] Missing env vars — NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
-    );
-    return null;
-  }
-
-  return createAdminClient(url, serviceRoleKey, {
-    auth: { persistSession: false },
-  });
-}
 
 /** Build the recovery redirect URL from request headers */
 async function getRedirectUrl(): Promise<string> {
@@ -57,6 +45,16 @@ async function getRedirectUrl(): Promise<string> {
     process.env.NEXT_PUBLIC_SITE_URL ||
     "http://localhost:3000";
   return `${origin}/auth/callback?next=/?modal=reset-password`;
+}
+
+/** Extract client IP from request headers */
+async function getClientIp(): Promise<string | null> {
+  const headerStore = await headers();
+  return (
+    headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    headerStore.get("x-real-ip") ||
+    null
+  );
 }
 
 /* ================================================================
@@ -70,46 +68,86 @@ export async function requestPasswordReset(
     return { error: "נא להזין כתובת אימייל תקינה." };
   }
 
-  const admin = getAdminClient();
-  if (!admin) {
-    // env-var issue already logged inside getAdminClient()
+  let admin;
+  try {
+    admin = createAdminClient();
+  } catch {
+    console.error("[requestPasswordReset] Failed to create admin client");
     return { error: ERR_INTERNAL };
   }
 
-  // Look up the user's profile by email
-  const { data: profile, error: profileError } = await admin
-    .from("profiles")
-    .select("id, reset_attempts")
+  // ── Check if email is banned → silent abort ───────────────────────
+  const { data: banned } = await admin
+    .from("banned_users")
+    .select("id")
     .eq("email", email)
     .maybeSingle();
 
-  if (profileError) {
-    console.error("[requestPasswordReset] Profile lookup error:", profileError);
-    return { error: ERR_USER_VERIFICATION };
+  if (banned) {
+    console.log(`[requestPasswordReset] Banned email silently aborted: ${email}`);
+    return { success: GENERIC_SUCCESS };
   }
 
-  // Security: don't reveal whether the email exists
-  if (!profile) {
-    return { success: "אם הכתובת רשומה במערכת, נשלח אליך קישור לאיפוס הסיסמה." };
+  // ── Count attempts in the last 24 hours ───────────────────────────
+  const windowStart = new Date(
+    Date.now() - RATE_WINDOW_HOURS * 60 * 60 * 1000,
+  ).toISOString();
+
+  const { count, error: countError } = await admin
+    .from("password_reset_attempts")
+    .select("id", { count: "exact", head: true })
+    .eq("email", email)
+    .gte("created_at", windowStart);
+
+  if (countError) {
+    console.error("[requestPasswordReset] Count query error:", countError);
+    return { error: ERR_INTERNAL };
   }
 
-  // Enforce 3-strike limit
-  if (profile.reset_attempts >= MAX_RESET_ATTEMPTS) {
-    return { error: "החשבון ננעל זמנית בשל יותר מדי ניסיונות איפוס. נא לפנות לתמיכה." };
+  const attempts = count ?? 0;
+
+  // ── 3-strike auto-ban ─────────────────────────────────────────────
+  if (attempts >= MAX_RESET_ATTEMPTS) {
+    console.warn(
+      `[requestPasswordReset] Auto-banning ${email} after ${attempts} attempts`,
+    );
+
+    await admin
+      .from("banned_users")
+      .upsert(
+        { email, reason: "password_reset_abuse" },
+        { onConflict: "email" },
+      );
+
+    // Silent abort — same generic success
+    return { success: GENERIC_SUCCESS };
   }
 
-  // Increment counter
-  const { error: updateError } = await admin
+  // ── Record this attempt ───────────────────────────────────────────
+  const clientIp = await getClientIp();
+
+  const { error: insertError } = await admin
+    .from("password_reset_attempts")
+    .insert({ email, ip_address: clientIp });
+
+  if (insertError) {
+    console.error("[requestPasswordReset] Attempt insert error:", insertError);
+    // Non-fatal — continue sending the email
+  }
+
+  // ── Check if user actually exists (silent if not) ─────────────────
+  const { data: profile } = await admin
     .from("profiles")
-    .update({ reset_attempts: profile.reset_attempts + 1 })
-    .eq("id", profile.id);
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
 
-  if (updateError) {
-    console.error("[requestPasswordReset] Counter update error:", updateError);
-    return { error: ERR_USER_VERIFICATION };
+  if (!profile) {
+    // Email not registered — return generic success (anti-enumeration)
+    return { success: GENERIC_SUCCESS };
   }
 
-  // Send recovery email
+  // ── Send recovery email ───────────────────────────────────────────
   const supabase = await createClient();
   const redirectTo = await getRedirectUrl();
   const { error: resetError } = await supabase.auth.resetPasswordForEmail(
@@ -119,10 +157,11 @@ export async function requestPasswordReset(
 
   if (resetError) {
     console.error("[requestPasswordReset] resetPasswordForEmail error:", resetError);
-    return { error: ERR_RESET_PROCESS };
+    // Still return generic success to avoid enumeration
+    return { success: GENERIC_SUCCESS };
   }
 
-  return { success: "אם הכתובת רשומה במערכת, נשלח אליך קישור לאיפוס הסיסמה." };
+  return { success: GENERIC_SUCCESS };
 }
 
 /* ================================================================
@@ -147,16 +186,20 @@ export async function updatePassword(
     return { error: ERR_RESET_PROCESS };
   }
 
-  // Reset the attempts counter (non-fatal if it fails)
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
-    const { error: resetError } = await supabase
-      .from("profiles")
-      .update({ reset_attempts: 0 })
-      .eq("id", user.id);
+  // Reset the attempt counter on profiles (non-fatal if it fails)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    if (resetError) {
-      console.error("[updatePassword] Counter reset error:", resetError);
+  if (user) {
+    try {
+      const admin = createAdminClient();
+      await admin
+        .from("profiles")
+        .update({ reset_attempts: 0 })
+        .eq("id", user.id);
+    } catch (err) {
+      console.error("[updatePassword] Counter reset error:", err);
     }
   }
 

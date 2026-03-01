@@ -35,3 +35,6 @@ export { sendContactEmail } from "./contact";
 
 // Password Reset
 export { requestPasswordReset, updatePassword } from "./password";
+
+// Registration
+export { registerUser } from "./registration";

@@ -219,7 +219,7 @@ function ToggleRow({ label, description, checked, onChange }: ToggleRowProps) {
       >
         <span
           className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
-            checked ? "left-6" : "left-1"
+            checked ? "start-6" : "start-1"
           }`}
         />
       </button>
