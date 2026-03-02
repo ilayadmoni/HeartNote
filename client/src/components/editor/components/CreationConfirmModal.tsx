@@ -47,12 +47,15 @@ export function CreationConfirmModal({
   // Calculate remaining creations
   const subscriptionTier = profile?.subscription.tier || "free";
 
+  // For free tier, remaining = totalAllowed - count_free.
+  // For premium, unlimited.
+  const totalAllowedFree = 3 + (profile?.subscription.additional_creation_free ?? 0);
   const currentCreations =
     subscriptionTier === "premium"
-      ? profile?.subscription.creations_left_pro || 0
-      : profile?.subscription.creations_left_free || 0;
+      ? Infinity
+      : Math.max(0, totalAllowedFree - (profile?.subscription.creations_count_free ?? 0));
 
-  const remainingCreations = Math.max(0, currentCreations - 1);
+  const remainingCreations = currentCreations === Infinity ? Infinity : Math.max(0, currentCreations - 1);
 
   // Get avatar - use initials as fallback
   const avatar = profile?.avatarUrl;
@@ -194,12 +197,12 @@ export function CreationConfirmModal({
                         יצירות שנותרנו לאחר היצירה:
                       </span>
                       <motion.span
-                        key={remainingCreations}
+                        key={remainingCreations === Infinity ? "unlimited" : remainingCreations}
                         initial={{ scale: 1.2 }}
                         animate={{ scale: 1 }}
                         className="text-sm font-bold text-[#2e3c52] dark:text-white text-hebrew-body text-right"
                       >
-                        {remainingCreations}
+                        {remainingCreations === Infinity ? "ללא הגבלה" : remainingCreations}
                       </motion.span>
                     </div>
 

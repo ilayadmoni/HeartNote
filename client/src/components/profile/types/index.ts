@@ -13,9 +13,10 @@ export type SubscriptionTier = "free" | "premium";
 export interface SubscriptionInfo {
   tier: SubscriptionTier;
   is_active: boolean;
-  creations_count: number;
-  creations_left_free: number;
-  creations_left_pro: number | null;
+  creations_count_free: number;
+  creations_count_pro: number;
+  additional_creation_free: number;
+  additional_creation_pro: number;
   premium_start: string | null;
   premium_expiry: string | null;
 }

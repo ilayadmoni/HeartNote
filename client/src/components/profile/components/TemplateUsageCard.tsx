@@ -2,8 +2,11 @@
 
 /**
  * TemplateUsageCard Component
- * Displays creation usage stats with a progress bar.
- * Shows "Used / Limit" based on subscription_policies data.
+ * Displays free-tier creation usage stats with a progress bar.
+ * Shows "Used / TotalAllowed" based on creations_count_free, creation_limit,
+ * and additional_creation_free.
+ *
+ * For premium users the bar is hidden and "unlimited" is displayed.
  */
 
 import { motion } from "framer-motion";
@@ -11,8 +14,10 @@ import { FileText } from "lucide-react";
 import type { SubscriptionTier } from "../types";
 
 interface TemplateUsageCardProps {
+  /** Number of free creations the user has made (creations_count_free) */
   used: number;
-  limit: number | null; // null = unlimited
+  /** Total allowed free creations (creation_limit + additional_creation_free). null = unlimited */
+  limit: number | null;
   tier: SubscriptionTier;
 }
 
@@ -22,11 +27,13 @@ export function TemplateUsageCard({
   tier,
 }: TemplateUsageCardProps) {
   const isPremium = tier === "premium";
-  const isUnlimited = limit == null;
+  const isUnlimited = limit == null || isPremium;
+  const totalAllowed = limit ?? 0;
+  // Cap at 100% so the bar never overflows
   const percent = isUnlimited
     ? 0
-    : limit > 0
-      ? Math.min((used / limit) * 100, 100)
+    : totalAllowed > 0
+      ? Math.min((used / totalAllowed) * 100, 100)
       : 0;
 
   return (
@@ -45,10 +52,10 @@ export function TemplateUsageCard({
       <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 text-center text-hebrew-body">
         {isUnlimited
           ? `נוצרו ${used} יצירות – ללא הגבלה 🎉`
-          : `נוצלו ${used} מתוך ${limit} יצירות`}
+          : `נוצלו ${used} מתוך ${totalAllowed} יצירות`}
       </p>
 
-      {/* Progress bar (only for limited tiers) */}
+      {/* Progress bar (only for limited / free tier) */}
       {!isUnlimited && (
         <div className="w-full h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden mb-3">
           <motion.div
@@ -56,7 +63,7 @@ export function TemplateUsageCard({
             animate={{ width: `${percent}%` }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className={`h-full rounded-full ${
-              percent >= 90
+              percent >= 100
                 ? "bg-red-500"
                 : percent >= 60
                   ? "bg-amber-500"

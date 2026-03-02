@@ -43,9 +43,10 @@ function buildProfileResponse(row: Record<string, unknown>): ProfileResponse {
     updated_at: (row.updated_at as string) ?? null,
     subscription: {
       tier: ((row.subscription_tier as string) ?? "free") as "free" | "premium",
-      creations_count: (row.creations_count as number) ?? 0,
-      creations_left_free: (row.creations_left_free as number) ?? 3,
-      creations_left_pro: (row.creations_left_pro as number) ?? null,
+      creations_count_free: (row.creations_count_free as number) ?? 0,
+      creations_count_pro: (row.creations_count_pro as number) ?? 0,
+      additional_creation_free: (row.additional_creation_free as number) ?? 0,
+      additional_creation_pro: (row.additional_creation_pro as number) ?? 0,
       premium_start: (row.premium_start as string) ?? null,
       premium_expiry: (row.premium_expiry as string) ?? null,
       is_active: isSubscriptionActive(row),
@@ -75,8 +76,9 @@ export default async function ProfilePage() {
     .from("profiles")
     .select(
       `id, email, first_name, last_name, date_of_birth, avatar_url,
-       created_at, updated_at, subscription_tier, creations_count,
-       creations_left_pro, creations_left_free, premium_start, premium_expiry`,
+       created_at, updated_at, subscription_tier, creations_count_free,
+       creations_count_pro, additional_creation_free, additional_creation_pro,
+       premium_start, premium_expiry`,
     )
     .eq("id", user.id)
     .single();
@@ -97,16 +99,15 @@ export default async function ProfilePage() {
     .eq("tier_code", userTier)
     .single();
 
-  // Calculate usage: Used = Policy_Limit - Remaining_In_Profile
+  // Calculate usage using the new counter-based model
   const policyLimit: number | null = (policyRow?.creation_limit as number) ?? null;
-  const remaining = userTier === "premium"
-    ? (profileRow.creations_left_pro as number | null) ?? 0
-    : (profileRow.creations_left_free as number) ?? 0;
-  const used = policyLimit != null ? Math.max(policyLimit - remaining, 0) : 0;
+  const additionalFree = (profileRow.additional_creation_free as number) ?? 0;
+  const totalAllowed = policyLimit != null ? policyLimit + additionalFree : null;
+  const used = (profileRow.creations_count_free as number) ?? 0;
 
   const subscriptionUsage = {
     used,
-    limit: policyLimit,                        // null = unlimited
+    limit: totalAllowed,                       // null = unlimited
     tier: userTier as "free" | "premium",
     expiryLabel: userTier === "free"
       ? "לנצח"
@@ -120,15 +121,16 @@ export default async function ProfilePage() {
 
   const { data: rawProfile } = await supabase
     .from("profiles")
-    .select("subscription_tier, creations_count, creations_left_free, creations_left_pro")
+    .select("subscription_tier, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro")
     .eq("id", user.id)
     .single();
 
   const pd = (rawProfile ?? {}) as Record<string, unknown>;
   const stats: DashboardStats = {
-    creations_count: (pd.creations_count as number) ?? 0,
-    creations_left_free: (pd.creations_left_free as number) ?? 3,
-    creations_left_pro: (pd.creations_left_pro as number) ?? null,
+    creations_count_free: (pd.creations_count_free as number) ?? 0,
+    creations_count_pro: (pd.creations_count_pro as number) ?? 0,
+    additional_creation_free: (pd.additional_creation_free as number) ?? 0,
+    additional_creation_pro: (pd.additional_creation_pro as number) ?? 0,
     subscription_tier: (pd.subscription_tier as string) ?? "free",
   };
 

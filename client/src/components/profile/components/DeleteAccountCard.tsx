@@ -115,7 +115,7 @@ export function DeleteAccountCard({ onDelete }: DeleteAccountCardProps) {
                     מחיקת חשבון
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 text-hebrew-body">
-                    האם אתם בטוחים? פעולה זו לא ניתנת לביטול.
+                    האם אתם בטוחים? לאחר מחיקת החשבון, לא תוכלו לפתוח חשבון חדש עם אותו מייל. בנוסף, פעולה זו לא ניתנת לביטול.
                   </p>
                 </div>
 

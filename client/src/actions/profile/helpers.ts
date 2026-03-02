@@ -37,9 +37,10 @@ export function buildProfileResponse(
     updated_at: (data.updated_at as string) ?? null,
     subscription: {
       tier: ((data.subscription_tier as string) ?? "free") as "free" | "premium",
-      creations_count: (data.creations_count as number) ?? 0,
-      creations_left_free: (data.creations_left_free as number) ?? 3,
-      creations_left_pro: (data.creations_left_pro as number) ?? null,
+      creations_count_free: (data.creations_count_free as number) ?? 0,
+      creations_count_pro: (data.creations_count_pro as number) ?? 0,
+      additional_creation_free: (data.additional_creation_free as number) ?? 0,
+      additional_creation_pro: (data.additional_creation_pro as number) ?? 0,
       premium_start: (data.premium_start as string) ?? null,
       premium_expiry: (data.premium_expiry as string) ?? null,
       is_active: isSubscriptionActive(data),

@@ -21,6 +21,7 @@
 import { createClient } from "@/lib/supabase/server";
 import {
   fetchProfileForQuota,
+  fetchPolicyLimit,
   checkPremiumAccess,
   checkQuotaLimit,
 } from "./helpers/quotaCheck";
@@ -122,7 +123,8 @@ export async function submitGenericCreation(
     const premiumErr = checkPremiumAccess(template.is_premium, userTier);
     if (premiumErr) return premiumErr;
 
-    const quotaErr = checkQuotaLimit(profile, userTier);
+    const policyLimit = await fetchPolicyLimit(supabase, userTier);
+    const quotaErr = checkQuotaLimit(profile, userTier, policyLimit);
     if (quotaErr) return quotaErr;
 
     // ── 6. Expiry & insert ─────────────────────────────────────────

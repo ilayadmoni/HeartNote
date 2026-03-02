@@ -16,6 +16,7 @@
 
 import { Resend } from "resend";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 interface RegistrationResult {
   success?: string;
@@ -64,7 +65,7 @@ async function sendAlreadyRegisteredEmail(email: string): Promise<void> {
         <body style="font-family: Arial, sans-serif; background-color: #faf7f5; padding: 40px 20px; margin: 0;">
           <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
             <h1 style="color: #2e3c52; font-size: 24px; margin: 0 0 16px; text-align: center;">
-              יש לך כבר חשבון! 🎉
+              🎉יש לך כבר חשבון 
             </h1>
             <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 24px; text-align: center;">
               זיהינו שניסית להירשם עם אימייל זה, אך כבר קיים חשבון פעיל במערכת.
@@ -160,6 +161,8 @@ export async function registerUser(
   }
 
   /* ── Step 3: New user → create account ───────────────────────── */
+  // Use the standard server client so Supabase sends its built-in
+  // confirmation email automatically. The Admin API skips that flow.
   const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
   const userMeta: Record<string, string> = {
     first_name: firstName.trim(),
@@ -170,15 +173,22 @@ export async function registerUser(
     userMeta.date_of_birth = dateOfBirth;
   }
 
-  const { error: createError } = await admin.auth.admin.createUser({
+  let supabase;
+  try {
+    supabase = await createClient();
+  } catch {
+    console.error("[registerUser] Failed to create server client");
+    return { error: ERR_INTERNAL };
+  }
+
+  const { error: signUpError } = await supabase.auth.signUp({
     email: trimmedEmail,
     password,
-    email_confirm: false, // user must confirm via email
-    user_metadata: userMeta,
+    options: { data: userMeta },
   });
 
-  if (createError) {
-    console.error("[registerUser] createUser error:", createError);
+  if (signUpError) {
+    console.error("[registerUser] signUp error:", signUpError);
     return { error: ERR_INTERNAL };
   }
 

@@ -12,6 +12,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, LogIn, AlertTriangle } from "lucide-react";
 import { AuthInput } from "./AuthInput";
@@ -448,6 +449,18 @@ export function LoginModal({
                         )}
                       </>
                     )}
+
+                    {/* Contact Support Footer */}
+                    <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400 text-hebrew-body">
+                      נתקלתם בבעיה?{" "}
+                      <Link
+                        href="/contact"
+                        onClick={handleClose}
+                        className="text-[#d4826f] hover:text-[#c4735f] dark:text-[#e8917a] dark:hover:text-[#d4826f] font-semibold hover:underline transition-colors"
+                      >
+                        צרו קשר
+                      </Link>
+                    </div>
                   </div>
                 </div>
 

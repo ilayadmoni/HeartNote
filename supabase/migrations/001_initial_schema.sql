@@ -95,6 +95,7 @@ CREATE TABLE IF NOT EXISTS public.templates (
     config_schema JSONB NOT NULL DEFAULT '{}',
     example_data JSONB DEFAULT '{}',
     category TEXT DEFAULT 'general',
+    tags TEXT[],
     is_premium BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     sort_order INTEGER DEFAULT 0,

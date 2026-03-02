@@ -111,11 +111,11 @@ export function Profile({ className = "" }: ProfileProps) {
     avatarOptions,
     dashboard,
     subscriptionUsage: {
-      used: profile.subscription.creations_count,
+      used: profile.subscription.creations_count_free,
       limit:
         profile.subscription.tier === "free"
-          ? profile.subscription.creations_left_free + profile.subscription.creations_count
-          : profile.subscription.creations_left_pro,
+          ? (profile.subscription.additional_creation_free ?? 0) + 3 // fallback policy limit
+          : null, // premium = unlimited
       tier: profile.subscription.tier,
       expiryLabel: profile.subscription.premium_expiry
         ? new Date(profile.subscription.premium_expiry).toLocaleDateString("he-IL")

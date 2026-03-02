@@ -24,6 +24,7 @@ import {
 import { validateMetadata } from "@/lib/validations/metadata";
 import {
   fetchProfileForQuota,
+  fetchPolicyLimit,
   checkPremiumAccess,
   checkQuotaLimit,
 } from "./helpers/quotaCheck";
@@ -90,7 +91,8 @@ export async function createCreation(
     const premiumErr = checkPremiumAccess(template.is_premium, userTier);
     if (premiumErr) return premiumErr;
 
-    const quotaErr = checkQuotaLimit(profile, userTier);
+    const policyLimit = await fetchPolicyLimit(supabase, userTier);
+    const quotaErr = checkQuotaLimit(profile, userTier, policyLimit);
     if (quotaErr) return quotaErr;
 
     // ── Step 6: Calculate expiry & insert ──────────────────────────

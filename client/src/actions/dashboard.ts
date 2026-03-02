@@ -7,7 +7,7 @@
  * Returns quota stats (from profiles) and creation history (from creations + templates).
  *
  * DB columns used:
- *   profiles  → subscription_tier, creations_count, creations_left_free, creations_left_pro
+ *   profiles  → subscription_tier, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro
  *   creations → id, is_paid, expires_at, created_at, is_deleted, user_id
  *   templates → slug, name  (joined via creations.template_id)
  */
@@ -48,7 +48,7 @@ export async function getDashboard(): Promise<
     const { data: profile, error: profErr } = await supabase
       .from("profiles")
       .select(
-        "subscription_tier, creations_count, creations_left_free, creations_left_pro",
+        "subscription_tier, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro",
       )
       .eq("id", user.id)
       .single();
@@ -56,9 +56,10 @@ export async function getDashboard(): Promise<
     const profileData = (profile ?? {}) as Record<string, unknown>;
 
     const stats: DashboardStats = {
-      creations_count: (profileData.creations_count as number) ?? 0,
-      creations_left_free: (profileData.creations_left_free as number) ?? 3,
-      creations_left_pro: (profileData.creations_left_pro as number) ?? null,
+      creations_count_free: (profileData.creations_count_free as number) ?? 0,
+      creations_count_pro: (profileData.creations_count_pro as number) ?? 0,
+      additional_creation_free: (profileData.additional_creation_free as number) ?? 0,
+      additional_creation_pro: (profileData.additional_creation_pro as number) ?? 0,
       subscription_tier:
         (profileData.subscription_tier as string) ?? "free",
     };
