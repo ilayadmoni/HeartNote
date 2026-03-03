@@ -4,6 +4,7 @@ import { Footer } from "@/components/footer";
 import { SkipLinks } from "@/components/accessibility";
 import { ScrollToTop } from "@/components/ui";
 import { WelcomeSplash } from "@/components/welcomeSplash";
+import ClientFontLoader from "@/components/ClientFontLoader";
 
 export default function MainLayout({
   children,
@@ -11,7 +12,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <ClientFontLoader>
       <SkipLinks />
       <Suspense>
         <Header />
@@ -22,6 +23,6 @@ export default function MainLayout({
       <Footer />
       <ScrollToTop />
       <WelcomeSplash />
-    </>
+    </ClientFontLoader>
   );
 }

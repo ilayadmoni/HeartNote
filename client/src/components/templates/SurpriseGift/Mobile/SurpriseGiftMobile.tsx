@@ -8,6 +8,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 import confetti from "canvas-confetti";
 import { GiftBox } from "../components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
@@ -64,8 +65,13 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
     setShaking(false);
   }, []);
 
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
+
   return (
-    <div className="min-h-[680px] w-full flex flex-col justify-between items-center gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate">
+    <div className={`w-full flex flex-col justify-between items-center gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate ${
+      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+    }`}>
       <FloatingIcons />
       {/* Main Content - Top */}
       <div className="flex-1 flex flex-col items-center justify-center w-full">
@@ -115,7 +121,7 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
             >
               <div className="max-h-[50vh] overflow-y-auto">
                 <p
-                  className="text-lg sm:text-xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words"
+                  className="text-lg sm:text-xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words text-center"
                   style={{ color: primaryColor }}
                 >
                   {greeting}

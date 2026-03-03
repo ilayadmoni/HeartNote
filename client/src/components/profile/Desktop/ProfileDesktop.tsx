@@ -109,6 +109,7 @@ export function ProfileDesktop({
                 subscription={subscriptionData}
                 onRenew={onRenew}
                 onUpgrade={onUpgrade}
+                creationLimit={subscriptionUsage.limit}
               />
             </motion.div>
           </div>

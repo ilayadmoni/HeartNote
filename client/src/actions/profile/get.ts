@@ -43,7 +43,7 @@ export async function getMyProfile(): Promise<
       };
     }
 
-    return { data: buildProfileResponse(data) };
+    return { data: await buildProfileResponse(data, supabase) };
   } catch (e) {
     return {
       error: `Failed to fetch profile: ${e instanceof Error ? e.message : String(e)}`,

@@ -7,6 +7,7 @@
 
 import { motion } from "framer-motion";
 import { RotateCcw } from "lucide-react";
+import { usePathname } from "next/navigation";
 import type { CouponsViewProps } from "../types";
 import { useCoupons } from "../hooks/useCoupons";
 import { CouponCard } from "../components";
@@ -18,11 +19,15 @@ import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import { FloatingIcons } from "../../OpenWhen/components";
 
 export function LoveCouponsMobile({ data }: CouponsViewProps) {
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
   const { coupons, handleRedeem, handleReset } = useCoupons(data.coupons);
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
-    <div className="min-h-[680px] bg-transparent px-4 py-6 relative isolate flex flex-col justify-between items-center gap-6">
+    <div className={`bg-transparent px-4 py-6 relative isolate flex flex-col justify-between items-center gap-6 ${
+      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+    }`}>
       <FloatingIcons />
       {/* Main Content - Top */}
       <div className="flex-1 max-w-lg mx-auto w-full flex flex-col justify-center">

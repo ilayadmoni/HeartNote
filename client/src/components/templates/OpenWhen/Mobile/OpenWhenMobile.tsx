@@ -7,6 +7,7 @@
 
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import type { OpenWhenViewProps, OpenWhenEnvelope } from "../types";
 import { EnvelopeCard, LetterModal, FloatingIcons } from "../components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
@@ -16,6 +17,8 @@ import {
 } from "@/components/templates/components";
 
 export function OpenWhenMobile({ data }: OpenWhenViewProps) {
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
   const [selectedEnvelope, setSelectedEnvelope] =
     useState<OpenWhenEnvelope | null>(null);
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
@@ -29,7 +32,9 @@ export function OpenWhenMobile({ data }: OpenWhenViewProps) {
   }, []);
 
   return (
-    <div className="min-h-[680px] bg-transparent py-8 px-4 relative isolate flex flex-col justify-between items-center">
+    <div className={`bg-transparent py-8 px-4 relative isolate flex flex-col justify-between items-center ${
+      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+    }`}>
       <FloatingIcons />
 
       <div className="flex-1 max-w-md mx-auto relative z-10 flex flex-col justify-center items-center">

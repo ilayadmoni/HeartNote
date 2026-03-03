@@ -49,7 +49,8 @@ export function CreationConfirmModal({
 
   // For free tier, remaining = totalAllowed - count_free.
   // For premium, unlimited.
-  const totalAllowedFree = 3 + (profile?.subscription.additional_creation_free ?? 0);
+  const baseLimit = profile?.subscription.creation_limit ?? 3; // Fallback to 3 if not loaded
+  const totalAllowedFree = baseLimit + (profile?.subscription.additional_creation_free ?? 0);
   const currentCreations =
     subscriptionTier === "premium"
       ? Infinity

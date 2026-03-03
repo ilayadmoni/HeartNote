@@ -6,6 +6,7 @@
  */
 
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import type { DecisionWheelViewProps } from "../types";
 import { WheelCanvas } from "../components";
 
@@ -16,11 +17,15 @@ import {
 import { FloatingIcons } from "../../OpenWhen/components";
 
 export function DecisionWheelMobile({ data }: DecisionWheelViewProps) {
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
   const options =
     data.options?.length >= 2 ? data.options : ["אופציה 1", "אופציה 2"];
 
   return (
-    <div className="min-h-[680px] bg-transparent px-4 relative isolate overflow-hidden flex flex-col justify-between items-center gap-6 py-6">
+    <div className={`bg-transparent px-4 relative isolate overflow-hidden flex flex-col justify-between items-center gap-6 py-6 ${
+      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+    }`}>
       <FloatingIcons />
       {/* Decorative blobs */}
       <div className="absolute top-5 left-0 w-28 h-28 bg-[#F8BBD0]/20 rounded-full blur-2xl pointer-events-none" />

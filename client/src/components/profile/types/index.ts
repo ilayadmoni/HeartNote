@@ -19,6 +19,7 @@ export interface SubscriptionInfo {
   additional_creation_pro: number;
   premium_start: string | null;
   premium_expiry: string | null;
+  creation_limit: number | null;
 }
 
 export interface TierConfig {

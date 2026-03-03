@@ -6,6 +6,7 @@
  */
 
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import type { SteamyWindowViewProps } from "../types";
 import { SteamCanvas } from "../components";
 import {
@@ -15,8 +16,13 @@ import {
 import { FloatingIcons } from "../../OpenWhen/components";
 
 export function SteamyWindowMobile({ data }: SteamyWindowViewProps) {
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
+
   return (
-    <div className="min-h-[680px] bg-transparent px-4 py-6 relative isolate overflow-hidden flex flex-col justify-between items-center gap-6">
+    <div className={`bg-transparent px-4 py-6 relative isolate overflow-hidden flex flex-col justify-between items-center gap-6 ${
+      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+    }`}>
       <FloatingIcons />
       {/* Decorative blob */}
       <div className="absolute top-5 left-0 w-28 h-28 bg-[#C7CEEA]/15 rounded-full blur-2xl pointer-events-none" />

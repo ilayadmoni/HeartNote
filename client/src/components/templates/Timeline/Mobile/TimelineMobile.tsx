@@ -6,6 +6,7 @@
  */
 
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import type { TimelineMobileProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
@@ -15,11 +16,15 @@ import {
 import { FloatingIcons } from "../../OpenWhen/components";
 
 export function TimelineMobile({ data }: TimelineMobileProps) {
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
   const hasEvents = data.events && data.events.length > 0;
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
-    <div className="w-full h-full min-h-[680px] flex flex-col justify-between items-center gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate">
+    <div className={`w-full h-full flex flex-col justify-between items-center gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate ${
+      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+    }`}>
       <FloatingIcons />
       {/* Main Content - Top */}
       <div className="flex-1 flex flex-col items-center justify-center w-full">

@@ -10,7 +10,9 @@ import { SteamyWindowDesktop } from "./Desktop/SteamyWindowDesktop";
 import { SteamyWindowMobile } from "./Mobile/SteamyWindowMobile";
 import type { TemplateComponentProps, SteamyWindowData } from "./types";
 
-export function SteamyWindow({ data }: TemplateComponentProps<SteamyWindowData>) {
+export function SteamyWindow({
+  data,
+}: TemplateComponentProps<SteamyWindowData>) {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return isMobile ? (

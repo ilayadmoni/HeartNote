@@ -17,6 +17,7 @@ export function AccessibilityWidget() {
     toggleGrayscale,
     toggleHighlightLinks,
     toggleReadableFont,
+    toggleStopAnimations,
     reset,
   } = useAccessibility();
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +61,7 @@ export function AccessibilityWidget() {
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b5a47]
         "
       >
-        <PersonStanding  size={24} strokeWidth={2.5} />
+        <PersonStanding size={24} strokeWidth={2.5} />
       </motion.button>
 
       {isOpen && (
@@ -119,7 +120,9 @@ export function AccessibilityWidget() {
                 <div className="space-y-3">
                   {/* Text Size Control */}
                   <div className="flex items-center justify-between rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-3 py-2">
-                    <span className="text-xs sm:text-sm font-medium">גודל טקסט</span>
+                    <span className="text-xs sm:text-sm font-medium">
+                      גודל טקסט
+                    </span>
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
@@ -170,6 +173,12 @@ export function AccessibilityWidget() {
                     checked={settings.readableFont}
                     onChange={toggleReadableFont}
                   />
+                  <ToggleRow
+                    label="עצור אנימציה"
+                    description="עצור את כל האנימציות באתר"
+                    checked={settings.stopAnimations}
+                    onChange={toggleStopAnimations}
+                  />
                 </div>
 
                 {/* Reset Button */}
@@ -199,7 +208,7 @@ type ToggleRowProps = {
 function ToggleRow({ label, description, checked, onChange }: ToggleRowProps) {
   return (
     <div className="flex items-center justify-between rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2">
-      <div className="flex-1">
+      <div className="flex-1 pe-2">
         <p className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200">
           {label}
         </p>
@@ -212,15 +221,15 @@ function ToggleRow({ label, description, checked, onChange }: ToggleRowProps) {
         role="switch"
         aria-checked={checked}
         onClick={onChange}
-        className={`relative flex-shrink-0 h-7 w-12 rounded-full transition ${
+        className={`relative inline-flex flex-shrink-0 h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f] ${
           checked ? "bg-[#d4826f]" : "bg-gray-200 dark:bg-gray-600"
         }`}
         aria-label={`${label}: ${checked ? "פעיל" : "כבוי"}`}
       >
         <span
-          className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
-            checked ? "start-6" : "start-1"
-          }`}
+          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ease-in-out ${
+            checked ? "-translate-x-5" : "translate-x-0"
+          } ms-1`}
         />
       </button>
     </div>

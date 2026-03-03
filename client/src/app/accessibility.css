@@ -166,7 +166,7 @@
 
 /* Touch target sizing for mobile accessibility */
 @media (pointer: coarse) {
-  button,
+  button:not([role="switch"]),
   a,
   input,
   select,
@@ -174,4 +174,26 @@
     min-height: 44px;
     min-width: 44px;
   }
+}
+
+/* ====================================
+   Stop Animations Toggle
+   ==================================== */
+.a11y-stop-animations *,
+.a11y-stop-animations *::before,
+.a11y-stop-animations *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* ====================================
+   Stop Animations Toggle
+   ==================================== */
+.a11y-stop-animations *,
+.a11y-stop-animations *::before,
+.a11y-stop-animations *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
 }
