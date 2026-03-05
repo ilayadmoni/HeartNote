@@ -13,7 +13,12 @@
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileClient } from "@/components/profile/ProfileClient";
-import type { ProfileResponse, DashboardResponse, DashboardStats, DashboardCreation } from "@/lib/validations";
+import type {
+  ProfileResponse,
+  DashboardResponse,
+  DashboardStats,
+  DashboardCreation,
+} from "@/lib/validations";
 
 // ---------------------------------------------------------------------------
 // Helpers — DB row → typed response (mirrors actions/profile.ts logic)
@@ -50,6 +55,7 @@ function buildProfileResponse(row: Record<string, unknown>): ProfileResponse {
       premium_start: (row.premium_start as string) ?? null,
       premium_expiry: (row.premium_expiry as string) ?? null,
       is_active: isSubscriptionActive(row),
+      creation_limit: null, // populated separately via subscriptionUsage.limit
     },
   };
 }
@@ -100,20 +106,26 @@ export default async function ProfilePage() {
     .single();
 
   // Calculate usage using the new counter-based model
-  const policyLimit: number | null = (policyRow?.creation_limit as number) ?? null;
+  const policyLimit: number | null =
+    (policyRow?.creation_limit as number) ?? null;
   const additionalFree = (profileRow.additional_creation_free as number) ?? 0;
-  const totalAllowed = policyLimit != null ? policyLimit + additionalFree : null;
+  const totalAllowed =
+    policyLimit != null ? policyLimit + additionalFree : null;
   const used = (profileRow.creations_count_free as number) ?? 0;
 
   const subscriptionUsage = {
     used,
-    limit: totalAllowed,                       // null = unlimited
+    limit: totalAllowed, // null = unlimited
     tier: userTier as "free" | "premium",
-    expiryLabel: userTier === "free"
-      ? "לנצח"
-      : profileRow.premium_expiry
-        ? new Date(String(profileRow.premium_expiry)).toLocaleDateString("he-IL", { day: "2-digit", month: "2-digit", year: "numeric" })
-        : "—",
+    expiryLabel:
+      userTier === "free"
+        ? "לנצח"
+        : profileRow.premium_expiry
+          ? new Date(String(profileRow.premium_expiry)).toLocaleDateString(
+              "he-IL",
+              { day: "2-digit", month: "2-digit", year: "numeric" },
+            )
+          : "—",
   };
 
   // ── 4. Fetch dashboard data (stats + creations) ──────────────────────
@@ -121,7 +133,9 @@ export default async function ProfilePage() {
 
   const { data: rawProfile } = await supabase
     .from("profiles")
-    .select("subscription_tier, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro")
+    .select(
+      "subscription_tier, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro",
+    )
     .eq("id", user.id)
     .single();
 
@@ -136,7 +150,9 @@ export default async function ProfilePage() {
 
   const { data: rawCreations } = await supabase
     .from("creations")
-    .select("id, is_paid, expires_at, created_at, is_deleted, templates!inner(slug, name)")
+    .select(
+      "id, is_paid, expires_at, created_at, is_deleted, templates!inner(slug, name)",
+    )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 

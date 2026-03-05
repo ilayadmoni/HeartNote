@@ -94,5 +94,5 @@ async function getMyProfileInternal(
     return { error: "Profile not found.", status: 404 };
   }
 
-  return { data: buildProfileResponse(data) };
+  return { data: await buildProfileResponse(data, supabase) };
 }

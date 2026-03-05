@@ -74,20 +74,17 @@ export function Header({ className = "" }: HeaderProps) {
         aria-label="כותרת ראשית"
         className={`
           sticky top-0 z-[100] w-full
+          bg-white dark:bg-gray-900
           transition-all duration-300 ease-out
           ${
             isScrolled
-              ? "backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 shadow-lg shadow-black/5 dark:shadow-black/20 border-b border-gray-200/50 dark:border-gray-700/50"
-              : "backdrop-blur-sm border-b"
+              ? "shadow-lg shadow-black/5 dark:shadow-black/20 border-b border-gray-200/50 dark:border-gray-700/50"
+              : "border-b border-gray-200/30 dark:border-gray-700/30"
           }
           ${className}
         `}
-        style={{
-          backgroundColor: isScrolled ? undefined : "var(--header-bg)",
-          borderColor: isScrolled ? undefined : "var(--header-border)",
-        }}
       >
-        <div className="w-full px-4 lg:px-8">
+        <div className="relative z-[2] w-full px-4 lg:px-8 bg-white dark:bg-gray-900">
           <div className="flex items-center justify-between h-16 lg:h-18">
             {/* Right Side: Logo (RTL) */}
             <div className="flex-shrink-0">
@@ -122,15 +119,15 @@ export function Header({ className = "" }: HeaderProps) {
             </div>
           </div>
         </div>
-      </header>
 
-      {/* Mobile Menu — rendered outside header so backdrop covers full page */}
-      <MobileMenu
-        isOpen={isMobileMenuOpen}
-        onClose={closeMobileMenu}
-        navItems={NAV_ITEMS}
-        onLoginClick={openLoginModal}
-      />
+        {/* Mobile Menu — absolutely positioned below header bar, inside the sticky container */}
+        <MobileMenu
+          isOpen={isMobileMenuOpen}
+          onClose={closeMobileMenu}
+          navItems={NAV_ITEMS}
+          onLoginClick={openLoginModal}
+        />
+      </header>
 
       {/* Login Modal */}
       <LoginModal

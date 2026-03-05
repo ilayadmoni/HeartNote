@@ -21,12 +21,11 @@ export function useTheme(storageKey: string = THEME_STORAGE_KEY): UseThemeReturn
   const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Initialize theme from localStorage
+  // Initialize theme from localStorage — strictly default to 'light'
+  // Dark mode only activates if the user explicitly toggled it previously
   useEffect(() => {
     const stored = localStorage.getItem(storageKey) as Theme | null;
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    const initialTheme = stored || (systemPrefersDark ? 'dark' : 'light');
+    const initialTheme: Theme = stored === 'dark' ? 'dark' : 'light';
     setThemeState(initialTheme);
     setIsLoaded(true);
   }, [storageKey]);

@@ -36,30 +36,30 @@ export function MobileMenu({
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop — z-[1] within header stacking context: behind header bar & menu, above page content */}
       <div
         className={`
           fixed inset-0 bg-black/50 backdrop-blur-sm
-          transition-opacity duration-300 lg:hidden z-40
+          transition-opacity duration-300 lg:hidden z-[1]
           ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
         `}
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Menu Panel with Focus Trap */}
+      {/* Menu Panel — z-[2] within header stacking context: same level as header bar, above backdrop */}
       <FocusTrap active={isOpen} onEscape={onClose}>
         <div
           id="mobile-menu"
           className={`
-            fixed top-[64px] left-0 right-0 bg-white dark:bg-[#252d3b]
-            border-t border-gray-100 dark:border-[#2e3c52]
-            shadow-lg lg:hidden z-50
-            transition-all duration-300 ease-out
+            absolute top-full left-0 w-full z-[2]
+            bg-white dark:bg-gray-900
+            shadow-xl lg:hidden
+            transition-all duration-300 ease-out overflow-hidden
             ${
               isOpen
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 -translate-y-4 pointer-events-none"
+                ? "opacity-100 max-h-[80vh] translate-y-0"
+                : "opacity-0 max-h-0 pointer-events-none"
             }
           `}
           aria-label="תפריט ניווט"
@@ -67,7 +67,7 @@ export function MobileMenu({
         >
           <nav className="container mx-auto px-4 py-6" aria-label="ניווט נייד">
             {/* Navigation Links */}
-            <ul className="space-y-1 mb-6" role="list">
+            <ul className="flex flex-col gap-2 mb-6" role="list">
               {navItems.map((item, index) => (
                 <li key={item.id} role="listitem">
                   <Link
@@ -75,12 +75,14 @@ export function MobileMenu({
                     href={item.href}
                     onClick={onClose}
                     className="
-                      block py-3 px-2
+                      block p-4
                       text-[#2e3c52] dark:text-gray-200
+                      font-medium
                       hover:text-[#c4735f] dark:hover:text-[#e8917a]
-                      hover:bg-gray-50 dark:hover:bg-[#293445]
-                      rounded-lg transition-colors duration-200
+                      hover:bg-gray-100 dark:hover:bg-gray-800
+                      rounded-xl transition-all duration-200
                       text-right text-hebrew-body
+                      border-b border-gray-100 dark:border-gray-700/50 last:border-b-0
                       focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f] focus-visible:ring-offset-2
                     "
                   >
