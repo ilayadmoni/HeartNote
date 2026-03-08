@@ -183,7 +183,7 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
         </motion.div>
 
         {/* Hint Text */}
-        <p className="mt-4 text-sm text-gray-400 dark:text-gray-500 text-hebrew-body">
+        <p className="mt-4 text-sm text-gray-800 dark:text-gray-500 text-hebrew-heading">
           👆 גררו את הכרטיס עם האצבע
         </p>
 

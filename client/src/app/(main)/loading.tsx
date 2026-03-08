@@ -81,7 +81,7 @@ export default function Loading() {
         {/* Logo Text */}
         <motion.span
           className="text-2xl font-bold text-[#2e3c52] dark:text-white transition-colors duration-300"
-          style={{ fontFamily: "'GlacialIndifference', sans-serif" }}
+          style={{ fontFamily: "var(--font-glacial-indifference, sans-serif)" }}
           animate={{ opacity: [0.7, 1, 0.7] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >

@@ -47,24 +47,18 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("[ForgotPassword] Form submitted, email:", email);
     setServerError(null);
 
     if (!validate()) {
-      console.log("[ForgotPassword] Validation failed");
       return;
     }
-
-    console.log("[ForgotPassword] Validation passed, calling server action...");
 
     startTransition(async () => {
       try {
         const fd = new FormData();
         fd.append("email", email);
 
-        console.log("[ForgotPassword] Calling requestPasswordReset...");
         const result = await requestPasswordReset(fd);
-        console.log("[ForgotPassword] Server action result:", result);
 
         if (result.error) {
           setServerError(result.error);

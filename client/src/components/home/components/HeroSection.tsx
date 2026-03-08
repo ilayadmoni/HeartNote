@@ -8,6 +8,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowLeft, Settings } from "lucide-react";
+import { useAccessibility } from "@/components/accessibility";
 import {
   HERO_BADGE,
   HERO_TITLE_LINE1,
@@ -21,16 +22,22 @@ import { HeroVisual } from "./HeroVisual";
 import type { HeroSectionProps } from "../types";
 
 export function HeroSection({ className = "" }: HeroSectionProps) {
+  const { settings } = useAccessibility();
+  const shouldAnimate = !settings.stopAnimations;
+
   return (
     <section className={`relative py-8  px-4 overflow-hidden ${className}`}>
       {/* Background Decorative Gears */}
       <div className="absolute top-0  left-0 -ml-20 -mt-20 opacity-15 pointer-events-none">
-        <Settings size={300} className="animate-spin-slow text-[#415A77]" />
+        <Settings 
+          size={300} 
+          className={`text-[#415A77] ${shouldAnimate ? "animate-spin-slow" : ""}`} 
+        />
       </div>
       <div className="absolute bottom-0 right-0 -mr-20 -mb-20 opacity-15 pointer-events-none">
         <Settings
           size={250}
-          className="animate-spin-slow-reverse text-[#1B263B]"
+          className={`text-[#1B263B] ${shouldAnimate ? "animate-spin-slow-reverse" : ""}`}
         />
       </div>
 
@@ -40,9 +47,9 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
           <div className="flex-1 text-center lg:text-right relative z-30 mb-12 lg:mb-0">
             {/* Badge */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={shouldAnimate ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={shouldAnimate ? { duration: 0.5 } : { duration: 0 }}
               className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm mb-6 border border-gray-100 dark:border-gray-700"
             >
               <Sparkles
@@ -56,9 +63,9 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
 
             {/* Title */}
             <motion.h1
-              initial={{ opacity: 0, y: 20 }}
+              initial={shouldAnimate ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              transition={shouldAnimate ? { duration: 0.5, delay: 0.1 } : { duration: 0 }}
               className="text-4xl lg:text-6xl font-black leading-tight text-[#2e3c52] dark:text-white mb-6 text-hebrew-heading"
             >
               {HERO_TITLE_LINE1}
@@ -82,9 +89,9 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
 
             {/* Description */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={shouldAnimate ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={shouldAnimate ? { duration: 0.5, delay: 0.2 } : { duration: 0 }}
               className="text-lg lg:text-xl text-[#2e3c52] dark:text-gray-300 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0 text-hebrew-body"
             >
               {HERO_DESCRIPTION}
@@ -94,14 +101,14 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
 
             {/* CTA Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={shouldAnimate ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={shouldAnimate ? { duration: 0.5, delay: 0.3 } : { duration: 0 }}
               className="flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start relative z-20"
             >
               <Link
                 href="/gallery"
-                className="flex items-center justify-center gap-4 sm:gap-6 w-full sm:w-auto px-8 sm:px-10 py-4 rounded-full text-lg font-bold text-white bg-[#d4826f] hover:bg-[#c4735f] shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-hebrew-heading whitespace-nowrap"
+                className={`flex items-center justify-center gap-4 sm:gap-6 w-full sm:w-auto px-8 sm:px-10 py-4 rounded-full text-lg font-bold text-white bg-[#d4826f] hover:bg-[#c4735f] shadow-xl hover:shadow-2xl text-hebrew-heading whitespace-nowrap transition-all duration-300 ${shouldAnimate ? "hover:scale-105" : ""}`}
               >
                 {HERO_CTA}
                 <ArrowLeft size={20} />

@@ -20,6 +20,17 @@ export async function middleware(request: NextRequest) {
   const { supabase, response } = createMiddlewareClient(request);
   const pathname = request.nextUrl.pathname;
 
+  // ── PKCE fallback: code arrived at wrong URL → forward to callback ──
+  const code = request.nextUrl.searchParams.get("code");
+  if (code && !pathname.startsWith("/auth/callback")) {
+    const callbackUrl = new URL("/auth/callback", request.url);
+    callbackUrl.searchParams.set("code", code);
+    const next =
+      request.nextUrl.searchParams.get("next") || "/?modal=reset-password";
+    callbackUrl.searchParams.set("next", next);
+    return NextResponse.redirect(callbackUrl);
+  }
+
   // Get current session
   const {
     data: { user },

@@ -131,6 +131,7 @@ export function ProfileMobile({
               subscription={subscriptionData}
               onRenew={onRenew}
               onUpgrade={onUpgrade}
+              creationLimit={subscriptionUsage.limit}
             />
           </motion.div>
 

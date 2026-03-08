@@ -1,12 +1,8 @@
 "use client";
 
-/**
- * SurpriseGiftDesktop Component
- * Gift box that shakes on click and opens to reveal a greeting (desktop).
- * Max 150 lines per project rules.
- */
+/** SurpriseGiftDesktop – gift box that shakes on click and opens to reveal a greeting. */
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { GiftBox } from "../components";
@@ -33,21 +29,30 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
   const [clicks, setClicks] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [shaking, setShaking] = useState(false);
-
+  const [showReset, setShowReset] = useState(false);
   const needed = clicksRequired || DEFAULT_CLICKS;
 
-  // Fire confetti when box opens
+  // Ref prevents confetti re-fire on editor color changes
+  const colorsRef = useRef({ primaryColor, ribbonColor });
+  colorsRef.current = { primaryColor, ribbonColor };
+
   useEffect(() => {
     if (!isOpen) return;
-    const colors = [primaryColor, ribbonColor, "#ff6b8a", "#ffd700"];
+    const { primaryColor: pc, ribbonColor: rc } = colorsRef.current;
+    const colors = [pc, rc, "#ff6b8a", "#ffd700"];
     confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors });
-    const t = setTimeout(
+    const t1 = setTimeout(
       () =>
         confetti({ particleCount: 60, spread: 90, origin: { y: 0.5 }, colors }),
       300,
     );
-    return () => clearTimeout(t);
-  }, [isOpen, primaryColor, ribbonColor]);
+    const t2 = setTimeout(() => setShowReset(true), 1500); // delay "Try Again"
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   const handleClick = useCallback(() => {
     if (isOpen) return;
@@ -62,6 +67,7 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
     setClicks(0);
     setIsOpen(false);
     setShaking(false);
+    setShowReset(false);
   }, []);
 
   return (
@@ -123,12 +129,17 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
                   {greeting}
                 </p>
               </div>
-              <button
-                onClick={handleReset}
-                className="w-full mt-6 text-sm font-medium underline text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-              >
-                נסו שוב
-              </button>
+              {showReset && (
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                  onClick={handleReset}
+                  className="w-full mt-6 text-sm font-medium underline text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                >
+                  נסו שוב
+                </motion.button>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

@@ -10,7 +10,9 @@ import { DecisionWheelDesktop } from "./Desktop/DecisionWheelDesktop";
 import { DecisionWheelMobile } from "./Mobile/DecisionWheelMobile";
 import type { TemplateComponentProps, DecisionWheelData } from "./types";
 
-export function DecisionWheel({ data }: TemplateComponentProps<DecisionWheelData>) {
+export function DecisionWheel({
+  data,
+}: TemplateComponentProps<DecisionWheelData>) {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return isMobile ? (

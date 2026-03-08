@@ -60,7 +60,7 @@ export function Logo({ className = "" }: LogoProps) {
       {/* Logo Text */}
       <span
         className="text-2xl md:text-3xl font-bold text-navy-700 dark:text-white transition-colors duration-300"
-        style={{ fontFamily: "'GlacialIndifference', sans-serif" }}
+        style={{ fontFamily: "var(--font-glacial-indifference, sans-serif)" }}
       >
         HeartNote
       </span>

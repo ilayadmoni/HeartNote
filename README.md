@@ -1,150 +1,159 @@
-# HeartNote
+# ❤️ HeartNote
 
-A modern note-taking application with card-based organization. Built with Next.js 14+, FastAPI, and PostgreSQL.
+**HeartNote** is a premium Hebrew digital greeting card platform. Users choose from a gallery of beautifully animated templates, personalize their card, and share a unique link with their loved ones — no app download required.
+
+> _יצירת ברכות דיגיטליות מעוצבות – בעברית, לכל אירוע._
+
+---
+
+## ✨ Key Features
+
+| Feature                 | Description                                                   |
+| ----------------------- | ------------------------------------------------------------- |
+| 🎨 **Template Gallery** | Curated collection of animated greeting card templates        |
+| ✏️ **Live Editor**      | Real-time preview as users customize text, colors, and images |
+| 🔗 **Shareable Links**  | Every card gets a unique public URL for sharing               |
+| 👤 **User Profiles**    | Avatar selection, name editing, and creation history          |
+| 📱 **Fully Responsive** | Optimized for mobile, tablet, and desktop                     |
+| 🌙 **Dark Mode**        | System-aware and manually toggleable dark theme               |
+| ♿ **Accessible**       | Focus trapping, keyboard navigation, and ARIA labels          |
+| 🌐 **RTL-First**        | Designed right-to-left for Hebrew content                     |
+| 🔐 **Auth**             | Email/password authentication with password reset flow        |
+| 💎 **Tiered Plans**     | Free tier with usage limits; Premium for power users          |
+
+---
 
 ## 🚀 Tech Stack
 
-### Frontend
+| Layer            | Technology                                                  |
+| ---------------- | ----------------------------------------------------------- |
+| **Framework**    | [Next.js 14](https://nextjs.org/) (App Router)              |
+| **Language**     | TypeScript                                                  |
+| **Styling**      | Tailwind CSS                                                |
+| **Animations**   | Framer Motion                                               |
+| **Icons**        | Lucide React                                                |
+| **Backend**      | [Supabase](https://supabase.com/) (Auth, Database, Storage) |
+| **Server Logic** | Next.js Server Actions                                      |
+| **State Mgmt**   | React Query (TanStack)                                      |
+| **Validation**   | Zod                                                         |
+| **Email**        | Resend                                                      |
 
-- **Next.js 14+** - React framework with App Router
-- **TypeScript** - Type-safe JavaScript
-- **Tailwind CSS** - Utility-first CSS framework
-- **Framer Motion** - Animation library
-
-### Backend
-
-- **FastAPI** - Modern Python web framework
-- **SQLAlchemy 2.0** - Async ORM
-- **Pydantic v2** - Data validation
-- **PostgreSQL** - Database with JSONB support
-
-### DevOps
-
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
+---
 
 ## 📁 Project Structure
 
 ```
 HeartNote/
-├── client/                    # Next.js Frontend
-│   ├── src/
-│   │   ├── app/              # App Router pages
-│   │   ├── components/
-│   │   │   └── ui/           # Base UI components (Atomic design)
-│   │   ├── features/         # Domain-based modules
-│   │   │   ├── auth/         # Authentication feature
-│   │   │   └── editor/       # Card editor feature
-│   │   ├── hooks/            # Custom React hooks
-│   │   ├── lib/              # Utilities and configs
-│   │   └── types/            # TypeScript interfaces
-│   └── Dockerfile
-├── server/                    # FastAPI Backend
-│   ├── app/
-│   │   ├── api/v1/           # Route handlers
-│   │   │   ├── endpoints/    # Individual route files
-│   │   │   ├── deps.py       # Dependencies (auth, etc.)
-│   │   │   └── router.py     # API router
-│   │   ├── core/             # Configuration & security
-│   │   ├── db/               # Database connection
-│   │   ├── models/           # SQLAlchemy models
-│   │   ├── schemas/          # Pydantic schemas
-│   │   ├── services/         # Business logic layer
-│   │   └── main.py           # Application entry point
-│   ├── tests/                # Pytest tests
-│   └── Dockerfile
-├── docker-compose.yml        # Container orchestration
-├── .env.example              # Environment template
+├── client/                          # Next.js application
+│   └── src/
+│       ├── app/                     # App Router pages (RSC + layouts)
+│       │   ├── (main)/             # Authenticated routes
+│       │   └── (public)/           # Public routes (gallery, pricing)
+│       ├── actions/                 # Server Actions (auth, profile, creations)
+│       ├── components/              # UI components
+│       │   ├── auth/               # Login / register / password reset
+│       │   ├── editor/             # Template editor (desktop + mobile)
+│       │   ├── header/             # Responsive header + mobile menu
+│       │   ├── home/               # Landing page sections
+│       │   ├── profile/            # User profile (desktop + mobile)
+│       │   ├── templates/          # Template renderers (SurpriseGift, SteamyWindow, …)
+│       │   └── ui/                 # Shared UI primitives
+│       ├── contexts/                # React contexts (Auth, Theme)
+│       ├── hooks/                   # Custom hooks
+│       ├── lib/                     # Utilities, Supabase clients, validations
+│       ├── providers/               # Query & context providers
+│       └── types/                   # Global TypeScript types
+├── supabase/
+│   └── migrations/                  # SQL migration files (DDL)
+├── .env.example                     # Environment variable template
 └── README.md
 ```
+
+---
+
+## ⚙️ Environment Variables
+
+Copy `.env.example` to `.env.local` and fill in the values:
+
+### Required
+
+| Variable                        | Description                                                   |
+| ------------------------------- | ------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Your Supabase project URL                                     |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous (publishable) key                          |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Supabase service-role key (server-only)                       |
+| `NEXT_PUBLIC_SITE_URL`          | Canonical site URL (e.g. `https://heartnote.co.il`)           |
+| `RESEND_KEY`                    | [Resend](https://resend.com/) API key for transactional email |
+| `MAIL_HEART_NOTE`               | Recipient email for the contact form                          |
+
+### Optional
+
+| Variable             | Description                     | Default                               |
+| -------------------- | ------------------------------- | ------------------------------------- |
+| `RESEND_FROM_EMAIL`  | Sender email                    | `HeartNote <noreply@heartnote.co.il>` |
+| `NEXT_PUBLIC_GTM_ID` | Google Tag Manager container ID | _(disabled)_                          |
+
+---
 
 ## 🛠️ Getting Started
 
 ### Prerequisites
 
-- Docker & Docker Compose
-- Node.js 20+ (for local frontend development)
-- Python 3.12+ (for local backend development)
+- **Node.js** 20+
+- **npm** 9+
+- A [Supabase](https://supabase.com/) project with the schema applied (see `supabase/migrations/`)
 
-### Quick Start with Docker
-
-1. **Clone and setup environment**
-
-   ```bash
-   cp .env.example .env
-   # Edit .env with your secrets
-   ```
-
-2. **Start all services**
-
-   ```bash
-   docker-compose up -d
-   ```
-
-3. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Docs: http://localhost:8000/api/v1/docs
-
-### Local Development
-
-#### Backend
+### Installation
 
 ```bash
-cd server
-python -m venv .venv
-source .venv/Scripts/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
+# Clone the repo
+git clone https://github.com/your-org/HeartNote.git
+cd HeartNote/client
 
-#### Frontend
-
-```bash
-cd client
+# Install dependencies
 npm install
-npm run dev
+
+# Create your env file
+cp ../.env.example .env.local
+# → Edit .env.local with your Supabase + Resend keys
 ```
 
-## 🔧 Configuration
-
-Environment variables are defined in `.env.example`. Key variables:
-
-| Variable              | Description                  | Default               |
-| --------------------- | ---------------------------- | --------------------- |
-| `DATABASE_URL`        | PostgreSQL connection string | -                     |
-| `SECRET_KEY`          | Application secret key       | -                     |
-| `JWT_SECRET_KEY`      | JWT signing key              | -                     |
-| `CORS_ORIGINS`        | Allowed CORS origins         | http://localhost:3000 |
-| `NEXT_PUBLIC_SUPABASE_URL` | Backend API URL              | http://localhost:8000 |
-
-## 📦 Adding New Card Types
-
-The architecture supports easy addition of new card types:
-
-### Backend
-
-1. Add new type to `app/core/constants.py` → `CardType` enum
-2. Create content schema in `app/schemas/card.py`
-3. Add validation logic if needed
-
-### Frontend
-
-1. Define content type in `src/types/index.ts`
-2. Create editor component in `src/features/editor/editors/`
-3. Register in `src/features/editor/CardEditor.tsx`
-
-## 🧪 Testing
+### Development
 
 ```bash
-# Backend tests
-cd server
-pytest
-
-# Frontend type checking
-cd client
-npm run type-check
+npm run dev         # Start on http://localhost:3000
+npm run dev:lan     # Start on 0.0.0.0 (for mobile testing on same WiFi)
 ```
+
+### Type Checking & Linting
+
+```bash
+npm run type-check  # TypeScript strict mode check (tsc --noEmit)
+npm run lint        # ESLint
+```
+
+### Production Build
+
+```bash
+npm run build       # Generates optimized .next/ output
+npm start           # Serve the production build on port 3000
+```
+
+---
+
+## 🗄️ Database
+
+HeartNote uses **Supabase PostgreSQL** with Row Level Security (RLS).
+
+Migration files are in `supabase/migrations/`. The main init file `000_init.sql` contains:
+
+- `profiles` table (user data, subscription tier, creation counts)
+- `templates` table (template metadata, config schemas, expiration policies)
+- `creations` table (user-generated cards with shareable slugs)
+- `subscription_policies` table (tier limits and features)
+- RLS policies, triggers, and seed data
+
+---
 
 ## 📄 License
 

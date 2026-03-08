@@ -4,13 +4,13 @@
  * Accepts dynamic templateSlug, metadata JSON, and optional file upload.
  *
  * Flow:
- *  1. Authenticate user
+ *  1. Authenticate user (via protectedAction wrapper)
  *  2. Parse metadata JSON
  *  3. If file + bucketName provided → upload, inject publicUrl into metadata
  *  4. Fetch template_id by slug
  *  5. Quota & premium guard (via helpers — fast-fail check only)
  *  6. Calculate expiry & insert creation
- *  7. Return { success, creationId }
+ *  7. Return { creationId }
  *
  * Note: Quota decrement is handled by the DB trigger
  * `trg_handle_new_creation_quota` — no application-level decrement.
@@ -18,7 +18,8 @@
 
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { protectedAction } from "@/lib/protectedAction";
+import { ActionError, type ActionResult } from "@/lib/action-response";
 import {
   fetchProfileForQuota,
   fetchPolicyLimit,
@@ -29,22 +30,8 @@ import { calculateExpiry } from "./helpers/expiryCalc";
 
 export async function submitGenericCreation(
   formData: FormData,
-): Promise<
-  { success: true; creationId: string } | { error: string; status: number }
-> {
-  try {
-    const supabase = await createClient();
-
-    // ── 1. Authenticate ────────────────────────────────────────────
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { error: "Unauthorized", status: 401 };
-    }
-
+): Promise<ActionResult<{ creationId: string }>> {
+  return protectedAction(async (user, supabase) => {
     // ── Extract form fields ────────────────────────────────────────
     const templateSlug = formData.get("templateSlug") as string | null;
     const metadataRaw = formData.get("metadata") as string | null;
@@ -52,22 +39,22 @@ export async function submitGenericCreation(
     const bucketName = formData.get("bucketName") as string | null;
 
     if (!templateSlug?.trim()) {
-      return { error: "templateSlug is required", status: 422 };
+      throw new ActionError("templateSlug is required", 422);
     }
 
     if (!metadataRaw) {
-      return { error: "metadata is required", status: 422 };
+      throw new ActionError("metadata is required", 422);
     }
 
-    // ── 2. Parse metadata JSON ─────────────────────────────────────
+    // ── Parse metadata JSON ────────────────────────────────────────
     let parsedMetadata: Record<string, unknown>;
     try {
       parsedMetadata = JSON.parse(metadataRaw);
     } catch {
-      return { error: "metadata must be valid JSON", status: 422 };
+      throw new ActionError("metadata must be valid JSON", 422);
     }
 
-    // ── 3. Optional file upload ────────────────────────────────────
+    // ── Optional file upload ───────────────────────────────────────
     if (file && file.size > 0 && bucketName?.trim()) {
       const fileExt = file.type.split("/")[1] || "jpeg";
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
@@ -84,14 +71,12 @@ export async function submitGenericCreation(
         console.error("[submitGenericCreation] Upload error", {
           bucketName,
           storagePath,
-          fileType: file.type,
-          fileSize: file.size,
           error: uploadError,
         });
-        return {
-          error: `Image upload failed: ${uploadError.message}`,
-          status: 500,
-        };
+        throw new ActionError(
+          `Image upload failed: ${uploadError.message}`,
+          500,
+        );
       }
 
       const {
@@ -101,7 +86,7 @@ export async function submitGenericCreation(
       parsedMetadata.background_image = publicUrl;
     }
 
-    // ── 4. Fetch template by slug ──────────────────────────────────
+    // ── Fetch template by slug ─────────────────────────────────────
     const { data: template, error: tmplErr } = await supabase
       .from("templates")
       .select("id, is_premium, expiration_policy")
@@ -110,24 +95,19 @@ export async function submitGenericCreation(
       .single();
 
     if (tmplErr || !template) {
-      return { error: "Template not found", status: 404 };
+      throw new ActionError("Template not found", 404);
     }
 
-    // ── 5. Quota & premium guard ───────────────────────────────────
-    const profileResult = await fetchProfileForQuota(supabase, user.id);
-    if ("error" in profileResult) return profileResult;
-
-    const profile = profileResult.data;
+    // ── Quota & premium guard ──────────────────────────────────────
+    const profile = await fetchProfileForQuota(supabase, user.id);
     const userTier = profile.subscription_tier ?? "free";
 
-    const premiumErr = checkPremiumAccess(template.is_premium, userTier);
-    if (premiumErr) return premiumErr;
+    checkPremiumAccess(template.is_premium, userTier);
 
     const policyLimit = await fetchPolicyLimit(supabase, userTier);
-    const quotaErr = checkQuotaLimit(profile, userTier, policyLimit);
-    if (quotaErr) return quotaErr;
+    checkQuotaLimit(profile, userTier, policyLimit);
 
-    // ── 6. Expiry & insert ─────────────────────────────────────────
+    // ── Expiry & insert ────────────────────────────────────────────
     const isPaid = userTier === "premium";
     const expiresAt = calculateExpiry(
       template.expiration_policy as Record<string, unknown>,
@@ -147,20 +127,12 @@ export async function submitGenericCreation(
       .single();
 
     if (insertErr || !creation) {
-      return {
-        error: `Failed to create card: ${insertErr?.message ?? "Unknown error"}`,
-        status: 500,
-      };
+      throw new ActionError(
+        `Failed to create card: ${insertErr?.message ?? "Unknown error"}`,
+        500,
+      );
     }
 
-    // Quota decrement handled by DB trigger `trg_handle_new_creation_quota`
-
-    return { success: true, creationId: creation.id as string };
-  } catch (e) {
-    console.error("[submitGenericCreation] Unexpected error", e);
-    return {
-      error: `Failed to create card: ${e instanceof Error ? e.message : String(e)}`,
-      status: 500,
-    };
-  }
+    return { creationId: creation.id as string };
+  });
 }

@@ -59,7 +59,7 @@ export function FooterLogo() {
       {/* Logo Text - Always white for dark background */}
       <span
         className="text-2xl md:text-3xl font-bold text-white"
-        style={{ fontFamily: "'GlacialIndifference', sans-serif" }}
+        style={{ fontFamily: "var(--font-glacial-indifference, sans-serif)" }}
       >
         HeartNote
       </span>

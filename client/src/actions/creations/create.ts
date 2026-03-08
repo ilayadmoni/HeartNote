@@ -15,7 +15,8 @@
 
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { protectedAction } from "@/lib/protectedAction";
+import { ActionError, type ActionResult } from "@/lib/action-response";
 import {
   CreateCreationRequestSchema,
   type CreateCreationInput,
@@ -32,27 +33,14 @@ import { calculateExpiry } from "./helpers/expiryCalc";
 
 export async function createCreation(
   input: CreateCreationInput,
-): Promise<
-  { data: CreateCreationResponse } | { error: string; status: number }
-> {
-  try {
+): Promise<ActionResult<CreateCreationResponse>> {
+  return protectedAction(async (user, supabase) => {
     const parsed = CreateCreationRequestSchema.safeParse(input);
     if (!parsed.success) {
-      return {
-        error: parsed.error.issues.map((i) => i.message).join("; "),
-        status: 422,
-      };
-    }
-
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { error: "Unauthorized", status: 401 };
+      throw new ActionError(
+        parsed.error.issues.map((i) => i.message).join("; "),
+        422,
+      );
     }
 
     // ── Step 1: Get template info ──────────────────────────────────
@@ -64,7 +52,7 @@ export async function createCreation(
       .single();
 
     if (tmplErr || !template) {
-      return { error: "Template not found", status: 404 };
+      throw new ActionError("Template not found", 404);
     }
 
     // ── Step 2: Validate metadata against config_schema ────────────
@@ -75,25 +63,20 @@ export async function createCreation(
       configSchema,
     );
     if (validationErrors.length > 0) {
-      return {
-        error: `Validation errors: ${validationErrors.join("; ")}`,
-        status: 422,
-      };
+      throw new ActionError(
+        `Validation errors: ${validationErrors.join("; ")}`,
+        422,
+      );
     }
 
     // ── Step 3-5: Profile, premium guard, quota ────────────────────
-    const profileResult = await fetchProfileForQuota(supabase, user.id);
-    if ("error" in profileResult) return profileResult;
-
-    const profile = profileResult.data;
+    const profile = await fetchProfileForQuota(supabase, user.id);
     const userTier = profile.subscription_tier ?? "free";
 
-    const premiumErr = checkPremiumAccess(template.is_premium, userTier);
-    if (premiumErr) return premiumErr;
+    checkPremiumAccess(template.is_premium, userTier);
 
     const policyLimit = await fetchPolicyLimit(supabase, userTier);
-    const quotaErr = checkQuotaLimit(profile, userTier, policyLimit);
-    if (quotaErr) return quotaErr;
+    checkQuotaLimit(profile, userTier, policyLimit);
 
     // ── Step 6: Calculate expiry & insert ──────────────────────────
     const isPaid = userTier === "premium";
@@ -115,21 +98,12 @@ export async function createCreation(
       .single();
 
     if (insertErr || !creation) {
-      return { error: "Failed to create card", status: 500 };
+      throw new ActionError("Failed to create card", 500);
     }
 
-    // Quota decrement handled by DB trigger `trg_handle_new_creation_quota`
-
     return {
-      data: {
-        id: creation.id as string,
-        expires_at: (creation.expires_at as string) ?? null,
-      },
+      id: creation.id as string,
+      expires_at: (creation.expires_at as string) ?? null,
     };
-  } catch (e) {
-    return {
-      error: `Failed to create card: ${e instanceof Error ? e.message : String(e)}`,
-      status: 500,
-    };
-  }
+  });
 }

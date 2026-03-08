@@ -54,7 +54,7 @@ export function useDeleteCreation() {
   return useMutation({
     mutationFn: async (creationId: string) => {
       const result = await deleteCreation(creationId);
-      if ("error" in result) throw new Error(result.error);
+      if (!result.success) throw new Error(result.error);
       return result;
     },
 

@@ -7,7 +7,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { protectedAction } from "@/lib/protectedAction";
+import { ActionError, type ActionResult } from "@/lib/action-response";
 import { ProfileUpdateSchema, type ProfileUpdateInput } from "@/lib/validations";
 import type { ProfileResponse } from "@/lib/validations";
 import { buildProfileResponse } from "./helpers";
@@ -19,25 +20,14 @@ import { buildProfileResponse } from "./helpers";
  */
 export async function updateMyProfile(
   input: ProfileUpdateInput,
-): Promise<{ data: ProfileResponse } | { error: string; status: number }> {
-  try {
+): Promise<ActionResult<ProfileResponse>> {
+  return protectedAction(async (user, supabase) => {
     const parsed = ProfileUpdateSchema.safeParse(input);
     if (!parsed.success) {
-      return {
-        error: parsed.error.issues.map((i) => i.message).join("; "),
-        status: 422,
-      };
-    }
-
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { error: "Unauthorized", status: 401 };
+      throw new ActionError(
+        parsed.error.issues.map((i) => i.message).join("; "),
+        422,
+      );
     }
 
     // Build update dict – only include provided fields
@@ -49,7 +39,7 @@ export async function updateMyProfile(
 
     // If nothing to update, just return current profile
     if (Object.keys(updateDict).length === 0) {
-      return getMyProfileInternal(supabase, user.id);
+      return fetchProfileInternal(supabase, user.id);
     }
 
     const { error: updateError } = await supabase
@@ -58,32 +48,27 @@ export async function updateMyProfile(
       .eq("id", user.id);
 
     if (updateError) {
-      return {
-        error: `Failed to update profile: ${updateError.message}`,
-        status: 500,
-      };
+      throw new ActionError(
+        `Failed to update profile: ${updateError.message}`,
+        500,
+      );
     }
 
     revalidatePath("/profile");
     revalidatePath("/", "layout");
 
-    return getMyProfileInternal(supabase, user.id);
-  } catch (e) {
-    return {
-      error: `Failed to update profile: ${e instanceof Error ? e.message : String(e)}`,
-      status: 500,
-    };
-  }
+    return fetchProfileInternal(supabase, user.id);
+  });
 }
 
 /**
  * Internal re-fetch after update (avoids re-authenticating).
  */
-async function getMyProfileInternal(
+async function fetchProfileInternal(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
   userId: string,
-): Promise<{ data: ProfileResponse } | { error: string; status: number }> {
+): Promise<ProfileResponse> {
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
@@ -91,8 +76,8 @@ async function getMyProfileInternal(
     .single();
 
   if (error || !data) {
-    return { error: "Profile not found.", status: 404 };
+    throw new ActionError("Profile not found.", 404);
   }
 
-  return { data: buildProfileResponse(data) };
+  return buildProfileResponse(data, supabase);
 }

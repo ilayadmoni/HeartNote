@@ -1,121 +1,72 @@
 /**
- * useProfile Hook
- * 
- * Custom hook for fetching and managing profile data.
- * Uses the profileApi service to communicate with FastAPI backend.
+ * useProfile Hook (Supabase version)
+ * Fetches the user profile + subscription data from the `profiles` table.
+ * Used by CreationConfirmModal and QuotaModal for quota display.
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { 
-  getProfile, 
-  updateProfile as apiUpdateProfile, 
-  deleteAccount as apiDeleteAccount,
-  type ProfileData,
-  type ProfileUpdateData as ApiProfileUpdateData,
-} from "@/services/profileApi";
-import { 
-  type UserProfile, 
-  type ProfileUpdateData,
-  mapApiProfileToUserProfile,
-  mapProfileUpdateToApi,
-  AVATAR_URLS,
-} from "@/components/profile/types";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
+
+interface Subscription {
+  tier: "free" | "premium";
+  creations_count_free: number;
+  additional_creation_free: number;
+  creation_limit: number;
+  premium_expiry: string | null;
+}
+
+interface ProfileData {
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+  subscription: Subscription;
+}
 
 interface UseProfileReturn {
-  profile: UserProfile | null;
-  avatarOptions: string[];
+  profile: ProfileData | null;
   loading: boolean;
   error: string | null;
-  updateProfile: (data: ProfileUpdateData) => Promise<boolean>;
-  deleteAccount: () => Promise<boolean>;
-  refresh: () => Promise<void>;
 }
 
 export function useProfile(): UseProfileReturn {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [avatarOptions, setAvatarOptions] = useState<string[]>([]);
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  const { user, signOut } = useAuth();
-  const router = useRouter();
 
-  // Fetch profile data
   const fetchProfile = useCallback(async () => {
-    if (!user) {
-      setProfile(null);
-      setLoading(false);
-      return;
-    }
-
+    if (!user) { setProfile(null); setLoading(false); return; }
     try {
       setLoading(true);
-      setError(null);
-
-      const profileData = await getProfile();
-     
-
-      setProfile(mapApiProfileToUserProfile(profileData));
-      // Use static DiceBear avatar list instead of broken API
-      setAvatarOptions(AVATAR_URLS);
-    } catch (err) {
-      const apiError = err as { message: string; status: number };
-      setError(apiError.message || "שגיאה בטעינת הפרופיל");
-      
-      // If unauthorized, redirect to login
-      if (apiError.status === 401) {
-        await signOut();
-        router.push("/");
-      }
+      const { data, error: err } = await supabase
+        .from("profiles")
+        .select("first_name, last_name, avatar_url, subscription_tier, creations_count_free, additional_creation_free, premium_expiry")
+        .eq("id", user.id)
+        .single();
+      if (err || !data) throw new Error(err?.message ?? "Failed to load profile");
+      setProfile({
+        firstName: data.first_name ?? "",
+        lastName: data.last_name ?? "",
+        avatarUrl: data.avatar_url ?? null,
+        subscription: {
+          tier: data.subscription_tier ?? "free",
+          creations_count_free: data.creations_count_free ?? 0,
+          additional_creation_free: data.additional_creation_free ?? 0,
+          creation_limit: 3,
+          premium_expiry: data.premium_expiry ?? null,
+        },
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unknown error");
     } finally {
       setLoading(false);
     }
-  }, [user, signOut, router]);
+  }, [user]);
 
-  // Initial fetch
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+  useEffect(() => { fetchProfile(); }, [fetchProfile]);
 
-  // Update profile
-  const updateProfileHandler = useCallback(async (data: ProfileUpdateData): Promise<boolean> => {
-    try {
-      setError(null);
-      const apiData = mapProfileUpdateToApi(data) as ApiProfileUpdateData;
-      const updatedProfile = await apiUpdateProfile(apiData);
-      setProfile(mapApiProfileToUserProfile(updatedProfile));
-      return true;
-    } catch (err) {
-      const apiError = err as { message: string };
-      setError(apiError.message || "שגיאה בעדכון הפרופיל");
-      return false;
-    }
-  }, []);
-
-  // Delete account
-  const deleteAccountHandler = useCallback(async (): Promise<boolean> => {
-    try {
-      setError(null);
-      await apiDeleteAccount();
-      await signOut();
-      router.push("/");
-      return true;
-    } catch (err) {
-      const apiError = err as { message: string };
-      setError(apiError.message || "שגיאה במחיקת החשבון");
-      return false;
-    }
-  }, [signOut, router]);
-
-  return {
-    profile,
-    avatarOptions,
-    loading,
-    error,
-    updateProfile: updateProfileHandler,
-    deleteAccount: deleteAccountHandler,
-    refresh: fetchProfile,
-  };
+  return { profile, loading, error };
 }

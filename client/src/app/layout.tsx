@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import { inter, glacialIndifference, openSans } from "@/lib/fonts";
 import { ThemeProvider } from "@/components/theme";
 import {
   AccessibilityProvider,
@@ -10,9 +10,9 @@ import {
 import { AuthProvider } from "@/contexts/AuthContext";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { CookieBanner } from "@/components/cookieBanner";
+import { InitialLoader } from "@/components/initialLoader";
+import FontReadyGateway from "@/components/FontReadyGateway";
 import { Toaster } from "sonner";
-
-const inter = Inter({ subsets: ["latin"] });
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 // Construct metadataBase from environment or fallback
@@ -68,8 +68,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="he" dir="rtl" suppressHydrationWarning>
+    <html
+      lang="he"
+      dir="rtl"
+      suppressHydrationWarning
+      className={`${inter.variable} ${glacialIndifference.variable} ${openSans.variable}`}
+    >
       <body className={`${inter.className} overflow-x-hidden`}>
+        {/* Inline script to prevent FOUT: applies app-loading class before React hydrates.
+            This ensures the loading screen is shown before any unstyled content paints.
+            The FontReadyGateway component removes this class once fonts are ready. */}
+        <Script id="prevent-fout" strategy="beforeInteractive">
+          {`
+            (function() {
+              if (document.documentElement.classList) {
+                document.documentElement.classList.add('app-loading');
+              }
+            })();
+          `}
+        </Script>
+
+        {/* Pre-hydration loading screen — visible before React mounts */}
+        <InitialLoader />
+
         {/* Google Consent Mode v2 — default all to denied */}
         <Script id="gtm-consent-default" strategy="beforeInteractive">
           {`
@@ -112,13 +133,15 @@ export default function RootLayout({
 
         <ThemeProvider>
           <AccessibilityProvider>
-            <div id="a11y-content">
-              <AuthProvider>
-                <QueryProvider>{children}</QueryProvider>
-              </AuthProvider>
-              <CookieBanner />
-            </div>
-            <AccessibilityWidget />
+            <FontReadyGateway>
+              <div id="a11y-content">
+                <AuthProvider>
+                  <QueryProvider>{children}</QueryProvider>
+                </AuthProvider>
+                <CookieBanner />
+              </div>
+              <AccessibilityWidget />
+            </FontReadyGateway>
           </AccessibilityProvider>
         </ThemeProvider>
         <Toaster

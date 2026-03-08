@@ -121,14 +121,14 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
       const result = await submitGenericCreation(formData);
 
-      if ("error" in result) {
-        if (result.status === 403 && result.error === "QUOTA_EXCEEDED") {
+      if (!result.success) {
+        if (result.code === 403 && result.error === "QUOTA_EXCEEDED") {
           setShowQuotaModal(true);
           setShowConfirmModal(false);
           return;
         }
 
-        if (result.status === 402 && result.error === "TEMPLATE_NOT_ALLOWED") {
+        if (result.code === 402 && result.error === "TEMPLATE_NOT_ALLOWED") {
           alert(
             "תבנית זו אינה זמינה במנוי הנוכחי שלך. שדרג את המנוי כדי להשתמש בה.",
           );
@@ -144,7 +144,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       // Show success modal with shareable link instead of redirecting
       setShowConfirmModal(false);
       setSuccessData({
-        url: `${window.location.origin}/p/${result.creationId}`,
+        url: `${window.location.origin}/p/${result.data.creationId}`,
         expiresAt: null,
       });
     } catch (error: unknown) {

@@ -49,7 +49,8 @@ export function CreationConfirmModal({
 
   // For free tier, remaining = totalAllowed - count_free.
   // For premium, unlimited.
-  const totalAllowedFree = 3 + (profile?.subscription.additional_creation_free ?? 0);
+  const baseLimit = profile?.subscription.creation_limit ?? 3; // Fallback to 3 if not loaded
+  const totalAllowedFree = baseLimit + (profile?.subscription.additional_creation_free ?? 0);
   const currentCreations =
     subscriptionTier === "premium"
       ? Infinity
@@ -194,7 +195,7 @@ export function CreationConfirmModal({
                     {/* Remaining Creations */}
                     <div className="flex items-start justify-between gap-3 pt-2 border-t border-gray-200 dark:border-gray-600">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400 text-hebrew-body">
-                        יצירות שנותרנו לאחר היצירה:
+                        יצירות שנותרו לאחר היצירה:
                       </span>
                       <motion.span
                         key={remainingCreations === Infinity ? "unlimited" : remainingCreations}

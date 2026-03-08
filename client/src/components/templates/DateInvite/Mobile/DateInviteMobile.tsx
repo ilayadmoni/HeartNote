@@ -8,6 +8,7 @@
 
 import { motion } from "framer-motion";
 import { RotateCcw, Heart } from "lucide-react";
+import { usePathname } from "next/navigation";
 import type { DateInviteMobileProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
@@ -24,10 +25,14 @@ export function DateInviteMobile({
   onReset,
   onNoHover,
 }: DateInviteMobileProps) {
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
-    <div className="w-full h-full min-h-[680px] flex flex-col justify-between gap-6 bg-transparent px-5 py-6 overflow-hidden relative isolate">
+    <div className={`w-full h-full flex flex-col justify-between gap-6 bg-transparent px-5 py-1 overflow-hidden relative isolate ${
+      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+    }`}>
       {/* Background Hearts Pattern */}
       <FloatingIcons />
 
@@ -66,8 +71,8 @@ export function DateInviteMobile({
               </h1>
 
               {/* Subtitle */}
-              <p className="text-xs text-gray-400 mb-6 text-hebrew-body">
-                ...כדאי לך לבחור את התשובה הנכונה
+              <p className="text-xs text-gray-800 mb-6 text-hebrew-body">
+               כדאי לך לבחור את התשובה הנכונה...
               </p>
 
               {/* Buttons */}
@@ -83,7 +88,11 @@ export function DateInviteMobile({
                   }}
                 >
                   <span className="truncate">{data.yesText}</span>
-                  <Heart size={16} fill="currentColor" className="opacity-80 shrink-0" />
+                  <Heart
+                    size={16}
+                    fill="currentColor"
+                    className="opacity-80 shrink-0"
+                  />
                 </motion.button>
 
                 {/* No Button - Enhanced evasion */}

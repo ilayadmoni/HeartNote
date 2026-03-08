@@ -9,9 +9,10 @@ import { Heart } from "lucide-react";
 
 interface PhoneScreenProps {
   isDodging?: boolean;
+  shouldAnimate?: boolean;
 }
 
-export function PhoneScreen({ isDodging = false }: PhoneScreenProps) {
+export function PhoneScreen({ isDodging = false, shouldAnimate = true }: PhoneScreenProps) {
   return (
     <div className="w-full h-full flex flex-col bg-[#f8f6f3]" dir="rtl">
       {/* App bar */}
@@ -56,9 +57,9 @@ export function PhoneScreen({ isDodging = false }: PhoneScreenProps) {
             <button
               className="text-[10px] text-gray-500 px-4 py-1.5 rounded-full border border-gray-200 bg-white"
               style={{
-                transform: `translateX(${isDodging ? -22 : 0}px)`,
-                opacity: isDodging ? 0.4 : 1,
-                transition: "transform 0.4s cubic-bezier(.4,0,.2,1), opacity 0.4s ease",
+                transform: `translateX(${isDodging && shouldAnimate ? -22 : 0}px)`,
+                opacity: isDodging && shouldAnimate ? 0.4 : 1,
+                transition: shouldAnimate ? "transform 0.4s cubic-bezier(.4,0,.2,1), opacity 0.4s ease" : "none",
               }}
             >
               לא

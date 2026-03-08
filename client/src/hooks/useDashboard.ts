@@ -2,13 +2,14 @@
  * useDashboard Hook
  *
  * Fetches user dashboard stats and creation history using
- * server actions.
+ * server actions. Handles auth expiry via useServerAction.
  * Aligned with new DB schema (creations table, subscription_tier).
  */
 
 import { useState, useEffect, useCallback } from "react";
 import { getDashboard } from "@/actions/dashboard";
 import { useAuth } from "@/contexts/AuthContext";
+import { useServerAction } from "@/hooks/useServerAction";
 
 // =============================================================================
 // Types (mirror the backend DashboardResponse)
@@ -54,6 +55,7 @@ export function useDashboard(): UseDashboardReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  const { execute } = useServerAction();
 
   const fetchDashboard = useCallback(async () => {
     if (!user) {
@@ -66,20 +68,15 @@ export function useDashboard(): UseDashboardReturn {
       setLoading(true);
       setError(null);
 
-      const result = await getDashboard();
-
-      if ("error" in result) {
-        throw { message: result.error, status: result.status };
-      }
-
-      setDashboard(result.data);
+      const data = await execute(getDashboard());
+      setDashboard(data);
     } catch (err: unknown) {
       const apiError = err as { message?: string };
       setError(apiError.message || "שגיאה בטעינת הנתונים");
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, execute]);
 
   useEffect(() => {
     fetchDashboard();

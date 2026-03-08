@@ -44,6 +44,7 @@ export const SubscriptionInfoSchema = z.object({
   premium_start: z.string().datetime({ offset: true }).nullable().default(null),
   premium_expiry: z.string().datetime({ offset: true }).nullable().default(null),
   is_active: z.boolean().default(true),
+  creation_limit: z.number().int().nullable().default(null), // from subscription_policies table
 });
 export type SubscriptionInfo = z.infer<typeof SubscriptionInfoSchema>;
 

@@ -16,6 +16,7 @@ export type AccessibilitySettings = {
   grayscale: boolean;
   highlightLinks: boolean;
   readableFont: boolean;
+  stopAnimations: boolean;
 };
 
 export type AccessibilityContextValue = {
@@ -26,6 +27,7 @@ export type AccessibilityContextValue = {
   toggleGrayscale: () => void;
   toggleHighlightLinks: () => void;
   toggleReadableFont: () => void;
+  toggleStopAnimations: () => void;
   reset: () => void;
 };
 
@@ -36,24 +38,24 @@ const DEFAULT_SETTINGS: AccessibilitySettings = {
   grayscale: false,
   highlightLinks: false,
   readableFont: false,
+  stopAnimations: false,
 };
 
 const MIN_SCALE = 0.85;
 const MAX_SCALE = 1.3;
 const STEP = 0.05;
 
-const AccessibilityContext = createContext<AccessibilityContextValue | undefined>(
-  undefined,
-);
+const AccessibilityContext = createContext<
+  AccessibilityContextValue | undefined
+>(undefined);
 
 function clampScale(value: number) {
   return Math.min(MAX_SCALE, Math.max(MIN_SCALE, value));
 }
 
 export function AccessibilityProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<AccessibilitySettings>(
-    DEFAULT_SETTINGS,
-  );
+  const [settings, setSettings] =
+    useState<AccessibilitySettings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
     try {
@@ -78,6 +80,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     root.classList.toggle("a11y-grayscale", settings.grayscale);
     root.classList.toggle("a11y-highlight-links", settings.highlightLinks);
     root.classList.toggle("a11y-readable-font", settings.readableFont);
+    root.classList.toggle("a11y-stop-animations", settings.stopAnimations);
 
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
@@ -119,6 +122,10 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     setSettings((prev) => ({ ...prev, readableFont: !prev.readableFont }));
   }, []);
 
+  const toggleStopAnimations = useCallback(() => {
+    setSettings((prev) => ({ ...prev, stopAnimations: !prev.stopAnimations }));
+  }, []);
+
   const reset = useCallback(() => {
     setSettings(DEFAULT_SETTINGS);
   }, []);
@@ -132,6 +139,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
       toggleGrayscale,
       toggleHighlightLinks,
       toggleReadableFont,
+      toggleStopAnimations,
       reset,
     }),
     [
@@ -142,6 +150,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
       toggleGrayscale,
       toggleHighlightLinks,
       toggleReadableFont,
+      toggleStopAnimations,
       reset,
     ],
   );
@@ -156,7 +165,9 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
 export function useAccessibility() {
   const context = useContext(AccessibilityContext);
   if (!context) {
-    throw new Error("useAccessibility must be used within AccessibilityProvider");
+    throw new Error(
+      "useAccessibility must be used within AccessibilityProvider",
+    );
   }
   return context;
 }

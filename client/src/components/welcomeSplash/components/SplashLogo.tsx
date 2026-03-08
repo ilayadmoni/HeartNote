@@ -76,7 +76,7 @@ export function SplashLogo({ className = "" }: SplashLogoProps) {
       {/* Brand Text */}
       <span
         className="text-4xl md:text-5xl font-bold text-navy-700 dark:text-white transition-colors duration-300"
-        style={{ fontFamily: "'GlacialIndifference', sans-serif" }}
+        style={{ fontFamily: "var(--font-glacial-indifference, sans-serif)" }}
       >
         HeartNote
       </span>

@@ -6,6 +6,7 @@
  */
 
 import { AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 import type { QuizViewProps } from "../types";
 import { useQuiz } from "../hooks/useQuiz";
 import { getScoreMessage } from "../constants";
@@ -17,12 +18,16 @@ import {
 import { FloatingIcons } from "../../OpenWhen/components";
 
 export function RelationshipQuizMobile({ data }: QuizViewProps) {
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
   const quiz = useQuiz(data.questions);
   const percentage = Math.round((quiz.score / data.questions.length) * 100);
   const scoreMsg = getScoreMessage(percentage, data.scoreMessages);
 
   return (
-    <div className="min-h-[680px] bg-transparent px-4 py-6 relative isolate flex flex-col justify-between items-center gap-6">
+    <div className={`bg-transparent px-4 py-6 relative isolate flex flex-col justify-between items-center gap-6 ${
+      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+    }`}>
       <FloatingIcons />
       {/* Main Content - Top */}
       <div className="flex-1 max-w-md mx-auto w-full flex flex-col justify-center">

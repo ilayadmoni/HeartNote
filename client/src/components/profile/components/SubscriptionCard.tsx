@@ -21,15 +21,23 @@ interface SubscriptionCardProps {
   subscription: SubscriptionData;
   onRenew: () => void;
   onUpgrade: () => void;
+  creationLimit?: number | null; // Dynamic creation limit from policy
 }
 
 export function SubscriptionCard({
   subscription,
   onRenew,
   onUpgrade,
+  creationLimit,
 }: SubscriptionCardProps) {
   const tierKey = (subscription.tier === "premium" ? "premium" : "free") as keyof typeof TIER_CONFIGS;
   const tierConfig = TIER_CONFIGS[tierKey];
+  
+  // Build dynamic feature text
+  const featureText = subscription.tier === "premium" 
+    ? tierConfig.features[0] 
+    : `${creationLimit ?? 3} יצירות חינם`;
+  
   const startDate = subscription.startDate
     ? new Date(subscription.startDate).toLocaleDateString("he-IL")
     : "—";
@@ -52,7 +60,7 @@ export function SubscriptionCard({
               {tierConfig.nameHe}
             </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 text-hebrew-body">
-              {tierConfig.features[0]}
+              {featureText}
             </p>
           </div>
         </div>

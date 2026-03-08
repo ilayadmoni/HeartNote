@@ -60,7 +60,7 @@ export function FooterBranding({ className = "" }: FooterBrandingProps) {
       {/* "HeartNote" text */}
       <span
         className="text-[11px] font-bold text-[#2e3c52] dark:text-white transition-colors duration-300"
-        style={{ fontFamily: "'GlacialIndifference', sans-serif" }}
+        style={{ fontFamily: "var(--font-glacial-indifference, sans-serif)" }}
       >
         HeartNote
       </span>

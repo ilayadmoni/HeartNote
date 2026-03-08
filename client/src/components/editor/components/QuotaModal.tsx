@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { X, Crown, Sparkles } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
 
 interface QuotaModalProps {
   isOpen: boolean;
@@ -20,6 +21,9 @@ interface QuotaModalProps {
 
 export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
   const router = useRouter();
+  const { profile } = useProfile();
+
+  const creationLimit = profile?.subscription.creation_limit ?? 3; // Fallback to 3 if not loaded
 
   /** Dismiss → close the modal and go home */
   const handleDismiss = () => {
@@ -81,7 +85,7 @@ export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
                 className="text-white/70 text-sm"
                 style={{ fontFamily: "'Open Sans', sans-serif" }}
               >
-              חשבון חינמי מוגבל ל-3 יצירות 
+              חשבון חינמי מוגבל ל-{creationLimit} יצירות 
               </p>
             </div>
 
@@ -93,7 +97,7 @@ export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
                   className="text-sm text-amber-800 dark:text-amber-300 leading-relaxed text-center"
                   style={{ fontFamily: "'Open Sans', sans-serif" }}
                 >
-                  משתמשים חינמיים יכולים ליצור עד 3 ברכות.
+                  משתמשים חינמיים יכולים ליצור עד {creationLimit} ברכות.
                   <br />
                   שדרגו לפרימיום ליצירת עוד ברכות
                 </p>
