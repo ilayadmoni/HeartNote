@@ -14,38 +14,26 @@
 
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { protectedAction } from "@/lib/protectedAction";
 import type {
   DashboardResponse,
   DashboardStats,
   DashboardCreation,
 } from "@/lib/validations";
+import type { ActionResult } from "@/lib/action-response";
 
 /**
  * GET /user/dashboard → getDashboard()
  *
  * User Dashboard — returns quota stats and creation history.
- * Exact port of the Python endpoint logic.
+ * Auth check handled by protectedAction wrapper.
  */
-export async function getDashboard(): Promise<
-  { data: DashboardResponse } | { error: string; status: number }
-> {
-  try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { error: "Unauthorized", status: 401 };
-    }
-
+export async function getDashboard(): Promise<ActionResult<DashboardResponse>> {
+  return protectedAction(async (user, supabase) => {
     const now = new Date();
 
     // ── Fetch profile for quota stats ──────────────────────────────
-    const { data: profile, error: profErr } = await supabase
+    const { data: profile } = await supabase
       .from("profiles")
       .select(
         "subscription_tier, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro",
@@ -65,7 +53,7 @@ export async function getDashboard(): Promise<
     };
 
     // ── Fetch all creations for this user (including soft-deleted) ───
-    const { data: rawCreations, error: crErr } = await supabase
+    const { data: rawCreations } = await supabase
       .from("creations")
       .select(
         "id, is_paid, expires_at, created_at, is_deleted, templates!inner(slug, name)",
@@ -73,9 +61,7 @@ export async function getDashboard(): Promise<
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
-    const allCreations = rawCreations ?? [];
-
-    const creations: DashboardCreation[] = allCreations.map((c) => {
+    const creations: DashboardCreation[] = (rawCreations ?? []).map((c) => {
       const expiresAtStr = c.expires_at as string | null;
       let isExpired = false;
 
@@ -84,8 +70,7 @@ export async function getDashboard(): Promise<
           const expStr = expiresAtStr.includes("Z")
             ? expiresAtStr
             : expiresAtStr.replace("+00:00", "Z");
-          const expDt = new Date(expStr);
-          isExpired = expDt < now;
+          isExpired = new Date(expStr) < now;
         } catch {
           isExpired = false;
         }
@@ -105,13 +90,6 @@ export async function getDashboard(): Promise<
       };
     });
 
-    return {
-      data: { stats, creations },
-    };
-  } catch (e) {
-    return {
-      error: `Failed to fetch dashboard: ${e instanceof Error ? e.message : String(e)}`,
-      status: 500,
-    };
-  }
+    return { stats, creations };
+  });
 }

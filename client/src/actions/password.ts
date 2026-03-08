@@ -39,12 +39,18 @@ const ERR_RESET_PROCESS =
 /** Build the recovery redirect URL from request headers */
 async function getRedirectUrl(): Promise<string> {
   const headerStore = await headers();
-  const origin =
+  let origin =
     headerStore.get("origin") ||
     headerStore.get("x-forwarded-host") ||
     process.env.NEXT_PUBLIC_SITE_URL ||
     "http://localhost:3000";
-  return `${origin}/auth/callback?next=/?modal=reset-password`;
+
+  // x-forwarded-host omits the protocol — add it so URL() doesn't throw
+  if (!origin.startsWith("http")) origin = `https://${origin}`;
+
+  const url = new URL("/auth/callback", origin);
+  url.searchParams.set("next", "/?modal=reset-password");
+  return url.toString();
 }
 
 /** Extract client IP from request headers */

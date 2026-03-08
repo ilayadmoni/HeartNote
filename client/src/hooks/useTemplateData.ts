@@ -51,8 +51,9 @@ export function useTemplateData(
     [templateId],
   );
 
-  /** Pretty-print to console for dev inspection */
+  /** Pretty-print to console for dev inspection (no-op in production) */
   const logData = useCallback((label = "שליחה") => {
+    if (process.env.NODE_ENV !== "development") return;
     const current = stateRef.current;
     console.group(`[HeartNote] ${label}`);
     console.log("templateId:", current.templateId);

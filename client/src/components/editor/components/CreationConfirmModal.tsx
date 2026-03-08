@@ -195,7 +195,7 @@ export function CreationConfirmModal({
                     {/* Remaining Creations */}
                     <div className="flex items-start justify-between gap-3 pt-2 border-t border-gray-200 dark:border-gray-600">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400 text-hebrew-body">
-                        יצירות שנותרנו לאחר היצירה:
+                        יצירות שנותרו לאחר היצירה:
                       </span>
                       <motion.span
                         key={remainingCreations === Infinity ? "unlimited" : remainingCreations}

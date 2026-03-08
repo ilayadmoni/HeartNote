@@ -1,47 +1,40 @@
 "use client";
 
-/**
- * UserMenu Component
- * User avatar and dropdown menu when logged in.
- * Fetches first_name, last_name, avatar_url from the profiles table
- * via useProfileQuery (React Query) so changes propagate instantly.
- */
+/** UserMenu – avatar + dropdown when logged in. */
 
 import { useState, useRef, useEffect } from "react";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, LogOut, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
+import { MenuItem } from "./MenuItem";
+import { UserAvatar } from "./UserAvatar";
 
-export function UserMenu() {
+interface UserMenuProps {
+  onMenuToggle?: (isOpen: boolean) => void;
+}
+
+export function UserMenu({ onMenuToggle }: UserMenuProps = {}) {
   const { user, signOut } = useAuth();
   const { data: profile } = useProfileQuery();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close menu when clicking outside
+  // Close on click-outside or Escape key
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+    const onMouseDown = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node))
         setIsOpen(false);
-      }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Close menu on Escape
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
     };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
+    document.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onMouseDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, []);
 
   const handleSignOut = async () => {
@@ -51,7 +44,6 @@ export function UserMenu() {
 
   if (!user) return null;
 
-  // Build display name from profiles table data
   const firstName = profile?.first_name;
   const lastName = profile?.last_name;
   const displayName = firstName || user.email?.split("@")[0] || "משתמש";
@@ -62,10 +54,18 @@ export function UserMenu() {
   const avatarUrl = profile?.avatar_url ?? null;
 
   return (
-    <div ref={menuRef} className="relative">
-      {/* Trigger Button */}
+    <div
+      ref={menuRef}
+      className="relative z-[150]"
+      onMouseDown={(e) => e.stopPropagation()}
+    >
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={(e) => {
+          e.stopPropagation();
+          const newState = !isOpen;
+          setIsOpen(newState);
+          onMenuToggle?.(newState);
+        }}
         className="
           flex items-center gap-2 px-3 py-1.5
           rounded-full
@@ -79,35 +79,16 @@ export function UserMenu() {
         aria-haspopup="true"
         aria-label={`תפריט משתמש - ${displayName}`}
       >
-        {/* Avatar */}
-        {avatarUrl ? (
-          <Image
-            src={avatarUrl}
-            alt={displayName}
-            width={32}
-            height={32}
-            className="w-8 h-8 rounded-full object-cover"
-            unoptimized={avatarUrl.includes("dicebear.com")}
-          />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-[#d4826f]/20 flex items-center justify-center">
-            <User size={16} className="text-[#d4826f]" />
-          </div>
-        )}
-
-        {/* Name */}
+        <UserAvatar avatarUrl={avatarUrl} displayName={displayName} />
         <span className="text-sm font-medium text-[#2e3c52] dark:text-white max-w-[100px] truncate text-hebrew-body hidden sm:inline">
           {displayName}
         </span>
-
-        {/* Chevron */}
         <ChevronDown
           size={16}
           className={`text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
-      {/* Dropdown Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -115,14 +96,15 @@ export function UserMenu() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
+            onClick={(e) => e.stopPropagation()}
             className="
               absolute top-full left-0 mt-2
               w-56 max-w-[calc(100vw-1rem)]
               bg-white dark:bg-gray-800
               rounded-xl shadow-lg
               border border-gray-100 dark:border-gray-700
-              overflow-hidden 
-              z-[60]
+              overflow-hidden
+              z-[250]
             "
           >
             {/* User Info */}
@@ -154,39 +136,5 @@ export function UserMenu() {
         )}
       </AnimatePresence>
     </div>
-  );
-}
-
-interface MenuItemProps {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  variant?: "default" | "danger";
-}
-
-function MenuItem({
-  icon,
-  label,
-  onClick,
-  variant = "default",
-}: MenuItemProps) {
-  const colorClass =
-    variant === "danger"
-      ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
-      : "text-[#2e3c52] dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700";
-
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        w-full flex items-center gap-3 px-4 py-2
-        text-sm text-hebrew-body
-        transition-colors duration-150
-        ${colorClass}
-      `}
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
   );
 }

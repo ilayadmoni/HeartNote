@@ -188,7 +188,7 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
       </motion.div>
 
       {/* Hint Text */}
-      <p className="mt-3 text-xs text-gray-400 dark:text-gray-500 text-hebrew-body">
+      <p className="mt-3 text-xs text-gray-800 dark:text-gray-500 text-hebrew-heading">
         👆 גררו את הכרטיס עם האצבע
       </p>
 

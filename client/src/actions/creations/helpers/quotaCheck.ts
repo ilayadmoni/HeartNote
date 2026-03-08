@@ -11,6 +11,7 @@
  */
 
 import { SupabaseClient } from "@supabase/supabase-js";
+import { ActionError } from "@/lib/action-response";
 
 // ── Types ────────────────────────────────────────────────────────────────
 
@@ -22,24 +23,16 @@ export interface ProfileQuotaData {
   additional_creation_pro: number;
 }
 
-export interface QuotaCheckResult {
-  profile: ProfileQuotaData;
-  userTier: string;
-  isPaid: boolean;
-}
-
 // ── Fetch Profile ────────────────────────────────────────────────────────
 
 /**
  * Fetches the user's profile quota fields.
- * Returns `null` with an error payload if the profile is missing.
+ * Throws ActionError(404) if the profile is missing.
  */
 export async function fetchProfileForQuota(
   supabase: SupabaseClient,
   userId: string,
-): Promise<
-  { data: ProfileQuotaData } | { error: string; status: number }
-> {
+): Promise<ProfileQuotaData> {
   const { data: profile, error: profErr } = await supabase
     .from("profiles")
     .select(
@@ -49,13 +42,13 @@ export async function fetchProfileForQuota(
     .single();
 
   if (profErr || !profile) {
-    return {
-      error: "Profile not found. Please complete registration.",
-      status: 404,
-    };
+    throw new ActionError(
+      "Profile not found. Please complete registration.",
+      404,
+    );
   }
 
-  return { data: profile as ProfileQuotaData };
+  return profile as ProfileQuotaData;
 }
 
 // ── Fetch Policy Limit ───────────────────────────────────────────────────
@@ -80,22 +73,21 @@ export async function fetchPolicyLimit(
 // ── Premium Guard ────────────────────────────────────────────────────────
 
 /**
- * Returns an error payload if a free-tier user tries to use a premium template.
+ * Throws ActionError(402) if a free-tier user tries to use a premium template.
  */
 export function checkPremiumAccess(
   isPremiumTemplate: boolean,
   userTier: string,
-): { error: string; status: number } | null {
+): void {
   if (isPremiumTemplate && userTier === "free") {
-    return { error: "TEMPLATE_NOT_ALLOWED", status: 402 };
+    throw new ActionError("TEMPLATE_NOT_ALLOWED", 402);
   }
-  return null;
 }
 
 // ── Quota Guard ──────────────────────────────────────────────────────────
 
 /**
- * Returns an error payload if the user has exhausted their creation quota.
+ * Throws ActionError(403) if the user has exhausted their creation quota.
  *
  * For free tier: compares creations_count_free against totalAllowed
  *   (policy creation_limit + additional_creation_free).
@@ -105,21 +97,18 @@ export function checkQuotaLimit(
   profile: ProfileQuotaData,
   userTier: string,
   policyLimit: number | null,
-): { error: string; status: number } | null {
+): void {
   if (userTier === "free") {
     const limit = policyLimit ?? 3;
     const totalAllowed = limit + (profile.additional_creation_free ?? 0);
 
     if (profile.creations_count_free >= totalAllowed) {
-      return { error: "QUOTA_EXCEEDED", status: 403 };
+      throw new ActionError("QUOTA_EXCEEDED", 403);
     }
   }
-  // Premium tier is unlimited — no check needed
-  return null;
 }
 
 // ── Note ─────────────────────────────────────────────────────────────────
 // Quota decrement is handled exclusively by the database trigger
 // `trg_handle_new_creation_quota` (see 018_update_profiles_creation_counters.sql).
 // No application-level decrement logic should exist here.
-

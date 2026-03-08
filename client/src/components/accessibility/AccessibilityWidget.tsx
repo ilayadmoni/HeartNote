@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { PersonStanding } from "lucide-react";
-
 import { FocusTrap } from "@/components/accessibility";
 import { useAccessibility } from "@/components/accessibility/AccessibilityProvider";
-import { KEYS } from "@/components/accessibility/constants";
+import { AccessibilityModalContent } from "./AccessibilityModalContent";
 
 export function AccessibilityWidget() {
   const {
@@ -65,173 +64,33 @@ export function AccessibilityWidget() {
       </motion.button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50">
+        <div className="fixed inset-0 z-[150]">
           <div
             className="absolute inset-0 bg-black/40"
             onClick={close}
             aria-hidden="true"
           />
           <div
-            className="absolute bottom-6 right-6 w-[320px] max-w-[95vw] max-h-[90dvh] overflow-y-auto rounded-2xl bg-white dark:bg-gray-800 shadow-2xl ring-1 ring-black/5"
+            className="absolute bottom-6 right-6 lg:top-20 lg:bottom-auto w-[320px] max-w-[95vw] max-h-[80vh] lg:max-h-[calc(100vh-6rem)] overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-2xl ring-1 ring-black/5"
             dir="rtl"
           >
             <FocusTrap active={isOpen} onEscape={close}>
-              <div
-                className="flex flex-col gap-4 p-5 text-sm text-gray-800 dark:text-gray-200"
-                role="dialog"
-                aria-modal="true"
-                aria-label="תפריט נגישות"
-                onKeyDown={(event) => {
-                  if (event.key === KEYS.ESCAPE) {
-                    event.preventDefault();
-                    close();
-                  }
-                }}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm sm:text-base font-semibold">נגישות</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      התאם את הממשק
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={close}
-                    className="rounded-full p-1 text-gray-500 hover:text-gray-900 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]"
-                    aria-label="סגור תפריט נגישות"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      viewBox="0 0 24 24"
-                      className="h-5 w-5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M18 6L6 18" />
-                      <path d="M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  {/* Text Size Control */}
-                  <div className="flex items-center justify-between rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-3 py-2">
-                    <span className="text-xs sm:text-sm font-medium">
-                      גודל טקסט
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={decreaseText}
-                        disabled={settings.fontScale <= 0.85}
-                        className="h-8 w-8 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-lg font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]"
-                        aria-label="הקטן טקסט"
-                      >
-                        A−
-                      </button>
-                      <span className="w-8 text-center text-xs text-gray-500 dark:text-gray-400">
-                        {Math.round(settings.fontScale * 100)}%
-                      </span>
-                      <button
-                        type="button"
-                        onClick={increaseText}
-                        disabled={settings.fontScale >= 1.3}
-                        className="h-8 w-8 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-lg font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]"
-                        aria-label="הגדל טקסט"
-                      >
-                        A+
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Toggles */}
-                  <ToggleRow
-                    label="ניגודיות גבוהה"
-                    description="ערכת צבעים כהה עם ניגודיות גבוהה"
-                    checked={settings.highContrast}
-                    onChange={toggleHighContrast}
-                  />
-                  <ToggleRow
-                    label="מצב אפור"
-                    description="הסר צבעים מהדף"
-                    checked={settings.grayscale}
-                    onChange={toggleGrayscale}
-                  />
-                  <ToggleRow
-                    label="הדגש קישורים"
-                    description="הוסף קו תחתון וצבע לקישורים"
-                    checked={settings.highlightLinks}
-                    onChange={toggleHighlightLinks}
-                  />
-                  <ToggleRow
-                    label="גופן קריא"
-                    description="השתמש בגופן סטנדרטי"
-                    checked={settings.readableFont}
-                    onChange={toggleReadableFont}
-                  />
-                  <ToggleRow
-                    label="עצור אנימציה"
-                    description="עצור את כל האנימציות באתר"
-                    checked={settings.stopAnimations}
-                    onChange={toggleStopAnimations}
-                  />
-                </div>
-
-                {/* Reset Button */}
-                <button
-                  type="button"
-                  onClick={reset}
-                  className="mt-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]"
-                >
-                  איפוס הגדרות
-                </button>
-              </div>
+              <AccessibilityModalContent
+                settings={settings}
+                increaseText={increaseText}
+                decreaseText={decreaseText}
+                toggleHighContrast={toggleHighContrast}
+                toggleGrayscale={toggleGrayscale}
+                toggleHighlightLinks={toggleHighlightLinks}
+                toggleReadableFont={toggleReadableFont}
+                toggleStopAnimations={toggleStopAnimations}
+                reset={reset}
+                onClose={close}
+              />
             </FocusTrap>
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-type ToggleRowProps = {
-  label: string;
-  description: string;
-  checked: boolean;
-  onChange: () => void;
-};
-
-function ToggleRow({ label, description, checked, onChange }: ToggleRowProps) {
-  return (
-    <div className="flex items-center justify-between rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2">
-      <div className="flex-1 pe-2">
-        <p className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200">
-          {label}
-        </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          {description}
-        </p>
-      </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={onChange}
-        className={`relative inline-flex flex-shrink-0 h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f] ${
-          checked ? "bg-[#d4826f]" : "bg-gray-200 dark:bg-gray-600"
-        }`}
-        aria-label={`${label}: ${checked ? "פעיל" : "כבוי"}`}
-      >
-        <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ease-in-out ${
-            checked ? "-translate-x-5" : "translate-x-0"
-          } ms-1`}
-        />
-      </button>
     </div>
   );
 }

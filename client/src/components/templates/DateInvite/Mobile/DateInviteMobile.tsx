@@ -71,8 +71,8 @@ export function DateInviteMobile({
               </h1>
 
               {/* Subtitle */}
-              <p className="text-xs text-gray-400 mb-6 text-hebrew-body">
-                ...כדאי לך לבחור את התשובה הנכונה
+              <p className="text-xs text-gray-800 mb-6 text-hebrew-body">
+               כדאי לך לבחור את התשובה הנכונה...
               </p>
 
               {/* Buttons */}

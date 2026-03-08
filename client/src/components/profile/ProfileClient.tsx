@@ -72,7 +72,7 @@ export function ProfileClient({
     queryKey: DASHBOARD_QUERY_KEY,
     queryFn: async () => {
       const result = await getDashboard();
-      if ("error" in result) throw new Error(result.error);
+      if (!result.success) throw new Error(result.error);
       return result.data;
     },
     initialData: initialDashboard,
@@ -94,7 +94,7 @@ export function ProfileClient({
         first_name: firstName,
         last_name: lastName,
       });
-      if ("error" in result) throw new Error(result.error);
+      if (!result.success) throw new Error(result.error);
       return result.data;
     },
     onMutate: async ({ firstName, lastName }) => {
@@ -118,7 +118,7 @@ export function ProfileClient({
   const avatarMutation = useMutation({
     mutationFn: async (avatarUrl: string) => {
       const result = await updateMyProfile({ avatar_url: avatarUrl });
-      if ("error" in result) throw new Error(result.error);
+      if (!result.success) throw new Error(result.error);
       return result.data;
     },
     onMutate: async (avatarUrl) => {
@@ -172,12 +172,11 @@ export function ProfileClient({
 
   const handleDeleteTemplate = async (slug: string) => {
     // TODO: implement via server action
-    console.log("Delete template:", slug);
   };
 
   const handleDeleteAccount = useCallback(async (): Promise<void> => {
     const result = await deleteMyAccount();
-    if ("error" in result) {
+    if (!result.success) {
       setError(result.error);
       throw new Error(result.error);
     }

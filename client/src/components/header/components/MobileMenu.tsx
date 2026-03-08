@@ -1,16 +1,16 @@
 "use client";
 
-/**
- * MobileMenu Component
- * Slide-out menu for mobile and tablet viewports
- * Includes focus trap for keyboard accessibility
- */
+/** MobileMenu – slide-out nav for mobile/tablet with navy background. */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, forwardRef } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import type { MobileMenuProps } from "../types";
 import { FocusTrap } from "@/components/accessibility";
 import { useAuth } from "@/contexts/AuthContext";
+
+/** Uniform border accent — coral/salmon brand color */
+const BORDER_COLOR = "#d4826f";
 
 export function MobileMenu({
   isOpen,
@@ -21,40 +21,33 @@ export function MobileMenu({
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
   const { user, loading } = useAuth();
 
-  // Focus first link when menu opens
   useEffect(() => {
     if (isOpen && firstLinkRef.current) {
-      // Small delay to allow animation to start
-      setTimeout(() => {
-        firstLinkRef.current?.focus();
-      }, 100);
+      setTimeout(() => firstLinkRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
-  // NOTE: Body scroll lock is handled by useHeader hook.
-  // Do NOT duplicate it here — racing cleanup causes persistent overflow:hidden.
-
   return (
     <>
-      {/* Backdrop — z-[1] within header stacking context: behind header bar & menu, above page content */}
+      {/* Backdrop – starts below the header bar so it doesn't block header controls */}
       <div
         className={`
-          fixed inset-0 bg-black/50 backdrop-blur-sm
-          transition-opacity duration-300 lg:hidden z-[1]
+          fixed left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm
+          transition-opacity duration-300 lg:hidden z-[90]
           ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
         `}
+        style={{ top: "64px" }}
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Menu Panel — z-[2] within header stacking context: same level as header bar, above backdrop */}
+      {/* Menu Panel – theme-aware background */}
       <FocusTrap active={isOpen} onEscape={onClose}>
         <div
           id="mobile-menu"
           className={`
-            absolute top-full left-0 w-full z-[2]
-            bg-white dark:bg-gray-900
-            shadow-xl lg:hidden
+            absolute top-full left-0 w-full z-[95]
+            bg-white dark:bg-[#2e3c52] shadow-xl lg:hidden
             transition-all duration-300 ease-out overflow-hidden
             ${
               isOpen
@@ -66,33 +59,18 @@ export function MobileMenu({
           aria-hidden={!isOpen}
         >
           <nav className="container mx-auto px-4 py-6" aria-label="ניווט נייד">
-            {/* Navigation Links */}
-            <ul className="flex flex-col gap-2 mb-6" role="list">
+            <ul className="flex flex-col gap-3 mb-6" role="list">
               {navItems.map((item, index) => (
-                <li key={item.id} role="listitem">
-                  <Link
-                    ref={index === 0 ? firstLinkRef : null}
-                    href={item.href}
-                    onClick={onClose}
-                    className="
-                      block p-4
-                      text-[#2e3c52] dark:text-gray-200
-                      font-medium
-                      hover:text-[#c4735f] dark:hover:text-[#e8917a]
-                      hover:bg-gray-100 dark:hover:bg-gray-800
-                      rounded-xl transition-all duration-200
-                      text-right text-hebrew-body
-                      border-b border-gray-100 dark:border-gray-700/50 last:border-b-0
-                      focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f] focus-visible:ring-offset-2
-                    "
-                  >
-                    {item.label}
-                  </Link>
-                </li>
+                <MobileNavItem
+                  key={item.id}
+                  href={item.href}
+                  label={item.label}
+                  ref={index === 0 ? firstLinkRef : null}
+                  onClick={onClose}
+                />
               ))}
             </ul>
 
-            {/* Login/Register — only when not logged in */}
             {!loading && !user && onLoginClick && (
               <button
                 type="button"
@@ -102,12 +80,11 @@ export function MobileMenu({
                 }}
                 className="
                   w-full py-3 text-center rounded-lg
-                  bg-[#2e3c52] dark:bg-[#d4826f]
-                  text-white font-bold text-sm
-                  transition-all duration-200
-                  text-hebrew-heading
-                  hover:bg-[#1B263B] dark:hover:bg-[#c4735f]
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f] focus-visible:ring-offset-2
+                  bg-[#d4826f] text-white font-bold text-sm
+                  transition-all duration-200 text-hebrew-heading
+                  hover:bg-[#c4735f]
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]
+                  focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#2e3c52]
                 "
               >
                 התחברות / הרשמה
@@ -119,3 +96,44 @@ export function MobileMenu({
     </>
   );
 }
+
+/* ─── Nav Item ─── */
+interface MobileNavItemProps {
+  href: string;
+  label: string;
+  onClick: () => void;
+}
+
+const MobileNavItem = forwardRef<HTMLAnchorElement, MobileNavItemProps>(
+  ({ href, label, onClick }, ref) => (
+    <li role="listitem">
+      <motion.div
+        whileTap={{ scale: 0.97 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      >
+        <Link
+          ref={ref}
+          href={href}
+          onClick={onClick}
+          className="
+            block p-4 rounded-xl text-right text-hebrew-body font-medium
+            text-[#2e3c52] dark:text-white/90
+            hover:text-[#c4735f] dark:hover:text-white
+            bg-gray-50 dark:bg-white/10
+            hover:bg-gray-100 dark:hover:bg-white/15
+            transition-all duration-200
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]
+            focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#2e3c52]
+          "
+          style={{
+            borderRight: `4px solid ${BORDER_COLOR}`,
+            borderBottom: `1px solid rgba(212,130,111,0.2)`,
+          }}
+        >
+          {label}
+        </Link>
+      </motion.div>
+    </li>
+  ),
+);
+MobileNavItem.displayName = "MobileNavItem";

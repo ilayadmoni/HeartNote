@@ -95,14 +95,14 @@ export function ConfirmationModal({
       // ── Call the generic server action ────────────────────────────
       const result = await submitGenericCreation(formData);
 
-      if ("error" in result) {
+      if (!result.success) {
         setErrorMessage(result.error);
         setIsLoading(false);
         return;
       }
 
       // ── Redirect to the new card page ────────────────────────────
-      router.push(`/p/${result.creationId}`);
+      router.push(`/p/${result.data.creationId}`);
     } catch (err) {
       setErrorMessage(
         err instanceof Error ? err.message : "שגיאה לא צפויה, נסו שנית",

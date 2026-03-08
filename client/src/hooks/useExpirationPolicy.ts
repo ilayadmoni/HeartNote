@@ -32,7 +32,6 @@ export function useExpirationPolicy(slug: string): ExpirationPolicyResult {
       setLoading(false);
       return;
     }
-    console.log("useExpirationPolicy: Fetching policy for user:", user.id, "slug:", slug);
 
     setLoading(true);
     setExpirationDate(null);
@@ -64,7 +63,6 @@ export function useExpirationPolicy(slug: string): ExpirationPolicyResult {
           setLoading(false);
           return;
         }
-        console.log("Fetching expiration policy for slug:", slug);
         const tier = profileRes.data?.subscription_tier ?? "free";
         const policyRaw = templateRes.data?.expiration_policy ?? null;
         const policy =

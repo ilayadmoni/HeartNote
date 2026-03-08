@@ -8,6 +8,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { protectedAction } from "@/lib/protectedAction";
+import { ActionError, type ActionResult } from "@/lib/action-response";
 import type { CreationListItem, CreationDetail } from "@/lib/validations";
 
 // ---------------------------------------------------------------------------
@@ -19,20 +21,9 @@ import type { CreationListItem, CreationDetail } from "@/lib/validations";
  * RLS enforces user_id ownership.
  */
 export async function getMyCreations(): Promise<
-  { data: CreationListItem[] } | { error: string; status: number }
+  ActionResult<CreationListItem[]>
 > {
-  try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { error: "Unauthorized", status: 401 };
-    }
-
+  return protectedAction(async (user, supabase) => {
     const { data, error } = await supabase
       .from("creations")
       .select(
@@ -43,10 +34,10 @@ export async function getMyCreations(): Promise<
       .order("created_at", { ascending: false });
 
     if (error) {
-      return { error: error.message, status: 500 };
+      throw new ActionError(error.message, 500);
     }
 
-    const items: CreationListItem[] = (data ?? []).map((c) => {
+    return (data ?? []).map((c) => {
       const tmpl = (c.templates as unknown as Record<string, string>) ?? {};
       return {
         id: c.id as string,
@@ -58,14 +49,7 @@ export async function getMyCreations(): Promise<
         created_at: c.created_at as string,
       };
     });
-
-    return { data: items };
-  } catch (e) {
-    return {
-      error: `Failed to fetch creations: ${e instanceof Error ? e.message : String(e)}`,
-      status: 500,
-    };
-  }
+  });
 }
 
 // ---------------------------------------------------------------------------

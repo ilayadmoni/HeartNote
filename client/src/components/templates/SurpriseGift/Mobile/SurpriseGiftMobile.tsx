@@ -1,12 +1,8 @@
 "use client";
 
-/**
- * SurpriseGiftMobile Component
- * Gift box that shakes on tap and opens to reveal a greeting (mobile).
- * Max 150 lines per project rules.
- */
+/** SurpriseGiftMobile – gift box that shakes on tap and opens to reveal a greeting. */
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import confetti from "canvas-confetti";
@@ -34,21 +30,30 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
   const [clicks, setClicks] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [shaking, setShaking] = useState(false);
-
+  const [showReset, setShowReset] = useState(false);
   const needed = clicksRequired || DEFAULT_CLICKS;
 
-  // Fire confetti on open
+  // Ref prevents confetti re-fire on editor color changes
+  const colorsRef = useRef({ primaryColor, ribbonColor });
+  colorsRef.current = { primaryColor, ribbonColor };
+
   useEffect(() => {
     if (!isOpen) return;
-    const colors = [primaryColor, ribbonColor, "#ff6b8a", "#ffd700"];
+    const { primaryColor: pc, ribbonColor: rc } = colorsRef.current;
+    const colors = [pc, rc, "#ff6b8a", "#ffd700"];
     confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors });
-    const t = setTimeout(
+    const t1 = setTimeout(
       () =>
         confetti({ particleCount: 50, spread: 80, origin: { y: 0.5 }, colors }),
       300,
     );
-    return () => clearTimeout(t);
-  }, [isOpen, primaryColor, ribbonColor]);
+    const t2 = setTimeout(() => setShowReset(true), 1500); // delay "Try Again"
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   const handleTap = useCallback(() => {
     if (isOpen) return;
@@ -63,15 +68,18 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
     setClicks(0);
     setIsOpen(false);
     setShaking(false);
+    setShowReset(false);
   }, []);
 
   const pathname = usePathname();
-  const isCreateRoute = pathname?.includes('/create/');
+  const isCreateRoute = pathname?.includes("/create/");
 
   return (
-    <div className={`w-full flex flex-col justify-between items-center gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate ${
-      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
-    }`}>
+    <div
+      className={`w-full flex flex-col justify-between items-center gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate ${
+        isCreateRoute ? "min-h-[400px]" : "min-h-[650px]"
+      }`}
+    >
       <FloatingIcons />
       {/* Main Content - Top */}
       <div className="flex-1 flex flex-col items-center justify-center w-full">
@@ -127,12 +135,17 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
                   {greeting}
                 </p>
               </div>
-              <button
-                onClick={handleReset}
-                className="w-full mt-5 text-sm font-medium underline text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-              >
-                נסו שוב
-              </button>
+              {showReset && (
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                  onClick={handleReset}
+                  className="w-full mt-5 text-sm font-medium underline text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                >
+                  נסו שוב
+                </motion.button>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

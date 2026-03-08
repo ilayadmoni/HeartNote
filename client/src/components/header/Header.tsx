@@ -6,11 +6,12 @@
  * Supports desktop, tablet (iPad), and mobile (iPhone) layouts
  */
 
-import { useState, useEffect } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { usePathname } from "next/navigation";
 import type { HeaderProps } from "./types";
 import { NAV_ITEMS } from "./constants";
 import { useHeader } from "./hooks/useHeader";
+import { usePasswordResetModal } from "./hooks/usePasswordResetModal";
 import {
   Logo,
   NavLinks,
@@ -30,24 +31,16 @@ export function Header({ className = "" }: HeaderProps) {
   const [loginModalView, setLoginModalView] = useState<
     "login" | "update-password"
   >("login");
-  const searchParams = useSearchParams();
 
-  // Auto-open modal in update-password mode when coming from recovery link
-  // Supports both: ?reset_password=true (legacy) and ?modal=reset-password (new)
-  useEffect(() => {
-    if (
-      searchParams.get("reset_password") === "true" ||
-      searchParams.get("modal") === "reset-password"
-    ) {
-      setLoginModalView("update-password");
-      setIsLoginModalOpen(true);
-      // Clean the URL without triggering a navigation
-      const url = new URL(window.location.href);
-      url.searchParams.delete("reset_password");
-      url.searchParams.delete("modal");
-      window.history.replaceState({}, "", url.pathname + url.search);
+  // Auto-open modal from password reset link
+  usePasswordResetModal(setLoginModalView, setIsLoginModalOpen);
+
+  // Close mobile menu when UserMenu opens on mobile
+  const handleUserMenuToggle = (isOpen: boolean) => {
+    if (isOpen && isMobileMenuOpen) {
+      closeMobileMenu();
     }
-  }, [searchParams]);
+  };
 
   // Hide header only on preview frame (iframe content)
   if (pathname?.startsWith("/preview-frame")) {
@@ -73,8 +66,8 @@ export function Header({ className = "" }: HeaderProps) {
         role="banner"
         aria-label="כותרת ראשית"
         className={`
-          sticky top-0 z-[100] w-full
-          bg-white dark:bg-gray-900
+          ${isMobileMenuOpen ? "fixed" : "sticky"} top-0 z-[100] w-full
+          bg-[#faf7f5] dark:bg-gray-900
           transition-all duration-300 ease-out
           ${
             isScrolled
@@ -84,7 +77,7 @@ export function Header({ className = "" }: HeaderProps) {
           ${className}
         `}
       >
-        <div className="relative z-[2] w-full px-4 lg:px-8 bg-white dark:bg-gray-900">
+        <div className="relative z-[2] w-full px-4 lg:px-8 bg-[#faf7f5] dark:bg-gray-900">
           <div className="flex items-center justify-between h-16 lg:h-18">
             {/* Right Side: Logo (RTL) */}
             <div className="flex-shrink-0">
@@ -110,7 +103,7 @@ export function Header({ className = "" }: HeaderProps) {
 
               {/* Mobile: Avatar + Hamburger */}
               <div className="flex items-center gap-2 lg:hidden">
-                <UserMenu />
+                <UserMenu onMenuToggle={handleUserMenuToggle} />
                 <HamburgerButton
                   isOpen={isMobileMenuOpen}
                   onClick={toggleMobileMenu}
@@ -136,7 +129,6 @@ export function Header({ className = "" }: HeaderProps) {
         initialView={loginModalView}
         onSwitchToRegister={() => {
           // TODO: Implement register modal switch
-          console.log("Switch to register");
         }}
       />
     </>
