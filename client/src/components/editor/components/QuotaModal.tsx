@@ -20,6 +20,7 @@ interface QuotaModalProps {
 }
 
 export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
+  const CLOSE_THEN_NAVIGATE_DELAY_MS = 60;
   const router = useRouter();
   const { profile } = useProfile();
 
@@ -28,7 +29,9 @@ export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
   /** Dismiss → close the modal and go home */
   const handleDismiss = () => {
     onClose();
-    router.push("/");
+    window.setTimeout(() => {
+      router.push("/");
+    }, CLOSE_THEN_NAVIGATE_DELAY_MS);
   };
 
   return (

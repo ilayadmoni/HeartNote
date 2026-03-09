@@ -29,6 +29,7 @@ interface UpdatePasswordFormProps {
 }
 
 export function UpdatePasswordForm({ onComplete }: UpdatePasswordFormProps) {
+  const CLOSE_THEN_NAVIGATE_DELAY_MS = 150;
   const router = useRouter();
   const completedRef = useRef(false);
 
@@ -67,10 +68,28 @@ export function UpdatePasswordForm({ onComplete }: UpdatePasswordFormProps) {
     if (completedRef.current) return;
     completedRef.current = true;
 
-    onComplete();                       // close modal
+    // 1. Close the modal state immediately
+    onComplete();
     toast.success(UPDATE_PASSWORD_SUCCESS, { duration: 3500 });
-    router.push("/");                   // navigate home
-    router.refresh();                   // refresh server components / session
+
+    // 2. Force DOM cleanup for Radix/Shadcn lingering locks.
+    // Even if a global auth event causes aggressive unmounts, this ensures
+    // stale lock artifacts do not keep the page non-interactive.
+    window.setTimeout(() => {
+      document.body.removeAttribute("data-scroll-locked");
+
+      const rootElement = document.getElementById("__next") || document.body;
+      rootElement.removeAttribute("aria-hidden");
+      rootElement.removeAttribute("data-aria-hidden");
+
+      const radixStyle = document.querySelector("[data-radix-scroll-prevent]");
+      if (radixStyle) {
+        radixStyle.remove();
+      }
+
+      // 3. Now it is safe to route.
+      router.push("/");
+    }, CLOSE_THEN_NAVIGATE_DELAY_MS);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

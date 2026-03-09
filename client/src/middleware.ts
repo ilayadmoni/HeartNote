@@ -20,7 +20,8 @@ export async function middleware(request: NextRequest) {
   const { supabase, response } = createMiddlewareClient(request);
   const pathname = request.nextUrl.pathname;
 
-  // ── PKCE fallback: code arrived at wrong URL → forward to callback ──
+  // ── Auth flow handling: support both PKCE (old) and Token Hash (new) ──
+  // PKCE flow: code parameter → forward to /auth/callback (deprecated)
   const code = request.nextUrl.searchParams.get("code");
   if (code && !pathname.startsWith("/auth/callback")) {
     const callbackUrl = new URL("/auth/callback", request.url);
@@ -30,6 +31,9 @@ export async function middleware(request: NextRequest) {
     callbackUrl.searchParams.set("next", next);
     return NextResponse.redirect(callbackUrl);
   }
+
+  // Token Hash flow: token_hash parameter → already at correct route
+  // (no redirect needed, /auth/confirm handles it directly)
 
   // Get current session
   const {

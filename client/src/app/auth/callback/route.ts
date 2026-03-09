@@ -1,10 +1,14 @@
 /**
- * Auth Callback Route Handler
- * ───────────────────────────
- * Handles PKCE code exchange for email verification and password recovery.
- * Runs server-side, exchanges the code for a session, then redirects.
+ * Auth Callback Route Handler (DEPRECATED - PKCE Flow)
+ * ──────────────────────────────────────────────────────
+ * ⚠️ DEPRECATED: This route uses the old PKCE flow with exchangeCodeForSession.
+ * ⚠️ USE /auth/confirm instead for Token Hash (OTP) flow.
  *
- * URL pattern:  /auth/callback?code=...&next=/some-page
+ * This file is kept temporarily for backward compatibility with old email links.
+ * Once all email templates are updated to use /auth/confirm, this can be deleted.
+ *
+ * Old URL pattern:  /auth/callback?code=...&next=/some-page
+ * New URL pattern:  /auth/confirm?token_hash=...&type=signup|recovery
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -41,6 +45,7 @@ export async function GET(request: NextRequest) {
       },
     );
 
+    // ⚠️ DEPRECATED: exchangeCodeForSession is the old PKCE method
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {

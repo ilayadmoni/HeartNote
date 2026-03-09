@@ -46,6 +46,7 @@ export function LoginModal({
   redirectTo,
   initialView,
 }: LoginModalProps) {
+  const CLOSE_THEN_NAVIGATE_DELAY_MS = 220;
   const router = useRouter();
   const { signIn, signUp, error: authError, clearError } = useAuth();
   const savedOverflow = useRef<string>("");
@@ -93,22 +94,45 @@ export function LoginModal({
     }
   }, [isOpen, clearError]);
 
-  // ── Prevent body scroll ──────────────────────────────────────────
+  // ── Defensive body cleanup (prevents stale modal locks) ──────────
+  const restoreBodyInteractivity = useCallback(() => {
+    document.body.style.overflow = savedOverflow.current;
+    document.body.style.pointerEvents = "auto";
+  }, []);
+
+  // ── Prevent body scroll while modal is open ──────────────────────
   useEffect(() => {
     if (isOpen) {
       savedOverflow.current = document.body.style.overflow;
       document.body.style.overflow = "hidden";
     }
+
+    if (!isOpen) {
+      // Ensure body is always clickable after close.
+      document.body.style.pointerEvents = "auto";
+    }
+
     return () => {
-      document.body.style.overflow = savedOverflow.current;
+      restoreBodyInteractivity();
     };
-  }, [isOpen]);
+  }, [isOpen, restoreBodyInteractivity]);
 
   // ── Close helper ─────────────────────────────────────────────────
   const handleClose = useCallback(() => {
-    document.body.style.overflow = savedOverflow.current;
+    restoreBodyInteractivity();
     onClose();
-  }, [onClose]);
+  }, [onClose, restoreBodyInteractivity]);
+
+  // Close modal first, then run follow-up work after exit animation
+  // and focus-trap cleanup have had enough time to complete.
+  const closeThen = useCallback((afterClose?: () => void) => {
+    handleClose();
+    if (!afterClose) return;
+
+    window.setTimeout(() => {
+      afterClose();
+    }, CLOSE_THEN_NAVIGATE_DELAY_MS);
+  }, [handleClose]);
 
   // ── Client-side validation ───────────────────────────────────────
   const validate = (): boolean => {
@@ -148,12 +172,12 @@ export function LoginModal({
 
       // If we get here, login succeeded (signIn throws on error).
       sessionStorage.setItem(SPLASH_STORAGE_KEY, "true");
-      handleClose();
-
-      // Intent-based redirect: navigate to originally intended page
-      if (redirectTo) {
-        router.push(redirectTo);
-      }
+      // Explicit close first. Only then navigate after cleanup window.
+      closeThen(() => {
+        if (redirectTo) {
+          router.push(redirectTo);
+        }
+      });
     } catch {
       // signIn already set authError via AuthContext, but we also
       // keep a local error for the reserved-height slot.

@@ -36,7 +36,17 @@ const ERR_INTERNAL =
 const ERR_RESET_PROCESS =
   "שגיאה בתהליך איפוס הסיסמה. ייתכן שהקישור פג תוקף.";
 
-/** Build the recovery redirect URL from request headers */
+/**
+ * Build the recovery redirect URL from request headers.
+ * 
+ * NOTE: In Token Hash (OTP) flow, this redirectTo is NOT used by Supabase.
+ * Instead, the email template itself contains the full URL with token_hash.
+ * This is kept for backward compatibility with any old PKCE-based emails
+ * that might still be in flight.
+ * 
+ * For Token Hash flow, configure the email template in Supabase Dashboard:
+ *   https://www.heartnote.co.il/auth/confirm?token_hash={{ .TokenHash }}&type=recovery
+ */
 async function getRedirectUrl(): Promise<string> {
   const headerStore = await headers();
   let origin =
@@ -48,8 +58,10 @@ async function getRedirectUrl(): Promise<string> {
   // x-forwarded-host omits the protocol — add it so URL() doesn't throw
   if (!origin.startsWith("http")) origin = `https://${origin}`;
 
-  const url = new URL("/auth/callback", origin);
-  url.searchParams.set("next", "/?modal=reset-password");
+  // Point to the new Token Hash confirm route (backward compatible)
+  const url = new URL("/auth/confirm", origin);
+  // Note: In actual Token Hash flow, type and token_hash come from email template
+  // This redirectTo is only used as fallback for old PKCE emails
   return url.toString();
 }
 
