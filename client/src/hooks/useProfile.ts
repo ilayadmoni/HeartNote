@@ -13,7 +13,9 @@ const supabase = createClient();
 interface Subscription {
   tier: "free" | "premium";
   creations_count_free: number;
+  creations_count_pro: number;
   additional_creation_free: number;
+  additional_creation_pro: number;
   creation_limit: number;
   premium_expiry: string | null;
 }
@@ -43,19 +45,30 @@ export function useProfile(): UseProfileReturn {
       setLoading(true);
       const { data, error: err } = await supabase
         .from("profiles")
-        .select("first_name, last_name, avatar_url, subscription_tier, creations_count_free, additional_creation_free, premium_expiry")
+        .select("first_name, last_name, avatar_url, subscription_tier, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro, premium_expiry")
         .eq("id", user.id)
         .single();
       if (err || !data) throw new Error(err?.message ?? "Failed to load profile");
+
+      // Fetch creation_limit from subscription_policies based on user tier
+      const tier = data.subscription_tier ?? "free";
+      const { data: policy } = await supabase
+        .from("subscription_policies")
+        .select("creation_limit")
+        .eq("tier_code", tier)
+        .single();
+
       setProfile({
         firstName: data.first_name ?? "",
         lastName: data.last_name ?? "",
         avatarUrl: data.avatar_url ?? null,
         subscription: {
-          tier: data.subscription_tier ?? "free",
+          tier: tier as "free" | "premium",
           creations_count_free: data.creations_count_free ?? 0,
+          creations_count_pro: data.creations_count_pro ?? 0,
           additional_creation_free: data.additional_creation_free ?? 0,
-          creation_limit: 3,
+          additional_creation_pro: data.additional_creation_pro ?? 0,
+          creation_limit: policy?.creation_limit ?? 3,
           premium_expiry: data.premium_expiry ?? null,
         },
       });

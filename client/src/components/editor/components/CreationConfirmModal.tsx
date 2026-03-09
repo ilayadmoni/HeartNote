@@ -44,19 +44,26 @@ export function CreationConfirmModal({
 
   const loading = profileLoading || expirationLoading;
 
-  // Calculate remaining creations
+  // Calculate remaining creations – mirrors DB trigger formula:
+  // free:    (subscription_policies.creation_limit + additional_creation_free) - creations_count_free
+  // premium: (subscription_policies.creation_limit + additional_creation_pro)  - creations_count_pro  (limit is NULL → unlimited)
   const subscriptionTier = profile?.subscription.tier || "free";
+  const isPremium = subscriptionTier === "premium";
 
-  // For free tier, remaining = totalAllowed - count_free.
-  // For premium, unlimited.
-  const baseLimit = profile?.subscription.creation_limit ?? 3; // Fallback to 3 if not loaded
-  const totalAllowedFree = baseLimit + (profile?.subscription.additional_creation_free ?? 0);
-  const currentCreations =
-    subscriptionTier === "premium"
-      ? Infinity
-      : Math.max(0, totalAllowedFree - (profile?.subscription.creations_count_free ?? 0));
+  const creationLimit = profile?.subscription.creation_limit ?? 3;
+  const used = isPremium
+    ? (profile?.subscription.creations_count_pro ?? 0)
+    : (profile?.subscription.creations_count_free ?? 0);
+  const additional = isPremium
+    ? (profile?.subscription.additional_creation_pro ?? 0)
+    : (profile?.subscription.additional_creation_free ?? 0);
+  const totalAllowed = creationLimit + additional;
+  const isUnlimited = isPremium;
 
-  const remainingCreations = currentCreations === Infinity ? Infinity : Math.max(0, currentCreations - 1);
+  // remainingCreations = how many are left AFTER this creation
+  const remainingCreations = isUnlimited
+    ? Infinity
+    : Math.max(0, totalAllowed - used - 1);
 
   // Get avatar - use initials as fallback
   const avatar = profile?.avatarUrl;
@@ -198,12 +205,18 @@ export function CreationConfirmModal({
                         יצירות שנותרו לאחר היצירה:
                       </span>
                       <motion.span
-                        key={remainingCreations === Infinity ? "unlimited" : remainingCreations}
+                        key={
+                          remainingCreations === Infinity
+                            ? "unlimited"
+                            : remainingCreations
+                        }
                         initial={{ scale: 1.2 }}
                         animate={{ scale: 1 }}
                         className="text-sm font-bold text-[#2e3c52] dark:text-white text-hebrew-body text-right"
                       >
-                        {remainingCreations === Infinity ? "ללא הגבלה" : remainingCreations}
+                        {remainingCreations === Infinity
+                          ? "ללא הגבלה"
+                          : remainingCreations}
                       </motion.span>
                     </div>
 

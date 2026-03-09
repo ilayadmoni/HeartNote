@@ -25,6 +25,7 @@ export function SuccessModal({
   url,
   expiresAt,
 }: SuccessModalProps) {
+  const CLOSE_THEN_NAVIGATE_DELAY_MS = 60;
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -184,7 +185,9 @@ export function SuccessModal({
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   onClose();
-                  router.push("/");
+                  window.setTimeout(() => {
+                    router.push("/");
+                  }, CLOSE_THEN_NAVIGATE_DELAY_MS);
                 }}
                 className="w-full py-3 px-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-lg transition-colors font-medium text-xs sm:text-sm"
                 style={{ fontFamily: "'Open Sans', sans-serif" }}
