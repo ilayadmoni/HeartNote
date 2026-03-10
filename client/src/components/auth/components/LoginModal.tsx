@@ -13,7 +13,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { X, LogIn, AlertTriangle } from "lucide-react";
 import { AuthInput } from "./AuthInput";
 import { AuthTabs } from "./AuthTabs";
@@ -221,18 +221,17 @@ export function LoginModal({
   const subtitle = activeTab === "login" ? LOGIN_SUBTITLE : REGISTER_SUBTITLE;
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait" onExitComplete={restoreBodyInteractivity}>
       {isOpen && (
-        <FocusTrap active={isOpen} onEscape={handleClose}>
-          {/* Full-screen portal layer */}
-          <motion.div
-            key="auth-modal"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[200]"
-          >
+        <motion.div
+          key="login-modal-root"
+          initial={{ opacity: 0, pointerEvents: "none" }}
+          animate={{ opacity: 1, pointerEvents: "auto" }}
+          exit={{ opacity: 0, pointerEvents: "none" }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-[200]"
+        >
+          <FocusTrap active={isOpen} onEscape={handleClose}>
             {/* Backdrop — stronger dimming (60 %) to darken page title */}
             <div
               className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200"
@@ -306,40 +305,29 @@ export function LoginModal({
                         />
 
                         {/* Register error banner (from AuthContext) — skip email-specific errors */}
-                        {activeTab === "register" && (
-                          <AnimatePresence mode="wait">
-                            {authError && authError !== "מייל לא חוקי" && (
-                              <motion.div
-                                key="register-error"
-                                initial={{ opacity: 0, y: -8 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -8 }}
-                                transition={{ duration: 0.25 }}
-                                className="mb-4 p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800/60"
-                                role="alert"
-                              >
-                                <div className="flex items-center justify-center gap-2">
-                                  <AlertTriangle
-                                    size={16}
-                                    className="text-red-500 dark:text-red-400 shrink-0"
-                                  />
-                                  <p className="text-red-500 dark:text-red-400 text-sm font-semibold text-hebrew-body">
-                                    {authError}
-                                  </p>
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        )}
+                        {activeTab === "register" &&
+                          authError &&
+                          authError !== "מייל לא חוקי" && (
+                            <div
+                              className="mb-4 p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800/60"
+                              role="alert"
+                            >
+                              <div className="flex items-center justify-center gap-2">
+                                <AlertTriangle
+                                  size={16}
+                                  className="text-red-500 dark:text-red-400 shrink-0"
+                                />
+                                <p className="text-red-500 dark:text-red-400 text-sm font-semibold text-hebrew-body">
+                                  {authError}
+                                </p>
+                              </div>
+                            </div>
+                          )}
 
                         {/* ─── Login Form (client-side auth via AuthContext) ─── */}
                         {activeTab === "login" && (
-                          <motion.form
+                          <form
                             key={shakeKey}
-                            animate={
-                              shakeKey > 0 ? { x: [-10, 10, -10, 10, 0] } : {}
-                            }
-                            transition={{ duration: 0.4, ease: "easeInOut" }}
                             onSubmit={handleLogin}
                             className="flex flex-col"
                           >
@@ -460,7 +448,7 @@ export function LoginModal({
                                 LOGIN_BUTTON
                               )}
                             </button>
-                          </motion.form>
+                          </form>
                         )}
 
                         {/* Register Form */}
@@ -492,8 +480,8 @@ export function LoginModal({
                 <div className="h-1.5 bg-gradient-to-r from-[#d4826f] to-[#2e3c52]" />
               </motion.div>
             </div>
-          </motion.div>
-        </FocusTrap>
+          </FocusTrap>
+        </motion.div>
       )}
     </AnimatePresence>
   );

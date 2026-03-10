@@ -113,6 +113,13 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
                 {HERO_CTA}
                 <ArrowLeft size={20} />
               </Link>
+
+              <Link
+                href="/demo"
+                className={`flex items-center justify-center w-full sm:w-auto px-8 sm:px-10 py-4 rounded-full text-lg font-bold border border-[#d4826f] text-[#d4826f] dark:text-[#e8917a] dark:border-[#e8917a] bg-white/80 dark:bg-gray-800/80 hover:bg-[#f8ece8] dark:hover:bg-gray-700 text-hebrew-heading whitespace-nowrap transition-all duration-300 ${shouldAnimate ? "hover:scale-105" : ""}`}
+              >
+                {HERO_CTA_SECONDARY}
+              </Link>
             </motion.div>
           </div>
 
