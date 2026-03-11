@@ -140,7 +140,6 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         return;
       }
 
-
       // Show success modal with shareable link instead of redirecting
       setShowConfirmModal(false);
       setSuccessData({
@@ -156,7 +155,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   };
 
   return (
-    <div className="min-h-[200px] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
+    <div className="min-h-[200px] 2xl:min-h-[calc(100vh-16rem)] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
       {/* Compact Toolbar */}
       <div className="flex-shrink-0 bg-[#faf7f5] dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex items-center justify-between">
         <h1 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">

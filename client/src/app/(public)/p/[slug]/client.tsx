@@ -76,10 +76,7 @@ export function UserPageClient({
 
           {/* TIER 3: Template — bg-transparent root, content cards are solid white */}
           <div className="relative z-20 w-full">
-            <TemplateRenderer
-              componentKey={componentKey}
-              data={contentData}
-            />
+            <TemplateRenderer componentKey={componentKey} data={contentData} />
           </div>
         </div>
       )}
