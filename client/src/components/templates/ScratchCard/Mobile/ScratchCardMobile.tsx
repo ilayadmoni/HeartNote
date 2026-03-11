@@ -37,7 +37,7 @@ const REVEAL_THRESHOLD = 0.6;
 
 export function ScratchCardMobile({ data }: ScratchCardProps) {
   const pathname = usePathname();
-  const isCreateRoute = pathname?.includes('/create/');
+  const isCreateRoute = pathname?.includes("/create/");
   const [scratchedBlocks, setScratchedBlocks] = useState<Set<number>>(
     new Set(),
   );
@@ -83,9 +83,11 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
   const colorDark = adjustBrightness(primaryColor, -25); // Darker for border
 
   return (
-    <div className={`w-full h-full flex flex-col items-center justify-center bg-transparent px-4 py-5 overflow-auto relative isolate ${
-      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
-    }`}>
+    <div
+      className={`w-full h-full flex flex-col items-center justify-center bg-transparent px-4 py-5 overflow-auto relative isolate ${
+        isCreateRoute ? "min-h-[400px]" : "min-h-[650px]"
+      }`}
+    >
       <FloatingIcons />
       <BackToGallery className="mb-3" />
 

@@ -34,7 +34,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
       },
     ],
     defaultData: {
-      question: "האם תרצה לצאת איתי לדייט?",
+      question: "האם תרצי לצאת איתי לדייט?",
       yesText: "כן",
       noText: "לא",
       successMessage: "יש איזה כיף!",

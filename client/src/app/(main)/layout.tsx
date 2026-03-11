@@ -17,7 +17,7 @@ export default function MainLayout({
       <Suspense>
         <Header />
       </Suspense>
-      <main id="main-content" role="main" tabIndex={-1}>
+      <main id="main-content" role="main" tabIndex={-1} className="bg-[#faf7f5] dark:bg-gray-900 pb-px">
         {children}
       </main>
       <Footer />

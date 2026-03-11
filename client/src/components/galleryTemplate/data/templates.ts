@@ -42,9 +42,21 @@ export const TEMPLATES: Template[] = [
     description:
       "מסע נוסטלגי דרך הרגעים המיוחדים: הנשיקה הראשונה, הדייט הראשון והיום. 📅",
     category: "memories",
+    isFree: true,
     componentKey: "Timeline",
     link: "/create/timeline",
-    badge: { type: "heart", color: "#d4826f" },
+    badge: { type: "free", color: "#22c55e" },
+  },
+  {
+    id: "decision-wheel",
+    title: "גלגל החלטות",
+    description:
+      "לא יודעים מה לעשות? סובבו את הגלגל ותנו לגורל להחליט! 🎡",
+    category: "fun",
+    isFree: true,
+    componentKey: "DecisionWheel",
+    link: "/create/decision-wheel",
+    badge: { type: "free", color: "#22c55e" },
   },
   {
     id: "love-coupons",
@@ -79,17 +91,6 @@ export const TEMPLATES: Template[] = [
     link: "/create/open-when",
     badge: { type: "premium", color: "#f59e0b" },
     linkText: "פרימיום",
-  },
-  {
-    id: "decision-wheel",
-    title: "גלגל החלטות",
-    description:
-      "לא יודעים מה לעשות? סובבו את הגלגל ותנו לגורל להחליט! 🎡",
-    category: "fun",
-    isFree: true,
-    componentKey: "DecisionWheel",
-    link: "/create/decision-wheel",
-    badge: { type: "free", color: "#22c55e" },
   },
   {
     id: "steamy-window",

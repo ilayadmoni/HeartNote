@@ -201,6 +201,15 @@ export async function updatePassword(
 
   if (updateError) {
     console.error("[updatePassword] updateUser error:", updateError);
+
+    // Supabase returns code "same_password" when new password matches old
+    if (
+      "code" in updateError &&
+      updateError.code === "same_password"
+    ) {
+      return { error: "סיסמא ישנה, אנא הכנס סיסמא חדשה" };
+    }
+
     return { error: ERR_RESET_PROCESS };
   }
 
