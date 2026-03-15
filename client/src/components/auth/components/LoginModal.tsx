@@ -15,6 +15,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, LogIn, AlertTriangle } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
+import { BrandCalendar } from "@/components/ui/BrandCalendar";
 import { AuthInput } from "./AuthInput";
 import { AuthTabs } from "./AuthTabs";
 import { RegisterForm } from "./RegisterForm";
@@ -22,6 +25,8 @@ import { ForgotPasswordForm } from "./ForgotPasswordForm";
 import { UpdatePasswordForm } from "./UpdatePasswordForm";
 import { FocusTrap } from "@/components/accessibility";
 import { useAuth } from "@/contexts/AuthContext";
+import { USER_QUERY_KEY } from "@/hooks/useUser";
+import { PROFILE_QUERY_KEY } from "@/hooks/useProfileQuery";
 import { SPLASH_STORAGE_KEY } from "@/components/welcomeSplash";
 import {
   LOGIN_TITLE,
@@ -37,6 +42,12 @@ import {
 } from "../constants";
 import type { LoginModalProps, LoginFormData } from "../types";
 
+interface CompleteProfileFormData {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+}
+
 /* ------------------------------------------------------------------ */
 /*  LoginModal                                                         */
 /* ------------------------------------------------------------------ */
@@ -48,7 +59,8 @@ export function LoginModal({
 }: LoginModalProps) {
   const CLOSE_THEN_NAVIGATE_DELAY_MS = 220;
   const router = useRouter();
-  const { signIn, signUp, error: authError, clearError } = useAuth();
+  const queryClient = useQueryClient();
+  const { signIn, signUp, user, error: authError, clearError } = useAuth();
   const savedOverflow = useRef<string>("");
 
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
@@ -69,14 +81,78 @@ export function LoginModal({
   // Register-specific loading state
   const [isRegisterSubmitting, setIsRegisterSubmitting] = useState(false);
 
+  // Modal content step: auth (login/register) or profile completion
+  const [step, setStep] = useState<"auth" | "profile">("auth");
+
+  // Complete-profile form state
+  const [profileForm, setProfileForm] = useState<CompleteProfileFormData>({
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+  });
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+
   // Shake animation trigger
   const [shakeKey, setShakeKey] = useState(0);
+
+  // Google OAuth loading state
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  const splitFullName = useCallback((fullName: string | undefined) => {
+    if (!fullName) {
+      return { firstName: "", lastName: "" };
+    }
+
+    const parts = fullName.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) {
+      return { firstName: "", lastName: "" };
+    }
+
+    if (parts.length === 1) {
+      return { firstName: parts[0], lastName: "" };
+    }
+
+    return {
+      firstName: parts[0],
+      lastName: parts.slice(1).join(" "),
+    };
+  }, []);
+
+  const clearModalQuery = useCallback(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("modal");
+    window.history.replaceState({}, "", url.pathname + url.search);
+  }, []);
+
+  // ── Google OAuth handler ─────────────────────────────────────────
+  const handleGoogleSignIn = useCallback(async () => {
+    setIsGoogleLoading(true);
+    try {
+      const supabase = createClient();
+      const nextQuery = redirectTo ? `?next=${encodeURIComponent(redirectTo)}` : "";
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback${nextQuery}`,
+        },
+      });
+      // Browser will redirect — no further action needed here.
+    } catch {
+      setIsGoogleLoading(false);
+    }
+  }, [redirectTo]);
 
   // ── Reset form when modal closes ─────────────────────────────────
   // Open in update-password mode when coming from recovery link
   useEffect(() => {
     if (isOpen && initialView === "update-password") {
       setShowUpdatePassword(true);
+    }
+
+    if (isOpen && initialView === "complete-profile") {
+      setStep("profile");
+      setActiveTab("login");
     }
   }, [isOpen, initialView]);
 
@@ -87,8 +163,13 @@ export function LoginModal({
       setActiveTab("login");
       setShowForgotPassword(false);
       setShowUpdatePassword(false);
+      setStep("auth");
       setIsSubmitting(false);
       setIsRegisterSubmitting(false);
+      setIsProfileLoading(false);
+      setIsGoogleLoading(false);
+      setProfileError(null);
+      setProfileForm({ firstName: "", lastName: "", dateOfBirth: "" });
       setLoginError(null);
       clearError();
     }
@@ -133,6 +214,138 @@ export function LoginModal({
       afterClose();
     }, CLOSE_THEN_NAVIGATE_DELAY_MS);
   }, [handleClose]);
+
+  // ── Profile completeness check for Google OAuth users ─────────────
+  useEffect(() => {
+    const checkProfileState = async () => {
+      if (!isOpen || step !== "profile" || !user) {
+        return;
+      }
+
+      setIsProfileLoading(true);
+      setProfileError(null);
+
+      const { firstName: guessedFirstName, lastName: guessedLastName } =
+        splitFullName(
+          typeof user.user_metadata?.full_name === "string"
+            ? user.user_metadata.full_name
+            : undefined,
+        );
+
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("first_name, last_name, date_of_birth")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (error) {
+          setProfileError("לא הצלחנו לטעון את הפרופיל. נסו שוב.");
+          return;
+        }
+
+        const hasBirthdate = Boolean(data?.date_of_birth);
+
+        if (hasBirthdate) {
+          clearModalQuery();
+          closeThen();
+          return;
+        }
+
+        setProfileForm({
+          firstName: (data?.first_name as string | null) ?? guessedFirstName,
+          lastName: (data?.last_name as string | null) ?? guessedLastName,
+          dateOfBirth: (data?.date_of_birth as string | null) ?? "",
+        });
+      } finally {
+        setIsProfileLoading(false);
+      }
+    };
+
+    void checkProfileState();
+  }, [
+    isOpen,
+    step,
+    user,
+    splitFullName,
+    clearModalQuery,
+    closeThen,
+    router,
+  ]);
+
+  const completeProfileMutation = useMutation({
+    mutationFn: async (values: CompleteProfileFormData) => {
+      const supabase = createClient();
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
+
+      if (!currentUser) {
+        throw new Error("פג תוקף ההתחברות. התחברו שוב.");
+      }
+
+      const { error: profileUpsertError } = await supabase.from("profiles").upsert(
+        {
+          id: currentUser.id,
+          first_name: values.firstName.trim(),
+          last_name: values.lastName.trim(),
+          date_of_birth: values.dateOfBirth,
+        },
+        { onConflict: "id" },
+      );
+
+      if (profileUpsertError) {
+        throw new Error("שמירת הפרופיל נכשלה. נסו שוב.");
+      }
+
+      const { error: updateUserError } = await supabase.auth.updateUser({
+        data: {
+          first_name: values.firstName.trim(),
+          last_name: values.lastName.trim(),
+          full_name: `${values.firstName.trim()} ${values.lastName.trim()}`.trim(),
+          date_of_birth: values.dateOfBirth,
+        },
+      });
+
+      if (updateUserError) {
+        throw new Error("שמירת פרטי המשתמש נכשלה. נסו שוב.");
+      }
+
+      return values;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
+      clearModalQuery();
+      closeThen(() => {
+        if (redirectTo) {
+          router.push(redirectTo);
+        }
+      });
+    },
+    onError: (err: unknown) => {
+      const message =
+        err instanceof Error ? err.message : "שמירת הפרופיל נכשלה. נסו שוב.";
+      setProfileError(message);
+    },
+  });
+
+  const handleCompleteProfile = useCallback(async () => {
+    setProfileError(null);
+
+    if (!profileForm.firstName.trim() || !profileForm.lastName.trim()) {
+      setProfileError("יש למלא שם פרטי ושם משפחה.");
+      return;
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(profileForm.dateOfBirth)) {
+      setProfileError("יש לבחור תאריך לידה תקין.");
+      return;
+    }
+
+    completeProfileMutation.mutate(profileForm);
+  }, [profileForm, completeProfileMutation]);
 
   // ── Client-side validation ───────────────────────────────────────
   const validate = (): boolean => {
@@ -275,6 +488,140 @@ export function LoginModal({
                     ) : /* Forgot Password View */
                     showForgotPassword ? (
                       <ForgotPasswordForm onBack={handleBackFromForgot} />
+                    ) : step === "profile" ? (
+                      <motion.div
+                        key="complete-profile-step"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="pt-2"
+                      >
+                        <div className="flex justify-center mb-3">
+                          <div className="w-12 h-12 rounded-full bg-[#faf7f5] dark:bg-gray-700 flex items-center justify-center">
+                            <LogIn
+                              size={20}
+                              className="text-[#2e3c52] dark:text-white"
+                            />
+                          </div>
+                        </div>
+
+                        <h2 className="text-xl font-black text-center text-[#2e3c52] dark:text-white mb-1 text-hebrew-heading">
+                          נגיעות אחרונות
+                        </h2>
+                        <p className="text-center text-gray-500 dark:text-gray-400 mb-5 text-hebrew-body text-xs">
+                          השלימו את הפרטים כדי לסיים את ההרשמה עם Google
+                        </p>
+
+                        {isProfileLoading ? (
+                          <div className="py-8 flex items-center justify-center">
+                            <svg
+                              className="animate-spin h-6 w-6 text-[#2e3c52]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                              />
+                            </svg>
+                          </div>
+                        ) : (
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              void handleCompleteProfile();
+                            }}
+                            className="space-y-3"
+                          >
+                            <div>
+                              <label
+                                htmlFor="complete-first-name"
+                                className="block text-xs mb-1.5 text-gray-600 dark:text-gray-300 text-hebrew-body"
+                              >
+                                שם פרטי
+                              </label>
+                              <input
+                                id="complete-first-name"
+                                type="text"
+                                value={profileForm.firstName}
+                                onChange={(e) =>
+                                  setProfileForm((prev) => ({
+                                    ...prev,
+                                    firstName: e.target.value,
+                                  }))
+                                }
+                                className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2.5 text-sm text-[#2e3c52] dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52]"
+                              />
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor="complete-last-name"
+                                className="block text-xs mb-1.5 text-gray-600 dark:text-gray-300 text-hebrew-body"
+                              >
+                                שם משפחה
+                              </label>
+                              <input
+                                id="complete-last-name"
+                                type="text"
+                                value={profileForm.lastName}
+                                onChange={(e) =>
+                                  setProfileForm((prev) => ({
+                                    ...prev,
+                                    lastName: e.target.value,
+                                  }))
+                                }
+                                className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2.5 text-sm text-[#2e3c52] dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52]"
+                              />
+                            </div>
+
+                            <div>
+                              <BrandCalendar
+                                value={profileForm.dateOfBirth}
+                                onChange={(value) =>
+                                  setProfileForm((prev) => ({
+                                    ...prev,
+                                    dateOfBirth: value,
+                                  }))
+                                }
+                                label="תאריך לידה"
+                                error={undefined}
+                              />
+                            </div>
+
+                            <div
+                              className="h-5 flex items-center justify-center"
+                              role="status"
+                              aria-live="polite"
+                            >
+                              <p
+                                className={`text-red-500 text-xs text-hebrew-body transition-opacity duration-200 ${profileError ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+                              >
+                                {profileError || "\u00A0"}
+                              </p>
+                            </div>
+
+                            <button
+                              type="submit"
+                              disabled={completeProfileMutation.isPending}
+                              className="w-full py-2.5 px-4 rounded-lg bg-[#2e3c52] hover:bg-[#1B263B] text-white font-bold text-base transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-hebrew-heading"
+                            >
+                              {completeProfileMutation.isPending
+                                ? "שומרים..."
+                                : "השלמת הרשמה"}
+                            </button>
+                          </form>
+                        )}
+                      </motion.div>
                     ) : (
                       <>
                         {/* Icon */}
@@ -326,6 +673,47 @@ export function LoginModal({
 
                         {/* ─── Login Form (client-side auth via AuthContext) ─── */}
                         {activeTab === "login" && (
+                          <>
+                            {/* Google Sign-In Button */}
+                            <button
+                              type="button"
+                              onClick={handleGoogleSignIn}
+                              disabled={isGoogleLoading || isSubmitting}
+                              className="
+                                w-full flex items-center justify-center gap-3 py-2.5 px-4 mb-4
+                                rounded-xl border border-gray-200 dark:border-gray-600
+                                bg-white dark:bg-gray-700
+                                hover:bg-gray-50 dark:hover:bg-gray-600
+                                shadow-sm hover:shadow-md
+                                text-gray-700 dark:text-gray-200 font-medium text-sm
+                                transition-all duration-200
+                                disabled:opacity-50 disabled:cursor-not-allowed
+                                focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52] focus-visible:ring-offset-2
+                              "
+                            >
+                              {isGoogleLoading ? (
+                                <svg className="animate-spin h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                </svg>
+                              ) : (
+                                <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" aria-hidden="true">
+                                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
+                                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                                </svg>
+                              )}
+                              {isGoogleLoading ? "מתחבר..." : "המשך עם Google"}
+                            </button>
+
+                            {/* OR Divider */}
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
+                              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 tracking-wider">או</span>
+                              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
+                            </div>
+
                           <form
                             key={shakeKey}
                             onSubmit={handleLogin}
@@ -449,6 +837,7 @@ export function LoginModal({
                               )}
                             </button>
                           </form>
+                          </>
                         )}
 
                         {/* Register Form */}

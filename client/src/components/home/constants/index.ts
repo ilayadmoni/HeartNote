@@ -8,7 +8,7 @@ import type { StepItem } from "../types";
 export const HERO_BADGE = "מפעל הברכות הדיגיטלי החדש";
 export const HERO_TITLE_LINE1 = "ברוכים הבאים";
 export const HERO_TITLE_LINE2 = "למפעל הרגעים שלכם.";
-export const HERO_DESCRIPTION = "צרו בקלות יצירות דיגיטליים, מצחיקים ומרגשים שכיף לתת למי שאוהבים.";
+export const HERO_DESCRIPTION = "צרו בקלות יצירות דיגיטליות, מצחיקות ומרגשות שכיף לתת למי שאוהבים.";
 export const HERO_DESCRIPTION_2 = "בחרו תבנית, התאימו אישית, ושלחו!";
 export const HERO_CTA = "התניעו את המכונה – התחילו לעצב"
 export const HERO_CTA_SECONDARY = "צפו בדוגמה";
@@ -23,7 +23,7 @@ export const PRICING_BADGE = "שדרגו את החוויה";
 export const PRICING_TITLE_HIGHLIGHT = "המסלול המושלם";
 export const PRICING_TITLE = "מצאו את";
 export const PRICING_TITLE_END = "עבורכם";
-export const PRICING_DESCRIPTION = "ממנוי חינם להתנסות ועד לחבילת פרימיום שנותנת לכם הכל. הצטרפו לאלפי יוצרים שכבר שדרגו.";
+export const PRICING_DESCRIPTION = "מחשבון חינמי להתנסות ועד לכרטיסיית פרימיום שנותנת לכם הכל. הצטרפו לאלפי יוצרים שכבר שדרגו.";
 export const PRICING_CTA = "לכל החבילות והמחירים";
 
 // How It Works

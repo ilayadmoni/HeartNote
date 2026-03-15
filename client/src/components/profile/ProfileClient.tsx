@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { PROFILE_QUERY_KEY } from "@/hooks/useProfileQuery";
+import { USER_QUERY_KEY } from "@/hooks/useUser";
 import { ProfileDesktop } from "./Desktop/ProfileDesktop";
 import { ProfileMobile } from "./Mobile/ProfileMobile";
 import { updateMyProfile, deleteMyAccount } from "@/actions/profile";
@@ -106,6 +107,7 @@ export function ProfileClient({
       setProfile(mapApiProfileToUserProfile(data));
       // Invalidate React Query cache → Header updates instantly
       queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
     },
     onError: (err: Error) => {
       setError(err.message);
@@ -128,6 +130,7 @@ export function ProfileClient({
     onSuccess: (data) => {
       setProfile(mapApiProfileToUserProfile(data));
       queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
     },
     onError: (err: Error) => {
       setError(err.message);

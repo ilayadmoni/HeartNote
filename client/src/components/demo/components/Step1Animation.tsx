@@ -16,38 +16,42 @@ export function Step1Animation() {
     let isActive = true;
 
     const runSequence = async () => {
-      await wait(500);
-      if (!isActive) return;
+      try {
+        await wait(500);
+        if (!isActive) return;
 
-      // Just start the cursor a bit off and move slowly to the button (slow motion click)
-      await animate("#fake-cursor", { top: "80%", left: "50%", opacity: 1 }, { duration: 0.1 });
-      if (!isActive || !scope.current) return;
+        // Just start the cursor a bit off and move slowly to the button (slow motion click)
+        await animate("#fake-cursor", { top: "80%", left: "50%", opacity: 1 }, { duration: 0.1 });
+        if (!isActive || !scope.current) return;
 
-      const wrapperEl = scope.current as HTMLElement;
-      const buttonEl = wrapperEl.querySelector("#date-btn") as HTMLElement | null;
+        const wrapperEl = scope.current as HTMLElement;
+        const buttonEl = wrapperEl.querySelector("#date-btn") as HTMLElement | null;
 
-      if (buttonEl) {
-        const btnRect = buttonEl.getBoundingClientRect();
-        const wrapRect = wrapperEl.getBoundingClientRect();
-        const targetTop = ((btnRect.top + btnRect.height / 2 - wrapRect.top) / wrapRect.height) * 100;
-        const targetLeft = ((btnRect.left + btnRect.width / 2 - wrapRect.left) / wrapRect.width) * 100;
+        if (buttonEl) {
+          const btnRect = buttonEl.getBoundingClientRect();
+          const wrapRect = wrapperEl.getBoundingClientRect();
+          const targetTop = ((btnRect.top + btnRect.height / 2 - wrapRect.top) / wrapRect.height) * 100;
+          const targetLeft = ((btnRect.left + btnRect.width / 2 - wrapRect.left) / wrapRect.width) * 100;
 
-        await animate(
-          "#fake-cursor",
-          { top: `${targetTop}%`, left: `${targetLeft}%` },
-          { duration: 1.5, ease: "easeInOut" } // Slow motion to click point
-        );
+          await animate(
+            "#fake-cursor",
+            { top: `${targetTop}%`, left: `${targetLeft}%` },
+            { duration: 1.5, ease: "easeInOut" } // Slow motion to click point
+          );
+        }
+        if (!isActive) return;
+
+        await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.12 });
+        await animate("#date-btn", { scale: 0.95, backgroundColor: "#c97564" }, { duration: 0.12 });
+        await Promise.all([
+          animate("#fake-cursor", { scale: 1 }, { duration: 0.12 }),
+          animate("#date-btn", { scale: 1, backgroundColor: "#d98574" }, { duration: 0.2 }),
+        ]);
+
+        await wait(500);
+      } catch (e) {
+        // Animation interrupted (e.g., component unmounted)
       }
-      if (!isActive) return;
-
-      await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.12 });
-      await animate("#date-btn", { scale: 0.95, backgroundColor: "#c97564" }, { duration: 0.12 });
-      await Promise.all([
-        animate("#fake-cursor", { scale: 1 }, { duration: 0.12 }),
-        animate("#date-btn", { scale: 1, backgroundColor: "#d98574" }, { duration: 0.2 }),
-      ]);
-
-      await wait(500);
     };
 
     runSequence();

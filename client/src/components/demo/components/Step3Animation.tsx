@@ -17,49 +17,53 @@ export function Step3Animation() {
     let isActive = true;
 
     const runSequence = async () => {
-      await wait(500);
-      if (!isActive) return;
+      try {
+        await wait(500);
+        if (!isActive) return;
 
-      // Cursor enters pointing at center of card
-      await animate("#fake-cursor", { top: "52%", left: "50%", opacity: 1 }, { duration: 0.7, ease: "easeOut" });
+        // Cursor enters pointing at center of card
+        await animate("#fake-cursor", { top: "52%", left: "50%", opacity: 1 }, { duration: 0.7, ease: "easeOut" });
 
-      // Move toward "לא" button (RTL: first DOM element appears on the right)
-      await animate("#fake-cursor", { top: "71%", left: "63%" }, { duration: 0.5, ease: "easeInOut" });
-      await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
+        // Move toward "לא" button (RTL: first DOM element appears on the right)
+        await animate("#fake-cursor", { top: "71%", left: "63%" }, { duration: 0.5, ease: "easeInOut" });
+        await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
 
-      // "לא" button escapes — jumps diagonally up-left
-      await Promise.all([
-        animate("#no-btn", { x: -55, y: -28 }, { duration: 0.22, ease: "easeOut" }),
-        animate("#fake-cursor", { scale: 1 }, { duration: 0.1 }),
-      ]);
+        // "לא" button escapes — jumps diagonally up-left
+        await Promise.all([
+          animate("#no-btn", { x: -55, y: -28 }, { duration: 0.22, ease: "easeOut" }),
+          animate("#fake-cursor", { scale: 1 }, { duration: 0.1 }),
+        ]);
 
-      // Cursor chases
-      await animate("#fake-cursor", { top: "56%", left: "38%" }, { duration: 0.32, ease: "easeInOut" });
-      await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
+        // Cursor chases
+        await animate("#fake-cursor", { top: "56%", left: "38%" }, { duration: 0.32, ease: "easeInOut" });
+        await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
 
-      // Escapes again — jumps down-right
-      await Promise.all([
-        animate("#no-btn", { x: 40, y: 20 }, { duration: 0.2, ease: "easeOut" }),
-        animate("#fake-cursor", { scale: 1 }, { duration: 0.1 }),
-      ]);
+        // Escapes again — jumps down-right
+        await Promise.all([
+          animate("#no-btn", { x: 40, y: 20 }, { duration: 0.2, ease: "easeOut" }),
+          animate("#fake-cursor", { scale: 1 }, { duration: 0.1 }),
+        ]);
 
-      if (!isActive) return;
+        if (!isActive) return;
 
-      // Cursor gives up — moves to "כן" (RTL: second DOM element, appears on the left)
-      await animate("#fake-cursor", { top: "71%", left: "37%" }, { duration: 0.55, ease: "easeInOut" });
-      await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
-      await animate("#yes-btn", { scale: 0.93 }, { duration: 0.1 });
+        // Cursor gives up — moves to "כן" (RTL: second DOM element, appears on the left)
+        await animate("#fake-cursor", { top: "71%", left: "37%" }, { duration: 0.55, ease: "easeInOut" });
+        await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
+        await animate("#yes-btn", { scale: 0.93 }, { duration: 0.1 });
 
-      // Click lands — accept and fade cursor
-      if (!isActive) return;
-      setAccepted(true);
-      setShowConfetti(true);
-      await Promise.all([
-        animate("#fake-cursor", { scale: 1, opacity: 0 }, { duration: 0.3 }),
-        animate("#yes-btn", { scale: 1 }, { duration: 0.2 }),
-      ]);
+        // Click lands — accept and fade cursor
+        if (!isActive) return;
+        setAccepted(true);
+        setShowConfetti(true);
+        await Promise.all([
+          animate("#fake-cursor", { scale: 1, opacity: 0 }, { duration: 0.3 }),
+          animate("#yes-btn", { scale: 1 }, { duration: 0.2 }),
+        ]);
 
-      await wait(500);
+        await wait(500);
+      } catch (e) {
+        // Animation interrupted (e.g., component unmounted)
+      }
     };
 
     runSequence();

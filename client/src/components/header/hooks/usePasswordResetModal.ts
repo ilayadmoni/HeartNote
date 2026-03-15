@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
  * Handles auto-opening the password reset modal from URL params
  */
 export function usePasswordResetModal(
-  setView: (view: "login" | "update-password") => void,
+  setView: (view: "login" | "update-password" | "complete-profile") => void,
   setOpen: (open: boolean) => void
 ) {
   const searchParams = useSearchParams();
@@ -21,6 +21,15 @@ export function usePasswordResetModal(
       // Clean URL without navigation
       const url = new URL(window.location.href);
       url.searchParams.delete("reset_password");
+      url.searchParams.delete("modal");
+      window.history.replaceState({}, "", url.pathname + url.search);
+      return;
+    }
+
+    if (searchParams.get("modal") === "complete-profile") {
+      setView("complete-profile");
+      setOpen(true);
+      const url = new URL(window.location.href);
       url.searchParams.delete("modal");
       window.history.replaceState({}, "", url.pathname + url.search);
     }

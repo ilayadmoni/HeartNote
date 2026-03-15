@@ -46,9 +46,29 @@ export async function GET(request: NextRequest) {
     );
 
     // ⚠️ DEPRECATED: exchangeCodeForSession is the old PKCE method
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data: exchangeData, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
+      // Google OAuth users who still miss required profile fields
+      // are redirected to the mandatory /complete-profile route.
+      const userId = exchangeData?.user?.id;
+      const provider = exchangeData?.user?.app_metadata?.provider;
+      if (userId && provider === "google") {
+        const { data: profileRow } = await supabase
+          .from("profiles")
+          .select("date_of_birth")
+          .eq("id", userId)
+          .maybeSingle();
+
+        const isProfileIncomplete =
+          !profileRow ||
+          !profileRow.date_of_birth;
+
+        if (isProfileIncomplete) {
+          return NextResponse.redirect(`${origin}/complete-profile`);
+        }
+      }
+
       // Successful exchange → redirect to the intended page.
       // `next` will typically be `/?modal=reset-password` for recovery,
       // or `/` for email verification.

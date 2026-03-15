@@ -11,10 +11,23 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createMiddlewareClient } from "@/lib/supabase/middleware";
 
 // Routes that require authentication
-const PROTECTED_ROUTES = ["/dashboard", "/create", "/profile"];
+const PROTECTED_ROUTES = ["/dashboard", "/profile", "/complete-profile"];
 
 // Routes that should redirect to gallery if already logged in
 const AUTH_ROUTES = ["/login", "/signup"];
+const PROFILE_COMPLETION_ROUTE = "/complete-profile";
+
+function isNonEmpty(value: unknown): boolean {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isGoogleUser(user: {
+  app_metadata?: Record<string, unknown>;
+  identities?: Array<{ provider?: string }>;
+}): boolean {
+  if (user.app_metadata?.provider === "google") return true;
+  return (user.identities ?? []).some((identity) => identity.provider === "google");
+}
 
 export async function middleware(request: NextRequest) {
   const { supabase, response } = createMiddlewareClient(request);
@@ -39,6 +52,49 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Mandatory profile-completion gate for Google OAuth users.
+  if (user && isGoogleUser(user)) {
+    const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+    const hasMetaFirstName = isNonEmpty(metadata.first_name);
+    const hasMetaLastName = isNonEmpty(metadata.last_name);
+    const hasMetaBirthDate =
+      isNonEmpty(metadata.birth_date) ||
+      isNonEmpty(metadata.date_of_birth);
+
+    const { data: profileRow } = await supabase
+      .from("profiles")
+      .select("first_name, last_name, date_of_birth")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const hasProfileFirstName = isNonEmpty(profileRow?.first_name);
+    const hasProfileLastName = isNonEmpty(profileRow?.last_name);
+    const hasProfileBirthDate = isNonEmpty(profileRow?.date_of_birth);
+
+    const needsCompletion =
+      !hasMetaFirstName ||
+      !hasMetaLastName ||
+      !hasMetaBirthDate ||
+      !hasProfileFirstName ||
+      !hasProfileLastName ||
+      !hasProfileBirthDate;
+
+    const isAuthRoute = pathname.startsWith("/auth/");
+    const isOnCompletionPage = pathname === PROFILE_COMPLETION_ROUTE;
+
+    if (needsCompletion && !isOnCompletionPage && !isAuthRoute) {
+      return NextResponse.redirect(new URL(PROFILE_COMPLETION_ROUTE, request.url));
+    }
+
+    if (!needsCompletion && isOnCompletionPage) {
+      return NextResponse.redirect(new URL("/gallery", request.url));
+    }
+  }
+
+  if (user && pathname === PROFILE_COMPLETION_ROUTE && !isGoogleUser(user)) {
+    return NextResponse.redirect(new URL("/gallery", request.url));
+  }
 
   // Check if accessing protected route without auth
   // → redirect to /gallery with login=true so the login modal opens
