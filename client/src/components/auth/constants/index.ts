@@ -15,7 +15,8 @@ export const REGISTER_SUBTITLE = "צרו חשבון והתחילו ליצור ב
 export const REGISTER_BUTTON = "הרשמה";
 export const REGISTER_LOGIN_PROMPT = "כבר יש לכם חשבון?";
 export const REGISTER_LOGIN_LINK = "התחברו";
-export const REGISTER_SUCCESS_MESSAGE = "אם האימייל תקין, בדקו את תיבת הדואר שלכם.";
+export const REGISTER_SUCCESS_MESSAGE =
+  "אם האימייל תקין, שלחנו אליכם הודעה. אם אינכם רואים אותה בתיבת הנכנס, בדקו גם בתיקיית הספאם/דואר זבל.";
 
 // Form Labels
 export const AUTH_LABELS = {
@@ -56,7 +57,8 @@ export const AUTH_VALIDATION = {
 export const FORGOT_PASSWORD_TITLE = "שחזור סיסמה";
 export const FORGOT_PASSWORD_SUBTITLE = "הזינו את כתובת האימייל שלכם ונשלח לכם קישור לאיפוס הסיסמה";
 export const FORGOT_PASSWORD_BUTTON = "שליחת קישור איפוס";
-export const FORGOT_PASSWORD_SUCCESS = "אם הכתובת רשומה ופעילה במערכת, נשלח אליך קישור לאיפוס הסיסמה.";
+export const FORGOT_PASSWORD_SUCCESS =
+  "אם הכתובת רשומה ופעילה במערכת, נשלח אליך קישור לאיפוס הסיסמה. אם אינך רואה אותו בתיבת הנכנס, בדוק גם בתיקיית הספאם/דואר זבל.";
 export const FORGOT_PASSWORD_BACK = "חזרה להתחברות";
 export const FORGOT_PASSWORD_LINK = "שכחתם את הסיסמה?";
 

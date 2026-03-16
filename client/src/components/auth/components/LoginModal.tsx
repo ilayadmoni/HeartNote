@@ -130,7 +130,9 @@ export function LoginModal({
     setIsGoogleLoading(true);
     try {
       const supabase = createClient();
-      const nextQuery = redirectTo ? `?next=${encodeURIComponent(redirectTo)}` : "";
+      const nextQuery = redirectTo
+        ? `?next=${encodeURIComponent(redirectTo)}`
+        : "";
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -206,14 +208,17 @@ export function LoginModal({
 
   // Close modal first, then run follow-up work after exit animation
   // and focus-trap cleanup have had enough time to complete.
-  const closeThen = useCallback((afterClose?: () => void) => {
-    handleClose();
-    if (!afterClose) return;
+  const closeThen = useCallback(
+    (afterClose?: () => void) => {
+      handleClose();
+      if (!afterClose) return;
 
-    window.setTimeout(() => {
-      afterClose();
-    }, CLOSE_THEN_NAVIGATE_DELAY_MS);
-  }, [handleClose]);
+      window.setTimeout(() => {
+        afterClose();
+      }, CLOSE_THEN_NAVIGATE_DELAY_MS);
+    },
+    [handleClose],
+  );
 
   // ── Profile completeness check for Google OAuth users ─────────────
   useEffect(() => {
@@ -264,15 +269,7 @@ export function LoginModal({
     };
 
     void checkProfileState();
-  }, [
-    isOpen,
-    step,
-    user,
-    splitFullName,
-    clearModalQuery,
-    closeThen,
-    router,
-  ]);
+  }, [isOpen, step, user, splitFullName, clearModalQuery, closeThen, router]);
 
   const completeProfileMutation = useMutation({
     mutationFn: async (values: CompleteProfileFormData) => {
@@ -285,15 +282,17 @@ export function LoginModal({
         throw new Error("פג תוקף ההתחברות. התחברו שוב.");
       }
 
-      const { error: profileUpsertError } = await supabase.from("profiles").upsert(
-        {
-          id: currentUser.id,
-          first_name: values.firstName.trim(),
-          last_name: values.lastName.trim(),
-          date_of_birth: values.dateOfBirth,
-        },
-        { onConflict: "id" },
-      );
+      const { error: profileUpsertError } = await supabase
+        .from("profiles")
+        .upsert(
+          {
+            id: currentUser.id,
+            first_name: values.firstName.trim(),
+            last_name: values.lastName.trim(),
+            date_of_birth: values.dateOfBirth,
+          },
+          { onConflict: "id" },
+        );
 
       if (profileUpsertError) {
         throw new Error("שמירת הפרופיל נכשלה. נסו שוב.");
@@ -303,7 +302,8 @@ export function LoginModal({
         data: {
           first_name: values.firstName.trim(),
           last_name: values.lastName.trim(),
-          full_name: `${values.firstName.trim()} ${values.lastName.trim()}`.trim(),
+          full_name:
+            `${values.firstName.trim()} ${values.lastName.trim()}`.trim(),
           date_of_birth: values.dateOfBirth,
         },
       });
@@ -680,7 +680,7 @@ export function LoginModal({
                               onClick={handleGoogleSignIn}
                               disabled={isGoogleLoading || isSubmitting}
                               className="
-                                w-full flex items-center justify-center gap-3 py-2.5 px-4 mb-4
+                                w-full flex flex-row-reverse items-center justify-center gap-3 py-2.5 px-4 mb-4
                                 rounded-xl border border-gray-200 dark:border-gray-600
                                 bg-white dark:bg-gray-700
                                 hover:bg-gray-50 dark:hover:bg-gray-600
@@ -692,115 +692,148 @@ export function LoginModal({
                               "
                             >
                               {isGoogleLoading ? (
-                                <svg className="animate-spin h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                <svg
+                                  className="animate-spin h-5 w-5 text-gray-500"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  />
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                                  />
                                 </svg>
                               ) : (
-                                <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" aria-hidden="true">
-                                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
-                                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  className="h-5 w-5 shrink-0"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                    fill="#4285F4"
+                                  />
+                                  <path
+                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                    fill="#34A853"
+                                  />
+                                  <path
+                                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                                    fill="#FBBC05"
+                                  />
+                                  <path
+                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                    fill="#EA4335"
+                                  />
                                 </svg>
                               )}
-                              {isGoogleLoading ? "מתחבר..." : "המשך עם Google"}
+                              {isGoogleLoading ? "מתחבר..." : "התחבר עם Google"}
                             </button>
 
                             {/* OR Divider */}
                             <div className="flex items-center gap-3 mb-4">
                               <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
-                              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 tracking-wider">או</span>
+                              <span className="text-xs font-medium text-gray-400 dark:text-gray-500 tracking-wider">
+                                או
+                              </span>
                               <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
                             </div>
 
-                          <form
-                            key={shakeKey}
-                            onSubmit={handleLogin}
-                            className="flex flex-col"
-                          >
-                            <AuthInput
-                              id="login-email"
-                              name="email"
-                              label={AUTH_LABELS.email}
-                              type="email"
-                              placeholder={AUTH_PLACEHOLDERS.email}
-                              value={formData.email}
-                              onChange={(value) => {
-                                setFormData({ ...formData, email: value });
-                                setLoginError(null);
-                                if (errors.email) {
-                                  setErrors((prev) => ({
-                                    ...prev,
-                                    email: undefined,
-                                  }));
-                                }
-                              }}
-                              error={errors.email}
-                            />
-
-                            <AuthInput
-                              id="login-password"
-                              name="password"
-                              label={AUTH_LABELS.password}
-                              type="password"
-                              placeholder={AUTH_PLACEHOLDERS.password}
-                              value={formData.password}
-                              onChange={(value) => {
-                                setFormData({ ...formData, password: value });
-                                setLoginError(null);
-                                if (errors.password) {
-                                  setErrors((prev) => ({
-                                    ...prev,
-                                    password: undefined,
-                                  }));
-                                }
-                              }}
-                              error={errors.password}
-                            />
-
-                            {/* ── Reserved-height error slot (no layout shift) ── */}
-                            <div
-                              className="h-6 flex items-center justify-center"
-                              role="status"
-                              aria-live="polite"
+                            <form
+                              key={shakeKey}
+                              onSubmit={handleLogin}
+                              className="flex flex-col"
                             >
-                              <p
-                                className={`
+                              <AuthInput
+                                id="login-email"
+                                name="email"
+                                label={AUTH_LABELS.email}
+                                type="email"
+                                placeholder={AUTH_PLACEHOLDERS.email}
+                                value={formData.email}
+                                onChange={(value) => {
+                                  setFormData({ ...formData, email: value });
+                                  setLoginError(null);
+                                  if (errors.email) {
+                                    setErrors((prev) => ({
+                                      ...prev,
+                                      email: undefined,
+                                    }));
+                                  }
+                                }}
+                                error={errors.email}
+                              />
+
+                              <AuthInput
+                                id="login-password"
+                                name="password"
+                                label={AUTH_LABELS.password}
+                                type="password"
+                                placeholder={AUTH_PLACEHOLDERS.password}
+                                value={formData.password}
+                                onChange={(value) => {
+                                  setFormData({ ...formData, password: value });
+                                  setLoginError(null);
+                                  if (errors.password) {
+                                    setErrors((prev) => ({
+                                      ...prev,
+                                      password: undefined,
+                                    }));
+                                  }
+                                }}
+                                error={errors.password}
+                              />
+
+                              {/* ── Reserved-height error slot (no layout shift) ── */}
+                              <div
+                                className="h-6 flex items-center justify-center"
+                                role="status"
+                                aria-live="polite"
+                              >
+                                <p
+                                  className={`
                                   text-red-500 text-sm font-semibold text-center
                                   text-hebrew-body transition-opacity duration-200
                                   ${loginError ? "opacity-100" : "opacity-0 pointer-events-none"}
                                 `}
-                              >
-                                {loginError || "\u00A0"}
-                              </p>
-                            </div>
+                                >
+                                  {loginError || "\u00A0"}
+                                </p>
+                              </div>
 
-                            {/* Forgot Password Link */}
-                            <div className="flex justify-start mb-2">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  clearError();
-                                  setLoginError(null);
-                                  setShowForgotPassword(true);
-                                }}
-                                className="
+                              {/* Forgot Password Link */}
+                              <div className="flex justify-start mb-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    clearError();
+                                    setLoginError(null);
+                                    setShowForgotPassword(true);
+                                  }}
+                                  className="
                                   text-xs text-[#d4826f] hover:text-[#c4735f]
                                   dark:text-[#e8917a] dark:hover:text-[#d4826f]
                                   transition-colors text-hebrew-body
                                   hover:underline
                                 "
-                              >
-                                {FORGOT_PASSWORD_LINK}
-                              </button>
-                            </div>
+                                >
+                                  {FORGOT_PASSWORD_LINK}
+                                </button>
+                              </div>
 
-                            {/* Submit Button */}
-                            <button
-                              type="submit"
-                              disabled={isSubmitting}
-                              className="
+                              {/* Submit Button */}
+                              <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="
                                 w-full py-2.5 px-4 mt-2 rounded-lg
                                 bg-[#2e3c52] hover:bg-[#1B263B]
                                 text-white font-bold text-base
@@ -809,34 +842,34 @@ export function LoginModal({
                                 text-hebrew-heading
                                 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52] focus-visible:ring-offset-2
                               "
-                            >
-                              {isSubmitting ? (
-                                <span className="flex items-center justify-center gap-2">
-                                  <svg
-                                    className="animate-spin h-5 w-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <circle
-                                      className="opacity-25"
-                                      cx="12"
-                                      cy="12"
-                                      r="10"
-                                      stroke="currentColor"
-                                      strokeWidth="4"
-                                    />
-                                    <path
-                                      className="opacity-75"
-                                      fill="currentColor"
-                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                                    />
-                                  </svg>
-                                </span>
-                              ) : (
-                                LOGIN_BUTTON
-                              )}
-                            </button>
-                          </form>
+                              >
+                                {isSubmitting ? (
+                                  <span className="flex items-center justify-center gap-2">
+                                    <svg
+                                      className="animate-spin h-5 w-5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      />
+                                      <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                                      />
+                                    </svg>
+                                  </span>
+                                ) : (
+                                  LOGIN_BUTTON
+                                )}
+                              </button>
+                            </form>
                           </>
                         )}
 

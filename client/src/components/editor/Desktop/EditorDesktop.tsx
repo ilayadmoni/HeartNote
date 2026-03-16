@@ -133,6 +133,13 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
   // Show confirmation modal instead of immediately creating
   const handlePublish = () => {
+    if (!user) {
+      setShowConfirmModal(false);
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    setIsLoginModalOpen(false);
     setShowConfirmModal(true);
   };
 

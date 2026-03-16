@@ -13,6 +13,7 @@ import { CookieBanner } from "@/components/cookieBanner";
 import { InitialLoader } from "@/components/initialLoader";
 import FontReadyGateway from "@/components/FontReadyGateway";
 import { Toaster } from "sonner";
+import { StructuredData } from "@/components/StructuredData";
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 // Construct metadataBase from environment or fallback
@@ -150,6 +151,7 @@ export default function RootLayout({
           duration={4000}
           closeButton
         />
+        <StructuredData />
       </body>
     </html>
   );
