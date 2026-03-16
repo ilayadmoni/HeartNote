@@ -11,29 +11,21 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createMiddlewareClient } from "@/lib/supabase/middleware";
 
 // Routes that require authentication
-const PROTECTED_ROUTES = ["/dashboard", "/create", "/profile"];
+const PROTECTED_ROUTES = ["/dashboard", "/profile", "/complete-profile"];
 
 // Routes that should redirect to gallery if already logged in
 const AUTH_ROUTES = ["/login", "/signup"];
 
+function withSessionCookies(source: NextResponse, target: NextResponse): NextResponse {
+  source.cookies.getAll().forEach(({ name, value, ...options }) => {
+    target.cookies.set(name, value, options);
+  });
+  return target;
+}
+
 export async function middleware(request: NextRequest) {
-  const { supabase, response } = createMiddlewareClient(request);
+  const { supabase, getResponse } = createMiddlewareClient(request);
   const pathname = request.nextUrl.pathname;
-
-  // ── Auth flow handling: support both PKCE (old) and Token Hash (new) ──
-  // PKCE flow: code parameter → forward to /auth/callback (deprecated)
-  const code = request.nextUrl.searchParams.get("code");
-  if (code && !pathname.startsWith("/auth/callback")) {
-    const callbackUrl = new URL("/auth/callback", request.url);
-    callbackUrl.searchParams.set("code", code);
-    const next =
-      request.nextUrl.searchParams.get("next") || "/?modal=reset-password";
-    callbackUrl.searchParams.set("next", next);
-    return NextResponse.redirect(callbackUrl);
-  }
-
-  // Token Hash flow: token_hash parameter → already at correct route
-  // (no redirect needed, /auth/confirm handles it directly)
 
   // Get current session
   const {
@@ -47,7 +39,7 @@ export async function middleware(request: NextRequest) {
       const redirectUrl = new URL("/gallery", request.url);
       redirectUrl.searchParams.set("login", "true");
       redirectUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(redirectUrl);
+      return withSessionCookies(getResponse(), NextResponse.redirect(redirectUrl));
     }
   }
 
@@ -55,24 +47,23 @@ export async function middleware(request: NextRequest) {
   // → redirect to gallery (no standalone dashboard page exists)
   if (AUTH_ROUTES.some((route) => pathname.startsWith(route))) {
     if (user) {
-      return NextResponse.redirect(new URL("/gallery", request.url));
+      return withSessionCookies(
+        getResponse(),
+        NextResponse.redirect(new URL("/gallery", request.url)),
+      );
     }
   }
 
-  return response;
+  return getResponse();
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (images, etc.)
-     * - API routes
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api).*)",
+    "/dashboard/:path*",
+    "/profile/:path*",
+    "/complete-profile",
+    "/login",
+    "/signup",
   ],
 };
 

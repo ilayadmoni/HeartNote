@@ -3,11 +3,16 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { UpdatePasswordForm } from "../UpdatePasswordForm";
 
-// ── Mock the server action ──────────────────────────────────────────
-const mockUpdatePassword = vi.fn();
+const mockGetSession = vi.fn();
+const mockUpdateUser = vi.fn();
 
-vi.mock("@/actions/password", () => ({
-  updatePassword: (...args: unknown[]) => mockUpdatePassword(...args),
+vi.mock("@/lib/supabase/client", () => ({
+  createClient: () => ({
+    auth: {
+      getSession: (...args: unknown[]) => mockGetSession(...args),
+      updateUser: (...args: unknown[]) => mockUpdateUser(...args),
+    },
+  }),
 }));
 
 // ── Mock next/navigation ────────────────────────────────────────────
@@ -25,14 +30,17 @@ describe("UpdatePasswordForm", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetSession.mockResolvedValue({
+      data: { session: { user: { id: "user-1" } } },
+    });
   });
 
   async function fillAndSubmit(password: string) {
     const user = userEvent.setup();
 
     // The form has two password fields with these exact placeholders
-    const passwordInput = screen.getByPlaceholderText("הכניסו סיסמה");
-    const confirmInput = screen.getByPlaceholderText("הכניסו סיסמה שוב");
+    const passwordInput = await screen.findByPlaceholderText("הכניסו סיסמה");
+    const confirmInput = await screen.findByPlaceholderText("הכניסו סיסמה שוב");
 
     await user.type(passwordInput, password);
     await user.type(confirmInput, password);
@@ -45,9 +53,8 @@ describe("UpdatePasswordForm", () => {
   it("displays the Hebrew 'same password' error when backend returns that specific error", async () => {
     const SAME_PASSWORD_ERROR = "סיסמא ישנה, אנא הכנס סיסמא חדשה";
 
-    // Simulate the server action returning the same-password error
-    mockUpdatePassword.mockResolvedValueOnce({
-      error: SAME_PASSWORD_ERROR,
+    mockUpdateUser.mockResolvedValueOnce({
+      error: { message: SAME_PASSWORD_ERROR },
     });
 
     render(<UpdatePasswordForm onComplete={onComplete} />);
@@ -66,8 +73,8 @@ describe("UpdatePasswordForm", () => {
     const GENERIC_ERROR =
       "שגיאה בתהליך איפוס הסיסמה. ייתכן שהקישור פג תוקף.";
 
-    mockUpdatePassword.mockResolvedValueOnce({
-      error: GENERIC_ERROR,
+    mockUpdateUser.mockResolvedValueOnce({
+      error: { message: GENERIC_ERROR },
     });
 
     render(<UpdatePasswordForm onComplete={onComplete} />);
@@ -79,8 +86,8 @@ describe("UpdatePasswordForm", () => {
   });
 
   it("shows success state when password update succeeds", async () => {
-    mockUpdatePassword.mockResolvedValueOnce({
-      success: "הסיסמה עודכנה בהצלחה!",
+    mockUpdateUser.mockResolvedValueOnce({
+      error: null,
     });
 
     render(<UpdatePasswordForm onComplete={onComplete} />);

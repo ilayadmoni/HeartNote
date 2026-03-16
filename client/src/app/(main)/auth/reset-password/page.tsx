@@ -6,7 +6,7 @@
  * The user is already authenticated at this point (session from callback).
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -14,19 +14,56 @@ const supabase = createClient();
 import { KeyRound, CheckCircle, XCircle, Eye, EyeOff } from "lucide-react";
 
 export default function ResetPasswordPage() {
+  const EXPIRED_SESSION_MESSAGE =
+    "Session expired, please request a new reset link.";
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [status, setStatus] = useState<
-    "form" | "loading" | "success" | "error"
+    "checking" | "form" | "loading" | "success" | "error"
   >("form");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const verifySession = async () => {
+      setStatus("checking");
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!isMounted) return;
+      if (session) {
+        setStatus("form");
+        return;
+      }
+
+      setStatus("error");
+      setError(EXPIRED_SESSION_MESSAGE);
+    };
+
+    void verifySession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      setStatus("error");
+      setError(EXPIRED_SESSION_MESSAGE);
+      return;
+    }
 
     if (password.length < 6) {
       setError("הסיסמה חייבת להכיל לפחות 6 תווים");
@@ -50,7 +87,7 @@ export default function ResetPasswordPage() {
 
     setStatus("success");
     setTimeout(() => {
-      router.push("/");
+      router.push("/login");
     }, 2500);
   };
 
@@ -69,13 +106,35 @@ export default function ResetPasswordPage() {
               מעבירים לעמוד הבית...
             </p>
           </div>
+        ) : status === "checking" ? (
+          <div className="py-8 flex items-center justify-center">
+            <svg
+              className="animate-spin h-6 w-6 text-[#2e3c52]"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
+            </svg>
+          </div>
         ) : status === "error" && !password ? (
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
               <XCircle size={32} className="text-red-500" />
             </div>
             <h1 className="text-xl font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
-              שגיאה
+              Session expired
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-2 text-hebrew-body">
               {error}

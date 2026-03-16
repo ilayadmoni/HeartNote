@@ -25,7 +25,7 @@ interface RegistrationResult {
 
 /** Shown for both existing-user and new-user outcomes */
 const GENERIC_SUCCESS =
-  "אם האימייל תקין, בדקו את תיבת הדואר שלכם.";
+  "אם האימייל תקין, שלחנו אליכם הודעה. אם אינכם רואים אותה בתיבת הנכנס, בדקו גם בתיקיית הספאם/דואר זבל.";
 
 const ERR_INTERNAL =
   "אירעה שגיאה פנימית במערכת. אנא נסו שוב מאוחר יותר.";

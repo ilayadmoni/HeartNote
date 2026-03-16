@@ -3,7 +3,7 @@
  * For route protection middleware
  */
 
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 export function createMiddlewareClient(request: NextRequest) {
@@ -22,21 +22,25 @@ export function createMiddlewareClient(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              request.cookies.set(name, value);
+              response.cookies.set(name, value, options);
+            });
+          } catch (error) {
+            if (process.env.NODE_ENV === "development") {
+              console.error("[supabase/middleware] Failed to set auth cookies", error);
+            }
+          }
         },
       },
     }
   );
 
-  return { supabase, response };
+  return {
+    supabase,
+    getResponse() {
+      return response;
+    },
+  };
 }

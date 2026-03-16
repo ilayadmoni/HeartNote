@@ -29,7 +29,7 @@ export function Header({ className = "" }: HeaderProps) {
     useHeader();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loginModalView, setLoginModalView] = useState<
-    "login" | "update-password"
+    "login" | "update-password" | "complete-profile"
   >("login");
 
   // Auto-open modal from password reset link

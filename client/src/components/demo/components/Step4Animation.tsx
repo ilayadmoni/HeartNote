@@ -34,78 +34,82 @@ export function Step4Animation() {
     let isActive = true;
 
     const runSequence = async () => {
-      // 1. Initial pause
-      await wait(500);
-      if (!isActive || !scope.current) return;
+      try {
+        // 1. Initial pause
+        await wait(500);
+        if (!isActive || !scope.current) return;
 
-      // 2. Move cursor to the real send button location (responsive to current height/layout)
-      const wrapperEl = scope.current as HTMLElement;
-      const sendButtonEl = wrapperEl.querySelector("#send-btn") as HTMLElement | null;
+        // 2. Move cursor to the real send button location (responsive to current height/layout)
+        const wrapperEl = scope.current as HTMLElement;
+        const sendButtonEl = wrapperEl.querySelector("#send-btn") as HTMLElement | null;
 
-      if (sendButtonEl) {
-        const btnRect = sendButtonEl.getBoundingClientRect();
-        const wrapRect = wrapperEl.getBoundingClientRect();
-        const targetTop = ((btnRect.top + btnRect.height / 2 - wrapRect.top) / wrapRect.height) * 100;
-        const targetLeft = ((btnRect.left + btnRect.width / 2 - wrapRect.left) / wrapRect.width) * 100;
+        if (sendButtonEl) {
+          const btnRect = sendButtonEl.getBoundingClientRect();
+          const wrapRect = wrapperEl.getBoundingClientRect();
+          const targetTop = ((btnRect.top + btnRect.height / 2 - wrapRect.top) / wrapRect.height) * 100;
+          const targetLeft = ((btnRect.left + btnRect.width / 2 - wrapRect.left) / wrapRect.width) * 100;
 
+          await animate(
+            "#fake-cursor",
+            { top: `${targetTop}%`, left: `${targetLeft}%`, opacity: 1 },
+            { duration: 0.8, ease: "easeOut" }
+          );
+        } else {
+          // Fallback if button is temporarily unavailable
+          await animate(
+            "#fake-cursor",
+            { top: "13%", left: "18%", opacity: 1 },
+            { duration: 0.8, ease: "easeOut" }
+          );
+        }
+        if (!isActive) return;
+
+        // Click Send button
+        await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
+        await animate("#send-btn", { scale: 0.95 }, { duration: 0.1 });
+        await animate("#fake-cursor", { scale: 1 }, { duration: 0.1 });
+        await animate("#send-btn", { scale: 1 }, { duration: 0.1 });
+
+        // 3. Switch to Modal phase
+        if (!isActive) return;
+        setPhase("modal");
+        await wait(400); // Wait for render and entrance animation
+
+        // 4. Move cursor to WhatsApp button in the modal
+        //    Modal is centered; wa-btn is the larger button on the left (RTL layout)
         await animate(
           "#fake-cursor",
-          { top: `${targetTop}%`, left: `${targetLeft}%`, opacity: 1 },
-          { duration: 0.8, ease: "easeOut" }
+          { top: "68%", left: "34%" },
+          { duration: 0.8, ease: "easeInOut" }
         );
-      } else {
-        // Fallback if button is temporarily unavailable
+        if (!isActive) return;
+
+        await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
+        await animate("#wa-btn", { scale: 0.95 }, { duration: 0.1 });
+        await animate("#fake-cursor", { scale: 1 }, { duration: 0.1 });
+
+        // 5. Switch to WhatsApp phase
+        if (!isActive) return;
+        setPhase("whatsapp");
+        await wait(600); // Wait for render and staggered bubble entrance
+
+        // 6. Move cursor to the link preview card inside WhatsApp
         await animate(
           "#fake-cursor",
-          { top: "13%", left: "18%", opacity: 1 },
-          { duration: 0.8, ease: "easeOut" }
+          { top: "53%", left: "34%" },
+          { duration: 0.8, ease: "easeInOut" }
         );
+        if (!isActive) return;
+
+        await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
+        await animate("#wa-link", { opacity: 0.8 }, { duration: 0.1 });
+        await animate("#fake-cursor", { scale: 1 }, { duration: 0.1 });
+
+        // 7. End slide
+        await wait(1000);
+      } catch (e) {
+        // Animation interrupted (e.g., component unmounted)
       }
-      if (!isActive) return;
-
-      // Click Send button
-      await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
-      await animate("#send-btn", { scale: 0.95 }, { duration: 0.1 });
-      await animate("#fake-cursor", { scale: 1 }, { duration: 0.1 });
-      await animate("#send-btn", { scale: 1 }, { duration: 0.1 });
-
-      // 3. Switch to Modal phase
-      if (!isActive) return;
-      setPhase("modal");
-      await wait(400); // Wait for render and entrance animation
-
-      // 4. Move cursor to WhatsApp button in the modal
-      //    Modal is centered; wa-btn is the larger button on the left (RTL layout)
-      await animate(
-        "#fake-cursor",
-        { top: "68%", left: "34%" },
-        { duration: 0.8, ease: "easeInOut" }
-      );
-      if (!isActive) return;
-
-      await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
-      await animate("#wa-btn", { scale: 0.95 }, { duration: 0.1 });
-      await animate("#fake-cursor", { scale: 1 }, { duration: 0.1 });
-
-      // 5. Switch to WhatsApp phase
-      if (!isActive) return;
-      setPhase("whatsapp");
-      await wait(600); // Wait for render and staggered bubble entrance
-
-      // 6. Move cursor to the link preview card inside WhatsApp
-      await animate(
-        "#fake-cursor",
-        { top: "53%", left: "34%" },
-        { duration: 0.8, ease: "easeInOut" }
-      );
-      if (!isActive) return;
-
-      await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.1 });
-      await animate("#wa-link", { opacity: 0.8 }, { duration: 0.1 });
-      await animate("#fake-cursor", { scale: 1 }, { duration: 0.1 });
-
-      // 7. End slide
-      await wait(1000);
     };
 
     runSequence();

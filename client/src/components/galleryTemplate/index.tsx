@@ -4,11 +4,8 @@
  * GalleryTemplate Component
  * Main export with responsive wrapper for Desktop/Mobile views.
  *
- * Also handles middleware auth redirects:
- * When an unauthenticated user tries to access a protected route,
- * middleware redirects here with ?login=true&redirect=/original/path.
- * This component reads those params to auto-open the login modal
- * and redirect after successful login.
+ * Handles middleware auth redirects for protected routes only.
+ * Template editing itself is guest-accessible (lazy auth on submit).
  */
 
 import { useState, useEffect } from "react";
@@ -53,12 +50,8 @@ export function GalleryTemplate(props: GalleryTemplateProps) {
     // Don't navigate for premium (locked) templates
     if (template.isPremium) return;
 
-    if (user) {
-      router.push(template.link);
-    } else {
-      setPendingLink(template.link);
-      setIsLoginModalOpen(true);
-    }
+    // Lazy-auth flow: allow guests to enter editor and only authenticate on save.
+    router.push(template.link);
   };
 
   const handleLoginClose = () => {

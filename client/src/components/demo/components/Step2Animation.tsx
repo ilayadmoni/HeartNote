@@ -29,49 +29,53 @@ export function Step2Animation() {
     };
 
     const runSequence = async () => {
-      await wait(500);
-      if (!isActive) return;
+      try {
+        await wait(500);
+        if (!isActive) return;
 
-      // Cursor enters and targets the bottom edit trigger
-      await animate("#fake-cursor", { opacity: 1, top: "50%", left: "50%" }, { duration: 0.7, ease: "easeOut" });
-      await animate("#fake-cursor", { top: "83%", left: "48%" }, { duration: 0.5, ease: "easeInOut" });
-      await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.12 });
-      await animate("#edit-trigger", { scale: 0.95 }, { duration: 0.12 });
+        // Cursor enters and targets the bottom edit trigger
+        await animate("#fake-cursor", { opacity: 1, top: "50%", left: "50%" }, { duration: 0.7, ease: "easeOut" });
+        await animate("#fake-cursor", { top: "83%", left: "48%" }, { duration: 0.5, ease: "easeInOut" });
+        await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.12 });
+        await animate("#edit-trigger", { scale: 0.95 }, { duration: 0.12 });
 
-      // Slide editor sheet up
-      await Promise.all([
-        animate("#editor-sheet", { y: 0 }, { duration: 0.4, ease: [0.32, 0.72, 0, 1] }),
-        animate("#edit-trigger", { scale: 1 }, { duration: 0.15 }),
-        animate("#fake-cursor", { scale: 1, opacity: 0 }, { duration: 0.2 }),
-      ]);
-      if (!isActive) return;
+        // Slide editor sheet up
+        await Promise.all([
+          animate("#editor-sheet", { y: 0 }, { duration: 0.4, ease: [0.32, 0.72, 0, 1] }),
+          animate("#edit-trigger", { scale: 1 }, { duration: 0.15 }),
+          animate("#fake-cursor", { scale: 1, opacity: 0 }, { duration: 0.2 }),
+        ]);
+        if (!isActive) return;
 
-      // Cursor reappears at question input inside the sheet
-      await wait(250);
-      await animate("#fake-cursor", { opacity: 1, top: "53%", left: "50%", scale: 1 }, { duration: 0 });
-      await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.12 });
-      await animate("#question-input", { borderColor: "#d98574", backgroundColor: "rgba(253,242,240,0.4)" }, { duration: 0.15 });
-      await animate("#fake-cursor", { scale: 1 }, { duration: 0.12 });
+        // Cursor reappears at question input inside the sheet
+        await wait(250);
+        await animate("#fake-cursor", { opacity: 1, top: "53%", left: "50%", scale: 1 }, { duration: 0 });
+        await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.12 });
+        await animate("#question-input", { borderColor: "#d98574", backgroundColor: "rgba(253,242,240,0.4)" }, { duration: 0.15 });
+        await animate("#fake-cursor", { scale: 1 }, { duration: 0.12 });
 
-      await typeText(setQuestionText, "האם תרצי לצאת איתי לדייט אורלי?");
-      if (!isActive) return;
+        await typeText(setQuestionText, "האם תרצי לצאת איתי לדייט אורלי?");
+        if (!isActive) return;
 
-      // Move to success message input
-      await animate("#fake-cursor", { top: "68%", left: "50%" }, { duration: 0.45, ease: "easeInOut" });
-      await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.12 });
-      await animate("#success-input", { borderColor: "#d98574", backgroundColor: "rgba(253,242,240,0.4)" }, { duration: 0.15 });
-      await animate("#fake-cursor", { scale: 1 }, { duration: 0.12 });
+        // Move to success message input
+        await animate("#fake-cursor", { top: "68%", left: "50%" }, { duration: 0.45, ease: "easeInOut" });
+        await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.12 });
+        await animate("#success-input", { borderColor: "#d98574", backgroundColor: "rgba(253,242,240,0.4)" }, { duration: 0.15 });
+        await animate("#fake-cursor", { scale: 1 }, { duration: 0.12 });
 
-      await typeText(setSuccessText, "יש ניפגש ב9 בגן הפקאן");
-      if (!isActive) return;
+        await typeText(setSuccessText, "יש ניפגש ב9 בגן הפקאן");
+        if (!isActive) return;
 
-      // Move to salmon color circle and confirm
-      await animate("#fake-cursor", { top: "83%", left: "40%" }, { duration: 0.45, ease: "easeInOut" });
-      await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.12 });
-      setColorActive(true);
-      await animate("#fake-cursor", { scale: 1 }, { duration: 0.12 });
+        // Move to salmon color circle and confirm
+        await animate("#fake-cursor", { top: "83%", left: "40%" }, { duration: 0.45, ease: "easeInOut" });
+        await animate("#fake-cursor", { scale: 0.8 }, { duration: 0.12 });
+        setColorActive(true);
+        await animate("#fake-cursor", { scale: 1 }, { duration: 0.12 });
 
-      await wait(500);
+        await wait(500);
+      } catch (e) {
+        // Animation interrupted (e.g., component unmounted)
+      }
     };
 
     runSequence();

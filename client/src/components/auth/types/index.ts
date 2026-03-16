@@ -8,8 +8,8 @@ export interface LoginModalProps {
   onSwitchToRegister?: () => void;
   /** URL to redirect to after successful login (deep linking) */
   redirectTo?: string | null;
-  /** Initial view to render: 'login' (default) or 'update-password' */
-  initialView?: "login" | "update-password";
+  /** Initial view to render: login, update-password, or complete-profile */
+  initialView?: "login" | "update-password" | "complete-profile";
 }
 
 export interface RegisterModalProps {

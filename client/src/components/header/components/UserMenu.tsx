@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, LogOut, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useProfileQuery } from "@/hooks/useProfileQuery";
+import { useUser } from "@/hooks/useUser";
 import { MenuItem } from "./MenuItem";
 import { UserAvatar } from "./UserAvatar";
 
@@ -16,7 +16,7 @@ interface UserMenuProps {
 
 export function UserMenu({ onMenuToggle }: UserMenuProps = {}) {
   const { user, signOut } = useAuth();
-  const { data: profile } = useProfileQuery();
+  const { data: profile } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 

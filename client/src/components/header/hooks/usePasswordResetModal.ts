@@ -1,26 +1,63 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 /**
  * usePasswordResetModal Hook
  * Handles auto-opening the password reset modal from URL params
  */
 export function usePasswordResetModal(
-  setView: (view: "login" | "update-password") => void,
+  setView: (view: "login" | "update-password" | "complete-profile") => void,
   setOpen: (open: boolean) => void
 ) {
   const searchParams = useSearchParams();
+  const hasClearedResetQuery = useRef(false);
 
   useEffect(() => {
-    if (
+    const isResetLink =
       searchParams.get("reset_password") === "true" ||
-      searchParams.get("modal") === "reset-password"
-    ) {
-      setView("update-password");
+      searchParams.get("modal") === "reset-password";
+
+    if (isResetLink) {
+      let cancelled = false;
+
+      const openResetModal = async () => {
+        setView("update-password");
+        setOpen(true);
+
+        if (hasClearedResetQuery.current) {
+          return;
+        }
+
+        const supabase = createClient();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (cancelled || !session) {
+          return;
+        }
+
+        hasClearedResetQuery.current = true;
+
+        // Clean URL only after session is confirmed.
+        const url = new URL(window.location.href);
+        url.searchParams.delete("reset_password");
+        url.searchParams.delete("modal");
+        window.history.replaceState({}, "", url.pathname + url.search);
+      };
+
+      void openResetModal();
+
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    if (searchParams.get("modal") === "complete-profile") {
+      setView("complete-profile");
       setOpen(true);
-      // Clean URL without navigation
       const url = new URL(window.location.href);
-      url.searchParams.delete("reset_password");
       url.searchParams.delete("modal");
       window.history.replaceState({}, "", url.pathname + url.search);
     }

@@ -3,7 +3,7 @@
  * For server-side authentication (API routes, Server Components)
  */
 
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export async function createClient() {
@@ -22,8 +22,10 @@ export async function createClient() {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             );
-          } catch {
-            // Called from a Server Component - cookies are read-only
+          } catch (error) {
+            if (process.env.NODE_ENV === "development") {
+              console.error("[supabase/server] Failed to set auth cookies", error);
+            }
           }
         },
       },

@@ -6,9 +6,10 @@
  * Uses global Header/Footer from layout.tsx
  */
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
+import { LoginModal } from "@/components/auth";
 import { EditorSidebar } from "../components/EditorSidebar";
 import { EditorPreview } from "../components/EditorPreview";
 import { SuccessModal } from "../components/SuccessModal";
@@ -19,6 +20,14 @@ import { EDITOR_CONFIGS } from "../configs";
 import { submitGenericCreation } from "@/actions/creations";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTemplateData } from "@/hooks/useTemplateData";
+import {
+  clearDraft,
+  clearPendingCreation,
+  getPendingCreation,
+  loadDraft,
+  saveDraft,
+  setPendingCreation,
+} from "@/lib/pendingCreation";
 import type { TemplateEditorProps } from "../types";
 
 export function EditorMobile({ templateId }: TemplateEditorProps) {
@@ -28,14 +37,17 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  const { userChoices: data, updateChoice: handleChange, logData } =
+  const { userChoices: data, updateChoice: handleChange, setChoices, logData } =
     useTemplateData(templateId, config?.defaultData || {});
   const [successData, setSuccessData] = useState<{
     url: string;
     expiresAt: string | null;
   } | null>(null);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
+  const hasHydratedDraftRef = useRef(false);
+  const hasResumedPendingRef = useRef(false);
 
   // Store the deferred upload function from ImageUploader (via sidebar)
   const pendingUploadRef = useRef<(() => Promise<string | null>) | null>(null);
@@ -46,6 +58,34 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
     },
     [],
   );
+
+  useEffect(() => {
+    if (hasHydratedDraftRef.current) return;
+    const draft = loadDraft(templateId);
+    if (draft) {
+      setChoices(draft);
+    }
+    hasHydratedDraftRef.current = true;
+  }, [templateId, setChoices]);
+
+  useEffect(() => {
+    saveDraft(templateId, data);
+  }, [templateId, data]);
+
+  useEffect(() => {
+    if (!user || isPublishing || hasResumedPendingRef.current) return;
+    const pending = getPendingCreation();
+    if (!pending || pending.templateId !== templateId) return;
+
+    hasResumedPendingRef.current = true;
+    setChoices(pending.data);
+    setShowConfirmModal(false);
+    setIsLoginModalOpen(false);
+
+    window.setTimeout(() => {
+      void handleConfirmCreation(pending.data);
+    }, 50);
+  }, [user, templateId, setChoices, isPublishing]);
 
   if (!config) {
     return (
@@ -68,20 +108,39 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
 
   // Show confirmation modal instead of immediately creating
   const handlePublish = () => {
+    if (!user) {
+      setShowConfirmModal(false);
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    setIsLoginModalOpen(false);
     setShowConfirmModal(true);
   };
 
   // Handle the actual creation after confirmation
-  const handleConfirmCreation = async () => {
+  const handleConfirmCreation = async (submissionData: Record<string, unknown> = data) => {
+    if (!user) {
+      setPendingCreation({
+        templateId,
+        data: submissionData,
+        returnPath: `/create/${templateId}`,
+        createdAt: Date.now(),
+      });
+      setShowConfirmModal(false);
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     logData("שליחה");
     setIsPublishing(true);
     try {
       const formData = new FormData();
       formData.append("templateSlug", templateId);
-      formData.append("metadata", JSON.stringify(data));
+      formData.append("metadata", JSON.stringify(submissionData));
 
       // Check for blob URLs in data and convert to File
-      const blobUrl = Object.values(data).find(
+      const blobUrl = Object.values(submissionData).find(
         (value) => typeof value === "string" && value.startsWith("blob:"),
       ) as string | undefined;
 
@@ -119,6 +178,8 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
 
       // Show success modal with shareable link instead of redirecting
       setShowConfirmModal(false);
+      clearPendingCreation();
+      clearDraft(templateId);
       setSuccessData({
         url: `${window.location.origin}/p/${result.data.creationId}`,
         expiresAt: null,
@@ -136,9 +197,16 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
       {/* Compact Toolbar */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-4 py-3">
         <div className="flex items-center justify-between">
-          <h1 className="text-base font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
-            {config.title}
-          </h1>
+          <div>
+            <h1 className="text-base font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
+              {config.title}
+            </h1>
+            {!user && (
+              <p className="text-[11px] text-gray-500 dark:text-gray-300 text-hebrew-body mt-0.5">
+                תתבקשו ליצור חשבון קצר כדי לשמור את היצירה.
+              </p>
+            )}
+          </div>
 
           <button
             onClick={handlePublish}
@@ -150,7 +218,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
             ) : (
               <Send size={14} />
             )}
-            <span>שליחה</span>
+              <span>{user ? "שליחה" : "התחברו כדי לשמור"}</span>
           </button>
         </div>
       </div>
@@ -199,6 +267,12 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
         onConfirm={handleConfirmCreation}
         templateSlug={templateId}
         templateName={config.title}
+      />
+
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        redirectTo={`/create/${templateId}`}
       />
     </div>
   );

@@ -1,64 +1,87 @@
 /**
- * Auth Callback Route Handler (DEPRECATED - PKCE Flow)
- * ──────────────────────────────────────────────────────
- * ⚠️ DEPRECATED: This route uses the old PKCE flow with exchangeCodeForSession.
- * ⚠️ USE /auth/confirm instead for Token Hash (OTP) flow.
- *
- * This file is kept temporarily for backward compatibility with old email links.
- * Once all email templates are updated to use /auth/confirm, this can be deleted.
- *
- * Old URL pattern:  /auth/callback?code=...&next=/some-page
- * New URL pattern:  /auth/confirm?token_hash=...&type=signup|recovery
+ * Auth Callback Route Handler
+ * Handles exactly two server-side auth callbacks:
+ * 1) OAuth code exchange (Google and other providers)
+ * 2) Token-hash verification (signup/recovery email flows)
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
+import { isInternalUrl } from "@/lib/utils/isInternalUrl";
+
+const DEFAULT_SUCCESS_PATH = "/dashboard";
+const RECOVERY_PATH = "/?modal=reset-password";
+
+function redirectWithError(request: NextRequest, message: string) {
+  const errorUrl = new URL("/auth/auth-code-error", request.url);
+  errorUrl.searchParams.set("message", message);
+  return NextResponse.redirect(errorUrl);
+}
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+  const supabase = await createClient();
+
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
+  const tokenHash = searchParams.get("token_hash");
+  const type = searchParams.get("type");
+  const next = searchParams.get("next") ?? "";
+  const safePath = isInternalUrl(next) ? next : DEFAULT_SUCCESS_PATH;
 
+  // Path A: OAuth/PKCE code exchange
   if (code) {
-    const cookieStore = await cookies();
-
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options),
-              );
-            } catch {
-              // Ignore errors from read-only cookie store in some
-              // edge-cases; the session will still be established.
-            }
-          },
-        },
-      },
-    );
-
-    // ⚠️ DEPRECATED: exchangeCodeForSession is the old PKCE method
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (!error) {
-      // Successful exchange → redirect to the intended page.
-      // `next` will typically be `/?modal=reset-password` for recovery,
-      // or `/` for email verification.
-      const forwardUrl = next.startsWith("/")
-        ? `${origin}${next}`
-        : next;
-      return NextResponse.redirect(forwardUrl);
+    const { data: exchangeData, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) {
+      return redirectWithError(
+        request,
+        error.message || "Failed to complete OAuth sign-in.",
+      );
     }
+
+    // Keep Google profile-completion behavior intact.
+    const userId = exchangeData?.user?.id;
+    const provider = exchangeData?.user?.app_metadata?.provider;
+    if (userId && provider === "google") {
+      const { data: profileRow } = await supabase
+        .from("profiles")
+        .select("date_of_birth")
+        .eq("id", userId)
+        .maybeSingle();
+
+      const isProfileIncomplete = !profileRow || !profileRow.date_of_birth;
+      if (isProfileIncomplete) {
+        return NextResponse.redirect(new URL("/complete-profile", request.url));
+      }
+    }
+
+    return NextResponse.redirect(new URL(safePath, request.url));
   }
 
-  // If code is missing or exchange failed, redirect to an error page.
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+  // Path B: Token hash verification (signup/recovery links)
+  if (tokenHash && type) {
+    const otpType = type === "signup" ? "email" : type;
+    if (otpType !== "email" && otpType !== "recovery") {
+      return redirectWithError(request, "Unsupported token verification type.");
+    }
+
+    const { error } = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: otpType,
+    });
+
+    if (error) {
+      return redirectWithError(
+        request,
+        error.message || "Failed to verify authentication link.",
+      );
+    }
+
+    if (otpType === "recovery") {
+      return NextResponse.redirect(new URL(RECOVERY_PATH, request.url));
+    }
+
+    return NextResponse.redirect(new URL(safePath, request.url));
+  }
+
+  return redirectWithError(request, "Missing authentication callback parameters.");
 }
