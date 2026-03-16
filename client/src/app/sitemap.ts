@@ -97,16 +97,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     try {
       const { data: templates, error: templatesError } = await admin
         .from("templates")
-        .select("id, component_key, updated_at")
+        .select("slug")
         .eq("is_active", true)
-        .order("updated_at", { ascending: false });
+        .order("slug", { ascending: true });
 
       if (templatesError) {
         console.error("[sitemap] Templates fetch error:", templatesError);
       } else if (templates && Array.isArray(templates)) {
         const templateRoutes = templates.map((template) => ({
-          url: `${SITE_URL}/create/${template.component_key}`,
-          lastModified: template.updated_at || NOW,
+          url: `${SITE_URL}/create/${template.slug}`,
+          lastModified: NOW,
           changeFrequency: "weekly" as const,
           priority: 0.7,
         }));
