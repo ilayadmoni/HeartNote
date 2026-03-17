@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isInternalUrl } from "@/lib/utils/isInternalUrl";
 
-const DEFAULT_SUCCESS_PATH = "/dashboard";
+const DEFAULT_SUCCESS_PATH = "/";
 const RECOVERY_PATH = "/?modal=reset-password";
 
 function redirectWithError(request: NextRequest, message: string) {

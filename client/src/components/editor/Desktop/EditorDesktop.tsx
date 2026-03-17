@@ -224,11 +224,6 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
           <h1 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
             {config.title}
           </h1>
-          {!user && (
-            <p className="text-xs text-gray-500 dark:text-gray-300 text-hebrew-body mt-0.5">
-              תתבקשו ליצור חשבון קצר כדי לשמור את היצירה.
-            </p>
-          )}
         </div>
 
         <motion.button
@@ -238,14 +233,14 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
           disabled={isPublishing}
           className="flex items-center gap-2 px-5 py-2 bg-[#d4826f] hover:bg-[#c4735f] text-white rounded-full shadow-md transition-colors text-hebrew-heading disabled:opacity-50"
         >
+          <span>
+            {isPublishing ? "יוצר..." : user ? "יצירה" : "יצירה"}
+          </span>
           {isPublishing ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
             <Send size={16} />
           )}
-          <span>
-            {isPublishing ? "יוצר..." : user ? "יצירה" : "התחברו כדי לשמור"}
-          </span>
         </motion.button>
       </div>
 

@@ -5,16 +5,17 @@
 import type { StepItem } from "../types";
 
 // Hero Section
-export const HERO_BADGE = "מפעל הברכות הדיגיטלי החדש";
-export const HERO_TITLE_LINE1 = "ברוכים הבאים";
-export const HERO_TITLE_LINE2 = "למפעל הרגעים שלכם.";
-export const HERO_DESCRIPTION = "צרו בקלות יצירות דיגיטליות, מצחיקות ומרגשות שכיף לתת למי שאוהבים.";
-export const HERO_DESCRIPTION_2 = "בחרו תבנית, התאימו אישית, ושלחו!";
-export const HERO_CTA = "התניעו את המכונה – התחילו לעצב"
-export const HERO_CTA_SECONDARY = "צפו בדוגמה";
+export const HERO_BADGE = "מפעל הברכות הדיגיטלי שלכם";
+export const HERO_TITLE_LINE1 = "יצירת ברכה דיגיטלית";
+export const HERO_TITLE_LINE2 = " בלי לשבור את הראש.";
+export const HERO_DESCRIPTION = "למה להסתבך עם ברכה בנאלית? ";
+export const HERO_DESCRIPTION_2 = "תבחרו תבנית, תזרקו לבפנים כמה מילים ואנחנו נדאג שזה יראה וואו!";
+export const HERO_DESCRIPTION_3 = "פשוט להפתיע את מי שאוהבים, בדרך שלכם.";
+export const HERO_CTA = "יאללה, בואו נתחיל לעצב";
+export const HERO_CTA_SECONDARY = "תראו לי דוגמה 👀";
 
 // Gallery Teaser
-export const GALLERY_TITLE = "טעימה מהגלריה";
+export const GALLERY_TITLE = "יצירת ברכות | טעימה מהגלריה";
 export const GALLERY_SUBTITLE = "הנה כמה מהעיצובים הכי פופולריים שלנו. יש עוד הרבה בגלריית התבניות!";
 export const GALLERY_CTA = "לכל התבניות בגלריה";
 
@@ -41,7 +42,7 @@ export const STEPS: StepItem[] = [
     id: 2,
     icon: "settings",
     title: "מתאימים אישית",
-    description: "הוסיפו טקסט, תמונות והתאימו אישית את העיצוב שלכם",
+    description: "הוסיפו טקסט, בחרו צבעים והתאימו אישית את העיצוב של הברכה הדיגיטלית שלכם",
   },
   {
     id: 3,

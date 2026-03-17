@@ -78,16 +78,15 @@ export function GalleryTeaser({ className = "" }: GalleryTeaserProps) {
   }, [user, pendingLink, router]);
 
   const handleTemplateClick = (template: Template) => {
-    // Don't navigate for premium (locked) templates
-    if (template.isPremium) return;
-
-    if (user) {
-      router.push(template.link);
-    } else {
-      setPendingLink(template.link);
+    if (template.isPremium) {
       setIsLoginModalOpen(true);
+      setPendingLink(template.link);
+      return;
     }
+    router.push(template.link);
   };
+
+
 
   const handleLoginClose = () => {
     setIsLoginModalOpen(false);

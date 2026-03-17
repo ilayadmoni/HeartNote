@@ -92,6 +92,10 @@ export function LoginModal({
   });
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileAgreedToTerms, setProfileAgreedToTerms] = useState(false);
+  const [profileTermsError, setProfileTermsError] = useState<string | null>(null);
+  const profileCompletedRef = useRef(false);
+  const profileForceLogoutRunningRef = useRef(false);
 
   // Shake animation trigger
   const [shakeKey, setShakeKey] = useState(0);
@@ -125,6 +129,20 @@ export function LoginModal({
     window.history.replaceState({}, "", url.pathname + url.search);
   }, []);
 
+  const forceLogoutFromProfileStep = useCallback(async () => {
+    if (profileForceLogoutRunningRef.current || profileCompletedRef.current) return;
+    profileForceLogoutRunningRef.current = true;
+
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
+    } finally {
+      router.replace("/");
+    }
+  }, [queryClient, router]);
+
   // ── Google OAuth handler ─────────────────────────────────────────
   const handleGoogleSignIn = useCallback(async () => {
     setIsGoogleLoading(true);
@@ -137,6 +155,9 @@ export function LoginModal({
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback${nextQuery}`,
+          queryParams: {
+            prompt: 'select_account'
+          },
         },
       });
       // Browser will redirect — no further action needed here.
@@ -153,6 +174,8 @@ export function LoginModal({
     }
 
     if (isOpen && initialView === "complete-profile") {
+      profileCompletedRef.current = false;
+      profileForceLogoutRunningRef.current = false;
       setStep("profile");
       setActiveTab("login");
     }
@@ -171,11 +194,40 @@ export function LoginModal({
       setIsProfileLoading(false);
       setIsGoogleLoading(false);
       setProfileError(null);
+      setProfileAgreedToTerms(false);
+      setProfileTermsError(null);
+      profileCompletedRef.current = false;
+      profileForceLogoutRunningRef.current = false;
       setProfileForm({ firstName: "", lastName: "", dateOfBirth: "" });
       setLoginError(null);
       clearError();
     }
   }, [isOpen, clearError]);
+
+  useEffect(() => {
+    if (!isOpen || step !== "profile") return;
+
+    const handleBackNavigation = () => {
+      if (!profileCompletedRef.current) {
+        void forceLogoutFromProfileStep();
+      }
+    };
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!profileCompletedRef.current) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+
+    window.addEventListener("popstate", handleBackNavigation);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("popstate", handleBackNavigation);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isOpen, step, forceLogoutFromProfileStep]);
 
   // ── Defensive body cleanup (prevents stale modal locks) ──────────
   const restoreBodyInteractivity = useCallback(() => {
@@ -315,6 +367,7 @@ export function LoginModal({
       return values;
     },
     onSuccess: () => {
+      profileCompletedRef.current = true;
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
       clearModalQuery();
@@ -344,8 +397,15 @@ export function LoginModal({
       return;
     }
 
+    if (!profileAgreedToTerms) {
+      setProfileTermsError(AUTH_VALIDATION.termsRequired);
+      return;
+    }
+
+    setProfileTermsError(null);
+
     completeProfileMutation.mutate(profileForm);
-  }, [profileForm, completeProfileMutation]);
+  }, [profileForm, completeProfileMutation, profileAgreedToTerms]);
 
   // ── Client-side validation ───────────────────────────────────────
   const validate = (): boolean => {
@@ -596,6 +656,74 @@ export function LoginModal({
                                 label="תאריך לידה"
                                 error={undefined}
                               />
+                            </div>
+
+                            <div className="mt-1 mb-1">
+                              <div
+                                role="checkbox"
+                                aria-checked={profileAgreedToTerms}
+                                tabIndex={0}
+                                onClick={() => {
+                                  setProfileAgreedToTerms((prev) => !prev);
+                                  if (profileTermsError) setProfileTermsError(null);
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === " " || e.key === "Enter") {
+                                    e.preventDefault();
+                                    setProfileAgreedToTerms((prev) => !prev);
+                                    if (profileTermsError) setProfileTermsError(null);
+                                  }
+                                }}
+                                className="flex items-center gap-2 cursor-pointer select-none outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52] focus-visible:ring-offset-1 rounded"
+                                dir="rtl"
+                              >
+                                <span className="text-xs text-[#2e3c52] dark:text-gray-300 text-hebrew-body leading-relaxed">
+                                  קראתי ואני מאשר/ת את{" "}
+                                  <Link
+                                    href="/privacy"
+                                    target="_blank"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="underline text-[#d4826f] hover:text-[#c4725f] dark:text-[#e8917a] dark:hover:text-[#f0a18a] font-semibold"
+                                  >
+                                    תנאי השימוש ומדיניות הפרטיות
+                                  </Link>
+                                </span>
+
+                                <span
+                                  className={`
+                                    shrink-0 flex items-center justify-center
+                                    w-[18px] h-[18px] rounded-[4px] border-2
+                                    transition-all duration-150
+                                    ${
+                                      profileAgreedToTerms
+                                        ? "bg-[#2e3c52] border-[#2e3c52] dark:bg-[#d4826f] dark:border-[#d4826f]"
+                                        : "bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-500"
+                                    }
+                                  `}
+                                >
+                                  <svg
+                                    className={`w-[11px] h-[11px] text-white pointer-events-none transition-all duration-150 ${
+                                      profileAgreedToTerms
+                                        ? "opacity-100 scale-100"
+                                        : "opacity-0 scale-50"
+                                    }`}
+                                    viewBox="0 0 12 12"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M2 6l3 3 5-5" />
+                                  </svg>
+                                </span>
+                              </div>
+
+                              {profileTermsError && (
+                                <p className="text-xs text-red-500 mt-1 text-hebrew-body text-right">
+                                  {profileTermsError}
+                                </p>
+                              )}
                             </div>
 
                             <div

@@ -28,7 +28,7 @@ const RATE_WINDOW_HOURS = 24;
 
 /** Generic success message — shown regardless of email status */
 const GENERIC_SUCCESS =
-  "אם הכתובת רשומה ופעילה במערכת, נשלח אליך קישור לאיפוס הסיסמה. אם אינך רואה אותו בתיבת הנכנס, בדוק גם בתיקיית הספאם/דואר זבל.";
+  "אם הכתובת רשומה ופעילה במערכת, נשלח אליך קישור לאיפוס הסיסמה. אם אינך רואה אותו בתיבת הדואר הנכנס, בדוק גם בתיקיית הספאם.";
 
 /** Generic internal error */
 const ERR_INTERNAL =

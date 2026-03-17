@@ -15,6 +15,7 @@ import {
   HERO_TITLE_LINE2,
   HERO_DESCRIPTION,
   HERO_DESCRIPTION_2,
+  HERO_DESCRIPTION_3,
   HERO_CTA,
   HERO_CTA_SECONDARY,
 } from "../constants";
@@ -97,6 +98,8 @@ export function HeroSection({ className = "" }: HeroSectionProps) {
               {HERO_DESCRIPTION}
               <br />
               {HERO_DESCRIPTION_2}
+              <br />
+              {HERO_DESCRIPTION_3}
             </motion.p>
 
             {/* CTA Buttons */}

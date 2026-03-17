@@ -58,7 +58,7 @@ export const FORGOT_PASSWORD_TITLE = "שחזור סיסמה";
 export const FORGOT_PASSWORD_SUBTITLE = "הזינו את כתובת האימייל שלכם ונשלח לכם קישור לאיפוס הסיסמה";
 export const FORGOT_PASSWORD_BUTTON = "שליחת קישור איפוס";
 export const FORGOT_PASSWORD_SUCCESS =
-  "אם הכתובת רשומה ופעילה במערכת, נשלח אליך קישור לאיפוס הסיסמה. אם אינך רואה אותו בתיבת הנכנס, בדוק גם בתיקיית הספאם/דואר זבל.";
+  "אם הכתובת רשומה ופעילה במערכת, נשלח אליך קישור לאיפוס הסיסמה. אם אינך רואה אותו בתיבת הדואר הנכנס, בדוק גם בתיקיית הספאם.";
 export const FORGOT_PASSWORD_BACK = "חזרה להתחברות";
 export const FORGOT_PASSWORD_LINK = "שכחתם את הסיסמה?";
 

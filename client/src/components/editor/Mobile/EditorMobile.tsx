@@ -201,24 +201,22 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
             <h1 className="text-base font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
               {config.title}
             </h1>
-            {!user && (
-              <p className="text-[11px] text-gray-500 dark:text-gray-300 text-hebrew-body mt-0.5">
-                תתבקשו ליצור חשבון קצר כדי לשמור את היצירה.
-              </p>
-            )}
+       
           </div>
 
           <button
             onClick={handlePublish}
             disabled={isPublishing}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[#d4826f] hover:bg-[#c4735f] text-white rounded-full text-sm font-semibold text-hebrew-heading disabled:opacity-50 shadow-sm shadow-[#d4826f]/20 transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-[#d4826f] hover:bg-[#c4735f] text-white rounded-full text-sm font-semibold text-hebrew-heading disabled:opacity-50 shadow-sm shadow-[#d4826f]/20 transition-all"
           >
+            <span>
+              {isPublishing ? "יוצר..." : user ? "יצירה" : "יצירה"}
+            </span>
             {isPublishing ? (
               <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <Send size={14} />
             )}
-              <span>{user ? "שליחה" : "התחברו כדי לשמור"}</span>
           </button>
         </div>
       </div>
