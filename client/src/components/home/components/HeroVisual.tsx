@@ -63,7 +63,7 @@ export function HeroVisual() {
       >
         <Image
           src="/assets/images/hand.svg"
-          alt="Pointing hand"
+          alt="דוגמה ליצירת ברכה דיגיטלית במסך הטלפון"
           width={400}
           height={100}
           priority

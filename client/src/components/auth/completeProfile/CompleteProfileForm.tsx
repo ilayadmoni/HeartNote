@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { BrandCalendar } from "@/components/ui/BrandCalendar";
+import { AUTH_VALIDATION } from "@/components/auth/constants";
 import { useAuth } from "@/contexts/AuthContext";
 import { USER_QUERY_KEY, useUser } from "@/hooks/useUser";
 import { PROFILE_QUERY_KEY } from "@/hooks/useProfileQuery";
@@ -14,6 +16,7 @@ interface FormState {
   firstName: string;
   lastName: string;
   birthDate: string;
+  agreedToTerms: boolean;
 }
 
 function splitGoogleName(fullName: string | undefined): Pick<FormState, "firstName" | "lastName"> {
@@ -29,15 +32,68 @@ export function CompleteProfileForm() {
   const queryClient = useQueryClient();
   const { user, loading } = useAuth();
   const { data: profile, isLoading: profileLoading } = useUser();
-  const [form, setForm] = useState<FormState>({ firstName: "", lastName: "", birthDate: "" });
+  const [form, setForm] = useState<FormState>({
+    firstName: "",
+    lastName: "",
+    birthDate: "",
+    agreedToTerms: false,
+  });
   const [error, setError] = useState<string | null>(null);
+  const [termsError, setTermsError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const didCompleteRef = useRef(false);
+  const isForceLogoutRunningRef = useRef(false);
+
+  const forceLogoutToLogin = useCallback(async () => {
+    if (isForceLogoutRunningRef.current || didCompleteRef.current) return;
+    isForceLogoutRunningRef.current = true;
+
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
+    } finally {
+      // CRITICAL: Do NOT call router.replace('/') here.
+      // The middleware already handles where to send the user.
+      // Calling replace would hijack <Link> navigation.
+      isForceLogoutRunningRef.current = false;
+    }
+  }, [queryClient]);
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace("/gallery");
+      // User has no session — middleware will handle protection.
+      // Do NOT force-navigate; user is either already on a public
+      // page or was redirected by middleware.
+      router.replace("/");
     }
   }, [loading, user, router]);
+
+  useEffect(() => {
+    if (loading || !user) return;
+
+    const handleBackNavigation = () => {
+      if (!didCompleteRef.current) {
+        void forceLogoutToLogin();
+      }
+    };
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!didCompleteRef.current) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+
+    window.addEventListener("popstate", handleBackNavigation);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("popstate", handleBackNavigation);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [loading, user, forceLogoutToLogin]);
 
   useEffect(() => {
     if (!user || isHydrated) return;
@@ -47,6 +103,7 @@ export function CompleteProfileForm() {
       firstName: profile?.first_name ?? parsed.firstName,
       lastName: profile?.last_name ?? parsed.lastName,
       birthDate: profile?.date_of_birth ?? "",
+      agreedToTerms: false,
     });
     setIsHydrated(true);
   }, [user, profile, isHydrated]);
@@ -54,6 +111,7 @@ export function CompleteProfileForm() {
   const isValid = useMemo(() => {
     if (!form.firstName.trim() || !form.lastName.trim()) return false;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(form.birthDate)) return false;
+    if (!form.agreedToTerms) return false;
     return !Number.isNaN(new Date(`${form.birthDate}T00:00:00`).getTime());
   }, [form]);
 
@@ -84,6 +142,7 @@ export function CompleteProfileForm() {
       if (metadataError) throw new Error("שמירת פרטי משתמש נכשלה.");
     },
     onSuccess: async () => {
+      didCompleteRef.current = true;
       await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
       await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
       const pending = getPendingCreation();
@@ -99,10 +158,11 @@ export function CompleteProfileForm() {
   });
 
   const handleLogout = async () => {
+    didCompleteRef.current = true;
     const supabase = createClient();
     await supabase.auth.signOut();
     await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
-    router.replace("/gallery");
+    router.replace("/");
   };
 
   if (loading || profileLoading) {
@@ -142,6 +202,72 @@ export function CompleteProfileForm() {
             label="תאריך לידה"
           />
 
+          <div className="mt-4 mb-1">
+            <div
+              role="checkbox"
+              aria-checked={form.agreedToTerms}
+              tabIndex={0}
+              onClick={() => {
+                setForm((prev) => ({ ...prev, agreedToTerms: !prev.agreedToTerms }));
+                if (termsError) setTermsError(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === " " || e.key === "Enter") {
+                  e.preventDefault();
+                  setForm((prev) => ({ ...prev, agreedToTerms: !prev.agreedToTerms }));
+                  if (termsError) setTermsError(null);
+                }
+              }}
+              className="flex items-center gap-2 cursor-pointer select-none outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52] focus-visible:ring-offset-1 rounded"
+              dir="rtl"
+            >
+              <span className="text-xs text-[#2e3c52] dark:text-gray-300 text-hebrew-body leading-relaxed">
+                קראתי ואני מאשר/ת את{" "}
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  onClick={(e) => e.stopPropagation()}
+                  className="underline text-[#d4826f] hover:text-[#c4725f] dark:text-[#e8917a] dark:hover:text-[#f0a18a] font-semibold"
+                >
+                  תנאי השימוש ומדיניות הפרטיות
+                </Link>
+              </span>
+
+              <span
+                className={`
+                  shrink-0 flex items-center justify-center
+                  w-[18px] h-[18px] rounded-[4px] border-2
+                  transition-all duration-150
+                  ${
+                    form.agreedToTerms
+                      ? "bg-[#2e3c52] border-[#2e3c52] dark:bg-[#d4826f] dark:border-[#d4826f]"
+                      : "bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-500"
+                  }
+                `}
+              >
+                <svg
+                  className={`w-[11px] h-[11px] text-white pointer-events-none transition-all duration-150 ${
+                    form.agreedToTerms ? "opacity-100 scale-100" : "opacity-0 scale-50"
+                  }`}
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M2 6l3 3 5-5" />
+                </svg>
+              </span>
+            </div>
+
+            {termsError && (
+              <p className="text-xs text-red-500 mt-1 text-hebrew-body text-right">
+                {termsError}
+              </p>
+            )}
+          </div>
+
           <p className={`text-xs text-center text-hebrew-body transition-opacity ${error ? "opacity-100 text-red-500" : "opacity-0"}`}>
             {error || "\u00A0"}
           </p>
@@ -151,6 +277,11 @@ export function CompleteProfileForm() {
             disabled={!isValid || saveMutation.isPending}
             onClick={() => {
               setError(null);
+              if (!form.agreedToTerms) {
+                setTermsError(AUTH_VALIDATION.termsRequired);
+                return;
+              }
+              setTermsError(null);
               saveMutation.mutate(form);
             }}
             className="w-full py-2.5 rounded-lg bg-[#2e3c52] hover:bg-[#1B263B] text-white text-hebrew-heading disabled:opacity-50 disabled:cursor-not-allowed"
