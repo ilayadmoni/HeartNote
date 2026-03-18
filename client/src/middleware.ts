@@ -124,10 +124,10 @@ export async function middleware(request: NextRequest) {
         return getResponse();
       }
 
-      // Sign out server-side first.
-      await supabase.auth.signOut();
-
       if (isProtectedRoute(pathname)) {
+        // Sign out server-side first.
+        await supabase.auth.signOut();
+
         // 3b) PROTECTED route → sign out + redirect to login modal.
         const loginUrl = new URL("/", request.url);
         loginUrl.searchParams.set("login", "true");
@@ -139,10 +139,10 @@ export async function middleware(request: NextRequest) {
         return redirectResponse;
       }
 
-      // 3c) PUBLIC route → sign out silently, let them land naturally.
-      const passResponse = getResponse();
-      clearAuthCookies(passResponse, request);
-      return passResponse;
+      // 3c) PUBLIC route → allow access, do not destroy session.
+      // Helps prevent Next.js <Link> prefetching from silently destroying
+      // the session while the user is filling out the /complete-profile form.
+      return getResponse();
     }
 
     // Profile is complete → user should NOT stay on /complete-profile.

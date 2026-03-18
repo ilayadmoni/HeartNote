@@ -41,6 +41,7 @@ export function CompleteProfileForm() {
   const [error, setError] = useState<string | null>(null);
   const [termsError, setTermsError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [isSessionValidating, setIsSessionValidating] = useState(true);
   const didCompleteRef = useRef(false);
   const isForceLogoutRunningRef = useRef(false);
 
@@ -49,8 +50,8 @@ export function CompleteProfileForm() {
     isForceLogoutRunningRef.current = true;
 
     try {
-      const supabase = createClient();
-      await supabase.auth.signOut();
+      // Server-side signOut ensures httpOnly SSR cookies are cleared.
+      await fetch("/api/auth/logout", { method: "POST" });
       await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
       await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
     } finally {
@@ -62,12 +63,38 @@ export function CompleteProfileForm() {
   }, [queryClient]);
 
   useEffect(() => {
-    if (!loading && !user) {
-      // User has no session — middleware will handle protection.
-      // Do NOT force-navigate; user is either already on a public
-      // page or was redirected by middleware.
-      router.replace("/");
+    let isMounted = true;
+
+    async function validateSession() {
+      // Wait for the context's initial sweep to finish loading
+      if (loading) return;
+
+      console.log("[ProfileGuard] AuthContext state:", { loading, hasUser: !!user });
+
+      const supabase = createClient();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      console.log("[ProfileGuard] Supabase getSession result:", { 
+        hasSession: !!session, 
+        error: error?.message 
+      });
+
+      if (!isMounted) return;
+
+      if (session) {
+        console.log("[ProfileGuard] Session valid. Allowing form render.");
+        setIsSessionValidating(false);
+      } else {
+        console.log("[ProfileGuard] No session found. Kicking user to /.");
+        router.replace("/");
+      }
     }
+
+    void validateSession();
+
+    return () => {
+      isMounted = false;
+    };
   }, [loading, user, router]);
 
   useEffect(() => {
@@ -159,13 +186,13 @@ export function CompleteProfileForm() {
 
   const handleLogout = async () => {
     didCompleteRef.current = true;
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    // Server-side signOut ensures httpOnly SSR cookies are cleared.
+    await fetch("/api/auth/logout", { method: "POST" });
     await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
     router.replace("/");
   };
 
-  if (loading || profileLoading) {
+  if (loading || profileLoading || isSessionValidating) {
     return <div className="min-h-[50vh] flex items-center justify-center text-hebrew-body">טוען...</div>;
   }
 

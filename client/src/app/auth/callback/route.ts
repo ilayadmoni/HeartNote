@@ -1,13 +1,28 @@
 /**
  * Auth Callback Route Handler
- * Handles exactly two server-side auth callbacks:
+ * Handles two server-side auth callbacks:
  * 1) OAuth code exchange (Google and other providers)
  * 2) Token-hash verification (signup/recovery email flows)
+ *
+ * Cookie strategy: `createCallbackClient` writes session tokens
+ * directly to `cookieStore` via `cookies().set()`. In Next.js
+ * App Router Route Handlers, these are automatically merged into
+ * the outgoing response — including `NextResponse.redirect()`.
+ * No manual cookie injection is needed.
+ *
+ * Profile completeness is enforced for ALL providers — if
+ * first_name, last_name, or date_of_birth is missing the user
+ * is always sent to /complete-profile (the `next` param is
+ * ignored in that case).
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { isInternalUrl } from "@/lib/utils/isInternalUrl";
+import {
+  createCallbackClient,
+  fetchProfileWithRetry,
+  isProfileIncomplete,
+} from "./helpers";
 
 const DEFAULT_SUCCESS_PATH = "/";
 const RECOVERY_PATH = "/?modal=reset-password";
@@ -18,9 +33,13 @@ function redirectWithError(request: NextRequest, message: string) {
   return NextResponse.redirect(errorUrl);
 }
 
+/* ------------------------------------------------------------------ */
+/*  Route handler                                                       */
+/* ------------------------------------------------------------------ */
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const supabase = await createClient();
+  const supabase = await createCallbackClient();
 
   const code = searchParams.get("code");
   const tokenHash = searchParams.get("token_hash");
@@ -28,9 +47,11 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get("next") ?? "";
   const safePath = isInternalUrl(next) ? next : DEFAULT_SUCCESS_PATH;
 
-  // Path A: OAuth/PKCE code exchange
+  // ── Path A: OAuth / PKCE code exchange ──────────────────────────
   if (code) {
-    const { data: exchangeData, error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data: exchangeData, error } =
+      await supabase.auth.exchangeCodeForSession(code);
+
     if (error) {
       return redirectWithError(
         request,
@@ -38,28 +59,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Keep Google profile-completion behavior intact.
-    const userId = exchangeData?.user?.id;
-    const provider = exchangeData?.user?.app_metadata?.provider;
-    if (userId && provider === "google") {
-      const { data: profileRow } = await supabase
-        .from("profiles")
-        .select("date_of_birth")
-        .eq("id", userId)
-        .maybeSingle();
+    console.log("[OAuth Callback] Exchange successful?", !!exchangeData?.session);
 
-      const isProfileIncomplete = !profileRow || !profileRow.date_of_birth;
-      if (isProfileIncomplete) {
-        return NextResponse.redirect(new URL("/complete-profile", request.url));
+    // Enforce profile completion for EVERY provider.
+    // The `next` param is intentionally ignored when incomplete.
+    const userId = exchangeData?.user?.id;
+
+    if (userId) {
+      const profile = await fetchProfileWithRetry(supabase, userId);
+
+      if (isProfileIncomplete(profile)) {
+        console.log("[OAuth Callback] Profile incomplete → /complete-profile");
+        return NextResponse.redirect(
+          new URL("/complete-profile", request.url),
+        );
       }
     }
 
+    // Profile is complete → land on next/home.
+    console.log(`[OAuth Callback] Profile complete → ${safePath}`);
     return NextResponse.redirect(new URL(safePath, request.url));
   }
 
-  // Path B: Token hash verification (signup/recovery links)
+  // ── Path B: Token hash verification (signup / recovery links) ───
   if (tokenHash && type) {
     const otpType = type === "signup" ? "email" : type;
+
     if (otpType !== "email" && otpType !== "recovery") {
       return redirectWithError(request, "Unsupported token verification type.");
     }
@@ -83,5 +108,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL(safePath, request.url));
   }
 
-  return redirectWithError(request, "Missing authentication callback parameters.");
+  return redirectWithError(
+    request,
+    "Missing authentication callback parameters.",
+  );
 }
