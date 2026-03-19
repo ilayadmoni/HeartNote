@@ -24,8 +24,9 @@ export function createMiddlewareClient(request: NextRequest) {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
+              const isDev = process.env.NODE_ENV !== 'production';
               request.cookies.set(name, value);
-              response.cookies.set(name, value, options);
+              response.cookies.set(name, value, { ...options, secure: isDev ? false : options.secure });
             });
           } catch (error) {
             if (process.env.NODE_ENV === "development") {

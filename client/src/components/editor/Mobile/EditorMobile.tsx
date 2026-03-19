@@ -19,6 +19,7 @@ import { BottomSheet } from "@/components/ui";
 import { EDITOR_CONFIGS } from "../configs";
 import { submitGenericCreation } from "@/actions/creations";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfileComplete } from "@/hooks/useProfileComplete";
 import { useTemplateData } from "@/hooks/useTemplateData";
 import {
   clearDraft,
@@ -33,6 +34,7 @@ import type { TemplateEditorProps } from "../types";
 export function EditorMobile({ templateId }: TemplateEditorProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const { isProfileComplete } = useProfileComplete();
   const config = EDITOR_CONFIGS[templateId];
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -115,6 +117,19 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
     if (!user) {
       setShowConfirmModal(false);
       setIsLoginModalOpen(true);
+      return;
+    }
+
+    // Action-based guard: user is logged in but profile incomplete.
+    // Save their work and redirect to onboarding.
+    if (!isProfileComplete) {
+      setPendingCreation({
+        templateId,
+        data,
+        returnPath: `/create/${templateId}`,
+        createdAt: Date.now(),
+      });
+      window.location.href = `/complete-profile?returnTo=/create/${templateId}&reason=incomplete_profile`;
       return;
     }
 

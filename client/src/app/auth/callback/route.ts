@@ -4,16 +4,10 @@
  * 1) OAuth code exchange (Google and other providers)
  * 2) Token-hash verification (signup/recovery email flows)
  *
- * Cookie strategy: `createCallbackClient` writes session tokens
- * directly to `cookieStore` via `cookies().set()`. In Next.js
- * App Router Route Handlers, these are automatically merged into
- * the outgoing response — including `NextResponse.redirect()`.
- * No manual cookie injection is needed.
- *
- * Profile completeness is enforced for ALL providers — if
- * first_name, last_name, or date_of_birth is missing the user
- * is always sent to /complete-profile (the `next` param is
- * ignored in that case).
+ * After a successful OAuth exchange, checks profile completeness
+ * and routes the user to /complete-profile or / accordingly.
+ * This is the INITIAL routing decision — middleware only enforces
+ * the /profile lock and /complete-profile bounce afterwards.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -59,25 +53,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log("[OAuth Callback] Exchange successful?", !!exchangeData?.session);
-
-    // Enforce profile completion for EVERY provider.
-    // The `next` param is intentionally ignored when incomplete.
+    // Check profile completeness to decide the initial landing page.
     const userId = exchangeData?.user?.id;
-
     if (userId) {
       const profile = await fetchProfileWithRetry(supabase, userId);
 
       if (isProfileIncomplete(profile)) {
-        console.log("[OAuth Callback] Profile incomplete → /complete-profile");
         return NextResponse.redirect(
           new URL("/complete-profile", request.url),
         );
       }
     }
 
-    // Profile is complete → land on next/home.
-    console.log(`[OAuth Callback] Profile complete → ${safePath}`);
+    // Profile is complete (or no user ID somehow) → go to the safe path.
     return NextResponse.redirect(new URL(safePath, request.url));
   }
 

@@ -51,9 +51,16 @@ export async function createCallbackClient() {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              const isDev = process.env.NODE_ENV !== 'production';
+              cookieStore.set(name, value, { ...options, secure: isDev ? false : options.secure });
+            });
+          } catch (error) {
+            if (process.env.NODE_ENV === "development") {
+              console.error("[supabase/helpers] Failed to set auth cookies", error);
+            }
+          }
         },
       },
     },
