@@ -74,7 +74,7 @@ async function sendAlreadyRegisteredEmail(email: string): Promise<void> {
               אנא היכנס לחשבון שלך או בצע איפוס סיסמה אם שכחת אותה.
             </p>
             <div style="text-align: center;">
-              <a href="${process.env.NEXT_PUBLIC_SITE_URL || "https://heartnote.co.il"}/?modal=login"
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL || "https://www.heartnote.co.il"}/?modal=login"
                  style="display: inline-block; background: #2e3c52; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px;">
                 כניסה לחשבון
               </a>
@@ -87,7 +87,7 @@ async function sendAlreadyRegisteredEmail(email: string): Promise<void> {
         </html>
       `,
     });
-    console.log(`[registerUser] Sent "already registered" email to: ${email}`);
+    console.log(`[registerUser] Sent "already registered" email to: ${email.replace(/(.{2}).*(@.*)/, '$1***$2')}`);
   } catch (err) {
     console.error("[registerUser] Resend email error:", err);
     // Non-fatal — continue returning generic success
@@ -137,7 +137,7 @@ export async function registerUser(
 
   if (banned) {
     console.log(
-      `[registerUser] Banned email rejected: ${trimmedEmail}`,
+      `[registerUser] Banned email rejected: ${trimmedEmail.replace(/(.{2}).*(@.*)/, '$1***$2')}`,
     );
     return { error: "מייל לא חוקי" };
   }
@@ -151,7 +151,7 @@ export async function registerUser(
 
   if (existingProfile) {
     console.log(
-      `[registerUser] Existing user — sending notification: ${trimmedEmail}`,
+      `[registerUser] Existing user — sending notification: ${trimmedEmail.replace(/(.{2}).*(@.*)/, '$1***$2')}`,
     );
 
     // Send "you already have an account" email (non-blocking)

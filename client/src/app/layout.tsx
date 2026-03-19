@@ -16,43 +16,57 @@ import { Toaster } from "sonner";
 import { StructuredData } from "@/components/StructuredData";
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
-// Construct metadataBase from environment or fallback
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-const metadataBase = new URL(siteUrl);
-
 export const metadata: Metadata = {
-  metadataBase,
-  title: "HeartNote - מפעל הברכות הדיגיטלי",
-  description: "צור ברכות דיגיטליות מרהיבות בקלות ובמהירות",
-  keywords: ["ברכות", "ברכה דיגיטלית", "אירועים", "HeartNote"],
-  authors: [{ name: "HeartNote", url: siteUrl }],
+  metadataBase: new URL("https://www.heartnote.co.il"),
+  title: "HeartNote | יצירת ברכות דיגיטליות",
+  description:
+    "הפתיעו את האנשים שאתם אוהבים עם ברכה דיגיטלית ואינטראקטיבית. בחרו מתוך מגוון תבניות: גלגל החלטות, כרטיס גירוד, הזמנה לדייט, ציר זמן, קופוני אהבה, חידון חברות ועוד. בואו נתחיל ליצור ביחד.",
+  applicationName: "HeartNote",
+  keywords: [
+    "ברכות",
+    "ברכה דיגיטלית",
+    "ברכה",
+    "ברכה ליום הולדת",
+    "ברכה ליום האהבה",
+    "ברכה לחג",
+    "יצירת ברכות",
+    "עיצוב ברכות דיגיטליות",
+    "אירועים",
+    "HeartNote",
+  ],
+  authors: [{ name: "HeartNote", url: "https://www.heartnote.co.il" }],
   creator: "HeartNote",
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: "/assets/images/logo_heartnote.png",
     apple: "/assets/images/logo_heartnote.png",
     shortcut: "/assets/images/logo_heartnote.png",
   },
   openGraph: {
-    type: "website",
-    locale: "he_IL",
-    url: siteUrl,
+    title: "HeartNote | יצירת ברכות דיגיטליות",
+    description:
+      "הפתיעו את האנשים שאתם אוהבים עם ברכה דיגיטלית ואינטראקטיבית. בחרו מתוך מגוון תבניות: גלגל החלטות, כרטיס גירוד, הזמנה לדייט, ציר זמן, קופוני אהבה, חידון חברות ועוד. בואו נתחיל ליצור ביחד.",
+    url: "https://www.heartnote.co.il",
     siteName: "HeartNote",
-    title: "HeartNote - מפעל הברכות הדיגיטלי",
-    description: "צור ברכות דיגיטליות מרהיבות בקלות ובמהירות",
+    locale: "he_IL",
+    type: "website",
     images: [
       {
         url: "/assets/images/full_logo.png",
         width: 1200,
         height: 630,
-        alt: "HeartNote - מפעל הברכות הדיגיטלי",
+        alt: "HeartNote - יצירת ברכות דיגיטליות",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "HeartNote - מפעל הברכות הדיגיטלי",
-    description: "צור ברכות דיגיטליות מרהיבות בקלות ובמהירות",
+    title: "HeartNote | יצירת ברכות דיגיטליות",
+    description:
+      "הפתיעו את האנשים שאתם אוהבים עם ברכה דיגיטלית ואינטראקטיבית. בחרו מתוך מגוון תבניות: גלגל החלטות, כרטיס גירוד, הזמנה לדייט, ציר זמן, קופוני אהבה, חידון חברות ועוד. בואו נתחיל ליצור ביחד.",
     images: ["/assets/images/full_logo.png"],
     creator: "@HeartNote",
   },

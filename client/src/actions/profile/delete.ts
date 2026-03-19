@@ -21,7 +21,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function deleteMyAccount(): Promise<ActionResult<null>> {
   return protectedAction(async (user, supabase) => {
-    console.log(`[deleteMyAccount] Deleting user: ${user.id}, email: ${user.email}`);
+    console.log(`[deleteMyAccount] Deleting user: ${user.id.slice(0, 8)}…, email: ${user.email?.replace(/(.{2}).*(@.*)/, '$1***$2')}`);
 
     // Service-role client — bypasses RLS for admin operations
     let admin;

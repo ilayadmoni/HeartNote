@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-const SITE_URL = "https://heartnote.co.il";
+const SITE_URL = "https://www.heartnote.co.il";
 const NOW = new Date().toISOString();
 
 /**
@@ -135,7 +135,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       } else if (creations && Array.isArray(creations)) {
         const creationRoutes = creations.map((creation) => ({
           url: `${SITE_URL}/p/${creation.id}`,
-          lastModified: creation.created_at || NOW,
+          lastModified: creation.created_at ? new Date(creation.created_at).toISOString() : NOW,
           changeFrequency: "never" as const,
           priority: 0.6,
         }));

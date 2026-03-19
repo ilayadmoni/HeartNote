@@ -10,10 +10,10 @@
  * data changes.
  */
 
-const SITE_URL = "https://heartnote.co.il";
+const SITE_URL = "https://www.heartnote.co.il";
 
 // TODO: replace with the actual hosted logo URL when available
-const LOGO_URL = "https://heartnote.co.il/assets/images/logo_heartnote.png";
+const LOGO_URL = "https://www.heartnote.co.il/assets/images/logo_heartnote.png";
 
 const schema = {
   "@context": "https://schema.org",
@@ -26,6 +26,21 @@ const schema = {
     },
     {
       "@type": "WebSite",
+      name: "HeartNote",
+      alternateName: [
+        "הארט נוט",
+        "ברכות דיגיטליות",
+        "כרטיס ברכה דיגיטלי",
+        "הזמנה דיגיטלית",
+        "אתר ברכות",
+        "ברכה אישית",
+        "heartnote",
+        "Haertnote",
+        "heart note",
+        "הראטנווט",
+        "הארטנוט",
+        "Heart Note",
+      ],
       url: SITE_URL,
       potentialAction: {
         "@type": "SearchAction",

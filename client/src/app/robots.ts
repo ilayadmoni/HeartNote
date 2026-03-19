@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const SITE_URL = "https://heartnote.co.il";
+const SITE_URL = "https://www.heartnote.co.il";
 
 /**
  * App Robots Configuration

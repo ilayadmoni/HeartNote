@@ -106,12 +106,9 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
     hasResumedPendingRef.current = true;
     setChoices(pending.data);
+    clearPendingCreation();
     setIsLoginModalOpen(false);
     setShowConfirmModal(false);
-
-    window.setTimeout(() => {
-      void handleConfirmCreation(pending.data);
-    }, 50);
   }, [user, templateId, setChoices, isPublishing]);
 
   if (!config) {

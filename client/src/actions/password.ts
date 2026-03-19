@@ -102,7 +102,7 @@ export async function requestPasswordReset(
     .maybeSingle();
 
   if (banned) {
-    console.log(`[requestPasswordReset] Banned email silently aborted: ${email}`);
+    console.log(`[requestPasswordReset] Banned email silently aborted: ${email.replace(/(.{2}).*(@.*)/, '$1***$2')}`);
     return { success: GENERIC_SUCCESS };
   }
 
@@ -127,7 +127,7 @@ export async function requestPasswordReset(
   // ── 3-strike auto-ban ─────────────────────────────────────────────
   if (attempts >= MAX_RESET_ATTEMPTS) {
     console.warn(
-      `[requestPasswordReset] Auto-banning ${email} after ${attempts} attempts`,
+      `[requestPasswordReset] Auto-banning ${email.replace(/(.{2}).*(@.*)/, '$1***$2')} after ${attempts} attempts`,
     );
 
     await admin

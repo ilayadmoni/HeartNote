@@ -85,12 +85,9 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
 
     hasResumedPendingRef.current = true;
     setChoices(pending.data);
+    clearPendingCreation();
     setShowConfirmModal(false);
     setIsLoginModalOpen(false);
-
-    window.setTimeout(() => {
-      void handleConfirmCreation(pending.data);
-    }, 50);
   }, [user, templateId, setChoices, isPublishing]);
 
   if (!config) {
