@@ -19,6 +19,7 @@ import { BottomSheet } from "@/components/ui";
 import { EDITOR_CONFIGS } from "../configs";
 import { submitGenericCreation } from "@/actions/creations";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfileComplete } from "@/hooks/useProfileComplete";
 import { useTemplateData } from "@/hooks/useTemplateData";
 import {
   clearDraft,
@@ -33,14 +34,19 @@ import type { TemplateEditorProps } from "../types";
 export function EditorMobile({ templateId }: TemplateEditorProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const { isProfileComplete } = useProfileComplete();
   const config = EDITOR_CONFIGS[templateId];
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  const { userChoices: data, updateChoice: handleChange, setChoices, logData } =
-    useTemplateData(templateId, config?.defaultData || {});
+  const {
+    userChoices: data,
+    updateChoice: handleChange,
+    setChoices,
+    logData,
+  } = useTemplateData(templateId, config?.defaultData || {});
   const [successData, setSuccessData] = useState<{
     url: string;
     expiresAt: string | null;
@@ -79,12 +85,9 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
 
     hasResumedPendingRef.current = true;
     setChoices(pending.data);
+    clearPendingCreation();
     setShowConfirmModal(false);
     setIsLoginModalOpen(false);
-
-    window.setTimeout(() => {
-      void handleConfirmCreation(pending.data);
-    }, 50);
   }, [user, templateId, setChoices, isPublishing]);
 
   if (!config) {
@@ -114,12 +117,27 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
       return;
     }
 
+    // Action-based guard: user is logged in but profile incomplete.
+    // Save their work and redirect to onboarding.
+    if (!isProfileComplete) {
+      setPendingCreation({
+        templateId,
+        data,
+        returnPath: `/create/${templateId}`,
+        createdAt: Date.now(),
+      });
+      window.location.href = `/complete-profile?returnTo=/create/${templateId}&reason=incomplete_profile`;
+      return;
+    }
+
     setIsLoginModalOpen(false);
     setShowConfirmModal(true);
   };
 
   // Handle the actual creation after confirmation
-  const handleConfirmCreation = async (submissionData: Record<string, unknown> = data) => {
+  const handleConfirmCreation = async (
+    submissionData: Record<string, unknown> = data,
+  ) => {
     if (!user) {
       setPendingCreation({
         templateId,
@@ -201,7 +219,6 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
             <h1 className="text-base font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
               {config.title}
             </h1>
-       
           </div>
 
           <button
@@ -209,9 +226,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
             disabled={isPublishing}
             className="flex items-center gap-2 px-4 py-2 bg-[#d4826f] hover:bg-[#c4735f] text-white rounded-full text-sm font-semibold text-hebrew-heading disabled:opacity-50 shadow-sm shadow-[#d4826f]/20 transition-all"
           >
-            <span>
-              {isPublishing ? "יוצר..." : user ? "יצירה" : "יצירה"}
-            </span>
+            <span>{isPublishing ? "יוצר..." : user ? "יצירה" : "יצירה"}</span>
             {isPublishing ? (
               <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (

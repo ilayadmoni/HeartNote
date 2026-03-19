@@ -95,7 +95,6 @@ export function LoginModal({
   const [profileAgreedToTerms, setProfileAgreedToTerms] = useState(false);
   const [profileTermsError, setProfileTermsError] = useState<string | null>(null);
   const profileCompletedRef = useRef(false);
-  const profileForceLogoutRunningRef = useRef(false);
 
   // Shake animation trigger
   const [shakeKey, setShakeKey] = useState(0);
@@ -129,19 +128,7 @@ export function LoginModal({
     window.history.replaceState({}, "", url.pathname + url.search);
   }, []);
 
-  const forceLogoutFromProfileStep = useCallback(async () => {
-    if (profileForceLogoutRunningRef.current || profileCompletedRef.current) return;
-    profileForceLogoutRunningRef.current = true;
 
-    try {
-      const supabase = createClient();
-      await supabase.auth.signOut();
-      await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
-      await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
-    } finally {
-      router.replace("/");
-    }
-  }, [queryClient, router]);
 
   // ── Google OAuth handler ─────────────────────────────────────────
   const handleGoogleSignIn = useCallback(async () => {
@@ -175,7 +162,6 @@ export function LoginModal({
 
     if (isOpen && initialView === "complete-profile") {
       profileCompletedRef.current = false;
-      profileForceLogoutRunningRef.current = false;
       setStep("profile");
       setActiveTab("login");
     }
@@ -197,37 +183,13 @@ export function LoginModal({
       setProfileAgreedToTerms(false);
       setProfileTermsError(null);
       profileCompletedRef.current = false;
-      profileForceLogoutRunningRef.current = false;
       setProfileForm({ firstName: "", lastName: "", dateOfBirth: "" });
       setLoginError(null);
       clearError();
     }
   }, [isOpen, clearError]);
 
-  useEffect(() => {
-    if (!isOpen || step !== "profile") return;
 
-    const handleBackNavigation = () => {
-      if (!profileCompletedRef.current) {
-        void forceLogoutFromProfileStep();
-      }
-    };
-
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (!profileCompletedRef.current) {
-        e.preventDefault();
-        e.returnValue = "";
-      }
-    };
-
-    window.addEventListener("popstate", handleBackNavigation);
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("popstate", handleBackNavigation);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [isOpen, step, forceLogoutFromProfileStep]);
 
   // ── Defensive body cleanup (prevents stale modal locks) ──────────
   const restoreBodyInteractivity = useCallback(() => {

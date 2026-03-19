@@ -19,6 +19,7 @@ import { CreationConfirmModal } from "../components/CreationConfirmModal";
 import { EDITOR_CONFIGS } from "../configs";
 import { submitGenericCreation } from "@/actions/creations";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfileComplete } from "@/hooks/useProfileComplete";
 import { useTemplateData } from "@/hooks/useTemplateData";
 import {
   clearDraft,
@@ -33,6 +34,7 @@ import type { TemplateEditorProps } from "../types";
 export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const { isProfileComplete } = useProfileComplete();
   const config = EDITOR_CONFIGS[templateId];
   const previewRef = useRef<HTMLDivElement>(null);
   const [previewHeight, setPreviewHeight] = useState<number | null>(null);
@@ -104,12 +106,9 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
     hasResumedPendingRef.current = true;
     setChoices(pending.data);
+    clearPendingCreation();
     setIsLoginModalOpen(false);
     setShowConfirmModal(false);
-
-    window.setTimeout(() => {
-      void handleConfirmCreation(pending.data);
-    }, 50);
   }, [user, templateId, setChoices, isPublishing]);
 
   if (!config) {
@@ -136,6 +135,19 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     if (!user) {
       setShowConfirmModal(false);
       setIsLoginModalOpen(true);
+      return;
+    }
+
+    // Action-based guard: user is logged in but profile incomplete.
+    // Save their work and redirect to onboarding.
+    if (!isProfileComplete) {
+      setPendingCreation({
+        templateId,
+        data,
+        returnPath: `/create/${templateId}`,
+        createdAt: Date.now(),
+      });
+      window.location.href = `/complete-profile?returnTo=/create/${templateId}&reason=incomplete_profile`;
       return;
     }
 

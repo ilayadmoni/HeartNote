@@ -1,78 +1,44 @@
 /**
- * Next.js Middleware
- * Handles authentication for protected routes.
+ * Next.js Middleware — Minimal Server-Driven Auth
  *
- * "Polite Logout" for Google users with incomplete profiles:
- * - On /complete-profile → allow access.
- * - On a PUBLIC route → sign out silently, let them land naturally.
- * - On a PROTECTED route → sign out, redirect to /?login=true.
+ * Only two route-level guards:
+ * 1) Profile Lock:    incomplete profile + /profile → /complete-profile
+ * 2) Onboarding Lock: complete profile + /complete-profile → /
  *
- * CRITICAL: There is NO /dashboard page. Do not use or reference it.
+ * Everything else passes through freely. Incomplete users CAN browse
+ * /, /gallery, /create/*, etc. The action-based guard in the editor
+ * components handles the save interception client-side.
  */
 
 import { type NextRequest, NextResponse } from "next/server";
 import { createMiddlewareClient } from "@/lib/supabase/middleware";
 
-// ── Route classifications ──────────────────────────────────────────
+/** Auth infra — skip entirely, never run profile checks. */
+const AUTH_INFRA_PREFIXES = [
+  "/auth/callback",
+  "/auth/confirm",
+  "/auth/auth-code-error",
+  "/api/auth",
+];
 
-/** Routes that require an active, complete session. */
-const PROTECTED_ROUTES = ["/profile", "/preview"];
-
-/** The profile-completion page itself (Google-only). */
-const PROFILE_COMPLETION_ROUTE = "/complete-profile";
-
-/** Legacy auth pages — redirect to gallery if already logged in. */
-const AUTH_ROUTES = ["/login", "/signup"];
-
-/** OAuth / token confirmation — NEVER enforce profile checks here. */
-const AUTH_CALLBACK_ROUTES = ["/auth/callback", "/api/auth/callback", "/auth/confirm"];
+const ONBOARDING_ROUTE = "/complete-profile";
 
 // ── Helpers ────────────────────────────────────────────────────────
 
-function isProtectedRoute(pathname: string): boolean {
-  return PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
-}
-
-function isAuthCallbackRoute(pathname: string): boolean {
-  return AUTH_CALLBACK_ROUTES.some((route) => pathname.startsWith(route));
+function isAuthInfra(pathname: string): boolean {
+  return AUTH_INFRA_PREFIXES.some((p) => pathname.startsWith(p));
 }
 
 function isNonEmpty(value: unknown): boolean {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function isGoogleUser(user: {
-  app_metadata?: Record<string, unknown>;
-  identities?: Array<{ provider?: string }>;
-}): boolean {
-  if (user.app_metadata?.provider === "google") return true;
-  return (user.identities ?? []).some((identity) => identity.provider === "google");
-}
-
-/**
- * Copy all cookies that the Supabase middleware client set on `source`
- * over to `target` so session tokens propagate through redirects.
- */
-function withSessionCookies(source: NextResponse, target: NextResponse): NextResponse {
-  source.cookies.getAll().forEach(({ name, value, ...options }) => {
-    target.cookies.set(name, value, options);
+/** Forward session cookies from middleware response onto a redirect. */
+function withCookies(source: NextResponse, target: NextResponse): NextResponse {
+  source.cookies.getAll().forEach(({ name, value, ...opts }) => {
+    target.cookies.set(name, value, opts);
   });
   return target;
-}
-
-/**
- * Delete every Supabase auth cookie to immediately drop the session
- * from the browser perspective.
- */
-function clearAuthCookies(response: NextResponse, request: NextRequest): void {
-  const supabaseCookieNames = request.cookies
-    .getAll()
-    .filter(({ name }) => name.startsWith("sb-"))
-    .map(({ name }) => name);
-
-  for (const cookieName of supabaseCookieNames) {
-    response.cookies.set(cookieName, "", { maxAge: 0, path: "/" });
-  }
 }
 
 // ── Main middleware ────────────────────────────────────────────────
@@ -81,116 +47,60 @@ export async function middleware(request: NextRequest) {
   const { supabase, getResponse } = createMiddlewareClient(request);
   const pathname = request.nextUrl.pathname;
 
-  // 1) Let OAuth / token-confirmation callbacks finish undisturbed.
-  if (isAuthCallbackRoute(pathname)) {
+  // Auth infra routes — always pass through.
+  if (isAuthInfra(pathname)) {
     return getResponse();
   }
 
-  // 2) Get the current user (validates the session in the process).
+  // Get the authenticated user (validates the JWT).
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // ── 3) Incomplete-profile guard for Google users ─────────────────
-
-  if (user && isGoogleUser(user)) {
-    const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
-    const hasMetaFirstName = isNonEmpty(metadata.first_name);
-    const hasMetaLastName = isNonEmpty(metadata.last_name);
-    const hasMetaBirthDate =
-      isNonEmpty(metadata.birth_date) || isNonEmpty(metadata.date_of_birth);
-
-    const { data: profileRow } = await supabase
-      .from("profiles")
-      .select("first_name, last_name, date_of_birth")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    const hasProfileFirstName = isNonEmpty(profileRow?.first_name);
-    const hasProfileLastName = isNonEmpty(profileRow?.last_name);
-    const hasProfileBirthDate = isNonEmpty(profileRow?.date_of_birth);
-
-    const profileIncomplete =
-      !hasMetaFirstName ||
-      !hasMetaLastName ||
-      !hasMetaBirthDate ||
-      !hasProfileFirstName ||
-      !hasProfileLastName ||
-      !hasProfileBirthDate;
-
-    if (profileIncomplete) {
-      // 3a) On /complete-profile → allow access.
-      if (pathname === PROFILE_COMPLETION_ROUTE) {
-        return getResponse();
-      }
-
-      // Sign out server-side first.
-      await supabase.auth.signOut();
-
-      if (isProtectedRoute(pathname)) {
-        // 3b) PROTECTED route → sign out + redirect to login modal.
-        const loginUrl = new URL("/", request.url);
-        loginUrl.searchParams.set("login", "true");
-        loginUrl.searchParams.set("redirect", pathname);
-
-        const redirectResponse = NextResponse.redirect(loginUrl);
-        withSessionCookies(getResponse(), redirectResponse);
-        clearAuthCookies(redirectResponse, request);
-        return redirectResponse;
-      }
-
-      // 3c) PUBLIC route → sign out silently, let them land naturally.
-      const passResponse = getResponse();
-      clearAuthCookies(passResponse, request);
-      return passResponse;
-    }
-
-    // Profile is complete → user should NOT stay on /complete-profile.
-    if (!profileIncomplete && pathname === PROFILE_COMPLETION_ROUTE) {
-      return withSessionCookies(
-        getResponse(),
-        NextResponse.redirect(new URL("/", request.url)),
-      );
-    }
+  // No user — let everything through (public site).
+  if (!user) {
+    return getResponse();
   }
 
-  // ── 4) Non-Google users shouldn't stay on complete-profile. ──────
+  // ── Authenticated: determine profile completeness ───────────────
+  const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const { data: profileRow } = await supabase
+    .from("profiles")
+    .select("first_name, last_name, date_of_birth")
+    .eq("id", user.id)
+    .maybeSingle();
 
-  if (user && pathname === PROFILE_COMPLETION_ROUTE && !isGoogleUser(user)) {
-    return withSessionCookies(
+  const profileComplete =
+    isNonEmpty(metadata.first_name) &&
+    isNonEmpty(metadata.last_name) &&
+    (isNonEmpty(metadata.birth_date) || isNonEmpty(metadata.date_of_birth)) &&
+    isNonEmpty(profileRow?.first_name) &&
+    isNonEmpty(profileRow?.last_name) &&
+    isNonEmpty(profileRow?.date_of_birth);
+
+  // ── Rule 1: Profile Lock ────────────────────────────────────────
+  // Incomplete profile + /profile → redirect to onboarding.
+  if (!profileComplete && pathname.startsWith("/profile")) {
+    const onboardUrl = new URL(ONBOARDING_ROUTE, request.url);
+    onboardUrl.searchParams.set("returnTo", pathname);
+    onboardUrl.searchParams.set("reason", "profile_access");
+    return withCookies(
+      getResponse(),
+      NextResponse.redirect(onboardUrl),
+    );
+  }
+
+  // ── Rule 2: Onboarding Lock ─────────────────────────────────────
+  // Complete profile + /complete-profile → bounce to home.
+  if (profileComplete && pathname === ONBOARDING_ROUTE) {
+    return withCookies(
       getResponse(),
       NextResponse.redirect(new URL("/", request.url)),
     );
   }
 
-  // ── 5) Unauthenticated → protected route → open login modal. ────
-
-  if (!user && isProtectedRoute(pathname)) {
-    const alreadyOnLoginFlow =
-      pathname === "/" && request.nextUrl.searchParams.get("login") === "true";
-
-    if (alreadyOnLoginFlow) {
-      return getResponse();
-    }
-
-    const redirectUrl = new URL("/", request.url);
-    redirectUrl.searchParams.set("login", "true");
-    redirectUrl.searchParams.set("redirect", pathname);
-
-    return withSessionCookies(getResponse(), NextResponse.redirect(redirectUrl));
-  }
-
-  // ── 6) Authenticated users should not stay on legacy auth routes. ─
-
-  if (AUTH_ROUTES.some((route) => pathname.startsWith(route))) {
-    if (user) {
-      return withSessionCookies(
-        getResponse(),
-        NextResponse.redirect(new URL("/gallery", request.url)),
-      );
-    }
-  }
-
+  // ── Rule 3: Freedom ─────────────────────────────────────────────
+  // Everything else passes through normally.
   return getResponse();
 }
 

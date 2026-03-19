@@ -41,25 +41,33 @@ export function Step4Animation() {
 
         // 2. Move cursor to the real send button location (responsive to current height/layout)
         const wrapperEl = scope.current as HTMLElement;
-        const sendButtonEl = wrapperEl.querySelector("#send-btn") as HTMLElement | null;
+        const sendButtonEl = wrapperEl.querySelector(
+          "#send-btn",
+        ) as HTMLElement | null;
 
         if (sendButtonEl) {
           const btnRect = sendButtonEl.getBoundingClientRect();
           const wrapRect = wrapperEl.getBoundingClientRect();
-          const targetTop = ((btnRect.top + btnRect.height / 2 - wrapRect.top) / wrapRect.height) * 100;
-          const targetLeft = ((btnRect.left + btnRect.width / 2 - wrapRect.left) / wrapRect.width) * 100;
+          const targetTop =
+            ((btnRect.top + btnRect.height / 2 - wrapRect.top) /
+              wrapRect.height) *
+            100;
+          const targetLeft =
+            ((btnRect.left + btnRect.width / 2 - wrapRect.left) /
+              wrapRect.width) *
+            100;
 
           await animate(
             "#fake-cursor",
             { top: `${targetTop}%`, left: `${targetLeft}%`, opacity: 1 },
-            { duration: 0.8, ease: "easeOut" }
+            { duration: 0.8, ease: "easeOut" },
           );
         } else {
           // Fallback if button is temporarily unavailable
           await animate(
             "#fake-cursor",
             { top: "13%", left: "18%", opacity: 1 },
-            { duration: 0.8, ease: "easeOut" }
+            { duration: 0.8, ease: "easeOut" },
           );
         }
         if (!isActive) return;
@@ -80,7 +88,7 @@ export function Step4Animation() {
         await animate(
           "#fake-cursor",
           { top: "68%", left: "34%" },
-          { duration: 0.8, ease: "easeInOut" }
+          { duration: 0.8, ease: "easeInOut" },
         );
         if (!isActive) return;
 
@@ -97,7 +105,7 @@ export function Step4Animation() {
         await animate(
           "#fake-cursor",
           { top: "53%", left: "34%" },
-          { duration: 0.8, ease: "easeInOut" }
+          { duration: 0.8, ease: "easeInOut" },
         );
         if (!isActive) return;
 
@@ -119,8 +127,10 @@ export function Step4Animation() {
   }, [animate]);
 
   return (
-    <div ref={scope} className="bg-[#faf9f6] h-full w-full relative overflow-hidden">
-
+    <div
+      ref={scope}
+      className="bg-[#faf9f6] h-full w-full relative overflow-hidden"
+    >
       {/* ─── Phase: preview ─── */}
       {phase === "preview" && (
         <div className="h-full w-full flex flex-col items-center justify-center pt-4 sm:pt-8 pb-4 sm:pb-8 relative">
@@ -128,7 +138,7 @@ export function Step4Animation() {
             id="send-btn"
             className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-[#d98574] text-white px-3 sm:px-5 py-1.5 sm:py-2 rounded-full font-medium flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm shadow-md z-10"
           >
-            שליחה <Send size={12} className="sm:w-4 sm:h-4" />
+            יצירה <Send size={12} className="sm:w-4 sm:h-4" />
           </motion.button>
 
           {/* Final card preview */}
@@ -160,7 +170,7 @@ export function Step4Animation() {
           {/* Background card (blurred behind overlay) */}
           <div className="h-full w-full flex flex-col items-center justify-center pt-8 pb-8">
             <button className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-[#d98574] text-white px-3 sm:px-5 py-1.5 sm:py-2 rounded-full font-medium flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm shadow-md z-10">
-              שליחה <Send size={12} className="sm:w-4 sm:h-4" />
+              יצירה <Send size={12} className="sm:w-4 sm:h-4" />
             </button>
             <div className="bg-white p-4 sm:p-7 rounded-2xl sm:rounded-3xl shadow-[0_15px_40px_-15px_rgba(0,0,0,0.15)] text-center w-full max-w-[280px] mx-3 sm:mx-4 border border-rose-50">
               <div className="bg-rose-50 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-5">
@@ -200,8 +210,12 @@ export function Step4Animation() {
               <div className="bg-[#d98574] text-white text-center py-4 sm:py-6 px-3 sm:px-4 relative">
                 <Sparkles className="absolute top-2 sm:top-3 right-2 sm:right-3 w-3 sm:w-4 h-3 sm:h-4 opacity-50" />
                 <Sparkles className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 w-3 sm:w-3.5 h-3 sm:h-3.5 opacity-50" />
-                <span className="text-2xl sm:text-4xl mb-1 sm:mb-2 block">🎉</span>
-                <h3 className="font-bold text-base sm:text-lg">הכרטיס נוצר בהצלחה!</h3>
+                <span className="text-2xl sm:text-4xl mb-1 sm:mb-2 block">
+                  🎉
+                </span>
+                <h3 className="font-bold text-base sm:text-lg">
+                  הכרטיס נוצר בהצלחה!
+                </h3>
               </div>
 
               {/* Modal body */}
@@ -217,7 +231,9 @@ export function Step4Animation() {
                     className="p-2 sm:p-2.5 text-[8px] sm:text-[10px] text-slate-500 flex-1 flex items-center border-r border-slate-200"
                     dir="ltr"
                   >
-                    <span className="truncate">https://heartnote.co.il/p/064...</span>
+                    <span className="truncate">
+                      https://heartnote.co.il/p/064...
+                    </span>
                   </div>
                 </div>
                 <div className="flex gap-1.5 sm:gap-2 mt-1">
@@ -228,7 +244,11 @@ export function Step4Animation() {
                     id="wa-btn"
                     className="flex-[2.5] bg-[#25D366] text-white py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl flex justify-center items-center gap-1 sm:gap-2 font-bold text-xs sm:text-base shadow-sm"
                   >
-                    <MessageCircle size={13} className="sm:w-[17px] sm:h-[17px]" /> WhatsApp
+                    <MessageCircle
+                      size={13}
+                      className="sm:w-[17px] sm:h-[17px]"
+                    />{" "}
+                    WhatsApp
                   </motion.button>
                 </div>
               </div>
@@ -261,7 +281,9 @@ export function Step4Animation() {
                 <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full bg-slate-400/40 flex items-center justify-center text-[9px] sm:text-[11px] text-white font-bold">
                   נ
                 </div>
-                <p className="text-white text-xs sm:text-base font-semibold">אורלי ❤️</p>
+                <p className="text-white text-xs sm:text-base font-semibold">
+                  אורלי ❤️
+                </p>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 text-white/90">
                 <Video className="w-3 sm:w-4 h-3 sm:h-4" />
@@ -285,8 +307,12 @@ export function Step4Animation() {
               transition={{ delay: 0.2, duration: 0.28 }}
               className="self-start bg-[#202c33] rounded-xl sm:rounded-2xl rounded-tl-sm px-2.5 sm:px-3 py-1.5 sm:py-2 max-w-[220px]"
             >
-              <p className="text-white/90 text-xs sm:text-[14px] text-hebrew-body">מה קורה שמעון??</p>
-              <p className="text-white/40 text-[7px] sm:text-[10px] text-left mt-0.5 sm:mt-1">0:53</p>
+              <p className="text-white/90 text-xs sm:text-[14px] text-hebrew-body">
+                מה קורה שמעון??
+              </p>
+              <p className="text-white/40 text-[7px] sm:text-[10px] text-left mt-0.5 sm:mt-1">
+                0:53
+              </p>
             </motion.div>
 
             {/* Main sent WhatsApp link bubble */}
@@ -296,11 +322,16 @@ export function Step4Animation() {
               transition={{ delay: 0.42, duration: 0.32 }}
               className="self-end bg-[#053a6d] rounded-2xl sm:rounded-3xl rounded-tr-md max-w-[292px] overflow-hidden shadow-lg"
             >
-              <motion.div id="wa-link" className="m-1 sm:m-1.5 rounded-xl sm:rounded-2xl overflow-hidden bg-white cursor-pointer">
+              <motion.div
+                id="wa-link"
+                className="m-1 sm:m-1.5 rounded-xl sm:rounded-2xl overflow-hidden bg-white cursor-pointer"
+              >
                 {/* Preview image area */}
                 <div className="h-[80px] sm:h-[140px] bg-[#f7f6f6] flex items-center justify-center">
                   <div className="flex items-center gap-1 sm:gap-2">
-                    <span className="text-[#17233f] text-2xl sm:text-[44px] leading-none font-extrabold">HeartNote</span>
+                    <span className="text-[#17233f] text-2xl sm:text-[44px] leading-none font-extrabold">
+                      HeartNote
+                    </span>
                     <div className="relative">
                       <Heart className="w-6 sm:w-9 h-6 sm:h-9 text-[#c99383]" />
                       <Settings className="absolute -bottom-0.5 sm:-bottom-1 -right-1 sm:-right-2 w-3 sm:w-4 h-3 sm:h-4 text-[#17233f] fill-[#17233f]" />
@@ -310,10 +341,18 @@ export function Step4Animation() {
 
                 {/* Preview metadata */}
                 <div className="bg-[#082d56] px-2 sm:px-3 py-1.5 sm:py-2.5 text-right">
-                  <p className="text-white text-sm sm:text-[18px] leading-tight text-hebrew-heading">גרד וגלה</p>
-                  <p className="text-white/80 text-[9px] sm:text-[12px] text-hebrew-body mt-0.5">פתחו וגלו את ההפתעה!</p>
-                  <p className="text-white/85 text-[9px] sm:text-[12px] mt-1 sm:mt-2 flex items-center justify-end gap-0.5 sm:gap-1" dir="ltr">
-                    <LinkIcon className="w-2 sm:w-3 h-2 sm:h-3" /> heartnote.co.il
+                  <p className="text-white text-sm sm:text-[18px] leading-tight text-hebrew-heading">
+                    גרד וגלה
+                  </p>
+                  <p className="text-white/80 text-[9px] sm:text-[12px] text-hebrew-body mt-0.5">
+                    פתחו וגלו את ההפתעה!
+                  </p>
+                  <p
+                    className="text-white/85 text-[9px] sm:text-[12px] mt-1 sm:mt-2 flex items-center justify-end gap-0.5 sm:gap-1"
+                    dir="ltr"
+                  >
+                    <LinkIcon className="w-2 sm:w-3 h-2 sm:h-3" />{" "}
+                    heartnote.co.il
                   </p>
                 </div>
               </motion.div>
@@ -322,15 +361,21 @@ export function Step4Animation() {
                 <p className="text-white text-xs sm:text-[14px] leading-snug text-hebrew-body">
                   הכנתי לך כרטיס מיוחד ב- HeartNote! ❤️
                 </p>
-                <p className="text-[#53bdeb] text-[8px] sm:text-[13px] mt-0.5 underline" dir="ltr">
+                <p
+                  className="text-[#53bdeb] text-[8px] sm:text-[13px] mt-0.5 underline"
+                  dir="ltr"
+                >
                   https://heartnote.co.il/p/65c55294-a898-4e8c-b425-f1cdac3028cd
                 </p>
-                <p className="text-white/45 text-[7px] sm:text-[10px] text-left mt-0.5 sm:mt-1">0:57 ✓✓</p>
+                <p className="text-white/45 text-[7px] sm:text-[10px] text-left mt-0.5 sm:mt-1">
+                  0:57 ✓✓
+                </p>
               </div>
             </motion.div>
 
             <div className="self-end bg-[#053a6d] text-white text-xs sm:text-[14px] px-2 sm:px-3 py-1 sm:py-2 rounded-xl sm:rounded-2xl rounded-tr-md">
-              באהבה ממני אלייך            </div>
+              באהבה ממני אלייך{" "}
+            </div>
           </div>
 
           {/* Input row */}

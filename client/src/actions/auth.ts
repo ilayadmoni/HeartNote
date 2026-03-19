@@ -35,7 +35,7 @@ export async function loginAction(
       .maybeSingle();
 
     if (banned) {
-      console.log(`[loginAction] Banned email attempted login: ${email}`);
+      console.log(`[loginAction] Banned email attempted login: ${email.replace(/(.{2}).*(@.*)/, '$1***$2')}`);
       return { error: "שם משתמש או סיסמה שגויים", success: false };
     }
   } catch (err) {

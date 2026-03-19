@@ -7,9 +7,9 @@ import { GalleryTemplate } from "@/components/galleryTemplate";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "HeartNote",
+  title: "HeartNote | גלריית ברכות דיגיטליות",
   description:
-    "בחרו מתוך מגוון תבניות מקוריות ליצירת ברכות דיגיטליות מרגשות לכל אירוע",
+    "בחרו תבנית מקורית מתוך מגוון התבניות שלנו, עצבו והתאימו אותה,ותשלחו ברכה דיגיטלית מרגשת למי שאתם אוהבים. גלגל החלטות | כרטיס גירוד | הזמנה לדייט | ציר זמן | קופוני אהבה | חידון חברות | ועוד",
 };
 
 export default function GalleryPage() {
