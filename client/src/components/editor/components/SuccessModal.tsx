@@ -11,12 +11,14 @@ import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Check, ExternalLink, X } from "lucide-react";
+import { pushToDataLayer } from "@/utils/gtm";
 
 interface SuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   url: string;
   expiresAt: string | null;
+  templateName?: string;
 }
 
 export function SuccessModal({
@@ -24,6 +26,7 @@ export function SuccessModal({
   onClose,
   url,
   expiresAt,
+  templateName = "unknown",
 }: SuccessModalProps) {
   const CLOSE_THEN_NAVIGATE_DELAY_MS = 60;
   const router = useRouter();
@@ -40,6 +43,7 @@ export function SuccessModal({
   const shareUrl = url || `${baseUrl}/p/card`;
 
   const handleCopy = async () => {
+    pushToDataLayer({ event: "share", method: "copy", template_name: templateName });
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
@@ -57,6 +61,7 @@ export function SuccessModal({
   };
 
   const handleWhatsAppShare = () => {
+    pushToDataLayer({ event: "share", method: "whatsapp", template_name: templateName });
     const encodedUrl = encodeURIComponent(shareUrl);
     const text = encodeURIComponent("הכנתי לך כרטיס מיוחד ב-HeartNote! 💌 ");
     window.open(`https://wa.me/?text=${text}${encodedUrl}`, "_blank");
@@ -170,6 +175,7 @@ export function SuccessModal({
                   href={shareUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => pushToDataLayer({ event: "share", method: "new_tab", template_name: templateName })}
                   className="flex items-center justify-center gap-1 py-3 px-3 bg-[#2e3c52] hover:bg-[#3d4f6a] text-white rounded-lg transition-colors font-medium text-xs sm:text-sm"
                   style={{ fontFamily: "'Open Sans', sans-serif" }}
                 >

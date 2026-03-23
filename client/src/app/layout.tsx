@@ -15,6 +15,7 @@ import FontReadyGateway from "@/components/FontReadyGateway";
 import { Toaster } from "sonner";
 import { StructuredData } from "@/components/StructuredData";
 import { GoogleTagManager } from "@next/third-parties/google";
+import GTMVerifierWrapper from "@/components/GTMVerifier";
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 export const metadata: Metadata = {
@@ -144,6 +145,7 @@ export default function RootLayout({
           closeButton
         />
         <StructuredData />
+        <GTMVerifierWrapper />
       </body>
     </html>
   );

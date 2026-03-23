@@ -96,7 +96,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL(RECOVERY_PATH, request.url));
     }
 
-    return NextResponse.redirect(new URL(safePath, request.url));
+    const successUrl = new URL(safePath, request.url);
+    successUrl.searchParams.set("verified", "true");
+    return NextResponse.redirect(successUrl);
   }
 
   return redirectWithError(

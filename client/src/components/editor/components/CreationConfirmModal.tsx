@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useExpirationPolicy } from "@/hooks/useExpirationPolicy";
+import { pushToDataLayer } from "@/utils/gtm";
 
 export interface CreationConfirmModalProps {
   /** Whether the modal is open */
@@ -77,6 +78,7 @@ export function CreationConfirmModal({
     setIsSubmitting(true);
     try {
       await onConfirm();
+      pushToDataLayer({ event: "generate_link", template_name: templateSlug });
       // onClose will be called by parent after success
     } catch (err) {
       const message = err instanceof Error ? err.message : "אירעה שגיאה";
