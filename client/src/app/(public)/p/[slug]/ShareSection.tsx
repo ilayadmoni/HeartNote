@@ -9,17 +9,20 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { pushToDataLayer } from "@/utils/gtm";
 
 export function ShareSection() {
   const [copied, setCopied] = useState(false);
 
   const handleWhatsAppShare = () => {
+    pushToDataLayer({ event: "share", platform: "whatsapp" });
     const url = encodeURIComponent(window.location.href);
     const text = encodeURIComponent("הכנתי לך כרטיס מיוחד ב-HeartNote! 💌 ");
     window.open(`https://wa.me/?text=${text}${url}`, "_blank");
   };
 
   const handleCopyLink = async () => {
+    pushToDataLayer({ event: "share", platform: "copy_link" });
     try {
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);

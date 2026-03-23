@@ -17,6 +17,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X, LogIn, AlertTriangle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { pushToDataLayer } from "@/utils/gtm";
 import { BrandCalendar } from "@/components/ui/BrandCalendar";
 import { AuthInput } from "./AuthInput";
 import { AuthTabs } from "./AuthTabs";
@@ -405,6 +406,17 @@ export function LoginModal({
       // → AuthContext sets user/session immediately → UI re-renders.
       await signIn(formData.email, formData.password);
 
+      // Track successful user logic
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        pushToDataLayer({
+          event: "user_login",
+          user_id: session.user.id,
+          user_status: "active",
+        });
+      }
+
       // If we get here, login succeeded (signIn throws on error).
       sessionStorage.setItem(SPLASH_STORAGE_KEY, "true");
       // Explicit close first. Only then navigate after cleanup window.
@@ -439,6 +451,7 @@ export function LoginModal({
         firstName,
         lastName,
         dateOfBirth,
+        redirectTo ?? undefined,
       );
       return result;
       // Don't close modal – RegisterForm will show success message if result.success

@@ -59,9 +59,12 @@ export async function GET(request: NextRequest) {
       const profile = await fetchProfileWithRetry(supabase, userId);
 
       if (isProfileIncomplete(profile)) {
-        return NextResponse.redirect(
-          new URL("/complete-profile", request.url),
-        );
+        // Preserve the user's intended destination through the onboarding flow
+        const completeProfileUrl = new URL("/complete-profile", request.url);
+        if (safePath && safePath !== "/") {
+          completeProfileUrl.searchParams.set("next", safePath);
+        }
+        return NextResponse.redirect(completeProfileUrl);
       }
     }
 

@@ -11,7 +11,7 @@
  */
 
 import { useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { getErrorMessage, formatDateOfBirth } from "./auth-helpers";
@@ -28,8 +28,16 @@ interface AuthActionsConfig {
   error: string | null;
 }
 
+// Define routes that require authentication
+const PROTECTED_ROUTES = ["/profile", "/settings", "/dashboard", "/complete-profile"];
+
+function isProtectedRoute(path: string) {
+  return PROTECTED_ROUTES.some((route) => path.startsWith(route));
+}
+
 export function useAuthActions({ setError, setUser, setSession, error }: AuthActionsConfig) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
@@ -45,6 +53,7 @@ export function useAuthActions({ setError, setUser, setSession, error }: AuthAct
   const signUp = useCallback(async (
     email: string, password: string,
     firstName: string, lastName: string, dateOfBirth?: string,
+    redirectTo?: string,
   ) => {
     setError(null);
     try {
@@ -57,7 +66,12 @@ export function useAuthActions({ setError, setUser, setSession, error }: AuthAct
         }
         formattedDob = dob;
       }
-      const result = await registerUser(firstName, lastName, email, password, formattedDob);
+      // Build emailRedirectTo on the client where window.location.origin is available
+      let emailRedirectTo: string | undefined;
+      if (redirectTo) {
+        emailRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`;
+      }
+      const result = await registerUser(firstName, lastName, email, password, formattedDob, emailRedirectTo);
       if (result.error) {
         // Server errors are already in Hebrew — set directly, don't translate
         setError(result.error);
@@ -79,13 +93,18 @@ export function useAuthActions({ setError, setUser, setSession, error }: AuthAct
       if (authErr) { setError(getErrorMessage(authErr.message)); throw authErr; }
       setUser(null);
       setSession(null);
+      
       router.refresh();
-      router.push("/");
+      
+      // Smart Redirect: Only push to home if leaving a protected route
+      if (pathname && isProtectedRoute(pathname)) {
+        router.push("/");
+      }
     } catch (err) {
       if (err instanceof Error && !error) setError(getErrorMessage(err.message));
       throw err;
     }
-  }, [setError, setUser, setSession, router, error]);
+  }, [setError, setUser, setSession, router, pathname, error]);
 
   // NOTE: resetPassword was removed (SEC-5). All password reset flows
   // must go through the server action requestPasswordReset() in actions/password.ts

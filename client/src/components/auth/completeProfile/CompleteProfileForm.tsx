@@ -57,8 +57,9 @@ export function CompleteProfileForm() {
   const [isHydrated, setIsHydrated] = useState(false);
   const didCompleteRef = useRef(false);
 
-  // Read returnTo and reason from URL search params (set by middleware).
-  const returnTo = searchParams.get("returnTo") || "/";
+  // Read destination from URL search params.
+  // `next` comes from the OAuth callback chain, `returnTo` from the editor's action-guard.
+  const returnTo = searchParams.get("next") || searchParams.get("returnTo") || "/";
   const reason = searchParams.get("reason");
 
   // Hydrate form with Google name / existing profile data.
