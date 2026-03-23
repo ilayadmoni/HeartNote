@@ -22,6 +22,7 @@ import { AUTH_VALIDATION } from "@/components/auth/constants";
 import { useAuth } from "@/contexts/AuthContext";
 import { USER_QUERY_KEY, useUser } from "@/hooks/useUser";
 import { PROFILE_QUERY_KEY } from "@/hooks/useProfileQuery";
+import { pushToDataLayer } from "@/utils/gtm";
 
 interface FormState {
   firstName: string;
@@ -113,6 +114,7 @@ export function CompleteProfileForm() {
       if (metadataError) throw new Error("שמירת פרטי משתמש נכשלה.");
     },
     onSuccess: async () => {
+      pushToDataLayer({ event: "sign_up", method: "google" });
       didCompleteRef.current = true;
       await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
       await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });

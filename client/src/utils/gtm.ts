@@ -6,8 +6,8 @@
 export type GTMEvent =
   | { event: "user_login"; user_id: string; user_status: string }
   | { event: "sign_up"; method: string }
-  | { event: "generate_link" }
-  | { event: "share"; platform: string }
+  | { event: "generate_link"; template_name: string }
+  | { event: "share"; method: string; template_name: string }
   | { event: "view_template"; template_name: string };
 
 /**
