@@ -108,12 +108,41 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
         >
           {/* Top Badge */}
           <div
-            className="py-2 px-4 text-center"
-            style={{ backgroundColor: primaryColor }}
+            className="relative py-4 px-6 flex items-center justify-center border-b-2 border-dashed border-white/40"
+            style={{ 
+              backgroundColor: primaryColor,
+              boxShadow: "inset 0px 4px 6px rgba(255, 255, 255, 0.25)"
+            }}
           >
-            <span className="text-xs text-white tracking-widest text-hebrew-body">
-              ✨ גרד כאן ✨
-            </span>
+            <div className="relative z-10 flex items-center gap-3">
+              <motion.span
+                animate={{ rotate: [-10, 10, -10], scale: [1, 1.1, 1] }}
+                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                className="text-xl drop-shadow-md"
+              >
+                ✨
+              </motion.span>
+              <h2 className="text-lg font-bold text-white tracking-widest text-hebrew-heading drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
+                גרד כאן
+              </h2>
+              <motion.span
+                animate={{ rotate: [10, -10, 10], scale: [1, 1.1, 1] }}
+                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut", delay: 0.2 }}
+                className="text-xl drop-shadow-md"
+              >
+                ✨
+              </motion.span>
+            </div>
+
+            {/* Side ticket notches mimicking perforations */}
+            <div 
+              className="absolute -bottom-[10px] -left-2 w-5 h-5 rounded-full border-t border-r border-white/20 z-10"
+              style={{ backgroundColor: colorLight }}
+            />
+            <div 
+              className="absolute -bottom-[10px] -right-2 w-5 h-5 rounded-full border-t border-l border-white/20 z-10"
+              style={{ backgroundColor: colorLight }}
+            />
           </div>
 
           {/* Scratch Area */}

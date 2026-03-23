@@ -18,7 +18,14 @@
  *  - Mobile: native <input type="date"> for optimal OS picker
  */
 
-import { useState, useCallback, useMemo, useRef, useEffect, useId } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+  useId,
+} from "react";
 import { ChevronRight, ChevronLeft, Calendar } from "lucide-react";
 
 // ── Hebrew locale data ────────────────────────────────────────────────
@@ -84,7 +91,12 @@ function getCalendarDays(year: number, month: number): CalendarDay[] {
   for (let i = firstDow - 1; i >= 0; i--) {
     const m = month === 0 ? 11 : month - 1;
     const y = month === 0 ? year - 1 : year;
-    days.push({ day: daysInPrev - i, month: m, year: y, isCurrentMonth: false });
+    days.push({
+      day: daysInPrev - i,
+      month: m,
+      year: y,
+      isCurrentMonth: false,
+    });
   }
 
   // Days of the current month
@@ -137,6 +149,7 @@ export function BrandCalendar({
 
   const [viewYear, setViewYear] = useState(parsed.year);
   const [viewMonth, setViewMonth] = useState(parsed.month);
+  const [isYearOpen, setIsYearOpen] = useState(false);
 
   // Sync view to value when value changes externally
   useEffect(() => {
@@ -147,7 +160,10 @@ export function BrandCalendar({
     }
   }, [value]);
 
-  const days = useMemo(() => getCalendarDays(viewYear, viewMonth), [viewYear, viewMonth]);
+  const days = useMemo(
+    () => getCalendarDays(viewYear, viewMonth),
+    [viewYear, viewMonth],
+  );
 
   const todayISO = useMemo(() => {
     const n = new Date();
@@ -157,36 +173,39 @@ export function BrandCalendar({
   // ── Year options (newest first for birthday UX) ─────────────────────
   const yearOptions = useMemo(() => {
     const years: number[] = [];
-    for (let y = MAX_YEAR; y >= MIN_YEAR; y--) years.push(y);
+    const start = Math.max(MAX_YEAR, viewYear);
+    const end = Math.min(MIN_YEAR, viewYear);
+    for (let y = start; y >= end; y--) years.push(y);
     return years;
-  }, []);
+  }, [viewYear]);
 
   // ── Month navigation ───────────────────────────────────────────────
   const prevMonth = useCallback(() => {
-    setViewMonth((m) => {
-      if (m === 0) {
-        setViewYear((y) => y - 1);
-        return 11;
-      }
-      return m - 1;
-    });
-  }, []);
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear(viewYear - 1);
+    } else {
+      setViewMonth(viewMonth - 1);
+    }
+  }, [viewMonth, viewYear]);
 
   const nextMonth = useCallback(() => {
-    setViewMonth((m) => {
-      if (m === 11) {
-        setViewYear((y) => y + 1);
-        return 0;
-      }
-      return m + 1;
-    });
-  }, []);
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear(viewYear + 1);
+    } else {
+      setViewMonth(viewMonth + 1);
+    }
+  }, [viewMonth, viewYear]);
 
   // ── Close on outside click ──────────────────────────────────────────
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -214,7 +233,11 @@ export function BrandCalendar({
     : placeholder;
 
   return (
-    <div className={`relative w-full ${className}`} dir="rtl" ref={containerRef}>
+    <div
+      className={`relative w-full ${className}`}
+      dir="rtl"
+      ref={containerRef}
+    >
       {/* Label */}
       {label && (
         <label
@@ -289,8 +312,13 @@ export function BrandCalendar({
             ${value ? "text-[#2e3c52] dark:text-white" : "text-gray-400 dark:text-gray-500"}
           `}
         >
-          <Calendar size={16} className="text-[#C7CEEA] dark:text-[#B5EAD7] flex-shrink-0" />
-          <span className="flex-1 text-right text-hebrew-body">{displayValue}</span>
+          <Calendar
+            size={16}
+            className="text-[#C7CEEA] dark:text-[#B5EAD7] flex-shrink-0"
+          />
+          <span className="flex-1 text-right text-hebrew-body">
+            {displayValue}
+          </span>
         </button>
 
         {/* Dropdown calendar */}
@@ -298,30 +326,32 @@ export function BrandCalendar({
           <div
             role="dialog"
             aria-label="בחירת תאריך"
-            className="absolute top-full z-50 mt-1.5 right-0 w-full max-w-[300px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden"
+            className="absolute top-full z-50 mt-1.5 right-0 w-full max-w-[300px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700"
           >
             {/* ── Header with year + month dropdowns ──────────────── */}
-            <div className="bg-gradient-to-l from-[#B5EAD7] to-[#C7CEEA] px-4 py-4 space-y-3">
+            <div className="bg-gradient-to-l from-[#B5EAD7] to-[#C7CEEA] px-4 py-4 space-y-3 rounded-t-2xl relative z-10">
               {/* Top row: Navigation buttons */}
               <div className="flex items-center justify-between">
+                {/* Physical Right Button (RTL = Prev Month) */}
                 <button
                   type="button"
                   onClick={nextMonth}
                   className="p-2 rounded-full hover:bg-white/30 transition-colors flex-shrink-0"
-                  aria-label="חודש הבא"
+                  aria-label="חודש קודם"
                 >
                   <ChevronRight size={20} className="text-[#2e3c52]" />
                 </button>
 
                 <span className="text-xs font-semibold text-[#2e3c52] text-hebrew-heading">
-                  בחר תאריך לידה
+                  בחר תאריך
                 </span>
 
+                {/* Physical Left Button (RTL = Next Month) */}
                 <button
                   type="button"
                   onClick={prevMonth}
                   className="p-2 rounded-full hover:bg-white/30 transition-colors flex-shrink-0"
-                  aria-label="חודש קודם"
+                  aria-label="חודש הבא"
                 >
                   <ChevronLeft size={20} className="text-[#2e3c52]" />
                 </button>
@@ -349,69 +379,105 @@ export function BrandCalendar({
                 </div>
 
                 {/* Year dropdown */}
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 relative">
                   <label className="text-[10px] font-bold text-[#2e3c52] text-hebrew-heading">
                     שנה
                   </label>
-                  <select
-                    value={viewYear}
-                    onChange={(e) => setViewYear(Number(e.target.value))}
-                    className="w-full bg-white/80 hover:bg-white text-sm font-semibold text-[#2e3c52] text-hebrew-heading cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2e3c52] rounded-lg border border-white/40 px-2 py-1.5 appearance-none transition-all"
+                  <button
+                    type="button"
+                    onClick={() => setIsYearOpen(!isYearOpen)}
+                    className="w-full bg-white/80 hover:bg-white text-sm font-semibold text-[#2e3c52] text-hebrew-heading cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2e3c52] rounded-lg border border-white/40 px-2 py-1.5 transition-all flex justify-between items-center"
                     aria-label="שנה"
+                    aria-expanded={isYearOpen}
                   >
-                    {yearOptions.map((y) => (
-                      <option key={y} value={y}>
-                        {y}
-                      </option>
-                    ))}
-                  </select>
+                    <span>{viewYear}</span>
+                    <ChevronLeft
+                      size={16}
+                      className={`transform transition-transform text-[#2e3c52] ${isYearOpen ? "rotate-90" : "-rotate-90"}`}
+                    />
+                  </button>
+
+                  {/* Custom 3-column Year Popover - POPPING UPWARDS ABOVE THE CALENDAR */}
+                  {isYearOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setIsYearOpen(false)}
+                      />
+                      <div className="absolute bottom-full right-0 mb-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 w-[240px] max-h-[240px] overflow-y-auto z-50 p-3">
+                        <div className="grid grid-cols-3 gap-1.5">
+                          {yearOptions.map((y) => (
+                            <button
+                              key={y}
+                              type="button"
+                              onClick={() => {
+                                setViewYear(y);
+                                setIsYearOpen(false);
+                              }}
+                              className={`py-2 text-xs font-bold rounded-lg transition-colors border border-transparent ${
+                                viewYear === y
+                                  ? "bg-[#2e3c52] text-white shadow-sm border-transparent"
+                                  : "text-[#2e3c52] dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-200 dark:hover:border-gray-600"
+                              }`}
+                            >
+                              {y}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* ── Day-of-week names ─────────────────────────────────── */}
-            <div className="grid grid-cols-7 px-2 pt-1.5">
-              {DAYS_HE.map((d) => (
-                <div
-                  key={d}
-                  className="text-center text-[10px] font-bold text-gray-400 py-1 select-none"
-                >
-                  {d}
-                </div>
-              ))}
-            </div>
-
-            {/* ── Day grid ──────────────────────────────────────────── */}
-            <div className="grid grid-cols-7 px-2 pb-2 gap-0.5">
-              {days.map((day, idx) => {
-                const iso = toISO(day.year, day.month, day.day);
-                const isSelected = iso === value;
-                const isToday = iso === todayISO;
-                const outOfRange =
-                  (min !== undefined && iso < min) || (max !== undefined && iso > max);
-                const isDisabled = !day.isCurrentMonth || outOfRange;
-
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => !isDisabled && handleSelect(day)}
-                    disabled={isDisabled}
-                    className={`
-                      w-7 h-7 rounded-lg text-[11px] font-medium mx-auto
-                      flex items-center justify-center transition-all
-                      ${isSelected ? "bg-[#F8BBD0] text-[#2e3c52] font-bold shadow-sm" : ""}
-                      ${isToday && !isSelected ? "ring-1 ring-[#C7CEEA] text-[#2e3c52] dark:text-white font-bold" : ""}
-                      ${!isSelected && !isToday && day.isCurrentMonth ? "text-[#2e3c52] dark:text-gray-200 hover:bg-[#F8BBD0]/30" : ""}
-                      ${!day.isCurrentMonth ? "text-gray-300 dark:text-gray-600" : ""}
-                      ${isDisabled && day.isCurrentMonth ? "opacity-40 cursor-not-allowed" : ""}
-                      ${!isDisabled ? "cursor-pointer" : ""}
-                    `}
+            {/* ── Content Area: Day Grid ─────────────────────────────────── */}
+            <div className="pb-3 bg-white dark:bg-gray-800 rounded-b-2xl">
+              {/* ── Day-of-week names ─────────────────────────────────── */}
+              <div className="grid grid-cols-7 px-2 pt-2">
+                {DAYS_HE.map((d) => (
+                  <div
+                    key={d}
+                    className="text-center text-[10px] font-bold text-gray-400 py-1 select-none"
                   >
-                    {day.day}
-                  </button>
-                );
-              })}
+                    {d}
+                  </div>
+                ))}
+              </div>
+
+              {/* ── Day grid ──────────────────────────────────────────── */}
+              <div className="grid grid-cols-7 px-2 gap-0.5 mt-1">
+                {days.map((day, idx) => {
+                  const iso = toISO(day.year, day.month, day.day);
+                  const isSelected = iso === value;
+                  const isToday = iso === todayISO;
+                  const outOfRange =
+                    (min !== undefined && iso < min) ||
+                    (max !== undefined && iso > max);
+                  const isDisabled = !day.isCurrentMonth || outOfRange;
+
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => !isDisabled && handleSelect(day)}
+                      disabled={isDisabled}
+                      className={`
+                        w-7 h-7 rounded-lg text-[11px] font-medium mx-auto
+                        flex items-center justify-center transition-all
+                        ${isSelected ? "bg-[#F8BBD0] text-[#2e3c52] font-bold shadow-sm" : ""}
+                        ${isToday && !isSelected ? "ring-1 ring-[#C7CEEA] text-[#2e3c52] dark:text-white font-bold" : ""}
+                        ${!isSelected && !isToday && day.isCurrentMonth ? "text-[#2e3c52] dark:text-gray-200 hover:bg-[#F8BBD0]/30" : ""}
+                        ${!day.isCurrentMonth ? "text-gray-300 dark:text-gray-600" : ""}
+                        ${isDisabled && day.isCurrentMonth ? "opacity-40 cursor-not-allowed" : ""}
+                        ${!isDisabled ? "cursor-pointer" : ""}
+                      `}
+                    >
+                      {day.day}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}

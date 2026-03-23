@@ -10,12 +10,12 @@ import { useCallback } from "react";
 
 /** Standard character limits for HeartNote greeting card fields */
 export const CHAR_LIMITS = {
-  TITLE: 35,
+  TITLE: 50,
   ENVELOPE_TITLE: 20,
   BODY: 120,
   QUESTION: 50,
   ANSWER: 35,
-  OPTION: 15,
+  OPTION: 25,
   HIDDEN_MESSAGE: 18,
 } as const;
 

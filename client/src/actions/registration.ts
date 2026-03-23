@@ -100,6 +100,7 @@ export async function registerUser(
   email: string,
   password: string,
   dateOfBirth?: string,
+  emailRedirectTo?: string,
 ): Promise<RegistrationResult> {
   /* ── Basic validation ────────────────────────────────────────── */
   const trimmedEmail = email?.trim().toLowerCase();
@@ -181,10 +182,17 @@ export async function registerUser(
     return { error: ERR_INTERNAL };
   }
 
+  const signUpOptions: { data: Record<string, string>; emailRedirectTo?: string } = {
+    data: userMeta,
+  };
+  if (emailRedirectTo) {
+    signUpOptions.emailRedirectTo = emailRedirectTo;
+  }
+
   const { error: signUpError } = await supabase.auth.signUp({
     email: trimmedEmail,
     password,
-    options: { data: userMeta },
+    options: signUpOptions,
   });
 
   if (signUpError) {

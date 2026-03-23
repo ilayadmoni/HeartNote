@@ -36,6 +36,7 @@ interface AuthContextType {
     firstName: string,
     lastName: string,
     dateOfBirth?: string,
+    redirectTo?: string,
   ) => Promise<{ error?: string; success?: boolean | string }>;
   signOut: () => Promise<void>;
   updatePassword: (password: string) => Promise<void>;
