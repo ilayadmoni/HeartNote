@@ -129,9 +129,9 @@ export default function RootLayout({
           <AccessibilityProvider>
             <FontReadyGateway>
               <div id="a11y-content">
-                <AuthProvider>
-                  <QueryProvider>{children}</QueryProvider>
-                </AuthProvider>
+                <QueryProvider>
+                  <AuthProvider>{children}</AuthProvider>
+                </QueryProvider>
                 <CookieBanner />
               </div>
               <AccessibilityWidget />

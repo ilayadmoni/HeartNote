@@ -8,7 +8,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Send } from "lucide-react";
 import { LoginModal } from "@/components/auth";
 import { EditorSidebar } from "../components/EditorSidebar";
@@ -21,18 +21,17 @@ import { submitGenericCreation } from "@/actions/creations";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfileComplete } from "@/hooks/useProfileComplete";
 import { useTemplateData } from "@/hooks/useTemplateData";
-import {
-  clearDraft,
-  clearPendingCreation,
-  getPendingCreation,
-  loadDraft,
-  saveDraft,
-  setPendingCreation,
-} from "@/lib/pendingCreation";
+import { saveGuestDraft } from "@/lib/draftServices";
+import { claimGuestDraft } from "@/actions/draftActions";
+import { pushToDataLayer } from "@/utils/gtm";
+import { toast } from "sonner";
 import type { TemplateEditorProps } from "../types";
 
 export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialDraftId = searchParams.get("draft_id");
+  const [isRestoringDraft, setIsRestoringDraft] = useState(!!initialDraftId);
   const { user } = useAuth();
   const { isProfileComplete } = useProfileComplete();
   const config = EDITOR_CONFIGS[templateId];
@@ -53,9 +52,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     expiresAt: string | null;
   } | null>(null);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
-  const hasHydratedDraftRef = useRef(false);
-  const hasResumedPendingRef = useRef(false);
-
+  const [loginRedirect, setLoginRedirect] = useState(`/create/${templateId}`);
   // Store the deferred upload function from ImageUploader (via sidebar)
   const pendingUploadRef = useRef<(() => Promise<string | null>) | null>(null);
 
@@ -86,30 +83,52 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     return () => resizeObserver.disconnect();
   }, [data]);
 
+  // Restore DB draft from auth callback
   useEffect(() => {
-    if (hasHydratedDraftRef.current) return;
-    const draft = loadDraft(templateId);
-    if (draft) {
-      setChoices(draft);
+    if (!user) return;
+    const searchParams = new URLSearchParams(window.location.search);
+    const draftId = searchParams.get("draft_id");
+    
+    if (draftId) {
+      setIsPublishing(true);
+      claimGuestDraft(draftId)
+        .then((res) => {
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.delete("draft_id");
+          window.history.replaceState({}, document.title, newUrl);
+
+          if (res.success && res.metadata) {
+            setChoices(res.metadata as Record<string, unknown>);
+            setShowConfirmModal(true);
+          }
+        })
+        .catch((e) => {
+          console.error("Failed to restore DB draft:", e);
+          toast.error("לא הצלחנו לשחזר את הטיוטה. נסו שוב.");
+        })
+        .finally(() => {
+          setIsPublishing(false);
+          setIsRestoringDraft(false);
+        });
+    } else {
+      setIsRestoringDraft(false);
     }
-    hasHydratedDraftRef.current = true;
-  }, [templateId, setChoices]);
+  }, [user, setChoices]);
 
-  useEffect(() => {
-    saveDraft(templateId, data);
-  }, [templateId, data]);
+  const prepareGuestDraft = async (submissionData: Record<string, unknown>) => {
+    let file: File | undefined = undefined;
+    const blobUrl = Object.values(submissionData).find(
+      (value) => typeof value === "string" && value.startsWith("blob:")
+    ) as string | undefined;
 
-  useEffect(() => {
-    if (!user || isPublishing || hasResumedPendingRef.current) return;
-    const pending = getPendingCreation();
-    if (!pending || pending.templateId !== templateId) return;
-
-    hasResumedPendingRef.current = true;
-    setChoices(pending.data);
-    clearPendingCreation();
-    setIsLoginModalOpen(false);
-    setShowConfirmModal(false);
-  }, [user, templateId, setChoices, isPublishing]);
+    if (blobUrl) {
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
+      const ext = blob.type.split("/")[1] || "jpeg";
+      file = new File([blob], `upload.${ext}`, { type: blob.type || "image/jpeg" });
+    }
+    return await saveGuestDraft(templateId, submissionData, file);
+  };
 
   if (!config) {
     return (
@@ -131,23 +150,37 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   }
 
   // Show confirmation modal instead of immediately creating
-  const handlePublish = () => {
+  const handlePublish = async () => {
     if (!user) {
-      setShowConfirmModal(false);
-      setIsLoginModalOpen(true);
+      setIsPublishing(true);
+      try {
+        const draftId = await prepareGuestDraft(data);
+        setLoginRedirect(`/create/${templateId}?draft_id=${draftId}`);
+        setShowConfirmModal(false);
+        setIsLoginModalOpen(true);
+      } catch (err) {
+        console.error(err);
+        alert("שמירת טיוטה נכשלה");
+      } finally {
+        setIsPublishing(false);
+      }
       return;
     }
 
     // Action-based guard: user is logged in but profile incomplete.
     // Save their work and redirect to onboarding.
     if (!isProfileComplete) {
-      setPendingCreation({
-        templateId,
-        data,
-        returnPath: `/create/${templateId}`,
-        createdAt: Date.now(),
-      });
-      window.location.href = `/complete-profile?returnTo=/create/${templateId}&reason=incomplete_profile`;
+      setIsPublishing(true);
+      try {
+        const draftId = await prepareGuestDraft(data);
+        const redirectPath = encodeURIComponent(`/create/${templateId}?draft_id=${draftId}`);
+        window.location.href = `/complete-profile?returnTo=${redirectPath}&reason=incomplete_profile`;
+      } catch (err) {
+        console.error(err);
+        alert("שמירת טיוטה נכשלה");
+      } finally {
+        setIsPublishing(false);
+      }
       return;
     }
 
@@ -158,14 +191,18 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   // Handle the actual creation after confirmation
   const handleConfirmCreation = async (submissionData: Record<string, unknown> = data) => {
     if (!user) {
-      setPendingCreation({
-        templateId,
-        data: submissionData,
-        returnPath: `/create/${templateId}`,
-        createdAt: Date.now(),
-      });
-      setShowConfirmModal(false);
-      setIsLoginModalOpen(true);
+      setIsPublishing(true);
+      try {
+        const draftId = await prepareGuestDraft(submissionData);
+        setLoginRedirect(`/create/${templateId}?draft_id=${draftId}`);
+        setShowConfirmModal(false);
+        setIsLoginModalOpen(true);
+      } catch (err) {
+        console.error(err);
+        alert("שמירת טיוטה נכשלה. נסה שוב.");
+      } finally {
+        setIsPublishing(false);
+      }
       return;
     }
 
@@ -214,8 +251,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
       // Show success modal with shareable link instead of redirecting
       setShowConfirmModal(false);
-      clearPendingCreation();
-      clearDraft(templateId);
+      // TODO: Clear DB draft on success
       setSuccessData({
         url: `${window.location.origin}/p/${result.data.creationId}`,
         expiresAt: null,
@@ -227,6 +263,15 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       setIsPublishing(false);
     }
   };
+
+  if (isRestoringDraft) {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-50/80">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+        <p className="mt-4 text-lg font-medium text-gray-700">משחזר את היצירה שלך...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[200px] 2xl:min-h-[calc(100vh-16rem)] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
@@ -304,7 +349,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
-        redirectTo={`/create/${templateId}`}
+        redirectTo={loginRedirect}
       />
     </div>
   );

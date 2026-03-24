@@ -35,7 +35,7 @@ export function useUser() {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: USER_QUERY_KEY,
+    queryKey: user ? [...USER_QUERY_KEY, user.id] : USER_QUERY_KEY,
     queryFn: () => fetchUserProfile(user!.id),
     enabled: !!user,
     staleTime: 1000 * 60 * 5,

@@ -39,7 +39,7 @@ export function useProfileQuery() {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: PROFILE_QUERY_KEY,
+    queryKey: user ? [...PROFILE_QUERY_KEY, user.id] : PROFILE_QUERY_KEY,
     queryFn: () => fetchProfile(user!.id),
     enabled: !!user,
     staleTime: 1000 * 60 * 5,

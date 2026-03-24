@@ -5,7 +5,7 @@
  * Dynamic route for template editor wizard
  */
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { TemplateEditor } from "@/components/editor";
 
@@ -14,12 +14,16 @@ import { pushToDataLayer } from "@/utils/gtm";
 export default function CreateTemplatePage() {
   const params = useParams();
   const templateId = params.templateId as string;
+  const hasTrackedView = useRef(false);
 
   useEffect(() => {
-    pushToDataLayer({
-      event: "view_template",
-      template_name: templateId,
-    });
+    if (!hasTrackedView.current && templateId) {
+      pushToDataLayer({
+        event: "view_template",
+        template_name: templateId,
+      });
+      hasTrackedView.current = true;
+    }
   }, [templateId]);
 
   return <TemplateEditor templateId={templateId} />;

@@ -45,7 +45,7 @@ export function CompleteProfileForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
-  const { user, loading } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const { data: profile, isLoading: profileLoading } = useUser();
   const [form, setForm] = useState<FormState>({
     firstName: "",
@@ -130,10 +130,11 @@ export function CompleteProfileForm() {
   const handleLogout = async () => {
     didCompleteRef.current = true;
 
-    // Dual Wipe:
-    // 1. Client-side signOut clears localStorage & in-memory state.
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    // 1. Centralized client-side signOut (auth state + query cache wipe).
+    await signOut();
+
+    // Extra safety for this flow before hard reload.
+    queryClient.clear();
 
     // 2. Server-side signOut ensures httpOnly SSR cookies are cleared.
     await fetch("/api/auth/logout", { method: "POST" });

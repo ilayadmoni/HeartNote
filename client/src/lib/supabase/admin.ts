@@ -9,6 +9,8 @@
  * patched fetch or any cookie-based session from overriding the role.
  */
 
+import "server-only";
+
 import { createClient } from "@supabase/supabase-js";
 
 export function createAdminClient() {

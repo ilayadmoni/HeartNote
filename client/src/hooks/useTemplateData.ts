@@ -6,7 +6,7 @@
  * boolean, array, object) depending on the template's field schema.
  */
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import type { TemplateUserData } from "@/components/editor/types";
 
 interface UseTemplateDataReturn {
@@ -34,6 +34,14 @@ export function useTemplateData(
   // Keep a ref for the latest state so logData doesn't go stale
   const stateRef = useRef(state);
   stateRef.current = state;
+
+  // Reset editor state when switching templates so choices don't bleed across routes.
+  useEffect(() => {
+    setState({
+      templateId,
+      userChoices: { ...defaultData },
+    });
+  }, [templateId, defaultData]);
 
   /** Update one key inside userChoices */
   const updateChoice = useCallback((key: string, value: unknown) => {
