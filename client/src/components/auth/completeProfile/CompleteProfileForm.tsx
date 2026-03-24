@@ -16,6 +16,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
 import { BrandCalendar } from "@/components/ui/BrandCalendar";
 import { AUTH_VALIDATION } from "@/components/auth/constants";
 import { useAuth } from "@/contexts/AuthContext";
