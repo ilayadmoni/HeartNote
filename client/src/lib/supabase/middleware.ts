@@ -24,14 +24,16 @@ export function createMiddlewareClient(request: NextRequest) {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
-              const isDev = process.env.NODE_ENV !== 'production';
+              const isProduction = process.env.NODE_ENV === 'production';
               request.cookies.set(name, value);
-              response.cookies.set(name, value, { ...options, secure: isDev ? false : options.secure });
+              response.cookies.set(name, value, {
+                ...options,
+                sameSite: 'lax' as const,
+                secure: isProduction,
+              });
             });
           } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-              console.error("[supabase/middleware] Failed to set auth cookies", error);
-            }
+            console.error("[supabase/middleware] Failed to set auth cookies", error);
           }
         },
       },
