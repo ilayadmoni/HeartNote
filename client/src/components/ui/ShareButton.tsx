@@ -64,7 +64,7 @@ export function ShareButton({
         // Use native Share API if available
         await navigator.share({
           title: "HeartNote - כרטיס דיגיטלי",
-          text: "הכנתי לך כרטיס מיוחד ב-HeartNote! 💌",
+          text: "הכנתי לך משהו ב-HeartNote! 💌",
           url: shareUrl,
         });
         setSuccessMessage("שותף!");

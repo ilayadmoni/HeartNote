@@ -12,7 +12,8 @@
 
 import { useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import type { User } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
+import type { User, Session } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { getErrorMessage, formatDateOfBirth } from "./auth-helpers";
 import { registerUser } from "@/actions/registration";
@@ -24,7 +25,7 @@ export { supabase };
 interface AuthActionsConfig {
   setError: (error: string | null) => void;
   setUser: (user: User | null) => void;
-  setSession: (session: null) => void;
+  setSession: (session: Session | null) => void;
   error: string | null;
 }
 
@@ -38,6 +39,7 @@ function isProtectedRoute(path: string) {
 export function useAuthActions({ setError, setUser, setSession, error }: AuthActionsConfig) {
   const router = useRouter();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
@@ -91,6 +93,9 @@ export function useAuthActions({ setError, setUser, setSession, error }: AuthAct
       setError(null);
       const { error: authErr } = await supabase.auth.signOut();
       if (authErr) { setError(getErrorMessage(authErr.message)); throw authErr; }
+
+      // Prevent stale cross-account UI by wiping all React Query data on logout.
+      queryClient.clear();
       setUser(null);
       setSession(null);
       
@@ -104,7 +109,7 @@ export function useAuthActions({ setError, setUser, setSession, error }: AuthAct
       if (err instanceof Error && !error) setError(getErrorMessage(err.message));
       throw err;
     }
-  }, [setError, setUser, setSession, router, pathname, error]);
+  }, [setError, queryClient, setUser, setSession, router, pathname, error]);
 
   // NOTE: resetPassword was removed (SEC-5). All password reset flows
   // must go through the server action requestPasswordReset() in actions/password.ts

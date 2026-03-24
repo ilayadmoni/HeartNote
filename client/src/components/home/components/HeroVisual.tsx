@@ -5,7 +5,7 @@
  * Hand image + phone frame with synchronized dodge animation
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useAccessibility } from "@/components/accessibility";
@@ -32,12 +32,18 @@ export function HeroVisual() {
   
   const [isDodging, setIsDodging] = useState(false);
   const [poking, setPoking] = useState(false);
+  const dodgeStartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dodgeEndTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const triggerPoke = useCallback(() => {
     if (!shouldAnimate) return; // Don't poke if animations are disabled
+
+    if (dodgeStartTimeoutRef.current) clearTimeout(dodgeStartTimeoutRef.current);
+    if (dodgeEndTimeoutRef.current) clearTimeout(dodgeEndTimeoutRef.current);
+
     setPoking(true);
-    setTimeout(() => setIsDodging(true), 350);
-    setTimeout(() => {
+    dodgeStartTimeoutRef.current = setTimeout(() => setIsDodging(true), 350);
+    dodgeEndTimeoutRef.current = setTimeout(() => {
       setIsDodging(false);
       setPoking(false);
     }, 1100);
@@ -46,7 +52,11 @@ export function HeroVisual() {
   useEffect(() => {
     if (!shouldAnimate) return; // Don't start interval if animations are disabled
     const interval = setInterval(triggerPoke, 4000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (dodgeStartTimeoutRef.current) clearTimeout(dodgeStartTimeoutRef.current);
+      if (dodgeEndTimeoutRef.current) clearTimeout(dodgeEndTimeoutRef.current);
+    };
   }, [triggerPoke, shouldAnimate]);
 
   return (

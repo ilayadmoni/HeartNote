@@ -136,13 +136,14 @@ export function LoginModal({
     setIsGoogleLoading(true);
     try {
       const supabase = createClient();
-      const nextQuery = redirectTo
-        ? `?next=${encodeURIComponent(redirectTo)}`
-        : "";
+      const currentPath = window.location.pathname + window.location.search;
+      const targetPath = redirectTo || currentPath;
+      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(targetPath)}`;
+
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback${nextQuery}`,
+          redirectTo: redirectUrl,
           queryParams: {
             prompt: 'select_account'
           },

@@ -359,7 +359,7 @@ export function Step4Animation() {
 
               <div className="px-2 sm:px-3 pb-1.5 sm:pb-2 text-right">
                 <p className="text-white text-xs sm:text-[14px] leading-snug text-hebrew-body">
-                  הכנתי לך כרטיס מיוחד ב- HeartNote! ❤️
+                הכנתי לך משהו  ב-HeartNote! 💌
                 </p>
                 <p
                   className="text-[#53bdeb] text-[8px] sm:text-[13px] mt-0.5 underline"
