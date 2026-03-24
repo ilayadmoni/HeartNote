@@ -43,33 +43,49 @@ export async function GET(request: NextRequest) {
 
   // ── Path A: OAuth / PKCE code exchange ──────────────────────────
   if (code) {
-    const { data: exchangeData, error } =
-      await supabase.auth.exchangeCodeForSession(code);
+    try {
+      const { data: exchangeData, error } =
+        await supabase.auth.exchangeCodeForSession(code);
 
-    if (error) {
-      return redirectWithError(
-        request,
-        error.message || "Failed to complete OAuth sign-in.",
-      );
-    }
-
-    // Check profile completeness to decide the initial landing page.
-    const userId = exchangeData?.user?.id;
-    if (userId) {
-      const profile = await fetchProfileWithRetry(supabase, userId);
-
-      if (isProfileIncomplete(profile)) {
-        // Preserve the user's intended destination through the onboarding flow
-        const completeProfileUrl = new URL("/complete-profile", request.url);
-        if (safePath && safePath !== "/") {
-          completeProfileUrl.searchParams.set("next", safePath);
-        }
-        return NextResponse.redirect(completeProfileUrl);
+      if (error) {
+        console.error(
+          "[auth/callback] exchangeCodeForSession returned error:",
+          { message: error.message, status: error.status, code: error.code },
+        );
+        return redirectWithError(
+          request,
+          error.message || "Failed to complete OAuth sign-in.",
+        );
       }
-    }
 
-    // Profile is complete (or no user ID somehow) → go to the safe path.
-    return NextResponse.redirect(new URL(safePath, request.url));
+      // Check profile completeness to decide the initial landing page.
+      const userId = exchangeData?.user?.id;
+      if (userId) {
+        const profile = await fetchProfileWithRetry(supabase, userId);
+
+        if (isProfileIncomplete(profile)) {
+          // Preserve the user's intended destination through the onboarding flow
+          const completeProfileUrl = new URL("/complete-profile", request.url);
+          if (safePath && safePath !== "/") {
+            completeProfileUrl.searchParams.set("next", safePath);
+          }
+          return NextResponse.redirect(completeProfileUrl);
+        }
+      }
+
+      // Profile is complete (or no user ID somehow) → go to the safe path.
+      return NextResponse.redirect(new URL(safePath, request.url));
+    } catch (unexpectedError) {
+      console.error(
+        "[auth/callback] Unexpected exception during code exchange:",
+        unexpectedError,
+      );
+      const message =
+        unexpectedError instanceof Error
+          ? unexpectedError.message
+          : "Unexpected error during OAuth sign-in.";
+      return redirectWithError(request, message);
+    }
   }
 
   // ── Path B: Token hash verification (signup / recovery links) ───
