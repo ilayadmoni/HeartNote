@@ -88,6 +88,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
         await supabase.auth.getSession();
 
         const res = await claimGuestDraft(draftId);
+        alert("Server Response: " + JSON.stringify(res));
 
         if (res.success && res.metadata) {
           // 1. Commit React state FIRST
