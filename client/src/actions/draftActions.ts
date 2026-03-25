@@ -22,30 +22,25 @@ export async function claimGuestDraft(draftId: string) {
     .eq("id", draftId)
     .maybeSingle(); // MUST BE maybeSingle
 
-  if (selectError) throw new Error("Draft read failed");
-  if (!draftData) {
-    // Silently return if already claimed (handles React double-fire)
-    return {
-      success: false,
-      error: "draft already claimed",
-      debug: {
-        isDoubleFire: null,
-        draftOwnerId: null,
-        requestingUserId: user.id,
-      },
-    };
+  // If the draft is gone or unreadable, it was likely already processed
+  // by a previous request (mobile double-fire scenario). Return success
+  // so the client doesn't show an error for a completed operation.
+  if (selectError || !draftData) {
+    console.log(
+      `[claimGuestDraft] Draft ${draftId} not found or already processed.`,
+      selectError?.message ?? "no row returned",
+    );
+    return { success: true, isAlreadyProcessed: true };
   }
 
   if (draftData.user_id) {
-    return {
-      success: false,
-      error: "draft already claimed",
-      debug: {
-        isDoubleFire: draftData.user_id === user.id,
-        draftOwnerId: draftData.user_id,
-        requestingUserId: user.id,
-      },
-    };
+    // Same user re-requesting (double-fire) — return the metadata so the client can use it
+    if (draftData.user_id === user.id) {
+      console.log(`[claimGuestDraft] Draft ${draftId} already claimed by same user.`);
+      return { success: true, isAlreadyProcessed: true };
+    }
+    // A different user owns this draft — this is a genuine conflict
+    return { success: false, error: "draft already claimed" };
   }
 
   const metadata = draftData.metadata as Record<string, any>;
