@@ -18,14 +18,34 @@ export async function claimGuestDraft(draftId: string) {
   // 1. SELECT the draft
   const { data: draftData, error: selectError } = await adminClient
     .from("drafts")
-    .select("metadata")
+    .select("metadata, user_id")
     .eq("id", draftId)
     .maybeSingle(); // MUST BE maybeSingle
 
   if (selectError) throw new Error("Draft read failed");
   if (!draftData) {
     // Silently return if already claimed (handles React double-fire)
-    return { success: false, error: "Draft already claimed" }; 
+    return {
+      success: false,
+      error: "draft already claimed",
+      debug: {
+        isDoubleFire: null,
+        draftOwnerId: null,
+        requestingUserId: user.id,
+      },
+    };
+  }
+
+  if (draftData.user_id) {
+    return {
+      success: false,
+      error: "draft already claimed",
+      debug: {
+        isDoubleFire: draftData.user_id === user.id,
+        draftOwnerId: draftData.user_id,
+        requestingUserId: user.id,
+      },
+    };
   }
 
   const metadata = draftData.metadata as Record<string, any>;
