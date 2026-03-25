@@ -108,8 +108,12 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
         } else {
           toast.error(res.error || "לא הצלחנו לשחזר את הטיוטה.");
         }
-      } catch (e) {
+   } catch (e: any) {
         console.error("[EditorMobile] Draft restore failed:", e);
+        
+        // 🚨 העברנו את האזעקה לפה! אנחנו רוצים לראות את הודעת הקריסה האמיתית
+        alert("CRASH ERROR: " + (e?.message || JSON.stringify(e)));
+        
         toast.error("שגיאה בשחזור הטיוטה. נסו שוב.");
       } finally {
         setIsRestoringDraft(false);
