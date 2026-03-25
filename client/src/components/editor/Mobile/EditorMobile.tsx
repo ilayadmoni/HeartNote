@@ -22,6 +22,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfileComplete } from "@/hooks/useProfileComplete";
 import { useTemplateData } from "@/hooks/useTemplateData";
 import { saveGuestDraft } from "@/lib/draftServices";
+import { createClient } from "@/lib/supabase/client";
 import { claimGuestDraft } from "@/actions/draftActions";
 import { pushToDataLayer } from "@/utils/gtm";
 import { toast } from "sonner";
@@ -32,7 +33,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   const searchParams = useSearchParams();
   const initialDraftId = searchParams.get("draft_id");
   const [isRestoringDraft, setIsRestoringDraft] = useState(!!initialDraftId);
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { isProfileComplete } = useProfileComplete();
   const config = EDITOR_CONFIGS[templateId];
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -40,6 +41,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loginRedirect, setLoginRedirect] = useState(`/create/${templateId}`);
+  const hasClaimed = useRef(false);
 
   const {
     userChoices: data,
@@ -62,37 +64,52 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
     [],
   );
 
+  // Extract primitive to avoid unstable searchParams dependency
+  const draftId = searchParams.get("draft_id");
+  const supabase = createClient();
+
   // Restore DB draft from auth callback
   useEffect(() => {
-    if (!user) return;
-    const searchParams = new URLSearchParams(window.location.search);
-    const draftId = searchParams.get("draft_id");
-    
-    if (draftId) {
-      setIsPublishing(true);
-      claimGuestDraft(draftId)
-        .then((res) => {
-          const newUrl = new URL(window.location.href);
-          newUrl.searchParams.delete("draft_id");
-          window.history.replaceState({}, document.title, newUrl);
-
-          if (res.success && res.metadata) {
-            setChoices(res.metadata);
-            setShowConfirmModal(true);
-          }
-        })
-        .catch((e) => {
-          console.error("Failed to restore DB draft:", e);
-          toast.error("לא הצלחנו לשחזר את הטיוטה. נסו שוב.");
-        })
-        .finally(() => {
-          setIsPublishing(false);
-          setIsRestoringDraft(false);
-        });
-    } else {
-      setIsRestoringDraft(false);
+    // 1. Strict guard clauses — hasClaimed lock is NOT set until all pass
+    if (loading || !user || !draftId || hasClaimed.current) {
+      if (!loading && !draftId) setIsRestoringDraft(false);
+      if (!loading && !user) setIsRestoringDraft(false);
+      return;
     }
-  }, [user, setChoices]);
+
+    const restoreDraft = async () => {
+      // 2. Lock ONLY when authenticated and ready to fetch
+      hasClaimed.current = true;
+      setIsRestoringDraft(true);
+
+      try {
+        // 3. Force mobile browser to settle cookies before the Server Action
+        await supabase.auth.getSession();
+
+        const res = await claimGuestDraft(draftId);
+
+        // Clean up the URL
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("draft_id");
+        window.history.replaceState({}, document.title, newUrl);
+
+        if (res.success && res.metadata) {
+          setChoices(res.metadata as Record<string, unknown>);
+          setShowConfirmModal(true);
+        } else {
+          toast.error(res.error || "לא הצלחנו לשחזר את הטיוטה.");
+        }
+      } catch (e) {
+        console.error("[EditorMobile] Draft restore failed:", e);
+        toast.error("שגיאה בשחזור הטיוטה. נסו שוב.");
+      } finally {
+        setIsRestoringDraft(false);
+      }
+    };
+
+    restoreDraft();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, user, draftId]);
 
   const prepareGuestDraft = async (submissionData: Record<string, unknown>) => {
     let file: File | undefined = undefined;
