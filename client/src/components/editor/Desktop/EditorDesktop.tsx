@@ -110,15 +110,20 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
         const res = await claimGuestDraft(draftId);
 
-        // Clean up the URL via Next.js router to sync React state
-        router.replace(pathname, { scroll: false });
-
         if (res.success && res.metadata) {
+          // 1. Commit React state FIRST
           setChoices(res.metadata as Record<string, unknown>);
           setShowConfirmModal(true);
+
+          // 2. Defer URL cleanup so Next.js navigation doesn't interrupt the state batch
+          setTimeout(() => {
+            router.replace(pathname, { scroll: false });
+          }, 100);
         } else if (res.error?.includes("already claimed")) {
           // Draft was already claimed (URL lingered) — silent recovery
-          // The URL is now clean, no error toast needed
+          setTimeout(() => {
+            router.replace(pathname, { scroll: false });
+          }, 100);
         } else {
           toast.error(res.error || "לא הצלחנו לשחזר את הטיוטה.");
         }
