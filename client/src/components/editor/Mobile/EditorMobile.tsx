@@ -78,8 +78,8 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
       return;
     }
 
-  const restoreDraft = async () => {
-      // 2. Lock ONLY when authenticated and ready to fetch
+    const restoreDraft = async () => {
+      // 2. Lock IMMEDIATELY to prevent double-fire
       hasClaimed.current = true;
       setIsRestoringDraft(true);
 
@@ -88,32 +88,27 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
         await supabase.auth.getSession();
 
         const res = await claimGuestDraft(draftId);
-        alert("Server Response: " + JSON.stringify(res));
 
         if (res.success && res.metadata) {
-          // 1. Commit React state FIRST
+          // 4a. Commit React state FIRST
           setChoices(res.metadata as Record<string, unknown>);
           setShowConfirmModal(true);
 
-          // ⛔ טסט דיבוג: אנחנו מנטרלים זמנית את ניקוי ה-URL בנייד!
-          // setTimeout(() => {
-          //   router.replace(pathname, { scroll: false });
-          // }, 100);
-
-        } else if (res.error?.includes("already claimed")) {
-          // ⛔ טסט דיבוג: מנטרלים את הניקוי גם במקרה של שחזור כפול
-          // setTimeout(() => {
-          //   router.replace(pathname, { scroll: false });
-          // }, 100);
+          // 5. Defer URL cleanup so Next.js navigation doesn't interrupt the state batch
+          setTimeout(() => {
+            router.replace(pathname, { scroll: false });
+          }, 150);
+        } else if (res.success) {
+          // 4b. isAlreadyProcessed — draft was already claimed, no metadata to restore
+          // Silently clean up the URL
+          setTimeout(() => {
+            router.replace(pathname, { scroll: false });
+          }, 150);
         } else {
           toast.error(res.error || "לא הצלחנו לשחזר את הטיוטה.");
         }
-   } catch (e: any) {
+      } catch (e) {
         console.error("[EditorMobile] Draft restore failed:", e);
-        
-        // 🚨 העברנו את האזעקה לפה! אנחנו רוצים לראות את הודעת הקריסה האמיתית
-        alert("CRASH ERROR: " + (e?.message || JSON.stringify(e)));
-        
         toast.error("שגיאה בשחזור הטיוטה. נסו שוב.");
       } finally {
         setIsRestoringDraft(false);
@@ -123,6 +118,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
     restoreDraft();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, user, draftId]);
+
 
   const prepareGuestDraft = async (submissionData: Record<string, unknown>) => {
     let file: File | undefined = undefined;
