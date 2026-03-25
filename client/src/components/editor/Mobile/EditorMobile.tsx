@@ -78,7 +78,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
       return;
     }
 
-    const restoreDraft = async () => {
+  const restoreDraft = async () => {
       // 2. Lock ONLY when authenticated and ready to fetch
       hasClaimed.current = true;
       setIsRestoringDraft(true);
@@ -94,15 +94,16 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
           setChoices(res.metadata as Record<string, unknown>);
           setShowConfirmModal(true);
 
-          // 2. Defer URL cleanup so Next.js navigation doesn't interrupt the state batch
-          setTimeout(() => {
-            router.replace(pathname, { scroll: false });
-          }, 100);
+          // ⛔ טסט דיבוג: אנחנו מנטרלים זמנית את ניקוי ה-URL בנייד!
+          // setTimeout(() => {
+          //   router.replace(pathname, { scroll: false });
+          // }, 100);
+
         } else if (res.error?.includes("already claimed")) {
-          // Draft was already claimed (URL lingered) — silent recovery
-          setTimeout(() => {
-            router.replace(pathname, { scroll: false });
-          }, 100);
+          // ⛔ טסט דיבוג: מנטרלים את הניקוי גם במקרה של שחזור כפול
+          // setTimeout(() => {
+          //   router.replace(pathname, { scroll: false });
+          // }, 100);
         } else {
           toast.error(res.error || "לא הצלחנו לשחזר את הטיוטה.");
         }
