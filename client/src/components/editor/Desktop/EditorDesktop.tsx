@@ -8,7 +8,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Send } from "lucide-react";
 import { LoginModal } from "@/components/auth";
 import { EditorSidebar } from "../components/EditorSidebar";
@@ -30,6 +30,7 @@ import type { TemplateEditorProps } from "../types";
 
 export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const initialDraftId = searchParams.get("draft_id");
   const [isRestoringDraft, setIsRestoringDraft] = useState(!!initialDraftId);
@@ -109,14 +110,15 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
         const res = await claimGuestDraft(draftId);
 
-        // Clean up the URL
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.delete("draft_id");
-        window.history.replaceState({}, document.title, newUrl);
+        // Clean up the URL via Next.js router to sync React state
+        router.replace(pathname, { scroll: false });
 
         if (res.success && res.metadata) {
           setChoices(res.metadata as Record<string, unknown>);
           setShowConfirmModal(true);
+        } else if (res.error?.includes("already claimed")) {
+          // Draft was already claimed (URL lingered) — silent recovery
+          // The URL is now clean, no error toast needed
         } else {
           toast.error(res.error || "לא הצלחנו לשחזר את הטיוטה.");
         }
