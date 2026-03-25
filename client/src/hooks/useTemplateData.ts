@@ -35,12 +35,20 @@ export function useTemplateData(
   const stateRef = useRef(state);
   stateRef.current = state;
 
+  // Track which template has been initialized to prevent overwriting
+  // async data (e.g. restored drafts) during shallow navigations.
+  const initializedForTemplate = useRef<string | null>(null);
+
   // Reset editor state when switching templates so choices don't bleed across routes.
+  // Only fires when navigating to a genuinely DIFFERENT template.
   useEffect(() => {
-    setState({
-      templateId,
-      userChoices: { ...defaultData },
-    });
+    if (initializedForTemplate.current !== templateId) {
+      setState({
+        templateId,
+        userChoices: { ...defaultData },
+      });
+      initializedForTemplate.current = templateId;
+    }
   }, [templateId, defaultData]);
 
   /** Update one key inside userChoices */

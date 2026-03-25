@@ -1,42 +1,79 @@
 "use server";
 
+/**
+ * claimGuestDraft — Idempotent Draft Restoration
+ *
+ * Reads a guest draft from the DB and returns its metadata so the
+ * editor can restore the user's work after OAuth login.
+ *
+ * Design decisions:
+ * - NO manual deletion: a Cron job cleans drafts older than 24 hours.
+ *   Keeping the row alive makes this action naturally idempotent —
+ *   mobile double-fires simply re-read the same row.
+ * - maybeSingle() instead of single() to avoid PGRST116 on missing rows.
+ * - All failure paths return { success, error } instead of throwing,
+ *   so the client never sees an unhandled Server Action crash.
+ */
+
 import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 export async function claimGuestDraft(draftId: string) {
+  // ── Auth gate ──────────────────────────────────────────────────────
   const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    throw new Error("User must be authenticated to claim drafts");
+    return { success: false, error: "User must be authenticated to claim drafts" };
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  const adminClient = createSupabaseAdmin(supabaseUrl, supabaseServiceKey);
+  const adminClient = createSupabaseAdmin(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
 
-  // 1. SELECT the draft
+  // ── Read draft (idempotent — no deletion) ──────────────────────────
   const { data: draftData, error: selectError } = await adminClient
     .from("drafts")
-    .select("metadata")
+    .select("metadata, user_id")
     .eq("id", draftId)
-    .maybeSingle(); // MUST BE maybeSingle
+    .maybeSingle();
 
-  if (selectError) throw new Error("Draft read failed");
-  if (!draftData) {
-    // Silently return if already claimed (handles React double-fire)
-    return { success: false, error: "Draft already claimed" }; 
+  // Draft missing or unreadable — already cleaned by Cron or prior call
+  if (selectError || !draftData) {
+    console.log(
+      `[claimGuestDraft] Draft ${draftId} not found or unreadable.`,
+      selectError?.message ?? "no row returned",
+    );
+    return { success: false, error: "Draft not found — it may have expired." };
   }
 
+  // Draft already assigned to a user
+  if (draftData.user_id) {
+    if (draftData.user_id === user.id) {
+      // Same user re-requesting (double-fire) — return the metadata again
+      const meta = draftData.metadata as Record<string, any>;
+      delete meta._temp_image_path;
+      delete meta._template_id;
+      return { success: true, metadata: meta };
+    }
+    // A different user owns this draft
+    return { success: false, error: "This draft belongs to another user." };
+  }
+
+  // ── Process guest draft ────────────────────────────────────────────
   const metadata = draftData.metadata as Record<string, any>;
   const templateSlug = metadata._template_id as string;
-  const tempImagePathToDelete = metadata._temp_image_path as string | undefined;
+  const tempImagePath = metadata._temp_image_path as string | undefined;
 
   if (!templateSlug) {
-    throw new Error("Draft metadata is missing _template_id mapping");
+    return { success: false, error: "Draft metadata is missing template mapping." };
   }
 
-  // Fetch true template UUID for foreign key mapping
+  // Verify template exists
   const { data: template, error: tmplErr } = await supabase
     .from("templates")
     .select("id")
@@ -44,54 +81,56 @@ export async function claimGuestDraft(draftId: string) {
     .single();
 
   if (tmplErr || !template) {
-    throw new Error("Template not found in registry");
+    return { success: false, error: "Template not found in registry." };
   }
 
-  // Cross-Bucket File Transfer
-  if (tempImagePathToDelete) {
-    const { data: fileData, error: downloadError } = await adminClient.storage
-      .from("temp_drafts")
-      .download(tempImagePathToDelete);
+  // ── Cross-bucket file transfer (temp_drafts → permanent bucket) ────
+  if (tempImagePath) {
+    try {
+      const { data: fileData, error: downloadError } = await adminClient.storage
+        .from("temp_drafts")
+        .download(tempImagePath);
 
-    if (downloadError || !fileData) {
-      throw new Error("Failed to download temporary draft image");
+      if (downloadError || !fileData) {
+        console.error("[claimGuestDraft] Image download failed:", downloadError?.message);
+        return { success: false, error: "Failed to download draft image." };
+      }
+
+      const ext = tempImagePath.split(".").pop() || "jpeg";
+      const newPath = `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("image_steamy_Window")
+        .upload(newPath, fileData, {
+          contentType: fileData.type || "image/jpeg",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("[claimGuestDraft] Image upload failed:", uploadError.message);
+        return { success: false, error: "Failed to move draft image." };
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("image_steamy_Window").getPublicUrl(newPath);
+
+      metadata.background_image = publicUrl;
+    } catch (imgErr) {
+      console.error("[claimGuestDraft] Image transfer crashed:", imgErr);
+      return { success: false, error: "Image transfer failed unexpectedly." };
     }
-
-    const ext = tempImagePathToDelete.split(".").pop() || "jpeg";
-    const newPath = `${user.id}/${crypto.randomUUID()}.${ext}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("image_steamy_Window")
-      .upload(newPath, fileData, {
-        contentType: fileData.type || "image/jpeg",
-        upsert: false,
-      });
-
-    if (uploadError) {
-      throw new Error(`Failed to move draft image: ${uploadError.message}`);
-    }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("image_steamy_Window").getPublicUrl(newPath);
-
-    if (!publicUrl) {
-      throw new Error("Failed to generate public URL for moved draft image");
-    }
-
-    // Map Image URL properly under background_image
-    metadata.background_image = publicUrl;
   }
 
-  // Cleanup inner temporary state definitions
+  // ── Mark draft as claimed (but do NOT delete — Cron handles cleanup) ─
+  await adminClient
+    .from("drafts")
+    .update({ user_id: user.id })
+    .eq("id", draftId);
+
+  // Strip internal keys before returning to the client
   delete metadata._temp_image_path;
   delete metadata._template_id;
 
-  // Cleanup only after successful claim/migration.
-  if (tempImagePathToDelete) {
-    await adminClient.storage.from("temp_drafts").remove([tempImagePathToDelete]);
-  }
-  await adminClient.from("drafts").delete().eq("id", draftId);
-
-  return { success: true, metadata: metadata };
+  return { success: true, metadata };
 }

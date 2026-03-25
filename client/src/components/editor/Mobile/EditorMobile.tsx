@@ -79,7 +79,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
     }
 
     const restoreDraft = async () => {
-      // 2. Lock ONLY when authenticated and ready to fetch
+      // 2. Lock IMMEDIATELY to prevent double-fire
       hasClaimed.current = true;
       setIsRestoringDraft(true);
 
@@ -89,15 +89,21 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
 
         const res = await claimGuestDraft(draftId);
 
-        // Clean up the URL via Next.js router to sync React state
-        router.replace(pathname, { scroll: false });
-
         if (res.success && res.metadata) {
+          // 4a. Commit React state FIRST
           setChoices(res.metadata as Record<string, unknown>);
           setShowConfirmModal(true);
-        } else if (res.error?.includes("already claimed")) {
-          // Draft was already claimed (URL lingered) — silent recovery
-          // The URL is now clean, no error toast needed
+
+          // 5. Defer URL cleanup so Next.js navigation doesn't interrupt the state batch
+          setTimeout(() => {
+            router.replace(pathname, { scroll: false });
+          }, 150);
+        } else if (res.success) {
+          // 4b. isAlreadyProcessed — draft was already claimed, no metadata to restore
+          // Silently clean up the URL
+          setTimeout(() => {
+            router.replace(pathname, { scroll: false });
+          }, 150);
         } else {
           toast.error(res.error || "לא הצלחנו לשחזר את הטיוטה.");
         }
@@ -112,6 +118,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
     restoreDraft();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, user, draftId]);
+
 
   const prepareGuestDraft = async (submissionData: Record<string, unknown>) => {
     let file: File | undefined = undefined;
