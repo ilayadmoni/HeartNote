@@ -91,11 +91,20 @@ export async function middleware(request: NextRequest) {
   }
 
   // ── Rule 2: Onboarding Lock ─────────────────────────────────────
-  // Complete profile + /complete-profile → bounce to home.
+  // Complete profile + /complete-profile → bounce to intended destination or home.
   if (profileComplete && pathname === ONBOARDING_ROUTE) {
+    // Preserve the "next" param from the OAuth flow, fallback to "/"
+    const nextParam = request.nextUrl.searchParams.get("next");
+    const returnTo = request.nextUrl.searchParams.get("returnTo");
+    const destination = nextParam || returnTo || "/";
+    
+    // Use NEXT_PUBLIC_SITE_URL for proper ngrok/proxy handling
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin;
+    const redirectUrl = new URL(destination, siteUrl);
+    
     return withCookies(
       getResponse(),
-      NextResponse.redirect(new URL("/", request.url)),
+      NextResponse.redirect(redirectUrl),
     );
   }
 
