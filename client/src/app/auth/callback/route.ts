@@ -11,7 +11,6 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { isInternalUrl } from "@/lib/utils/isInternalUrl";
 import {
   createCallbackClient,
   fetchProfileWithRetry,
@@ -21,10 +20,31 @@ import {
 const DEFAULT_SUCCESS_PATH = "/";
 const RECOVERY_PATH = "/?modal=reset-password";
 
+function htmlRedirect(url: string | URL) {
+  const urlString = typeof url === "string" ? url : url.toString();
+  return new NextResponse(
+    `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content="0;url=${urlString}" />
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <script>window.location.href = ${JSON.stringify(urlString)};</script>
+  </body>
+</html>`,
+    {
+      status: 200,
+      headers: { "Content-Type": "text/html" },
+    }
+  );
+}
+
 function redirectWithError(request: NextRequest, message: string) {
   const errorUrl = new URL("/auth/auth-code-error", request.url);
   errorUrl.searchParams.set("message", message);
-  return NextResponse.redirect(errorUrl);
+  return htmlRedirect(errorUrl);
 }
 
 /* ------------------------------------------------------------------ */
@@ -39,7 +59,8 @@ export async function GET(request: NextRequest) {
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type");
   const next = searchParams.get("next") ?? "";
-  const safePath = isInternalUrl(next) ? next : DEFAULT_SUCCESS_PATH;
+  const isSafeInternal = next.startsWith("/") && !next.startsWith("//");
+  const safePath = isSafeInternal ? next : DEFAULT_SUCCESS_PATH;
 
   // ── Path A: OAuth / PKCE code exchange ──────────────────────────
   if (code) {
@@ -69,12 +90,12 @@ export async function GET(request: NextRequest) {
           if (safePath && safePath !== "/") {
             completeProfileUrl.searchParams.set("next", safePath);
           }
-          return NextResponse.redirect(completeProfileUrl);
+          return htmlRedirect(completeProfileUrl);
         }
       }
 
       // Profile is complete (or no user ID somehow) → go to the safe path.
-      return NextResponse.redirect(new URL(safePath, request.url));
+      return htmlRedirect(new URL(safePath, request.url));
     } catch (unexpectedError) {
       console.error(
         "[auth/callback] Unexpected exception during code exchange:",
@@ -109,12 +130,12 @@ export async function GET(request: NextRequest) {
     }
 
     if (otpType === "recovery") {
-      return NextResponse.redirect(new URL(RECOVERY_PATH, request.url));
+      return htmlRedirect(new URL(RECOVERY_PATH, request.url));
     }
 
     const successUrl = new URL(safePath, request.url);
     successUrl.searchParams.set("verified", "true");
-    return NextResponse.redirect(successUrl);
+    return htmlRedirect(successUrl);
   }
 
   return redirectWithError(

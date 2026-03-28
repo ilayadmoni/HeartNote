@@ -25,6 +25,157 @@
 
 ---
 
+## Guest-to-Authenticated Flow (Draft Preservation)
+
+This section documents the critical flow for preserving guest user work through the authentication process.
+
+### Overview
+
+When a guest user edits a template and attempts to save/publish, their work must be preserved through the login flow. This is especially important for OAuth (Google) where the user leaves the site temporarily.
+
+### The `drafts` Table Mechanism
+
+| Column       | Type        | Purpose                                          |
+| ------------ | ----------- | ------------------------------------------------ |
+| `id`         | UUID        | Primary key, generated client-side               |
+| `metadata`   | JSONB       | Template data + `_template_id` + `_temp_image_path` |
+| `user_id`    | UUID (nullable) | NULL for guest drafts, set after claim        |
+| `created_at` | TIMESTAMP   | For cron cleanup                                 |
+
+### Flow Steps
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  1. GUEST EDITS TEMPLATE                                                    │
+│     Location: /create/{templateId}                                          │
+│     Components: EditorDesktop.tsx / EditorMobile.tsx                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  2. GUEST CLICKS "PUBLISH" → DRAFT SAVED                                    │
+│     Function: saveGuestDraft() in lib/draftServices.ts                      │
+│     Actions:                                                                │
+│       - Upload image to `temp_drafts` bucket (if any)                       │
+│       - Insert row into `drafts` table with metadata                        │
+│       - Return draft UUID                                                   │
+│     State: setLoginRedirect(`/create/${templateId}?draft_id=${draftId}`)    │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  3. LOGIN MODAL OPENS                                                       │
+│     Component: LoginModal.tsx                                               │
+│     Props: redirectTo = "/create/{templateId}?draft_id={uuid}"              │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+          ┌─────────────────────────┴─────────────────────────┐
+          ▼                                                   ▼
+┌─────────────────────────────┐         ┌─────────────────────────────────────┐
+│  4A. EMAIL/PASSWORD LOGIN   │         │  4B. GOOGLE OAUTH LOGIN             │
+│  - Same-origin flow         │         │  - Cross-origin redirect            │
+│  - redirectTo used directly │         │  - Supabase → Google → Callback     │
+│  - No URL manipulation      │         │  - CRITICAL: See "OAuth Param Rules"│
+└─────────────────────────────┘         └─────────────────────────────────────┘
+                                                      │
+                                                      ▼
+                              ┌─────────────────────────────────────────────────┐
+                              │  5. AUTH CALLBACK                               │
+                              │     Route: /auth/callback/route.ts              │
+                              │     Actions:                                    │
+                              │       - Exchange PKCE code for session          │
+                              │       - Extract `next` param (contains draft_id)│
+                              │       - Check profile completeness              │
+                              │       - Redirect to `next` or /complete-profile │
+                              └─────────────────────────────────────────────────┘
+                                                      │
+                                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  6. DRAFT RESTORATION                                                       │
+│     Location: EditorDesktop/EditorMobile useEffect hook                     │
+│     Action: claimGuestDraft(draftId) Server Action                          │
+│     Result:                                                                 │
+│       - Reads draft metadata from DB                                        │
+│       - Moves temp image to permanent bucket                                │
+│       - Returns metadata to hydrate editor state                            │
+│       - Sets user_id on draft row (ownership claim)                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Cron Job Policy
+
+- **Schedule**: Daily at 00:00 UTC
+- **Action**: Deletes drafts where `created_at < NOW() - INTERVAL '2 days'`
+- **Why no immediate deletion**: Enables idempotent `claimGuestDraft` calls (mobile double-fires simply re-read the same row)
+
+### OAuth Parameter Handling Rules (CRITICAL)
+
+When passing state through OAuth redirects, **nested query parameters are unreliable on mobile browsers**. The following rules MUST be followed:
+
+#### ❌ DO NOT: Nest query strings in redirectTo
+```typescript
+// BAD: Mobile browsers may truncate at the nested `?`
+const redirectUrl = `/auth/callback?next=/create/template?draft_id=${id}`;
+```
+
+#### ✅ DO: Use one of these approaches
+
+**Option A: Store in httpOnly cookie before OAuth**
+```typescript
+// Set cookie client-side or via Server Action
+document.cookie = `pending_draft_id=${draftId}; path=/; max-age=3600; SameSite=Lax`;
+// Retrieve in callback route
+const draftId = cookies().get('pending_draft_id')?.value;
+```
+
+**Option B: Use Supabase's built-in state parameter**
+```typescript
+await supabase.auth.signInWithOAuth({
+  provider: "google",
+  options: {
+    redirectTo: `${origin}/auth/callback`,
+    // State survives OAuth redirects by design
+    queryParams: { state: JSON.stringify({ draftId, returnPath }) },
+  },
+});
+```
+
+**Option C: Double-encode and explicitly decode**
+```typescript
+// Encode the entire path including its query string
+const safePath = encodeURIComponent(`/create/template?draft_id=${id}`);
+const redirectUrl = `${origin}/auth/callback?next=${safePath}`;
+// In callback: const next = decodeURIComponent(searchParams.get('next'));
+```
+
+### Mobile-Specific Considerations
+
+1. **Safari ITP (Intelligent Tracking Prevention)**
+   - May delay third-party cookie operations
+   - Workaround: `await supabase.auth.getSession()` before Server Actions
+
+2. **In-App Browsers (Instagram, Facebook)**
+   - URL handling is unpredictable
+   - Consider detecting in-app browser and showing "Open in Safari/Chrome" prompt
+
+3. **Session Cookie Attributes**
+   - Always use `sameSite: 'lax'` for auth cookies
+   - Use `secure: true` in production only (see `middleware.ts`)
+
+### Key Files
+
+| File                                    | Role                                      |
+| --------------------------------------- | ----------------------------------------- |
+| `lib/draftServices.ts`                  | `saveGuestDraft()` — create guest draft   |
+| `actions/draftActions.ts`               | `claimGuestDraft()` — restore after login |
+| `components/auth/LoginModal.tsx`        | OAuth initiation with redirectTo          |
+| `app/auth/callback/route.ts`            | OAuth callback handler                    |
+| `app/auth/callback/helpers.ts`          | Cookie client + profile check             |
+| `components/editor/*/Editor*.tsx`       | Draft restoration useEffect               |
+| `components/auth/completeProfile/*.tsx` | Profile completion (OAuth users)          |
+
+---
+
 ## Directory Map
 
 | Path                | Role                                                                      |
