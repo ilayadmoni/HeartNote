@@ -29,6 +29,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { USER_QUERY_KEY } from "@/hooks/useUser";
 import { PROFILE_QUERY_KEY } from "@/hooks/useProfileQuery";
 import { SPLASH_STORAGE_KEY } from "@/components/welcomeSplash";
+import { setOAuthDraftCookie } from "@/actions/oauthDraft";
 import {
   LOGIN_TITLE,
   LOGIN_SUBTITLE,
@@ -136,21 +137,60 @@ export function LoginModal({
     setIsGoogleLoading(true);
     try {
       const supabase = createClient();
+      
+      // Use the configured site URL (ngrok in dev, production URL in prod)
+      // This ensures cookies and redirects use the same origin
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+      
       const currentPath = window.location.pathname + window.location.search;
       const targetPath = redirectTo || currentPath;
-      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(targetPath)}`;
 
-      await supabase.auth.signInWithOAuth({
+      // Parse the target path to extract draft_id if present
+      const targetUrl = new URL(targetPath, siteUrl);
+      const draftId = targetUrl.searchParams.get("draft_id");
+      
+      // Extract template slug from path (e.g., "/create/birthday" → "birthday")
+      const pathSegments = targetUrl.pathname.split("/").filter(Boolean);
+      const templateSlug = pathSegments[pathSegments.length - 1] || "";
+
+      // Store draft_id in cookie and remove from URL BEFORE building redirect
+      if (draftId && templateSlug) {
+        try {
+          await setOAuthDraftCookie({ draftId, templateSlug });
+        } catch (cookieError) {
+          console.error("[OAuth] Failed to set draft cookie:", cookieError);
+        }
+      }
+
+      // Build the "next" path WITHOUT draft_id — cookie handles it now
+      // Only include the base path (e.g., "/create/scratch-card")
+      const cleanNextPath = targetUrl.pathname;
+
+      // Build callback URL: {siteUrl}/auth/callback?next=/create/scratch-card
+      const callbackUrl = new URL("/auth/callback", siteUrl);
+      if (cleanNextPath && cleanNextPath !== "/") {
+        callbackUrl.searchParams.set("next", cleanNextPath);
+      }
+
+      console.log("[OAuth] Redirecting to callback:", callbackUrl.toString());
+
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: callbackUrl.toString(),
           queryParams: {
             prompt: 'select_account'
           },
         },
       });
+
+      if (oauthError) {
+        console.error("[OAuth] signInWithOAuth error:", oauthError);
+        setIsGoogleLoading(false);
+      }
       // Browser will redirect — no further action needed here.
-    } catch {
+    } catch (err) {
+      console.error("[OAuth] Unexpected error:", err);
       setIsGoogleLoading(false);
     }
   }, [redirectTo]);

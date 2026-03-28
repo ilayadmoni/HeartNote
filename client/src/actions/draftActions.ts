@@ -38,7 +38,7 @@ export async function claimGuestDraft(draftId: string) {
   // ── Read draft (idempotent — no deletion) ──────────────────────────
   const { data: draftData, error: selectError } = await adminClient
     .from("drafts")
-    .select("metadata, user_id")
+    .select("metadata")
     .eq("id", draftId)
     .maybeSingle();
 
@@ -49,19 +49,6 @@ export async function claimGuestDraft(draftId: string) {
       selectError?.message ?? "no row returned",
     );
     return { success: false, error: "Draft not found — it may have expired." };
-  }
-
-  // Draft already assigned to a user
-  if (draftData.user_id) {
-    if (draftData.user_id === user.id) {
-      // Same user re-requesting (double-fire) — return the metadata again
-      const meta = draftData.metadata as Record<string, any>;
-      delete meta._temp_image_path;
-      delete meta._template_id;
-      return { success: true, metadata: meta };
-    }
-    // A different user owns this draft
-    return { success: false, error: "This draft belongs to another user." };
   }
 
   // ── Process guest draft ────────────────────────────────────────────
@@ -121,12 +108,6 @@ export async function claimGuestDraft(draftId: string) {
       return { success: false, error: "Image transfer failed unexpectedly." };
     }
   }
-
-  // ── Mark draft as claimed (but do NOT delete — Cron handles cleanup) ─
-  await adminClient
-    .from("drafts")
-    .update({ user_id: user.id })
-    .eq("id", draftId);
 
   // Strip internal keys before returning to the client
   delete metadata._temp_image_path;

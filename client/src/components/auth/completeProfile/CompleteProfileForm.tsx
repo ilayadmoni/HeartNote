@@ -60,8 +60,20 @@ export function CompleteProfileForm() {
 
   // Read destination from URL search params.
   // `next` comes from the OAuth callback chain, `returnTo` from the editor's action-guard.
-  const returnTo = searchParams.get("next") || searchParams.get("returnTo") || "/";
+  const nextParam = searchParams.get("next");
+  const returnToParam = searchParams.get("returnTo");
+  const returnTo = nextParam || returnToParam || "/";
   const reason = searchParams.get("reason");
+  
+  // Debug logging for OAuth draft flow
+  useEffect(() => {
+    console.log("[CompleteProfile] URL params:", {
+      next: nextParam,
+      returnTo: returnToParam,
+      resolvedReturnTo: returnTo,
+      fullUrl: window.location.href,
+    });
+  }, [nextParam, returnToParam, returnTo]);
 
   // Hydrate form with Google name / existing profile data.
   useEffect(() => {
@@ -120,7 +132,14 @@ export function CompleteProfileForm() {
       await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
 
       // Hard reload to returnTo path so middleware re-evaluates the now-complete profile.
-      window.location.href = returnTo;
+      console.log("[CompleteProfile] Success! Redirecting to:", returnTo);
+      
+      // Use NEXT_PUBLIC_SITE_URL for ngrok/proxy support
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+      const fullUrl = returnTo.startsWith("http") ? returnTo : `${siteUrl}${returnTo}`;
+      console.log("[CompleteProfile] Full redirect URL:", fullUrl);
+      
+      window.location.href = fullUrl;
     },
     onError: (err: unknown) => {
       setError(err instanceof Error ? err.message : "שמירה נכשלה. נסו שוב.");
