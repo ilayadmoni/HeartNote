@@ -31,6 +31,14 @@ import {
 import { calculateExpiry } from "./helpers/expiryCalc";
 import { logger } from "@/lib/utils/logger";
 
+/** Strictly allowed storage bucket names for file uploads. */
+const ALLOWED_BUCKETS = ["image_steamy_Window"] as const;
+type AllowedBucket = (typeof ALLOWED_BUCKETS)[number];
+
+function isAllowedBucket(name: string): name is AllowedBucket {
+  return (ALLOWED_BUCKETS as readonly string[]).includes(name);
+}
+
 export async function submitGenericCreation(
   formData: FormData,
 ): Promise<ActionResult<{ creationId: string }>> {
@@ -39,7 +47,7 @@ export async function submitGenericCreation(
     const templateSlug = formData.get("templateSlug") as string | null;
     const metadataRaw = formData.get("metadata") as string | null;
     const file = formData.get("file") as File | null;
-    const bucketName = formData.get("bucketName") as string | null;
+    const rawBucketName = formData.get("bucketName") as string | null;
 
     if (!templateSlug?.trim()) {
       throw new ActionError("templateSlug is required", 422);
@@ -47,6 +55,16 @@ export async function submitGenericCreation(
 
     if (!metadataRaw) {
       throw new ActionError("metadata is required", 422);
+    }
+
+    // ── SEC-HIGH-4: Validate bucket name against whitelist ─────────
+    let bucketName: AllowedBucket | null = null;
+    if (rawBucketName?.trim()) {
+      if (!isAllowedBucket(rawBucketName)) {
+        logger.warn("[submitGenericCreation] Rejected invalid bucket", { bucket: rawBucketName });
+        throw new ActionError("Invalid storage bucket", 400);
+      }
+      bucketName = rawBucketName;
     }
 
     // ── Parse metadata JSON ────────────────────────────────────────
@@ -58,7 +76,7 @@ export async function submitGenericCreation(
     }
 
     // ── Optional file upload ───────────────────────────────────────
-    if (file && file.size > 0 && bucketName?.trim()) {
+    if (file && file.size > 0 && bucketName) {
       const fileExt = file.type.split("/")[1] || "jpeg";
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
       const storagePath = `${user.id}/${fileName}`;

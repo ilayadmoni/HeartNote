@@ -18,11 +18,20 @@
  * SEC-HIGH-1: Uses logger for PII-safe logging.
  */
 
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/utils/logger";
 
+const DraftIdSchema = z.string().uuid("Invalid draft ID format");
+
 export async function claimGuestDraft(draftId: string) {
+  // ── Input validation ───────────────────────────────────────────────
+  const parsed = DraftIdSchema.safeParse(draftId);
+  if (!parsed.success) {
+    return { success: false, error: "Invalid draft ID format." };
+  }
+
   // ── Auth gate ──────────────────────────────────────────────────────
   const supabase = await createClient();
   const {

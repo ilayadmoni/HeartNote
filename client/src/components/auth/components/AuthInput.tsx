@@ -19,6 +19,7 @@ export function AuthInput({
   onChange,
   error,
   showPasswordToggle = true,
+  maxLength,
 }: AuthInputProps) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -44,6 +45,7 @@ export function AuthInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
+          maxLength={maxLength}
           className={`
             w-full px-3 py-2.5 rounded-lg text-base box-border
             bg-white dark:bg-gray-700

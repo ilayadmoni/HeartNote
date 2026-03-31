@@ -65,14 +65,16 @@ export function CompleteProfileForm() {
   const returnTo = nextParam || returnToParam || "/";
   const reason = searchParams.get("reason");
   
-  // Debug logging for OAuth draft flow
+  // Debug logging for OAuth draft flow (development only)
   useEffect(() => {
-    console.log("[CompleteProfile] URL params:", {
-      next: nextParam,
-      returnTo: returnToParam,
-      resolvedReturnTo: returnTo,
-      fullUrl: window.location.href,
-    });
+    if (process.env.NODE_ENV === "development") {
+      console.log("[CompleteProfile] URL params:", {
+        next: nextParam,
+        returnTo: returnToParam,
+        resolvedReturnTo: returnTo,
+        fullUrl: window.location.href,
+      });
+    }
   }, [nextParam, returnToParam, returnTo]);
 
   // Hydrate form with Google name / existing profile data.
@@ -132,12 +134,16 @@ export function CompleteProfileForm() {
       await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
 
       // Hard reload to returnTo path so middleware re-evaluates the now-complete profile.
-      console.log("[CompleteProfile] Success! Redirecting to:", returnTo);
+      if (process.env.NODE_ENV === "development") {
+        console.log("[CompleteProfile] Success! Redirecting to:", returnTo);
+      }
       
       // Use NEXT_PUBLIC_SITE_URL for ngrok/proxy support
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
       const fullUrl = returnTo.startsWith("http") ? returnTo : `${siteUrl}${returnTo}`;
-      console.log("[CompleteProfile] Full redirect URL:", fullUrl);
+      if (process.env.NODE_ENV === "development") {
+        console.log("[CompleteProfile] Full redirect URL:", fullUrl);
+      }
       
       window.location.href = fullUrl;
     },

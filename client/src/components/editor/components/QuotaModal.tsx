@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { X, Crown, Sparkles } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 interface QuotaModalProps {
   isOpen: boolean;
@@ -23,6 +24,8 @@ export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
   const CLOSE_THEN_NAVIGATE_DELAY_MS = 60;
   const router = useRouter();
   const { profile } = useProfile();
+
+  useLockBodyScroll(isOpen);
 
   const creationLimit = profile?.subscription.creation_limit ?? 3; // Fallback to 3 if not loaded
 

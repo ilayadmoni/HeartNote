@@ -12,6 +12,7 @@ import { X } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useExpirationPolicy } from "@/hooks/useExpirationPolicy";
 import { pushToDataLayer } from "@/utils/gtm";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 export interface CreationConfirmModalProps {
   /** Whether the modal is open */
@@ -35,6 +36,8 @@ export function CreationConfirmModal({
 }: CreationConfirmModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useLockBodyScroll(isOpen);
 
   // Fetch user profile data
   const { profile, loading: profileLoading } = useProfile();

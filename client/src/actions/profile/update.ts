@@ -11,6 +11,7 @@ import { protectedAction } from "@/lib/protectedAction";
 import { ActionError, type ActionResult } from "@/lib/action-response";
 import { ProfileUpdateSchema, type ProfileUpdateInput } from "@/lib/validations";
 import type { ProfileResponse } from "@/lib/validations";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { buildProfileResponse } from "./helpers";
 
 /**
@@ -65,8 +66,7 @@ export async function updateMyProfile(
  * Internal re-fetch after update (avoids re-authenticating).
  */
 async function fetchProfileInternal(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any,
+  supabase: SupabaseClient,
   userId: string,
 ): Promise<ProfileResponse> {
   const { data, error } = await supabase

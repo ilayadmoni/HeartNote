@@ -22,9 +22,9 @@ export default function Error({
         אירעה שגיאה בלתי צפויה. נסו שוב או חזרו לעמוד הבית.
       </p>
 
-      {error?.message && (
+      {error?.digest && (
         <p className="text-xs text-gray-400 dark:text-gray-500 mb-8 max-w-sm truncate">
-          {error.message}
+          קוד שגיאה: {error.digest}
         </p>
       )}
 

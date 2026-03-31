@@ -61,6 +61,12 @@ export async function sendContactEmail(
       return { error: "כתובת האימייל אינה תקינה." };
     }
 
+    // ── MED-2: Server-side length limits ─────────────────────────────
+    if (name.length > 100) return { error: "שם ארוך מידי (מקסימום 100 תווים)." };
+    if (email.length > 254) return { error: "אימייל ארוך מידי." };
+    if (subject && subject.length > 200) return { error: "נושא ארוך מידי (מקסימום 200 תווים)." };
+    if (message.length > 5000) return { error: "ההודעה ארוכה מידי (מקסימום 5000 תווים)." };
+
     // ── SEC-4: Redis rate limiting ──────────────────────────────────────
     const ip = await getClientIp();
     const rateLimitResult = await contactLimiter.check(ip);

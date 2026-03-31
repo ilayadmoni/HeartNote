@@ -48,11 +48,19 @@ export async function deleteMyAccount(): Promise<ActionResult<null>> {
       );
     }
 
+    // LOW-5: Guard against null email (rare OAuth edge case)
+    if (!user.email) {
+      throw new ActionError(
+        "Cannot delete account: no email associated. Contact support.",
+        400,
+      );
+    }
+
     // --- 1. Ban the email permanently ---
     const { error: banError } = await admin
       .from("banned_users")
       .upsert(
-        { email: user.email!, reason: "self_deletion" },
+        { email: user.email, reason: "self_deletion" },
         { onConflict: "email" },
       );
 
@@ -66,7 +74,7 @@ export async function deleteMyAccount(): Promise<ActionResult<null>> {
 
     if (deleteError) {
       // Rollback the ban record if auth deletion failed
-      await admin.from("banned_users").delete().eq("email", user.email!);
+      await admin.from("banned_users").delete().eq("email", user.email);
       throw new ActionError(
         `Failed to delete account: ${deleteError.message}`,
         500,

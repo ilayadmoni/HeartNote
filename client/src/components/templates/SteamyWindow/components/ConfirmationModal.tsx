@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { submitGenericCreation } from "@/actions/creations";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 interface ConfirmationModalProps {
   /** Whether the modal is visible */
@@ -51,6 +52,8 @@ export function ConfirmationModal({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useLockBodyScroll(isOpen);
 
   if (!isOpen) return null;
 

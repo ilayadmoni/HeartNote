@@ -16,7 +16,8 @@ export function FormField({
   onChange,
   error,
   required = false,
-}: FormFieldProps) {
+  maxLength,
+}: FormFieldProps & { maxLength?: number }) {
   const baseInputStyles = `
     w-full px-4 py-3 rounded-xl
     bg-white dark:bg-gray-700
@@ -50,6 +51,7 @@ export function FormField({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           required={required}
+          maxLength={maxLength}
           rows={5}
           className={`${baseInputStyles} resize-none`}
           aria-describedby={error ? `${id}-error` : undefined}
@@ -64,6 +66,7 @@ export function FormField({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           required={required}
+          maxLength={maxLength}
           className={baseInputStyles}
           aria-describedby={error ? `${id}-error` : undefined}
           aria-invalid={error ? "true" : "false"}

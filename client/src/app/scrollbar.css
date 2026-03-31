@@ -7,6 +7,13 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* Applied by useLockBodyScroll hook — !important is required here
+   to override the `overflow-y: scroll` rule above from the same file. */
+html.scroll-locked {
+  overflow: hidden !important;
+  overflow-y: hidden !important;
+}
+
 /* Firefox: Standard Properties */
 * {
   scrollbar-width: thin;

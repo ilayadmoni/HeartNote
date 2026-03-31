@@ -225,6 +225,7 @@ export function RegisterForm({
           type="text"
           placeholder={AUTH_PLACEHOLDERS.firstName}
           value={formData.firstName}
+          maxLength={50}
           onChange={(value) => handleFieldChange("firstName", value)}
           error={errors.firstName}
         />
@@ -235,6 +236,7 @@ export function RegisterForm({
           type="text"
           placeholder={AUTH_PLACEHOLDERS.lastName}
           value={formData.lastName}
+          maxLength={50}
           onChange={(value) => handleFieldChange("lastName", value)}
           error={errors.lastName}
         />
@@ -246,6 +248,7 @@ export function RegisterForm({
         type="email"
         placeholder={AUTH_PLACEHOLDERS.email}
         value={formData.email}
+        maxLength={254}
         onChange={(value) => handleFieldChange("email", value)}
         error={
           errors.email ||
@@ -266,6 +269,7 @@ export function RegisterForm({
         type="password"
         placeholder={AUTH_PLACEHOLDERS.password}
         value={formData.password}
+        maxLength={128}
         onChange={(value) => handleFieldChange("password", value)}
         error={errors.password}
         showPasswordToggle
@@ -277,6 +281,7 @@ export function RegisterForm({
         type="password"
         placeholder={AUTH_PLACEHOLDERS.confirmPassword}
         value={formData.confirmPassword}
+        maxLength={128}
         onChange={(value) => handleFieldChange("confirmPassword", value)}
         error={errors.confirmPassword}
         showPasswordToggle

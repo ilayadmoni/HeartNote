@@ -160,6 +160,17 @@ export async function registerUser(
       return { error: "נא להזין שם פרטי ושם משפחה." };
     }
 
+    /* ── MED-1: Server-side length limits ─────────────────────── */
+    if (trimmedEmail.length > 254) {
+      return { error: "כתובת האימייל ארוכה מידי." };
+    }
+    if (password.length > 128) {
+      return { error: "הסיסמה ארוכה מידי." };
+    }
+    if (firstName.trim().length > 50 || lastName.trim().length > 50) {
+      return { error: "שם ארוך מידי (מקסימום 50 תווים)." };
+    }
+
     /* ── Admin client ────────────────────────────────────────────── */
     let admin;
     try {

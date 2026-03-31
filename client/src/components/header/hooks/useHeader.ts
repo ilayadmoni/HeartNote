@@ -6,6 +6,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
 interface UseHeaderReturn {
   isMobileMenuOpen: boolean;
@@ -29,15 +30,8 @@ export function useHeader(): UseHeaderReturn {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Lock body scroll when mobile menu is open — single source of truth
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isMobileMenuOpen]);
+  // Lock body scroll when mobile menu is open
+  useLockBodyScroll(isMobileMenuOpen);
 
   const openMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(true);
