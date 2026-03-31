@@ -183,17 +183,28 @@
 .a11y-stop-animations *::before,
 .a11y-stop-animations *::after {
   animation: none !important;
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
   transition: none !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
   scroll-behavior: auto !important;
 }
 
-/* ====================================
-   Stop Animations Toggle
-   ==================================== */
-.a11y-stop-animations *,
-.a11y-stop-animations *::before,
-.a11y-stop-animations *::after {
-  animation: none !important;
+/* Force Framer Motion to skip animations via transform override */
+.a11y-stop-animations [style*="transform"],
+.a11y-stop-animations [style*="opacity"] {
   transition: none !important;
-  scroll-behavior: auto !important;
+}
+
+/* Also respect system preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

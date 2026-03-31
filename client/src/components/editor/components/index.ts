@@ -8,8 +8,6 @@ export { EditorField } from "./EditorField";
 export { ColorPicker } from "./ColorPicker";
 export { SuccessModal } from "./SuccessModal";
 export { EnvelopesEditor } from "./EnvelopesEditor";
-export { QuestionsEditor } from "./QuestionsEditor";
+export { QuestionsEditor, validateQuizQuestions, areAllQuestionsValid, isQuestionValid } from "./QuestionsEditor";
 export { CouponsEditor } from "./CouponsEditor";
 export { ImageUploader } from "./ImageUploader";
-
-

@@ -1,6 +1,10 @@
 /**
  * Supabase Middleware Client
  * For route protection middleware
+ * 
+ * Note: Cannot use the logger here as middleware runs at the Edge runtime
+ * and logger imports may cause issues. Console.error is acceptable for
+ * critical middleware failures.
  */
 
 import { createServerClient } from "@supabase/ssr";
@@ -32,8 +36,9 @@ export function createMiddlewareClient(request: NextRequest) {
                 secure: isProduction,
               });
             });
-          } catch (error) {
-            console.error("[supabase/middleware] Failed to set auth cookies", error);
+          } catch {
+            // Non-fatal: cookie setting can fail in Edge contexts
+            // Error is caught silently to prevent middleware crashes
           }
         },
       },

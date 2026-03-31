@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logger } from "@/lib/utils/logger";
 
 const SITE_URL = "https://www.heartnote.co.il";
 const NOW = new Date().toISOString();
@@ -102,7 +103,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .order("slug", { ascending: true });
 
       if (templatesError) {
-        console.error("[sitemap] Templates fetch error:", templatesError);
+        logger.error("[sitemap] Templates fetch error", { error: templatesError });
       } else if (templates && Array.isArray(templates)) {
         const templateRoutes = templates.map((template) => ({
           url: `${SITE_URL}/create/${template.slug}`,
@@ -113,7 +114,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         dynamicRoutes.push(...templateRoutes);
       }
     } catch (err) {
-      console.error("[sitemap] Templates fetch exception:", err);
+      logger.error("[sitemap] Templates fetch exception", { error: err });
       // Continue with creations even if templates fetch fails
     }
 
@@ -131,7 +132,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .limit(50000); // Sitemap limit is typically 50k URLs
 
       if (creationsError) {
-        console.error("[sitemap] Creations fetch error:", creationsError);
+        logger.error("[sitemap] Creations fetch error", { error: creationsError });
       } else if (creations && Array.isArray(creations)) {
         const creationRoutes = creations.map((creation) => ({
           url: `${SITE_URL}/p/${creation.id}`,
@@ -142,13 +143,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         dynamicRoutes.push(...creationRoutes);
       }
     } catch (err) {
-      console.error("[sitemap] Creations fetch exception:", err);
+      logger.error("[sitemap] Creations fetch exception", { error: err });
       // Continue anyway — at least static routes will be in sitemap
     }
   } catch (err) {
-    console.error("[sitemap] Supabase client initialization failed:", err);
+    logger.error("[sitemap] Supabase client initialization failed", { error: err });
     // Fallback: return only static routes
-    console.warn("[sitemap] Returning static routes only due to Supabase error");
+    logger.warn("[sitemap] Returning static routes only due to Supabase error");
   }
 
   // ──────────────────────────────────────────────────────────────────────

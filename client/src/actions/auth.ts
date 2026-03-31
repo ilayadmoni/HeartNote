@@ -4,10 +4,12 @@
  * Auth Server Actions
  * Handles authentication via Supabase on the server side.
  * SEC-2: Checks banned_users before authenticating.
+ * SEC-HIGH-1: Uses logger for PII-safe logging.
  */
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logger } from "@/lib/utils/logger";
 import type { LoginState } from "./auth.types";
 
 /**
@@ -35,11 +37,11 @@ export async function loginAction(
       .maybeSingle();
 
     if (banned) {
-      console.log(`[loginAction] Banned email attempted login: ${email.replace(/(.{2}).*(@.*)/, '$1***$2')}`);
+      logger.info("[loginAction] Banned email attempted login", { email });
       return { error: "שם משתמש או סיסמה שגויים", success: false };
     }
   } catch (err) {
-    console.error("[loginAction] Banned check error:", err);
+    logger.error("[loginAction] Banned check error", { error: err });
     // Continue — don't block login if the check fails
   }
 

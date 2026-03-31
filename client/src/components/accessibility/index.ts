@@ -5,5 +5,11 @@
 export * from "./components";
 export * from "./constants";
 export * from "./types";
-export * from "./AccessibilityProvider";
+export { 
+  AccessibilityProvider, 
+  useAccessibility,
+  useReducedMotion,
+  type AccessibilitySettings,
+  type AccessibilityContextValue,
+} from "./AccessibilityProvider";
 export * from "./AccessibilityWidget";

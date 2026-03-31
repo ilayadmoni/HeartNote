@@ -13,10 +13,14 @@
  * - maybeSingle() instead of single() to avoid PGRST116 on missing rows.
  * - All failure paths return { success, error } instead of throwing,
  *   so the client never sees an unhandled Server Action crash.
+ *
+ * SEC-CRIT-3: Uses centralized createAdminClient() for service role access.
+ * SEC-HIGH-1: Uses logger for PII-safe logging.
  */
 
-import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { logger } from "@/lib/utils/logger";
 
 export async function claimGuestDraft(draftId: string) {
   // ── Auth gate ──────────────────────────────────────────────────────
@@ -30,10 +34,8 @@ export async function claimGuestDraft(draftId: string) {
     return { success: false, error: "User must be authenticated to claim drafts" };
   }
 
-  const adminClient = createSupabaseAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
+  // SEC-CRIT-3: Use centralized admin client with validation
+  const adminClient = createAdminClient();
 
   // ── Read draft (idempotent — no deletion) ──────────────────────────
   const { data: draftData, error: selectError } = await adminClient
@@ -44,10 +46,10 @@ export async function claimGuestDraft(draftId: string) {
 
   // Draft missing or unreadable — already cleaned by Cron or prior call
   if (selectError || !draftData) {
-    console.log(
-      `[claimGuestDraft] Draft ${draftId} not found or unreadable.`,
-      selectError?.message ?? "no row returned",
-    );
+    logger.info("[claimGuestDraft] Draft not found or unreadable", {
+      draftId,
+      error: selectError?.message ?? "no row returned",
+    });
     return { success: false, error: "Draft not found — it may have expired." };
   }
 
@@ -79,7 +81,7 @@ export async function claimGuestDraft(draftId: string) {
         .download(tempImagePath);
 
       if (downloadError || !fileData) {
-        console.error("[claimGuestDraft] Image download failed:", downloadError?.message);
+        logger.error("[claimGuestDraft] Image download failed", { error: downloadError?.message });
         return { success: false, error: "Failed to download draft image." };
       }
 
@@ -94,7 +96,7 @@ export async function claimGuestDraft(draftId: string) {
         });
 
       if (uploadError) {
-        console.error("[claimGuestDraft] Image upload failed:", uploadError.message);
+        logger.error("[claimGuestDraft] Image upload failed", { error: uploadError.message });
         return { success: false, error: "Failed to move draft image." };
       }
 
@@ -104,7 +106,7 @@ export async function claimGuestDraft(draftId: string) {
 
       metadata.background_image = publicUrl;
     } catch (imgErr) {
-      console.error("[claimGuestDraft] Image transfer crashed:", imgErr);
+      logger.error("[claimGuestDraft] Image transfer crashed", { error: imgErr });
       return { success: false, error: "Image transfer failed unexpectedly." };
     }
   }

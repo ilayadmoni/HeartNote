@@ -8,8 +8,11 @@
 
 import { motion } from "framer-motion";
 import { FLOATING_EMOJIS } from "../constants";
+import { useReducedMotion } from "@/components/accessibility";
 
 export function FloatingIcons() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
       {FLOATING_EMOJIS.map((emoji, i) => (
@@ -19,13 +22,13 @@ export function FloatingIcons() {
           style={{
             left: `${15 + i * 14}%`,
             top: `${10 + (i % 3) * 30}%`,
-            willChange: "transform",
+            willChange: shouldReduceMotion ? "auto" : "transform",
           }}
-          animate={{
+          animate={shouldReduceMotion ? {} : {
             y: [0, -15, 0],
             rotate: [0, i % 2 === 0 ? 10 : -10, 0],
           }}
-          transition={{
+          transition={shouldReduceMotion ? { duration: 0 } : {
             duration: 4 + i * 0.5,
             repeat: Infinity,
             ease: "easeInOut",

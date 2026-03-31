@@ -6,18 +6,19 @@
  * Sends an email via Resend when a user submits the contact form.
  *
  * SEC-3: All user input is HTML-escaped before template interpolation.
- * SEC-4: IP-based sliding-window rate limiting (5 req / 60 s).
+ * SEC-4: IP-based sliding-window rate limiting via Redis (5 req / 60 s).
+ * SEC-HIGH-1: Uses logger for PII-safe logging.
+ * SEC-HIGH-2: CSRF origin validation for state-changing operation.
  */
 
 import { headers } from "next/headers";
 import { Resend } from "resend";
 import { escapeHtml } from "@/lib/utils/sanitize";
-import { createRateLimiter } from "@/lib/utils/rate-limiter";
+import { contactLimiter } from "@/lib/utils/rate-limiter";
+import { logger } from "@/lib/utils/logger";
+import { validateOrigin } from "@/lib/utils/csrf";
 
 const resend = new Resend(process.env.RESEND_KEY);
-
-/** 5 requests per minute per IP */
-const limiter = createRateLimiter({ maxRequests: 5, windowMs: 60_000 });
 
 interface ContactActionResult {
   success?: string;
@@ -30,6 +31,7 @@ async function getClientIp(): Promise<string> {
   return (
     h.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     h.get("x-real-ip") ||
+    h.get("cf-connecting-ip") ||
     "unknown"
   );
 }
@@ -37,37 +39,45 @@ async function getClientIp(): Promise<string> {
 export async function sendContactEmail(
   formData: FormData,
 ): Promise<ContactActionResult> {
-  const name = formData.get("name")?.toString().trim();
-  const email = formData.get("email")?.toString().trim();
-  const subject = formData.get("subject")?.toString().trim();
-  const message = formData.get("message")?.toString().trim();
-
-  // ── Basic validation ──────────────────────────────────────────────
-  if (!name || !email || !message) {
-    return { error: "נא למלא את כל השדות הנדרשים." };
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return { error: "כתובת האימייל אינה תקינה." };
-  }
-
-  // ── Rate limiting (SEC-4) ─────────────────────────────────────────
-  const ip = await getClientIp();
-  if (!limiter.check(ip)) {
-    console.warn(`[contact] Rate-limited IP: ${ip}`);
-    return { error: "שלחת יותר מדי הודעות. אנא נסה שוב בעוד דקה." };
-  }
-
-  // ── Sanitise user input (SEC-3) ───────────────────────────────────
-  const safeName = escapeHtml(name);
-  const safeEmail = escapeHtml(email);
-  const safeSubject = subject ? escapeHtml(subject) : "";
-  const safeMessage = escapeHtml(message);
-
-  // ── Send email via Resend ─────────────────────────────────────────
   try {
-    const { error } = await resend.emails.send({
+    // ── SEC-HIGH-2: CSRF validation ───────────────────────────────────
+    if (!await validateOrigin()) {
+      logger.warn("[contact] CSRF validation failed");
+      return { error: "בקשה לא חוקית. נא לרענן את הדף ולנסות שוב." };
+    }
+
+    const name = formData.get("name")?.toString().trim();
+    const email = formData.get("email")?.toString().trim();
+    const subject = formData.get("subject")?.toString().trim();
+    const message = formData.get("message")?.toString().trim();
+
+    // ── Basic validation ──────────────────────────────────────────────
+    if (!name || !email || !message) {
+      return { error: "נא למלא את כל השדות הנדרשים." };
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return { error: "כתובת האימייל אינה תקינה." };
+    }
+
+    // ── SEC-4: Redis rate limiting ──────────────────────────────────────
+    const ip = await getClientIp();
+    const rateLimitResult = await contactLimiter.check(ip);
+    
+    if (!rateLimitResult.success) {
+      logger.warn("[contact] Rate-limited request", { ip, remaining: rateLimitResult.remaining });
+      return { error: "שלחת יותר מדי הודעות. אנא נסה שוב בעוד דקה." };
+    }
+
+    // ── Sanitise user input (SEC-3) ───────────────────────────────────
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safeSubject = subject ? escapeHtml(subject) : "";
+    const safeMessage = escapeHtml(message);
+
+    // ── Send email via Resend ─────────────────────────────────────────
+    const { error: sendError } = await resend.emails.send({
       from: "HeartNote <contact@heartnote.co.il>",
       to: process.env.MAIL_HEART_NOTE!,
       subject: safeSubject || `הודעה חדשה מ-${safeName}`,
@@ -111,14 +121,15 @@ export async function sendContactEmail(
       `,
     });
 
-    if (error) {
-      console.error("[contact] Resend error:", error);
+    if (sendError) {
+      logger.error("[contact] Resend error", { error: sendError });
       return { error: "שליחת ההודעה נכשלה. נסו שוב מאוחר יותר." };
     }
 
     return { success: "ההודעה נשלחה בהצלחה! נחזור אליך בהקדם." };
   } catch (err) {
-    console.error("[contact] Unexpected error:", err);
+    // SEC: Log full error server-side, return generic message to client
+    logger.error("[contact] Unexpected error", { error: err });
     return { error: "שגיאה בלתי צפויה. נסו שוב מאוחר יותר." };
   }
 }

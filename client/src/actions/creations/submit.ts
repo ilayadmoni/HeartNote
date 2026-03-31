@@ -14,6 +14,8 @@
  *
  * Note: Quota decrement is handled by the DB trigger
  * `trg_handle_new_creation_quota` — no application-level decrement.
+ * 
+ * SEC-HIGH-1: Uses logger for PII-safe logging.
  */
 
 "use server";
@@ -27,6 +29,7 @@ import {
   checkQuotaLimit,
 } from "./helpers/quotaCheck";
 import { calculateExpiry } from "./helpers/expiryCalc";
+import { logger } from "@/lib/utils/logger";
 
 export async function submitGenericCreation(
   formData: FormData,
@@ -68,7 +71,7 @@ export async function submitGenericCreation(
         });
 
       if (uploadError) {
-        console.error("[submitGenericCreation] Upload error", {
+        logger.error("[submitGenericCreation] Upload error", {
           bucketName,
           storagePath,
           error: uploadError,

@@ -7,6 +7,7 @@
 
 import { motion } from "framer-motion";
 import type { AnswerState } from "../types";
+import { useReducedMotion } from "@/components/accessibility";
 
 interface OptionButtonProps {
   option: string;
@@ -23,6 +24,8 @@ export function OptionButton({
   answerState,
   onClick,
 }: OptionButtonProps) {
+  const shouldReduceMotion = useReducedMotion();
+  
   const getStyle = () => {
     if (answerState === "none") {
       return "bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600";
@@ -35,11 +38,11 @@ export function OptionButton({
 
   return (
     <motion.button
-      whileHover={answerState === "none" ? { scale: 1.02 } : undefined}
-      whileTap={answerState === "none" ? { scale: 0.98 } : undefined}
+      whileHover={!shouldReduceMotion && answerState === "none" ? { scale: 1.02 } : undefined}
+      whileTap={!shouldReduceMotion && answerState === "none" ? { scale: 0.98 } : undefined}
       onClick={onClick}
       disabled={answerState !== "none"}
-      className={`w-full p-4 rounded-xl border-2 text-right transition-all flex items-center justify-between ${getStyle()}`}
+      className={`w-full p-5 md:p-4 rounded-xl border-2 text-right transition-all flex items-center justify-between min-h-[60px] ${getStyle()}`}
     >
       {/* Radio circle */}
       <span

@@ -6,7 +6,7 @@
  * Uses global Header/Footer from layout.tsx
  */
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Send } from "lucide-react";
@@ -16,6 +16,7 @@ import { EditorPreview } from "../components/EditorPreview";
 import { SuccessModal } from "../components/SuccessModal";
 import { QuotaModal } from "../components/QuotaModal";
 import { CreationConfirmModal } from "../components/CreationConfirmModal";
+import { validateQuizQuestions } from "../components/QuestionsEditor";
 import { EDITOR_CONFIGS } from "../configs";
 import { submitGenericCreation } from "@/actions/creations";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,6 +28,7 @@ import { claimGuestDraft } from "@/actions/draftActions";
 import { pushToDataLayer } from "@/utils/gtm";
 import { toast } from "sonner";
 import type { TemplateEditorProps } from "../types";
+import type { QuizQuestion } from "@/components/templates/types";
 
 export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const router = useRouter();
@@ -176,6 +178,16 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
   // Show confirmation modal instead of immediately creating
   const handlePublish = async () => {
+    // Validate quiz questions if this is a relationship-quiz template
+    if (templateId === "relationship-quiz" && data.questions) {
+      const validation = validateQuizQuestions(data.questions as QuizQuestion[]);
+      if (!validation.isValid) {
+        // Show the first error as a toast notification
+        toast.error(validation.errors[0] || "יש להשלים את כל השאלות לפני היצירה");
+        return;
+      }
+    }
+
     if (!user) {
       setIsPublishing(true);
       try {

@@ -171,3 +171,30 @@ export function useAccessibility() {
   }
   return context;
 }
+
+/**
+ * useReducedMotion Hook
+ * Returns true if animations should be reduced/disabled
+ * Combines user's accessibility setting with system preference
+ * 
+ * Usage:
+ * const shouldReduceMotion = useReducedMotion();
+ * <motion.div animate={shouldReduceMotion ? {} : { scale: 1.1 }} />
+ */
+export function useReducedMotion(): boolean {
+  const { settings } = useAccessibility();
+  // Check for system preference via media query
+  const [systemReducedMotion, setSystemReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setSystemReducedMotion(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => setSystemReducedMotion(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
+
+  // Return true if either user setting OR system preference wants reduced motion
+  return settings.stopAnimations || systemReducedMotion;
+}
