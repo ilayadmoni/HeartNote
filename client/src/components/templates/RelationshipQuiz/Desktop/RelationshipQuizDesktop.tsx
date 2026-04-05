@@ -19,7 +19,8 @@ import { FloatingIcons } from "../../OpenWhen/components";
 
 export function RelationshipQuizDesktop({ data }: QuizViewProps) {
   const quiz = useQuiz(data.questions);
-  const percentage = Math.round((quiz.score / data.questions.length) * 100);
+  const totalQuestions = data.questions.length;
+  const percentage = Math.round((quiz.score / totalQuestions) * 100);
   const scoreMsg = getScoreMessage(percentage, data.scoreMessages);
 
   return (
@@ -38,8 +39,9 @@ export function RelationshipQuizDesktop({ data }: QuizViewProps) {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
             <QuizResults
               score={quiz.score}
-              total={data.questions.length}
+              total={totalQuestions}
               message={scoreMsg}
+              onPlayAgain={quiz.reset}
             />
           </div>
         ) : (

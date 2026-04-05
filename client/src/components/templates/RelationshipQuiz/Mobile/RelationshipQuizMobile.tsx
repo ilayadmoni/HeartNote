@@ -21,7 +21,8 @@ export function RelationshipQuizMobile({ data }: QuizViewProps) {
   const pathname = usePathname();
   const isCreateRoute = pathname?.includes('/create/');
   const quiz = useQuiz(data.questions);
-  const percentage = Math.round((quiz.score / data.questions.length) * 100);
+  const totalQuestions = data.questions.length;
+  const percentage = Math.round((quiz.score / totalQuestions) * 100);
   const scoreMsg = getScoreMessage(percentage, data.scoreMessages);
 
   return (
@@ -46,8 +47,9 @@ export function RelationshipQuizMobile({ data }: QuizViewProps) {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
             <QuizResults
               score={quiz.score}
-              total={data.questions.length}
+              total={totalQuestions}
               message={scoreMsg}
+              onPlayAgain={quiz.reset}
             />
           </div>
         ) : (

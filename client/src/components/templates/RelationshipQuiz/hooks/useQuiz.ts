@@ -38,6 +38,7 @@ interface UseQuizReturn {
   progress: number;
   handleAnswer: (optionIndex: number) => void;
   currentQuestion: ShuffledQuestion;
+  reset: () => void;
 }
 
 export function useQuiz(questions: QuizQuestion[]): UseQuizReturn {
@@ -47,10 +48,14 @@ export function useQuiz(questions: QuizQuestion[]): UseQuizReturn {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isFinished, setIsFinished] = useState(false);
 
-  // Shuffle all questions once on mount
+  // Track shuffle generation to allow re-shuffle on reset
+  const [shuffleKey, setShuffleKey] = useState(0);
+
+  // Re-shuffle when questions change OR when reset is triggered
   const shuffledQuestions = useMemo(
     () => questions.map(shuffleOptions),
-    [questions],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [questions, shuffleKey],
   );
 
   const currentQuestion = shuffledQuestions[currentIndex] ?? shuffledQuestions[0];
@@ -69,6 +74,16 @@ export function useQuiz(questions: QuizQuestion[]): UseQuizReturn {
     },
     [answerState, currentIndex, shuffledQuestions],
   );
+
+  /** Reset game progress only — preserves the user's customized questions */
+  const reset = useCallback(() => {
+    setCurrentIndex(0);
+    setScore(0);
+    setAnswerState("none");
+    setSelectedIndex(null);
+    setIsFinished(false);
+    setShuffleKey((k) => k + 1);
+  }, []);
 
   // Auto-advance after 1.5s
   useEffect(() => {
@@ -94,5 +109,6 @@ export function useQuiz(questions: QuizQuestion[]): UseQuizReturn {
     progress,
     handleAnswer,
     currentQuestion,
+    reset,
   };
 }
