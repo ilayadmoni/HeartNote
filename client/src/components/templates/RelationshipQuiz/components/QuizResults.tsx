@@ -14,6 +14,7 @@ interface QuizResultsProps {
   score: number;
   total: number;
   message?: { message: string }; // Optional - we calculate internally for accuracy
+  onPlayAgain: () => void;
 }
 
 /**
@@ -48,7 +49,7 @@ function getDynamicFeedbackMessage(percentage: number): string {
   }
 }
 
-export function QuizResults({ score, total }: QuizResultsProps) {
+export function QuizResults({ score, total, onPlayAgain }: QuizResultsProps) {
   const percentage = Math.round((score / total) * 100);
   const shouldReduceMotion = useReducedMotion();
   // Always use dynamic calculation for accurate tier matching
@@ -107,7 +108,7 @@ export function QuizResults({ score, total }: QuizResultsProps) {
       <motion.button
         whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
         whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
-        onClick={() => window.location.reload()}
+        onClick={onPlayAgain}
         className="px-10 py-4 bg-[#d4826f] hover:bg-[#c4735f] text-white font-bold rounded-full text-hebrew-heading transition-colors shadow-lg shadow-[#d4826f]/30"
       >
         לשחק שוב

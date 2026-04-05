@@ -7,7 +7,7 @@
  */
 
 import { useRef, useEffect, useCallback, useState } from "react";
-import { motion, useAnimation, useMotionValue, animate } from "framer-motion";
+import { motion, useMotionValue, animate } from "framer-motion";
 import confetti from "canvas-confetti";
 
 /* ── palette ─────────────────────────────────────────────── */
@@ -33,6 +33,179 @@ interface WheelCanvasProps {
   primaryColor?: string;
 }
 
+/**
+ * Calculate slice geometry for text placement.
+ * Returns the available width at different radii within the slice.
+ */
+function getSliceGeometry(
+  segCount: number,
+  radius: number,
+  wheelSize: number
+): {
+  labelRadius: number;
+  maxWidth: number;
+  maxHeight: number;
+  baseFontSize: number;
+} {
+  const segAngleRad = (2 * Math.PI) / segCount;
+  
+  // Position label at ~55% of radius for better centering with multi-line
+  const labelRadius = radius * 0.55;
+  
+  // Calculate the chord length at the label position
+  // This is the max width available for text within the slice
+  const chordLength = 2 * labelRadius * Math.sin(segAngleRad / 2);
+  
+  // Use 80% of chord length as max text width
+  const maxWidth = chordLength * 0.8;
+  
+  // Max height is the radial depth available for text
+  // From ~35% to ~75% of radius (avoiding center button and edge)
+  const maxHeight = radius * 0.4;
+  
+  // Base font size scales with wheel size and inversely with number of slices
+  // Formula: baseFontSize = (wheelSize / 18) * (8 / segCount)^0.35
+  const sliceScaleFactor = Math.pow(8 / segCount, 0.35);
+  const baseFontSize = (wheelSize / 18) * sliceScaleFactor;
+  
+  return { labelRadius, maxWidth, maxHeight, baseFontSize };
+}
+
+/**
+ * Wrap text into multiple lines that fit within maxWidth.
+ * Uses word-breaking for long words and natural word wrapping otherwise.
+ */
+function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+  fontSize: number
+): string[] {
+  ctx.font = `bold ${fontSize}px sans-serif`;
+  
+  // If text fits on one line, return it
+  if (ctx.measureText(text).width <= maxWidth) {
+    return [text];
+  }
+  
+  const words = text.split(/\s+/);
+  const lines: string[] = [];
+  let currentLine = "";
+  
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word;
+    const testWidth = ctx.measureText(testLine).width;
+    
+    if (testWidth <= maxWidth) {
+      currentLine = testLine;
+    } else {
+      // If current line has content, push it
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+      
+      // Check if the word itself is too long and needs breaking
+      if (ctx.measureText(word).width > maxWidth) {
+        // Break the word character by character
+        let partialWord = "";
+        for (const char of word) {
+          const testPartial = partialWord + char;
+          if (ctx.measureText(testPartial).width <= maxWidth) {
+            partialWord = testPartial;
+          } else {
+            if (partialWord) lines.push(partialWord);
+            partialWord = char;
+          }
+        }
+        currentLine = partialWord;
+      } else {
+        currentLine = word;
+      }
+    }
+  }
+  
+  // Push the last line
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+  
+  return lines;
+}
+
+/**
+ * Calculate the optimal font size and wrapped lines for a label.
+ * Balances font size with number of lines to maximize readability.
+ */
+function calculateWrappedText(
+  ctx: CanvasRenderingContext2D,
+  label: string,
+  segCount: number,
+  radius: number,
+  wheelSize: number
+): { fontSize: number; lines: string[]; labelRadius: number; lineHeight: number } {
+  const { labelRadius, maxWidth, maxHeight, baseFontSize } = getSliceGeometry(
+    segCount,
+    radius,
+    wheelSize
+  );
+  
+  // Clamp base font size
+  let fontSize = Math.min(Math.max(baseFontSize, 9), wheelSize / 9);
+  const minFontSize = 8;
+  const maxLines = segCount >= 7 ? 3 : 2; // Allow more lines for narrow slices
+  
+  let lines = wrapText(ctx, label, maxWidth, fontSize);
+  let lineHeight = fontSize * 1.15;
+  
+  // Reduce font size if we have too many lines or text doesn't fit vertically
+  while (
+    (lines.length > maxLines || lines.length * lineHeight > maxHeight) &&
+    fontSize > minFontSize
+  ) {
+    fontSize -= 0.5;
+    lineHeight = fontSize * 1.15;
+    lines = wrapText(ctx, label, maxWidth, fontSize);
+  }
+  
+  // If still too many lines, truncate with ellipsis
+  if (lines.length > maxLines) {
+    lines = lines.slice(0, maxLines);
+    const lastLine = lines[maxLines - 1];
+    if (lastLine.length > 3) {
+      lines[maxLines - 1] = lastLine.slice(0, -3) + "...";
+    }
+  }
+  
+  return { fontSize, lines, labelRadius, lineHeight };
+}
+
+/**
+ * Draw multi-line text centered at (0, 0) in the current transform.
+ */
+function drawWrappedText(
+  ctx: CanvasRenderingContext2D,
+  lines: string[],
+  fontSize: number,
+  lineHeight: number
+): void {
+  ctx.font = `bold ${fontSize}px sans-serif`;
+  ctx.fillStyle = "#2e3c52";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  
+  // Calculate total text block height
+  const totalHeight = lines.length * lineHeight;
+  
+  // Start Y position to center the block vertically
+  const startY = -totalHeight / 2 + lineHeight / 2;
+  
+  // Draw each line
+  lines.forEach((line, index) => {
+    const y = startY + index * lineHeight;
+    ctx.fillText(line, 0, y);
+  });
+}
+
 export function WheelCanvas({
   options,
   size,
@@ -41,7 +214,6 @@ export function WheelCanvas({
 }: WheelCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rotation = useMotionValue(0);
-  const controls = useAnimation();
   const [spinning, setSpinning] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
 
@@ -74,36 +246,30 @@ export function WheelCanvas({
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // label
+        // label with dynamic font sizing and multi-line wrapping
+        const label = options[i] || "";
         const midAngle = (startAngle + endAngle) / 2;
-        const labelR = r * 0.62;
-        const lx = cx + Math.cos(midAngle) * labelR;
-        const ly = cy + Math.sin(midAngle) * labelR;
+        
+        // Calculate wrapped text with dynamic font size
+        const { fontSize, lines, labelRadius, lineHeight } = calculateWrappedText(
+          ctx,
+          label,
+          segCount,
+          r,
+          w
+        );
+        
+        // Position label at calculated radius
+        const lx = cx + Math.cos(midAngle) * labelRadius;
+        const ly = cy + Math.sin(midAngle) * labelRadius;
 
         ctx.save();
         ctx.translate(lx, ly);
         ctx.rotate(midAngle + Math.PI / 2);
-        ctx.fillStyle = "#2e3c52";
         
-        // Dynamic font sizing based on text width
-        const label = options[i] || "";
-        const maxWidth = r * 0.3; // max width available in slice
-        let fontSize = Math.max(11, Math.floor(w / 22));
+        // Draw multi-line wrapped text
+        drawWrappedText(ctx, lines, fontSize, lineHeight);
         
-        // Measure text and shrink if needed
-        ctx.font = `bold ${fontSize}px sans-serif`;
-        let textWidth = ctx.measureText(label).width;
-        
-        // If text is too wide, reduce font size until it fits
-        while (textWidth > maxWidth && fontSize > 8) {
-          fontSize -= 1;
-          ctx.font = `bold ${fontSize}px sans-serif`;
-          textWidth = ctx.measureText(label).width;
-        }
-        
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(label, 0, 0);
         ctx.restore();
       }
     },
