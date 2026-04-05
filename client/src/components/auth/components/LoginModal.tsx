@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, LogIn, AlertTriangle } from "lucide-react";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { pushToDataLayer } from "@/utils/gtm";
@@ -63,7 +64,7 @@ export function LoginModal({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { signIn, signUp, user, error: authError, clearError } = useAuth();
-  const savedOverflow = useRef<string>("");
+
 
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -172,8 +173,6 @@ export function LoginModal({
         callbackUrl.searchParams.set("next", cleanNextPath);
       }
 
-      console.log("[OAuth] Redirecting to callback:", callbackUrl.toString());
-
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -233,34 +232,25 @@ export function LoginModal({
 
 
 
-  // ── Defensive body cleanup (prevents stale modal locks) ──────────
-  const restoreBodyInteractivity = useCallback(() => {
-    document.body.style.overflow = savedOverflow.current;
-    document.body.style.pointerEvents = "auto";
-  }, []);
-
   // ── Prevent body scroll while modal is open ──────────────────────
-  useEffect(() => {
-    if (isOpen) {
-      savedOverflow.current = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-    }
+  useLockBodyScroll(isOpen);
 
+  useEffect(() => {
     if (!isOpen) {
       // Ensure body is always clickable after close.
       document.body.style.pointerEvents = "auto";
     }
 
     return () => {
-      restoreBodyInteractivity();
+      document.body.style.pointerEvents = "auto";
     };
-  }, [isOpen, restoreBodyInteractivity]);
+  }, [isOpen]);
 
   // ── Close helper ─────────────────────────────────────────────────
   const handleClose = useCallback(() => {
-    restoreBodyInteractivity();
+    document.body.style.pointerEvents = "auto";
     onClose();
-  }, [onClose, restoreBodyInteractivity]);
+  }, [onClose]);
 
   // Close modal first, then run follow-up work after exit animation
   // and focus-trap cleanup have had enough time to complete.
@@ -510,7 +500,7 @@ export function LoginModal({
   const subtitle = activeTab === "login" ? LOGIN_SUBTITLE : REGISTER_SUBTITLE;
 
   return (
-    <AnimatePresence mode="wait" onExitComplete={restoreBodyInteractivity}>
+    <AnimatePresence mode="wait" onExitComplete={() => { document.body.style.pointerEvents = "auto"; }}>
       {isOpen && (
         <motion.div
           key="login-modal-root"
@@ -518,24 +508,25 @@ export function LoginModal({
           animate={{ opacity: 1, pointerEvents: "auto" }}
           exit={{ opacity: 0, pointerEvents: "none" }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[200]"
+          className="fixed inset-0 z-[200] overscroll-contain touch-none"
         >
           <FocusTrap active={isOpen} onEscape={handleClose}>
             {/* Backdrop — stronger dimming (60 %) to darken page title */}
             <div
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200 touch-none"
               onClick={handleClose}
+              onTouchMove={(e) => e.preventDefault()}
               aria-hidden="true"
             />
 
             {/* Top-aligned on mobile to prevent layout jumping, centered on desktop — clicks pass through to backdrop */}
-            <div className="relative flex items-start md:items-center justify-center h-[100dvh] p-4 pt-[5dvh] md:p-4">
+            <div className="relative flex items-start md:items-center justify-center h-[100dvh] p-4 pt-[5dvh] md:p-4 overscroll-contain">
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.95, y: 20 }}
                 transition={{ duration: 0.2 }}
-                className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden"
+                className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden touch-pan-y"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="auth-title"
@@ -903,6 +894,7 @@ export function LoginModal({
                                 type="email"
                                 placeholder={AUTH_PLACEHOLDERS.email}
                                 value={formData.email}
+                                maxLength={254}
                                 onChange={(value) => {
                                   setFormData({ ...formData, email: value });
                                   setLoginError(null);
@@ -923,6 +915,7 @@ export function LoginModal({
                                 type="password"
                                 placeholder={AUTH_PLACEHOLDERS.password}
                                 value={formData.password}
+                                maxLength={128}
                                 onChange={(value) => {
                                   setFormData({ ...formData, password: value });
                                   setLoginError(null);

@@ -30,7 +30,8 @@ export async function deleteCreation(
     const { error: updateErr } = await supabase
       .from("creations")
       .update({ is_deleted: true })
-      .eq("id", creationId);
+      .eq("id", creationId)
+      .eq("user_id", user.id);
 
     if (updateErr) {
       throw new ActionError(`Failed to delete: ${updateErr.message}`, 500);

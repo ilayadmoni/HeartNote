@@ -12,6 +12,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Check, ExternalLink, X } from "lucide-react";
 import { pushToDataLayer } from "@/utils/gtm";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 interface SuccessModalProps {
   isOpen: boolean;
@@ -32,6 +33,8 @@ export function SuccessModal({
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  useLockBodyScroll(isOpen);
 
   // Hydration-safe: only render portal on client
   useEffect(() => {

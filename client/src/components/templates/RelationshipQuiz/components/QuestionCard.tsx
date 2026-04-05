@@ -8,6 +8,7 @@
 import { motion } from "framer-motion";
 import type { AnswerState } from "../types";
 import { OptionButton } from "./OptionButton";
+import { useReducedMotion } from "@/components/accessibility";
 
 interface QuestionCardProps {
   question: { question: string; options: string[]; correctIndex: number };
@@ -24,12 +25,15 @@ export function QuestionCard({
   answerState,
   onAnswer,
 }: QuestionCardProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <motion.div
       key={questionIndex}
-      initial={{ opacity: 0, x: 50 }}
+      initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -50 }}
+      exit={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: -50 }}
+      transition={shouldReduceMotion ? { duration: 0 } : undefined}
       className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
     >
       {/* Question */}
@@ -37,8 +41,8 @@ export function QuestionCard({
         {question.question}
       </h2>
 
-      {/* Options */}
-      <div className="space-y-3">
+      {/* Options - increased spacing for touch-friendly mobile */}
+      <div className="space-y-4 md:space-y-3">
         {question.options.map((option, index) => (
           <OptionButton
             key={index}

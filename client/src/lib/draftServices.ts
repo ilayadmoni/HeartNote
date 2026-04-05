@@ -1,5 +1,14 @@
 import { createClient } from "@/lib/supabase/client";
 
+/**
+ * Draft Services for Guest Users
+ * ───────────────────────────────
+ * Client-side services for saving guest drafts before OAuth login.
+ * 
+ * Note: This runs on the client, so we can't use the server-side logger.
+ * Console statements here are acceptable as they only show in the user's browser.
+ */
+
 function generateSafeUUID(): string {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return crypto.randomUUID();
@@ -29,7 +38,7 @@ export async function saveGuestDraft(
       .upload(fileName, file);
 
     if (uploadError) {
-      console.error("Temp image upload failed:", uploadError);
+      // Client-side error - ok to use console
       throw new Error(`Upload error: ${uploadError.message}`);
     }
 
@@ -54,7 +63,7 @@ export async function saveGuestDraft(
     }); // Absolutely no native .select() allowing for strict Write-Only RLS policies
 
   if (dbError) {
-    console.error("Draft insert failed:", dbError);
+    // Client-side error - ok to use console
     throw new Error(dbError.message || "Failed to insert draft");
   }
 

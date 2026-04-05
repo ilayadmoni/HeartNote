@@ -3,11 +3,21 @@
  *
  * Marks a single coupon as redeemed inside the creation's metadata JSONB.
  * No auth required — the viewer (public link recipient) redeems coupons.
+ *
+ * SEC-HIGH-1: Validates input UUIDs with Zod before querying DB.
+ * SEC-HIGH-1: Uses logger for PII-safe logging.
  */
 
 "use server";
 
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/utils/logger";
+
+const RedeemInputSchema = z.object({
+  creationId: z.string().uuid("Invalid creation ID format"),
+  couponId: z.string().uuid("Invalid coupon ID format"),
+});
 
 /**
  * Marks a coupon as redeemed inside the creation's metadata.
@@ -21,6 +31,12 @@ export async function redeemCoupon(
   couponId: string,
 ): Promise<{ success: true } | { error: string; status: number }> {
   try {
+    // ── Input validation ──────────────────────────────────────────
+    const parsed = RedeemInputSchema.safeParse({ creationId, couponId });
+    if (!parsed.success) {
+      return { error: "Invalid input", status: 400 };
+    }
+
     const supabase = await createClient();
 
     // Fetch the creation's metadata
@@ -59,16 +75,18 @@ export async function redeemCoupon(
       .eq("id", creationId);
 
     if (updateErr) {
+      logger.error("[redeemCoupon] Update failed", { error: updateErr.message });
       return {
-        error: `Failed to redeem coupon: ${updateErr.message}`,
+        error: "Failed to redeem coupon",
         status: 500,
       };
     }
 
     return { success: true };
   } catch (e) {
+    logger.error("[redeemCoupon] Unexpected error", { error: e });
     return {
-      error: `Failed to redeem coupon: ${e instanceof Error ? e.message : String(e)}`,
+      error: "Failed to redeem coupon",
       status: 500,
     };
   }

@@ -23,6 +23,7 @@ import type { User } from "@supabase/supabase-js";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { ActionError, type ActionResult } from "@/lib/action-response";
+import { logger } from "@/lib/utils/logger";
 
 export async function protectedAction<T>(
   fn: (user: User, supabase: SupabaseClient) => Promise<T>,
@@ -46,8 +47,8 @@ export async function protectedAction<T>(
       return { success: false, error: e.message, code: e.code };
     }
 
-    const message =
-      e instanceof Error ? e.message : "An unexpected error occurred";
-    return { success: false, error: message, code: 500 };
+    // MED-5: Log the real error server-side, return generic message to client
+    logger.error("[protectedAction] Unexpected error", { error: e });
+    return { success: false, error: "An unexpected error occurred", code: 500 };
   }
 }

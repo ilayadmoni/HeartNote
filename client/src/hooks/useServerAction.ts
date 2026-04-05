@@ -44,11 +44,16 @@ export function useServerAction() {
       if (result.success) return result.data;
 
       if (result.code === 401) {
-        await signOut();
+        try {
+          await signOut();
+        } catch {
+          // Redirect still happens below even if client sign-out fails.
+        }
         toast.error(SESSION_EXPIRED_MSG, {
           description: SESSION_EXPIRED_DESC,
         });
         router.push(LOGIN_REDIRECT);
+        throw new ActionError(result.error, result.code);
       }
 
       throw new ActionError(result.error, result.code);

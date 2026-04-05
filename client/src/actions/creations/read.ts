@@ -82,19 +82,49 @@ export async function getCreation(
       return { error: "This creation has been deleted", status: 410 };
     }
 
+    // ── SEC-HIGH-7: Expiry date validation ─────────────────────────
+    // Safely parse and compare expiry date against current UTC time.
+    // If parsing fails or date is invalid, treat as expired (fail-secure).
     if (c.expires_at) {
+      const expStr = String(c.expires_at);
+      let expiryDate: Date;
+      
       try {
-        const expStr = String(c.expires_at);
-        const expDt = new Date(
-          expStr.includes("Z")
-            ? expStr
-            : expStr.replace("+00:00", "Z"),
-        );
-        if (expDt < new Date()) {
+        // Handle various timestamp formats from Supabase
+        // PostgreSQL timestamps can come as:
+        // - "2024-12-31T23:59:59.000Z" (ISO with Z)
+        // - "2024-12-31T23:59:59+00:00" (ISO with offset)
+        // - "2024-12-31 23:59:59" (space-separated, assumes UTC)
+        let normalizedStr = expStr;
+        
+        // Normalize "+00:00" to "Z" for consistent parsing
+        if (normalizedStr.includes("+00:00")) {
+          normalizedStr = normalizedStr.replace("+00:00", "Z");
+        }
+        
+        // Add Z suffix if no timezone indicator present (assume UTC)
+        if (!normalizedStr.includes("Z") && !normalizedStr.includes("+") && !normalizedStr.includes("-", 10)) {
+          // Replace space with T for ISO format if needed
+          normalizedStr = normalizedStr.replace(" ", "T") + "Z";
+        }
+        
+        expiryDate = new Date(normalizedStr);
+        
+        // Validate the parsed date
+        if (isNaN(expiryDate.getTime())) {
+          console.error("[getCreation] Invalid expiry date format:", expStr);
           return { error: "This creation has expired", status: 410 };
         }
-      } catch {
-        // Ignore parse errors
+      } catch (parseError) {
+        // If date parsing throws, treat as expired (fail-secure)
+        console.error("[getCreation] Date parsing error:", parseError, "for:", expStr);
+        return { error: "This creation has expired", status: 410 };
+      }
+      
+      // Compare against current UTC time
+      const nowUtc = new Date();
+      if (expiryDate.getTime() < nowUtc.getTime()) {
+        return { error: "This creation has expired", status: 410 };
       }
     }
 
@@ -112,8 +142,13 @@ export async function getCreation(
       },
     };
   } catch (e) {
+    // SEC-HIGH-6: Never expose internal error details to clients
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    // Log full error server-side for debugging
+    console.error("[getCreation] Internal error:", errorMessage);
+    
     return {
-      error: `Failed to fetch creation: ${e instanceof Error ? e.message : String(e)}`,
+      error: "Failed to load creation. Please try again.",
       status: 500,
     };
   }

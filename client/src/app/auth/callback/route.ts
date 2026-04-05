@@ -3,6 +3,7 @@
  *
  * Handles OAuth code exchange and token verification.
  * CRITICAL: Every code path MUST end with a redirect.
+ * SEC-HIGH-1: Uses logger for PII-safe logging.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -12,6 +13,7 @@ import {
   fetchProfileWithRetry,
   isProfileIncomplete,
 } from "./helpers";
+import { logger } from "@/lib/utils/logger";
 
 const DEFAULT_PATH = "/";
 const ERROR_PATH = "/auth/auth-code-error";
@@ -41,10 +43,10 @@ function redirect(request: NextRequest, path: string): NextResponse {
   try {
     const siteUrl = getSiteUrl(request);
     const url = new URL(path, siteUrl);
-    console.log("[callback] Redirecting to:", url.toString());
+    logger.info("[callback] Redirecting to", { url: url.toString() });
     return NextResponse.redirect(url);
   } catch (e) {
-    console.error("[callback] Redirect URL construction failed:", e);
+    logger.error("[callback] Redirect URL construction failed", { error: e });
     const siteUrl = getSiteUrl(request);
     return NextResponse.redirect(new URL("/", siteUrl));
   }
@@ -75,12 +77,12 @@ async function getDraftFromCookie(): Promise<{ draftId: string; templateSlug: st
     
     const data = JSON.parse(cookie.value);
     if (data?.draftId && data?.templateSlug) {
-      console.log("[callback] Draft cookie found:", data);
+      logger.info("[callback] Draft cookie found", { draftId: data.draftId });
       return data;
     }
     return null;
   } catch (e) {
-    console.error("[callback] Cookie error:", e);
+    logger.error("[callback] Cookie error", { error: e });
     return null;
   }
 }
@@ -121,8 +123,7 @@ function buildFinalPath(
 /* ══════════════════════════════════════════════════════════════════ */
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  console.log("[callback] Request URL:", request.url);
-  console.log("[callback] Site URL:", getSiteUrl(request));
+  logger.info("[callback] Processing auth callback", { url: request.url });
 
   try {
     const { searchParams } = new URL(request.url);
@@ -136,22 +137,22 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // ── OAuth Code Exchange ────────────────────────────────────────
     if (code) {
-      console.log("[callback] Exchanging OAuth code...");
+      logger.info("[callback] Exchanging OAuth code");
 
       const supabase = await createCallbackClient();
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
-        console.error("[callback] Exchange error:", error.message);
+        logger.error("[callback] Exchange error", { message: error.message });
         return errorRedirect(request, error.message || "Authentication failed");
       }
 
-      console.log("[callback] Exchange success, user:", data?.user?.id);
+      logger.info("[callback] Exchange success", { userId: data?.user?.id });
 
       // Get draft from cookie
       const draft = await getDraftFromCookie();
       const finalPath = buildFinalPath(basePath, draft);
-      console.log("[callback] Final path:", finalPath);
+      logger.info("[callback] Final path", { path: finalPath });
 
       // Check profile completeness
       const userId = data?.user?.id;
@@ -159,7 +160,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         try {
           const profile = await fetchProfileWithRetry(supabase, userId);
           if (isProfileIncomplete(profile)) {
-            console.log("[callback] Profile incomplete → onboarding");
+            logger.info("[callback] Profile incomplete → onboarding");
             const siteUrl = getSiteUrl(request);
             const onboardUrl = new URL("/complete-profile", siteUrl);
             if (finalPath !== "/") {
@@ -168,7 +169,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             return NextResponse.redirect(onboardUrl);
           }
         } catch (e) {
-          console.error("[callback] Profile check failed:", e);
+          logger.error("[callback] Profile check failed", { error: e });
           // Continue anyway
         }
       }
@@ -178,7 +179,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // ── Token Hash Verification (email links) ──────────────────────
     if (tokenHash && type) {
-      console.log("[callback] Verifying token hash, type:", type);
+      logger.info("[callback] Verifying token hash", { type });
 
       const otpType = type === "signup" ? "email" : type;
       if (otpType !== "email" && otpType !== "recovery") {
@@ -192,7 +193,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       });
 
       if (error) {
-        console.error("[callback] OTP error:", error.message);
+        logger.error("[callback] OTP error", { message: error.message });
         return errorRedirect(request, error.message || "Verification failed");
       }
 
@@ -207,12 +208,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     // ── No valid params ────────────────────────────────────────────
-    console.error("[callback] Missing code or token_hash");
+    logger.error("[callback] Missing code or token_hash");
     return errorRedirect(request, "Missing authentication parameters");
 
   } catch (fatalError) {
     // ── FATAL: Catch-all ───────────────────────────────────────────
-    console.error("[callback] FATAL:", fatalError);
+    logger.error("[callback] FATAL error", { error: fatalError });
     try {
       const siteUrl = getSiteUrl(request);
       return NextResponse.redirect(new URL("/?auth_error=1", siteUrl));

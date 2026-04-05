@@ -6,7 +6,7 @@
  * boolean, array, object) depending on the template's field schema.
  */
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import type { TemplateUserData } from "@/components/editor/types";
 
 interface UseTemplateDataReturn {
@@ -26,6 +26,8 @@ export function useTemplateData(
   templateId: string,
   defaultData: Record<string, unknown> = {},
 ): UseTemplateDataReturn {
+  const defaultDataKey = useMemo(() => JSON.stringify(defaultData), [defaultData]);
+
   const [state, setState] = useState<TemplateUserData>({
     templateId,
     userChoices: { ...defaultData },
@@ -49,7 +51,7 @@ export function useTemplateData(
       });
       initializedForTemplate.current = templateId;
     }
-  }, [templateId, defaultData]);
+  }, [templateId, defaultDataKey]);
 
   /** Update one key inside userChoices */
   const updateChoice = useCallback((key: string, value: unknown) => {

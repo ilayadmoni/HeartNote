@@ -9,6 +9,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { SPLASH_STORAGE_KEY } from "../constants";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 export function useWelcomeSplash() {
   const { user } = useAuth();
@@ -31,11 +32,7 @@ export function useWelcomeSplash() {
   }, [user]);
 
   // Lock body scroll while visible
-  useEffect(() => {
-    if (!isVisible) return;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
-  }, [isVisible]);
+  useLockBodyScroll(isVisible);
 
   /** Called by the progress bar when it reaches 100% */
   const dismiss = useCallback(() => {

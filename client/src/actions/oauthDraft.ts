@@ -12,9 +12,12 @@
  * 2. OAuth redirect happens (no draft_id in URL)
  * 3. Callback route reads cookie, appends draft_id to final redirect
  * 4. Cookie is deleted immediately after reading
+ * 
+ * SEC-HIGH-1: Uses logger for PII-safe logging.
  */
 
 import { cookies } from "next/headers";
+import { logger } from "@/lib/utils/logger";
 
 const COOKIE_NAME = "pending_oauth_draft";
 const COOKIE_MAX_AGE = 600; // 10 minutes — enough for OAuth flow
@@ -60,7 +63,7 @@ export async function consumeOAuthDraftCookie(): Promise<OAuthDraftData | null> 
   try {
     return JSON.parse(cookie.value) as OAuthDraftData;
   } catch {
-    console.error("[oauthDraft] Failed to parse draft cookie:", cookie.value);
+    logger.error("[oauthDraft] Failed to parse draft cookie");
     return null;
   }
 }

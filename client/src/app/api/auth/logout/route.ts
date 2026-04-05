@@ -5,11 +5,14 @@
  * Client-side `supabase.auth.signOut()` only clears in-memory state
  * and localStorage — it does NOT reliably clear httpOnly SSR cookies.
  * This route ensures the server writes proper cookie-clearing headers.
+ * 
+ * SEC-HIGH-1: Uses logger for PII-safe logging.
  */
 
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { logger } from "@/lib/utils/logger";
 
 export async function POST() {
   const cookieStore = await cookies();
@@ -32,8 +35,8 @@ export async function POST() {
                 secure: isProduction,
               });
             });
-          } catch (error) {
-            console.error("[supabase/logout] Failed to delete auth cookies", error);
+          } catch {
+            // Non-fatal: cookie deletion can fail in some contexts
           }
         },
       },
@@ -43,7 +46,7 @@ export async function POST() {
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    console.error("[Server Logout] signOut failed:", error.message);
+    logger.error("[Server Logout] signOut failed", { error: error.message });
     return NextResponse.json(
       { success: false, message: error.message },
       { status: 500 },

@@ -99,6 +99,7 @@ export function ContactForm({ onSubmit, isPending = false }: ContactFormProps) {
           onChange={(value) => setFormData({ ...formData, name: value })}
           error={errors.name}
           required
+          maxLength={100}
         />
         <FormField
           id="email"
@@ -109,6 +110,7 @@ export function ContactForm({ onSubmit, isPending = false }: ContactFormProps) {
           onChange={(value) => setFormData({ ...formData, email: value })}
           error={errors.email}
           required
+          maxLength={254}
         />
       </div>
 
@@ -120,6 +122,7 @@ export function ContactForm({ onSubmit, isPending = false }: ContactFormProps) {
         onChange={(value) => setFormData({ ...formData, subject: value })}
         error={errors.subject}
         required
+        maxLength={200}
       />
 
       <FormField
@@ -131,6 +134,7 @@ export function ContactForm({ onSubmit, isPending = false }: ContactFormProps) {
         onChange={(value) => setFormData({ ...formData, message: value })}
         error={errors.message}
         required
+        maxLength={5000}
       />
 
       {/* Submit Status Messages */}

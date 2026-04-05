@@ -6,6 +6,9 @@
  * Cookie strategy: In Next.js App Router Route Handlers,
  * `cookies().set()` writes directly to the outgoing response —
  * including redirects. No manual cookie injection is needed.
+ * 
+ * Note: Cannot use logger here due to potential Edge runtime constraints.
+ * Cookie-setting errors are caught silently as they are non-fatal.
  */
 
 import { createServerClient } from "@supabase/ssr";
@@ -60,8 +63,9 @@ export async function createCallbackClient() {
                 secure: isProduction,
               });
             });
-          } catch (error) {
-            console.error("[supabase/callback] Failed to set auth cookies:", error);
+          } catch {
+            // Non-fatal: cookie setting can fail in some contexts
+            // Error is caught silently to prevent handler crashes
           }
         },
       },

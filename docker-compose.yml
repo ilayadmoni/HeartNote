@@ -7,11 +7,13 @@ services:
     container_name: heartnote-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-heartnote}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-heartnote_secret}
+      # SEC-HIGH-4: No default passwords - must be set via environment
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       POSTGRES_DB: ${POSTGRES_DB:-heartnote}
     ports:
-      - "${DB_PORT:-5432}:5432"
+      # SEC-HIGH-8: Bind to localhost only - not accessible from external network
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./server/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -19,13 +21,22 @@ services:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-heartnote} -d ${POSTGRES_DB:-heartnote}",
+          "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}",
         ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - heartnote-network
+    # SEC: Resource limits to prevent DoS
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
 
   # FastAPI Backend Server
   server:
@@ -35,16 +46,18 @@ services:
     container_name: heartnote-server
     restart: unless-stopped
     environment:
-      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-heartnote}:${POSTGRES_PASSWORD:-heartnote_secret}@db:5432/${POSTGRES_DB:-heartnote}
-      - SECRET_KEY=${SECRET_KEY:-your-super-secret-key-change-in-production}
-      - DEBUG=${DEBUG:-true}
+      # SEC-HIGH-4: No default passwords - must be set via environment
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?}:${POSTGRES_PASSWORD:?}@db:5432/${POSTGRES_DB:-heartnote}
+      - SECRET_KEY=${SECRET_KEY:?SECRET_KEY is required}
+      - DEBUG=${DEBUG:-false}
       - PORT=80
-      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost:3001,http://localhost:80,http://localhost}
+      # SEC: CORS_ORIGINS must be explicitly set for production
+      - CORS_ORIGINS=${CORS_ORIGINS:?CORS_ORIGINS is required}
       - API_V1_PREFIX=/api/v1
     ports:
       - "${SERVER_PORT:-80}:80"
     volumes:
-      - ./server:/app
+      - ./server:/app:ro
     depends_on:
       db:
         condition: service_healthy
@@ -55,6 +68,14 @@ services:
       retries: 3
     networks:
       - heartnote-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
 
   # Next.js Frontend Client
   client:
@@ -64,18 +85,26 @@ services:
     container_name: heartnote-client
     restart: unless-stopped
     environment:
-      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-http://localhost:80}
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:?NEXT_PUBLIC_SUPABASE_URL is required}
       - NEXT_PUBLIC_APP_NAME=HeartNote
     ports:
       - "${CLIENT_PORT:-3000}:3000"
     volumes:
-      - ./client:/app
+      - ./client:/app:ro
       - /app/node_modules
       - /app/.next
     depends_on:
       - server
     networks:
       - heartnote-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
 
 networks:
   heartnote-network:

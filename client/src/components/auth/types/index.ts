@@ -44,4 +44,6 @@ export interface AuthInputProps {
   error?: string;
   /** Show password toggle for password fields */
   showPasswordToggle?: boolean;
+  /** Maximum character length for the input (MED-1) */
+  maxLength?: number;
 }
