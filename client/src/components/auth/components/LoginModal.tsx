@@ -173,10 +173,6 @@ export function LoginModal({
         callbackUrl.searchParams.set("next", cleanNextPath);
       }
 
-      if (process.env.NODE_ENV === "development") {
-        console.log("[OAuth] Redirecting to callback:", callbackUrl.toString());
-      }
-
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
