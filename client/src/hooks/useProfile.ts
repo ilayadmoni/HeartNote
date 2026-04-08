@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 const supabase = createClient();
 
 interface Subscription {
-  tier: "free" | "premium";
+  tier: "free" | "lite" | "premium";
   creations_count_free: number;
   creations_count_pro: number;
   additional_creation_free: number;
@@ -63,7 +63,7 @@ export function useProfile(): UseProfileReturn {
         lastName: data.last_name ?? "",
         avatarUrl: data.avatar_url ?? null,
         subscription: {
-          tier: tier as "free" | "premium",
+          tier: tier as "free" | "lite" | "premium",
           creations_count_free: data.creations_count_free ?? 0,
           creations_count_pro: data.creations_count_pro ?? 0,
           additional_creation_free: data.additional_creation_free ?? 0,

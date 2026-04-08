@@ -47,7 +47,10 @@ function buildProfileResponse(row: Record<string, unknown>): ProfileResponse {
     created_at: (row.created_at as string) ?? null,
     updated_at: (row.updated_at as string) ?? null,
     subscription: {
-      tier: ((row.subscription_tier as string) ?? "free") as "free" | "premium",
+      tier: ((row.subscription_tier as string) ?? "free") as
+        | "free"
+        | "lite"
+        | "premium",
       creations_count_free: (row.creations_count_free as number) ?? 0,
       creations_count_pro: (row.creations_count_pro as number) ?? 0,
       additional_creation_free: (row.additional_creation_free as number) ?? 0,
@@ -99,33 +102,52 @@ export default async function ProfilePage() {
   // ── 3. Fetch subscription policy for the user's tier ─────────────────
   const userTier = (profileRow.subscription_tier as string) ?? "free";
 
-  const { data: policyRow } = await supabase
+  const { data: freePolicyRow } = await supabase
     .from("subscription_policies")
     .select("tier_code, creation_limit, default_expiry")
-    .eq("tier_code", userTier)
+    .eq("tier_code", "free")
     .single();
 
-  // Calculate usage using the new counter-based model
-  const policyLimit: number | null =
-    (policyRow?.creation_limit as number) ?? null;
+  let paidPolicyRow: Record<string, unknown> | null = null;
+  if (userTier !== "free") {
+    const { data } = await supabase
+      .from("subscription_policies")
+      .select("tier_code, creation_limit, default_expiry")
+      .eq("tier_code", userTier)
+      .single();
+    paidPolicyRow = (data as Record<string, unknown>) ?? null;
+  }
+
+  const freePolicyLimit: number | null =
+    (freePolicyRow?.creation_limit as number) ?? null;
   const additionalFree = (profileRow.additional_creation_free as number) ?? 0;
-  const totalAllowed =
-    policyLimit != null ? policyLimit + additionalFree : null;
-  const used = (profileRow.creations_count_free as number) ?? 0;
+  const freeTotalAllowed =
+    freePolicyLimit != null ? freePolicyLimit + additionalFree : null;
+
+  const paidPolicyLimit: number | null =
+    paidPolicyRow != null
+      ? ((paidPolicyRow.creation_limit as number | null) ?? null)
+      : null;
+  const additionalPro = (profileRow.additional_creation_pro as number) ?? 0;
+  const paidTotalAllowed =
+    paidPolicyLimit != null ? paidPolicyLimit + additionalPro : null;
 
   const subscriptionUsage = {
-    used,
-    limit: totalAllowed, // null = unlimited
-    tier: userTier as "free" | "premium",
-    expiryLabel:
-      userTier === "free"
-        ? "לנצח"
-        : profileRow.premium_expiry
-          ? new Date(String(profileRow.premium_expiry)).toLocaleDateString(
-              "he-IL",
-              { day: "2-digit", month: "2-digit", year: "numeric" },
-            )
-          : "—",
+    free: {
+      used: (profileRow.creations_count_free as number) ?? 0,
+      limit: freeTotalAllowed,
+    },
+    paid:
+      userTier !== "free"
+        ? {
+            tier: userTier as "lite" | "premium",
+            used: (profileRow.creations_count_pro as number) ?? 0,
+            limit: paidTotalAllowed,
+            startDate: (profileRow.premium_start as string) ?? null,
+            expiryDate: (profileRow.premium_expiry as string) ?? null,
+            isActive: isSubscriptionActive(profileRow),
+          }
+        : undefined,
   };
 
   // ── 4. Fetch dashboard data (stats + creations) ──────────────────────

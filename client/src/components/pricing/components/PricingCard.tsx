@@ -6,13 +6,27 @@
  */
 
 import Link from "next/link";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Check, Lock } from "lucide-react";
+import { toast } from "sonner";
+import { upgradeSubscription } from "@/actions/subscription";
+import { ActiveSubscriptionWarningModal } from "./ActiveSubscriptionWarningModal";
 import type { PricingCardProps } from "../types";
 
-export function PricingCard({ plan, index }: PricingCardProps) {
-  const isComingSoon = !!plan.badge;
+export function PricingCard({
+  plan,
+  index,
+  upgradesEnabled = false,
+  hasActivePaidSubscription = false,
+}: PricingCardProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
+  const isComingSoon = !upgradesEnabled && !!plan.badge;
   const isFree = plan.price === 0;
+  const canUpgrade = !isFree && upgradesEnabled && !!plan.tierCode;
 
   const baseCardStyles = plan.isFeatured
     ? "bg-[#d4826f] text-white shadow-2xl scale-105 z-10"
@@ -25,6 +39,48 @@ export function PricingCard({ plan, index }: PricingCardProps) {
   const buttonStyles = plan.isFeatured
     ? "bg-white text-[#d4826f] hover:bg-gray-100"
     : "bg-transparent border-2 border-[#2e3c52] dark:border-gray-400 text-[#2e3c52] dark:text-gray-200 hover:border-[#d4826f] hover:text-[#d4826f] dark:hover:border-[#e8917a] dark:hover:text-[#e8917a]";
+
+  const runUpgrade = () => {
+    if (!plan.tierCode || isPending) {
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await upgradeSubscription({ tierCode: plan.tierCode! });
+
+      if (!result.success) {
+        if (result.code === 401) {
+          toast.error("יש להתחבר כדי לשדרג מסלול.");
+          router.push("/login");
+          return;
+        }
+
+        toast.error(result.error || "שדרוג המסלול נכשל.");
+        return;
+      }
+
+      toast.success("המסלול שודרג בהצלחה.");
+      router.refresh();
+    });
+  };
+
+  const handleUpgradeClick = () => {
+    if (!canUpgrade || isPending) {
+      return;
+    }
+
+    if (hasActivePaidSubscription) {
+      setIsWarningModalOpen(true);
+      return;
+    }
+
+    runUpgrade();
+  };
+
+  const handleWarningConfirm = () => {
+    setIsWarningModalOpen(false);
+    runUpgrade();
+  };
 
   return (
     <motion.div
@@ -94,12 +150,25 @@ export function PricingCard({ plan, index }: PricingCardProps) {
         </Link>
       ) : (
         <button
-          disabled
-          className="w-full py-3 px-6 rounded-full font-bold text-hebrew-heading bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+          type="button"
+          onClick={canUpgrade ? handleUpgradeClick : undefined}
+          disabled={!canUpgrade || isPending}
+          className={
+            canUpgrade
+              ? `w-full py-3 px-6 rounded-full font-bold transition-all duration-200 text-hebrew-heading ${buttonStyles}`
+              : "w-full py-3 px-6 rounded-full font-bold text-hebrew-heading bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+          }
         >
-          {plan.ctaText}
+          {isPending ? "משדרגים..." : canUpgrade ? "שדרגו עכשיו" : plan.ctaText}
         </button>
       )}
+
+      <ActiveSubscriptionWarningModal
+        isOpen={isWarningModalOpen}
+        onCancel={() => setIsWarningModalOpen(false)}
+        onConfirm={handleWarningConfirm}
+        isSubmitting={isPending}
+      />
     </motion.div>
   );
 }

@@ -8,7 +8,7 @@
 // Subscription Types
 // =============================================================================
 
-export type SubscriptionTier = "free" | "premium";
+export type SubscriptionTier = "free" | "lite" | "premium";
 
 export interface SubscriptionInfo {
   tier: SubscriptionTier;

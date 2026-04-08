@@ -10,7 +10,11 @@ import { PricingHeader, PricingCard } from "../components";
 import { PRICING_PLANS } from "../constants";
 import type { PricingProps } from "../types";
 
-export function PricingDesktop({ className = "" }: PricingProps) {
+export function PricingDesktop({
+  className = "",
+  upgradesEnabled = false,
+  hasActivePaidSubscription = false,
+}: PricingProps) {
   // Reorder plans for desktop: starter (right), manager (center), owner (left)
   const orderedPlans = [PRICING_PLANS[2], PRICING_PLANS[1], PRICING_PLANS[0]];
 
@@ -35,7 +39,13 @@ export function PricingDesktop({ className = "" }: PricingProps) {
         {/* Pricing Cards Grid */}
         <div className="grid grid-cols-3 gap-8 items-center max-w-5xl mx-auto">
           {orderedPlans.map((plan, index) => (
-            <PricingCard key={plan.id} plan={plan} index={index} />
+            <PricingCard
+              key={plan.id}
+              plan={plan}
+              index={index}
+              upgradesEnabled={upgradesEnabled}
+              hasActivePaidSubscription={hasActivePaidSubscription}
+            />
           ))}
         </div>
       </div>

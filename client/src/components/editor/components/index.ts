@@ -11,3 +11,4 @@ export { EnvelopesEditor } from "./EnvelopesEditor";
 export { QuestionsEditor, validateQuizQuestions, areAllQuestionsValid, isQuestionValid } from "./QuestionsEditor";
 export { CouponsEditor } from "./CouponsEditor";
 export { ImageUploader } from "./ImageUploader";
+export { PremiumTemplateUpgradeModal } from "./PremiumTemplateUpgradeModal";

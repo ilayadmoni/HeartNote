@@ -10,6 +10,7 @@ export interface PricingFeature {
 
 export interface PricingPlan {
   id: string;
+  tierCode?: "lite" | "premium";
   name: string;
   price: number;
   period: string;
@@ -21,11 +22,15 @@ export interface PricingPlan {
 
 export interface PricingProps {
   className?: string;
+  upgradesEnabled?: boolean;
+  hasActivePaidSubscription?: boolean;
 }
 
 export interface PricingCardProps {
   plan: PricingPlan;
   index: number;
+  upgradesEnabled?: boolean;
+  hasActivePaidSubscription?: boolean;
 }
 
 export interface PricingHeaderProps {

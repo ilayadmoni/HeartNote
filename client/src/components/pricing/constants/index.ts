@@ -28,6 +28,7 @@ export const PRICING_PLANS: PricingPlan[] = [
   },
   {
     id: "manager",
+    tierCode: "lite",
     name: "פועל לייט",
     price: 12,
     period: "2 יצירות פרימיום",
@@ -47,6 +48,7 @@ export const PRICING_PLANS: PricingPlan[] = [
   },
   {
     id: "owner",
+    tierCode: "premium",
     name: "פועל פרימיום",
     price: 29,
     period: "6 יצירות פרימיום",

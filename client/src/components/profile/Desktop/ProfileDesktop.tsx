@@ -48,13 +48,34 @@ export function ProfileDesktop({
   onAvatarSelect,
   onDeleteAccount,
 }: Props) {
-  // Format subscription for the card
-  const subscriptionData = {
-    tier: profile.subscription.tier,
+  const premiumExpiryRaw = profile.subscription.premium_expiry;
+  const premiumExpiryDate = premiumExpiryRaw ? new Date(premiumExpiryRaw) : null;
+  const isPaidSubscriptionActive = Boolean(
+    premiumExpiryDate &&
+      !Number.isNaN(premiumExpiryDate.getTime()) &&
+      premiumExpiryDate > new Date(),
+  );
+
+  const freeSubscriptionData = {
+    tier: "free" as const,
     startDate: profile.createdAt?.split("T")[0],
-    expiryDate: subscriptionUsage.expiryLabel,
-    isActive: profile.subscription.is_active,
+    expiryDate: "ללא תוקף",
+    isActive: true,
   };
+
+  const paidSubscriptionData = subscriptionUsage.paid
+    ? {
+        tier: subscriptionUsage.paid.tier,
+        startDate: subscriptionUsage.paid.startDate ?? undefined,
+        expiryDate: subscriptionUsage.paid.expiryDate
+          ? new Date(subscriptionUsage.paid.expiryDate).toLocaleDateString(
+              "he-IL",
+            )
+          : "—",
+        isActive: isPaidSubscriptionActive,
+      }
+    : undefined;
+
   const creations = dashboard?.creations ?? [];
 
   return (
@@ -106,10 +127,12 @@ export function ProfileDesktop({
               transition={{ delay: 0.2 }}
             >
               <SubscriptionCard
-                subscription={subscriptionData}
+                freeSubscription={freeSubscriptionData}
+                paidSubscription={paidSubscriptionData}
                 onRenew={onRenew}
                 onUpgrade={onUpgrade}
-                creationLimit={subscriptionUsage.limit}
+                freeCreationLimit={subscriptionUsage.free.limit}
+                paidCreationLimit={subscriptionUsage.paid?.limit}
               />
             </motion.div>
           </div>
@@ -122,9 +145,20 @@ export function ProfileDesktop({
               transition={{ delay: 0.1 }}
             >
               <TemplateUsageCard
-                used={subscriptionUsage.used}
-                limit={subscriptionUsage.limit}
-                tier={profile.subscription.tier}
+                freeUsage={{
+                  tier: "free",
+                  used: subscriptionUsage.free.used,
+                  limit: subscriptionUsage.free.limit,
+                }}
+                paidUsage={
+                  subscriptionUsage.paid
+                    ? {
+                        tier: subscriptionUsage.paid.tier,
+                        used: subscriptionUsage.paid.used,
+                        limit: subscriptionUsage.paid.limit,
+                      }
+                    : undefined
+                }
               />
             </motion.div>
 

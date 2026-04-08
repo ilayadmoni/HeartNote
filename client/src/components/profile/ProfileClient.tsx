@@ -32,10 +32,18 @@ export const DASHBOARD_QUERY_KEY = ["dashboard"];
 // ---------------------------------------------------------------------------
 
 export interface SubscriptionUsage {
-  used: number;
-  limit: number | null; // null = unlimited
-  tier: "free" | "premium";
-  expiryLabel: string;
+  free: {
+    used: number;
+    limit: number | null;
+  };
+  paid?: {
+    tier: "lite" | "premium";
+    used: number;
+    limit: number | null;
+    startDate: string | null;
+    expiryDate: string | null;
+    isActive: boolean;
+  };
 }
 
 export interface ProfileClientProps {

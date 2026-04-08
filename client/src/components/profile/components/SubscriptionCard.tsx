@@ -2,51 +2,86 @@
 
 /**
  * SubscriptionCard Component
- * Displays user's subscription tier, dates, and status.
- * Aligned with new DB schema (subscription_tier: free | premium).
+ * Always displays free plan card and optionally a paid plan card.
  */
 
 import { motion } from "framer-motion";
 import { Calendar, AlertCircle, CheckCircle, Crown } from "lucide-react";
 import { TIER_CONFIGS } from "../constants";
+import type { SubscriptionTier } from "../types";
 
 interface SubscriptionData {
-  tier: string;
+  tier: SubscriptionTier;
   startDate: string | undefined;
   expiryDate: string | undefined;
   isActive: boolean;
 }
 
 interface SubscriptionCardProps {
-  subscription: SubscriptionData;
+  freeSubscription: SubscriptionData;
+  paidSubscription?: SubscriptionData;
   onRenew: () => void;
   onUpgrade: () => void;
-  creationLimit?: number | null; // Dynamic creation limit from policy
+  freeCreationLimit: number | null;
+  paidCreationLimit?: number | null;
 }
 
 export function SubscriptionCard({
-  subscription,
+  freeSubscription,
+  paidSubscription,
   onRenew,
   onUpgrade,
-  creationLimit,
+  freeCreationLimit,
+  paidCreationLimit,
 }: SubscriptionCardProps) {
-  const tierKey = (subscription.tier === "premium" ? "premium" : "free") as keyof typeof TIER_CONFIGS;
-  const tierConfig = TIER_CONFIGS[tierKey];
-  
-  // Build dynamic feature text
-  const featureText = subscription.tier === "premium" 
-    ? tierConfig.features[0] 
-    : `${creationLimit ?? 3} יצירות חינם`;
-  
+  const hasActivePaidSubscription = Boolean(paidSubscription?.isActive);
+
+  return (
+    <div className="space-y-4">
+      <SingleSubscriptionPlanCard
+        subscription={freeSubscription}
+        creationLimit={freeCreationLimit}
+        onUpgrade={hasActivePaidSubscription ? undefined : onUpgrade}
+      />
+
+      {paidSubscription && (
+        <SingleSubscriptionPlanCard
+          subscription={paidSubscription}
+          creationLimit={paidCreationLimit}
+          onRenew={paidSubscription.isActive ? undefined : onRenew}
+        />
+      )}
+    </div>
+  );
+}
+
+function SingleSubscriptionPlanCard({
+  subscription,
+  creationLimit,
+  onRenew,
+  onUpgrade,
+}: {
+  subscription: SubscriptionData;
+  creationLimit: number | null | undefined;
+  onRenew?: () => void;
+  onUpgrade?: () => void;
+}) {
+  const tierConfig = TIER_CONFIGS[subscription.tier];
+
+  const featureText =
+    subscription.tier === "free"
+      ? `${creationLimit ?? 0} יצירות חינם`
+      : creationLimit == null
+        ? "ללא הגבלה - הכל כלול"
+        : `${creationLimit} יצירות במסלול`;
+
   const startDate = subscription.startDate
     ? new Date(subscription.startDate).toLocaleDateString("he-IL")
     : "—";
-  // expiryDate is now pre-formatted ("לנצח" for free, DD/MM/YYYY for premium)
   const expiryDate = subscription.expiryDate || "—";
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div
@@ -65,11 +100,9 @@ export function SubscriptionCard({
           </div>
         </div>
 
-        {/* Status Badge */}
         <StatusBadge isActive={subscription.isActive} />
       </div>
 
-      {/* Dates */}
       <div className="space-y-3 mb-6">
         <DateRow
           icon={<Calendar size={16} />}
@@ -83,12 +116,11 @@ export function SubscriptionCard({
         />
       </div>
 
-      {/* Action Buttons */}
       <div className="flex gap-3">
-        {subscription.tier !== "premium" && (
+        {subscription.tier === "free" && onUpgrade && (
           <ActionButton label="שדרוג לפרימיום" onClick={onUpgrade} variant="primary" />
         )}
-        {subscription.tier === "premium" && (
+        {subscription.tier !== "free" && onRenew && (
           <ActionButton label="חידוש מנוי" onClick={onRenew} variant="primary" />
         )}
       </div>

@@ -20,7 +20,6 @@ export function TemplateCard({
   className = "",
   onClick,
 }: TemplateCardProps) {
-  const isPremiumLocked = !!template.isPremium;
   const [showInfo, setShowInfo] = useState(false);
 
   const infoText = TEMPLATE_INFO_TEXT[template.id];
@@ -30,34 +29,17 @@ export function TemplateCard({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        whileHover={isPremiumLocked ? undefined : { y: -4 }}
+        whileHover={{ y: -4 }}
         transition={{ duration: 0.3 }}
         className={`
           relative group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden
           shadow-sm transition-all duration-300
           border border-gray-100 dark:border-gray-700
-          ${isPremiumLocked ? "cursor-not-allowed" : "hover:shadow-xl"}
+          hover:shadow-xl
           ${className}
         `}
       >
-        {/* Coming Soon Overlay for Premium Templates */}
-        {isPremiumLocked && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-black/5 dark:bg-black/20">
-            <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-xl flex items-center gap-2 text-hebrew-heading border border-amber-400/30">
-              <span>🔒</span>
-              <span>בקרוב</span>
-            </div>
-          </div>
-        )}
-
-        {/* Card Content - dimmed for premium */}
-        <div
-          className={
-            isPremiumLocked
-              ? "grayscale-[60%] opacity-50 pointer-events-none select-none"
-              : ""
-          }
-        >
+        <div>
           {/* Preview Container */}
           <div className="relative aspect-[7/3] bg-gradient-to-br from-[#faf7f5] to-[#f5f0eb] dark:from-gray-700 dark:to-gray-800 overflow-hidden">
             {/* Badges */}
@@ -134,14 +116,7 @@ export function TemplateCard({
 
             {/* CTA Button */}
             <div className="w-full">
-              {isPremiumLocked ? (
-                <button
-                  disabled
-                  className="w-full py-2.5 rounded-xl font-bold text-sm text-hebrew-heading bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-400 cursor-not-allowed"
-                >
-                  בקרוב
-                </button>
-              ) : onClick ? (
+              {onClick ? (
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}

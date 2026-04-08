@@ -10,4 +10,15 @@ export type { TemplateResponse } from "./template";
 export { DashboardResponseSchema, DashboardStatsSchema, DashboardCreationSchema } from "./dashboard";
 export type { DashboardResponse, DashboardStats, DashboardCreation } from "./dashboard";
 
+export {
+	UpgradeTierCodeSchema,
+	UpgradeSubscriptionRequestSchema,
+	UpgradeSubscriptionResponseSchema,
+} from "./subscription";
+export type {
+	UpgradeTierCode,
+	UpgradeSubscriptionInput,
+	UpgradeSubscriptionResponse,
+} from "./subscription";
+
 export { validateMetadata } from "./metadata";

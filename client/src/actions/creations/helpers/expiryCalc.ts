@@ -12,6 +12,11 @@ export interface ExpirationPolicy {
   paid_days?: number;
 }
 
+export interface ExpiryCalculationOptions {
+  isPremiumBehavior: boolean;
+  paidDefaultExpirySeconds?: number | null;
+}
+
 // ── Calculate Expiry ─────────────────────────────────────────────────────
 
 /**
@@ -22,11 +27,21 @@ export interface ExpirationPolicy {
  */
 export function calculateExpiry(
   rawPolicy: Record<string, unknown> | null | undefined,
-  isPaid: boolean,
+  options: ExpiryCalculationOptions,
 ): string {
   const policy = (rawPolicy ?? {}) as ExpirationPolicy;
 
-  const expiryDays = isPaid
+  if (
+    options.isPremiumBehavior &&
+    options.paidDefaultExpirySeconds != null &&
+    Number.isFinite(options.paidDefaultExpirySeconds)
+  ) {
+    return new Date(
+      Date.now() + Number(options.paidDefaultExpirySeconds) * 1000,
+    ).toISOString();
+  }
+
+  const expiryDays = options.isPremiumBehavior
     ? Number(policy.paid_days ?? 14)
     : Number(policy.free_days ?? 1);
 

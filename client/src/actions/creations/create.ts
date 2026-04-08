@@ -25,9 +25,7 @@ import {
 import { validateMetadata } from "@/lib/validations/metadata";
 import {
   fetchProfileForQuota,
-  fetchPolicyLimit,
   checkPremiumAccess,
-  checkQuotaLimit,
 } from "./helpers/quotaCheck";
 import { calculateExpiry } from "./helpers/expiryCalc";
 
@@ -75,14 +73,65 @@ export async function createCreation(
 
     checkPremiumAccess(template.is_premium, userTier);
 
-    const policyLimit = await fetchPolicyLimit(supabase, userTier);
-    checkQuotaLimit(profile, userTier, policyLimit);
+    const quotaPreference = parsed.data.quotaPreference === "free" ? "free" : "pro";
+    const appliedQuota: "free" | "pro" = template.is_premium
+      ? "pro"
+      : userTier === "free"
+        ? "free"
+        : quotaPreference;
+    const isPremiumBehavior = userTier !== "free" && appliedQuota === "pro";
+
+    const { data: freePolicy } = await supabase
+      .from("subscription_policies")
+      .select("creation_limit")
+      .eq("tier_code", "free")
+      .single();
+
+    const freeLimit = Number(freePolicy?.creation_limit ?? 3);
+    const freeTotalAllowed = freeLimit + (profile.additional_creation_free ?? 0);
+
+    if (appliedQuota === "free" && profile.creations_count_free >= freeTotalAllowed) {
+      throw new ActionError("QUOTA_EXCEEDED", 403);
+    }
+
+    let paidDefaultExpirySeconds: number | null = null;
+    if (isPremiumBehavior) {
+      const { data: tierPolicy } = await supabase
+        .from("subscription_policies")
+        .select("creation_limit, default_expiry")
+        .eq("tier_code", userTier)
+        .single();
+
+      const proLimit = tierPolicy?.creation_limit as number | null | undefined;
+      const proTotalAllowed =
+        proLimit == null ? null : Number(proLimit) + (profile.additional_creation_pro ?? 0);
+
+      if (
+        proTotalAllowed != null &&
+        profile.creations_count_pro >= proTotalAllowed
+      ) {
+        throw new ActionError("QUOTA_EXCEEDED", 403);
+      }
+
+      paidDefaultExpirySeconds = Number(tierPolicy?.default_expiry ?? 0);
+      if (!Number.isFinite(paidDefaultExpirySeconds) || paidDefaultExpirySeconds <= 0) {
+        throw new ActionError("Invalid subscription policy expiry", 500);
+      }
+    }
 
     // ── Step 6: Calculate expiry & insert ──────────────────────────
-    const isPaid = userTier === "premium";
+    const metadataWithBehavior = {
+      ...(parsed.data.metadata as Record<string, unknown>),
+      has_watermark: !isPremiumBehavior,
+      applied_quota: appliedQuota,
+    };
+
     const expiresAt = calculateExpiry(
       template.expiration_policy as Record<string, unknown>,
-      isPaid,
+      {
+        isPremiumBehavior,
+        paidDefaultExpirySeconds,
+      },
     );
 
     const { data: creation, error: insertErr } = await supabase
@@ -90,8 +139,9 @@ export async function createCreation(
       .insert({
         user_id: user.id,
         template_id: parsed.data.template_id,
-        metadata: parsed.data.metadata,
-        is_paid: isPaid,
+        metadata: metadataWithBehavior,
+        is_paid: isPremiumBehavior,
+        has_watermark: !isPremiumBehavior,
         expires_at: expiresAt,
       })
       .select("id, expires_at")

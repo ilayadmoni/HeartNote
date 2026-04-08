@@ -15,12 +15,14 @@ import { EditorSidebar } from "../components/EditorSidebar";
 import { EditorPreview } from "../components/EditorPreview";
 import { SuccessModal } from "../components/SuccessModal";
 import { QuotaModal } from "../components/QuotaModal";
+import { PremiumTemplateUpgradeModal } from "../components/PremiumTemplateUpgradeModal";
 import { CreationConfirmModal } from "../components/CreationConfirmModal";
 import { validateQuizQuestions } from "../components/QuestionsEditor";
 import { EDITOR_CONFIGS } from "../configs";
 import { submitGenericCreation } from "@/actions/creations";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfileComplete } from "@/hooks/useProfileComplete";
+import { useProfile } from "@/hooks/useProfile";
 import { useTemplateData } from "@/hooks/useTemplateData";
 import { saveGuestDraft } from "@/lib/draftServices";
 import { createClient } from "@/lib/supabase/client";
@@ -38,6 +40,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const [isRestoringDraft, setIsRestoringDraft] = useState(!!initialDraftId);
   const { user, loading } = useAuth();
   const { isProfileComplete } = useProfileComplete();
+  const { profile } = useProfile();
   const config = EDITOR_CONFIGS[templateId];
   const previewRef = useRef<HTMLDivElement>(null);
   const [previewHeight, setPreviewHeight] = useState<number | null>(null);
@@ -52,11 +55,14 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const [isPublishing, setIsPublishing] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isPremiumTemplate, setIsPremiumTemplate] = useState(false);
   const [successData, setSuccessData] = useState<{
     url: string;
     expiresAt: string | null;
   } | null>(null);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
+  const [showPremiumTemplateUpgradeModal, setShowPremiumTemplateUpgradeModal] =
+    useState(false);
   const [loginRedirect, setLoginRedirect] = useState(`/create/${templateId}`);
   // Store the deferred upload function from ImageUploader (via sidebar)
   const pendingUploadRef = useRef<(() => Promise<string | null>) | null>(null);
@@ -91,6 +97,34 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   // Extract primitive to avoid unstable searchParams dependency
   const draftId = searchParams.get("draft_id");
   const supabase = createClient();
+
+  useEffect(() => {
+    let cancelled = false;
+    const accessClient = createClient();
+
+    const fetchTemplateAccess = async () => {
+      if (!templateId) {
+        if (!cancelled) setIsPremiumTemplate(false);
+        return;
+      }
+
+      const { data } = await accessClient
+        .from("templates")
+        .select("is_premium")
+        .eq("slug", templateId)
+        .single();
+
+      if (!cancelled) {
+        setIsPremiumTemplate(Boolean(data?.is_premium));
+      }
+    };
+
+    fetchTemplateAccess();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [templateId]);
 
   // Restore DB draft from auth callback
   useEffect(() => {
@@ -204,6 +238,12 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       return;
     }
 
+    if (isPremiumTemplate && profile?.subscription.tier === "free") {
+      setShowPremiumTemplateUpgradeModal(true);
+      setShowConfirmModal(false);
+      return;
+    }
+
     // Action-based guard: user is logged in but profile incomplete.
     // Save their work and redirect to onboarding.
     if (!isProfileComplete) {
@@ -226,7 +266,10 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   };
 
   // Handle the actual creation after confirmation
-  const handleConfirmCreation = async (submissionData: Record<string, unknown> = data) => {
+  const handleConfirmCreation = async (
+    quotaPreference: "free" | "pro",
+    submissionData: Record<string, unknown> = data,
+  ) => {
     if (!user) {
       setIsPublishing(true);
       try {
@@ -243,12 +286,19 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       return;
     }
 
+    if (isPremiumTemplate && profile?.subscription.tier === "free") {
+      setShowPremiumTemplateUpgradeModal(true);
+      setShowConfirmModal(false);
+      return;
+    }
+
     logData("שליחה");
     setIsPublishing(true);
     try {
       const formData = new FormData();
       formData.append("templateSlug", templateId);
       formData.append("metadata", JSON.stringify(submissionData));
+      formData.append("quotaPreference", quotaPreference);
 
       const blobUrl = Object.values(submissionData).find(
         (value) => typeof value === "string" && value.startsWith("blob:"),
@@ -374,6 +424,11 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         onClose={() => setShowQuotaModal(false)}
       />
 
+      <PremiumTemplateUpgradeModal
+        isOpen={showPremiumTemplateUpgradeModal}
+        onClose={() => setShowPremiumTemplateUpgradeModal(false)}
+      />
+
       {/* Creation Confirmation Modal */}
       <CreationConfirmModal
         isOpen={showConfirmModal}
@@ -381,6 +436,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         onConfirm={handleConfirmCreation}
         templateSlug={templateId}
         templateName={config.title}
+        isPremiumTemplate={isPremiumTemplate}
       />
 
       <LoginModal

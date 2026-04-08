@@ -47,9 +47,6 @@ export function GalleryTemplate(props: GalleryTemplateProps) {
   }, [user, pendingLink, router]);
 
   const handleTemplateClick = (template: Template) => {
-    // Don't navigate for premium (locked) templates
-    if (template.isPremium) return;
-
     // Lazy-auth flow: allow guests to enter editor and only authenticate on save.
     router.push(template.link);
   };

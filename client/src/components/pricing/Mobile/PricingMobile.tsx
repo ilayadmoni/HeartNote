@@ -10,7 +10,11 @@ import { PricingHeader, PricingCard } from "../components";
 import { PRICING_PLANS } from "../constants";
 import type { PricingProps } from "../types";
 
-export function PricingMobile({ className = "" }: PricingProps) {
+export function PricingMobile({
+  className = "",
+  upgradesEnabled = false,
+  hasActivePaidSubscription = false,
+}: PricingProps) {
   // Order for mobile: Free (starter), then Lite (manager), then Premium (owner)
   const orderedPlans = [PRICING_PLANS[0], PRICING_PLANS[1], PRICING_PLANS[2]];
 
@@ -29,7 +33,13 @@ export function PricingMobile({ className = "" }: PricingProps) {
         {/* Pricing Cards Stack */}
         <div className="flex flex-col gap-8">
           {orderedPlans.map((plan, index) => (
-            <PricingCard key={plan.id} plan={plan} index={index} />
+            <PricingCard
+              key={plan.id}
+              plan={plan}
+              index={index}
+              upgradesEnabled={upgradesEnabled}
+              hasActivePaidSubscription={hasActivePaidSubscription}
+            />
           ))}
         </div>
       </div>

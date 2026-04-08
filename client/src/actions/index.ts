@@ -38,3 +38,6 @@ export { requestPasswordReset, updatePassword } from "./password";
 
 // Registration
 export { registerUser } from "./registration";
+
+// Subscription
+export { upgradeSubscription } from "./subscription";

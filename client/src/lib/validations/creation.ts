@@ -15,6 +15,7 @@ import { z } from "zod";
 export const CreateCreationRequestSchema = z.object({
   template_id: z.string().uuid(),
   metadata: z.record(z.string(), z.unknown()),
+  quotaPreference: z.enum(["free", "pro"]).optional(),
 });
 export type CreateCreationInput = z.infer<typeof CreateCreationRequestSchema>;
 

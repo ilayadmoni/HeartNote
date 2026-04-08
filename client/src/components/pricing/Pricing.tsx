@@ -10,12 +10,24 @@ import { PricingDesktop } from "./Desktop/PricingDesktop";
 import { PricingMobile } from "./Mobile/PricingMobile";
 import type { PricingProps } from "./types";
 
-export function Pricing(props: PricingProps) {
+export function Pricing({
+  className = "",
+  upgradesEnabled = false,
+  hasActivePaidSubscription = false,
+}: PricingProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return isMobile ? (
-    <PricingMobile {...props} />
+    <PricingMobile
+      className={className}
+      upgradesEnabled={upgradesEnabled}
+      hasActivePaidSubscription={hasActivePaidSubscription}
+    />
   ) : (
-    <PricingDesktop {...props} />
+    <PricingDesktop
+      className={className}
+      upgradesEnabled={upgradesEnabled}
+      hasActivePaidSubscription={hasActivePaidSubscription}
+    />
   );
 }

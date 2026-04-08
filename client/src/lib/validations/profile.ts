@@ -11,7 +11,7 @@ import { z } from "zod";
 // Enums
 // ---------------------------------------------------------------------------
 
-export const SubscriptionTierEnum = z.enum(["free", "premium"]);
+export const SubscriptionTierEnum = z.enum(["free", "lite", "premium"]);
 export type SubscriptionTier = z.infer<typeof SubscriptionTierEnum>;
 
 /** Netflix-style avatar options (DiceBear Avataaars v9) */

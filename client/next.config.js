@@ -33,6 +33,12 @@ const nextConfig = {
         protocol: "https",
         hostname: "heartnote.co.il",
       },
+      // Google profile avatars
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
+      },
     ],
   },
   // SEC-MED-4: Limit Server Action body size
@@ -51,5 +57,6 @@ const nextConfig = {
     ];
   },
 };
+
 
 module.exports = nextConfig;

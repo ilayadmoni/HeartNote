@@ -14,6 +14,12 @@ export const TIER_CONFIGS: Record<SubscriptionTier, TierConfig> = {
     color: "#6b7280", // gray
     features: ["3 יצירות חינם"],
   },
+  lite: {
+    name: "Lite",
+    nameHe: "לייט",
+    color: "#d4826f",
+    features: ["מסלול לייט"],
+  },
   premium: {
     name: "Premium",
     nameHe: "פרימיום",

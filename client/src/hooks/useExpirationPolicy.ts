@@ -75,7 +75,7 @@ export function useExpirationPolicy(slug: string): ExpirationPolicyResult {
           return;
         }
 
-        const days = tier === "premium" ? policy.paid_days : policy.free_days;
+        const days = tier !== "free" ? policy.paid_days : policy.free_days;
         if (!Number.isFinite(days)) {
           console.error("Invalid expiration policy days:", policy);
           setLoading(false);
