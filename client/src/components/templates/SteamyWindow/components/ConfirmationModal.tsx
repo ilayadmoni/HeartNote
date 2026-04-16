@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { submitGenericCreation } from "@/actions/creations";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
+import { CREATION_ACTION_ERRORS } from "@/lib/creation-flow/errors";
 
 interface ConfirmationModalProps {
   /** Whether the modal is visible */
@@ -99,6 +100,18 @@ export function ConfirmationModal({
       const result = await submitGenericCreation(formData);
 
       if (!result.success) {
+        if (result.error === CREATION_ACTION_ERRORS.SUBSCRIPTION_EXPIRED) {
+          setErrorMessage("תוקף המנוי הסתיים. כדי להמשיך ביצירה פרימיום, יש לחדש את המנוי.");
+          setIsLoading(false);
+          return;
+        }
+
+        if (result.error === CREATION_ACTION_ERRORS.QUOTA_EXCEEDED) {
+          setErrorMessage("ניצלת את כלל מכסת היצירות שלך. אפשר לשדרג מנוי כדי להמשיך.");
+          setIsLoading(false);
+          return;
+        }
+
         setErrorMessage(result.error);
         setIsLoading(false);
         return;
@@ -118,7 +131,7 @@ export function ConfirmationModal({
     /* ── Overlay — fixed, covers the entire viewport ─────────────── */
     <div
       dir="rtl"
-      className="fixed inset-0 w-full h-full bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+      className="fixed inset-0 w-full h-full bg-black/50 backdrop-blur-sm flex items-center justify-center z-[999]"
       onClick={!isLoading ? onClose : undefined}
     >
       {/* ── Modal box — compact floating card, never full-screen ── */}

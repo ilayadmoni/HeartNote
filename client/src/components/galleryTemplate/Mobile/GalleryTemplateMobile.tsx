@@ -81,7 +81,7 @@ export function GalleryTemplateMobile({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            className="grid grid-cols-1 gap-4"
           >
             {filteredTemplates.map((template, index) => (
               <motion.div

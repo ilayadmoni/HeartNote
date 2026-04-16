@@ -24,6 +24,7 @@ import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/utils/logger";
 import { validateOrigin } from "@/lib/utils/csrf";
 import { registrationLimiter } from "@/lib/utils/rate-limiter";
+import { HAPPY_AVATAR_OPTIONS } from "@/components/profile/types";
 
 interface RegistrationResult {
   success?: string;
@@ -212,10 +213,15 @@ export async function registerUser(
 
     /* ── Step 3: New user → create account ───────────────────────── */
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+    const defaultAvatar =
+      HAPPY_AVATAR_OPTIONS[
+        Math.floor(Math.random() * HAPPY_AVATAR_OPTIONS.length)
+      ].url;
     const userMeta: Record<string, string> = {
       first_name: firstName.trim(),
       last_name: lastName.trim(),
       full_name: fullName,
+      avatar_url: defaultAvatar,
     };
     if (dateOfBirth) {
       userMeta.date_of_birth = dateOfBirth;

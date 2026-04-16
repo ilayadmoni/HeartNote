@@ -5,10 +5,10 @@
  * Shown when user has reached their free-tier page creation limit.
  * Prompts upgrade or waiting for existing pages to expire.
  *
- * Uses z-[100] so the backdrop covers the site header / navbar.
+ * Uses z-[999] so the backdrop covers the site header / navbar.
  */
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { X, Crown, Sparkles } from "lucide-react";
@@ -38,26 +38,25 @@ export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        /* Single full-screen overlay — z-[100] sits above the navbar */
-        <motion.div
-          key="quota-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center backdrop-blur-sm"
-          onClick={onClose}
-        >
-          {/* Modal card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md mx-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden"
-          >
+    <motion.div
+      key="quota-overlay"
+      initial={false}
+      animate={{ opacity: isOpen ? 1 : 0 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      className={`fixed inset-0 z-[999] bg-black/60 flex items-center justify-center backdrop-blur-sm ${
+        isOpen ? "pointer-events-auto" : "pointer-events-none"
+      }`}
+      aria-hidden={!isOpen}
+      onClick={onClose}
+    >
+      {/* Modal card */}
+      <motion.div
+        initial={false}
+        animate={{ scale: isOpen ? 1 : 0.98, y: isOpen ? 0 : 12, opacity: isOpen ? 1 : 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md mx-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden"
+      >
             {/* Header — Premium gradient */}
             <div className="relative bg-gradient-to-br from-[#2e3c52] to-[#1a2535] p-6 text-center">
               <button
@@ -152,9 +151,7 @@ export function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
                 אחזור מאוחר יותר
               </button>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </motion.div>
+    </motion.div>
   );
 }

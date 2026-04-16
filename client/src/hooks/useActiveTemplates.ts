@@ -8,6 +8,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 const supabase = createClient();
 import type { Template } from "@/components/galleryTemplate/types";
@@ -76,7 +77,7 @@ export function useActiveTemplates(
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
         setError(message);
-        console.error("Error fetching active templates:", message);
+        toast.error("לא הצלחנו לטעון את רשימת התבניות. נסו שוב.");
       } finally {
         setLoading(false);
       }

@@ -26,7 +26,7 @@ export function ActiveSubscriptionWarningModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center backdrop-blur-sm"
+          className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center backdrop-blur-sm"
           onClick={onCancel}
         >
           <motion.div

@@ -20,6 +20,8 @@ export interface CreationConfirmModalProps {
   templateSlug: string;
   templateName: string;
   isPremiumTemplate?: boolean;
+  /** free_days from template.expiration_policy — used when subscription_policies has no free expiry */
+  templateFreeDays?: number;
 }
 
 function formatDate(seconds: number | null | undefined): string | null {
@@ -28,7 +30,7 @@ function formatDate(seconds: number | null | undefined): string | null {
   return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
-export function CreationConfirmModal({ isOpen, onClose, onConfirm, templateSlug, templateName, isPremiumTemplate = false }: CreationConfirmModalProps) {
+export function CreationConfirmModal({ isOpen, onClose, onConfirm, templateSlug, templateName, isPremiumTemplate = false, templateFreeDays = 1 }: CreationConfirmModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedQuota, setSelectedQuota] = useState<QuotaPreference>("pro");
@@ -53,7 +55,8 @@ export function CreationConfirmModal({ isOpen, onClose, onConfirm, templateSlug,
   const remainingAfterCreate = selectedQuota === "free"
     ? Math.max(0, freeRemaining - 1)
     : proRemaining === Infinity ? Infinity : Math.max(0, proRemaining - 1);
-  const freeExpiryDate = formatDate(freePolicy.expirySeconds) ?? "ללא תוקף";
+  const freeFallbackSeconds = templateFreeDays * 24 * 60 * 60;
+  const freeExpiryDate = formatDate(freePolicy.expirySeconds ?? freeFallbackSeconds) ?? "ללא תוקף";
   const proExpiryDate  = formatDate(paidPolicy.expirySeconds) ?? "לא זמין";
   const selectedExpirationDate = selectedQuota === "free" ? freeExpiryDate : proExpiryDate;
   const avatar   = profile?.avatarUrl;
@@ -90,34 +93,34 @@ export function CreationConfirmModal({ isOpen, onClose, onConfirm, templateSlug,
               <X size={24} className="text-gray-500 dark:text-gray-300" />
             </button>
 
-            <div className="pt-7 px-5 pb-5">
+            <div className="pt-5 px-4 pb-4">
               {loading ? (
-                <div className="text-center py-8">
+                <div className="text-center py-6">
                   <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                    className="w-10 h-10 border-3 border-coral-500 border-t-transparent rounded-full mx-auto mb-4" />
+                    className="w-8 h-8 border-2 border-coral-500 border-t-transparent rounded-full mx-auto mb-3" />
                   <p className="text-gray-600 dark:text-gray-400 text-hebrew-body">טוען פרטים...</p>
                 </div>
               ) : (
                 <>
                   {/* Avatar */}
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.1, type: "spring", stiffness: 300 }} className="flex justify-center mb-3">
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.1, type: "spring", stiffness: 300 }} className="flex justify-center mb-2">
                     {avatar
                       // eslint-disable-next-line @next/next/no-img-element
-                      ? <img src={avatar} alt="Profile" className="w-16 h-16 rounded-full object-cover border-4 border-coral-200 dark:border-coral-500/40 shadow-lg" />
-                      : <div className="w-16 h-16 rounded-full bg-gradient-to-br from-coral-500 to-coral-600 flex items-center justify-center text-xl font-bold text-white shadow-lg border-4 border-coral-200 dark:border-coral-500/40">{initials}</div>
+                      ? <img src={avatar} alt="Profile" className="w-12 h-12 rounded-full object-cover border-3 border-coral-200 dark:border-coral-500/40 shadow-md" />
+                      : <div className="w-12 h-12 rounded-full bg-gradient-to-br from-coral-500 to-coral-600 flex items-center justify-center text-base font-bold text-white shadow-md border-3 border-coral-200 dark:border-coral-500/40">{initials}</div>
                     }
                   </motion.div>
 
                   {/* Header */}
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="text-center mb-4">
-                    <h2 className="text-xl font-bold text-navy-700 dark:text-white mb-1 text-hebrew-heading">אישור יצירה</h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 text-hebrew-body">בחר איך להשתמש ביתרה עבור היצירה הזו</p>
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="text-center mb-3">
+                    <h2 className="text-lg font-bold text-navy-700 dark:text-white mb-0.5 text-hebrew-heading">אישור יצירה</h2>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 text-hebrew-body">בחר איך להשתמש ביתרה עבור היצירה הזו</p>
                   </motion.div>
 
                   {/* 2-column tier selection */}
                   {!isPremiumTemplate && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }} className="mb-4">
-                      <p className="text-sm font-bold text-navy-700 dark:text-white text-hebrew-heading text-right mb-2">בחירת יתרה ליצירה זו</p>
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }} className="mb-3">
+                      <p className="text-xs font-bold text-navy-700 dark:text-white text-hebrew-heading text-right mb-1.5">בחירת יתרה ליצירה זו</p>
                       <div className="grid grid-cols-2 gap-3">
                         <TierCard tier="free" used={freeUsed} totalAllowed={freeTotalAllowed}
                           isSelected={selectedQuota === "free"} isDisabled={freeRemaining === 0}

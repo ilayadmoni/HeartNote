@@ -21,15 +21,15 @@ export interface TierCardProps {
 const TIER_CONFIG = {
   free: {
     name: "חינם",
-    icon: <Sparkles className="h-4 w-4" />,
+    icon: <Sparkles className="h-3.5 w-3.5" />,
     description: "שימוש ביתרה חינמית",
-    benefits: ["כולל סימן מים", "ללא תוקף"],
+    benefits: ["כולל סימן מים"],
     iconColor: "text-navy-500 dark:text-gray-300",
     nameColor: "text-navy-700 dark:text-white",
   },
   pro: {
     name: "פרימיום",
-    icon: <Crown className="h-4 w-4" />,
+    icon: <Crown className="h-3.5 w-3.5" />,
     description: "שימוש ביתרת פרימיום",
     benefits: ["ללא סימן מים", "תוקף מורחב"],
     iconColor: "text-coral-500",
@@ -53,7 +53,7 @@ export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isU
       whileHover={isClickable ? { scale: 1.02 } : {}}
       whileTap={isClickable ? { scale: 0.98 } : {}}
       onClick={isClickable ? onSelect : undefined}
-      className={`relative rounded-2xl border-2 p-3 transition-all select-none ${borderClass}`}
+      className={`relative rounded-xl border-2 p-2 transition-all select-none ${borderClass}`}
       aria-pressed={isSelected}
     >
       {/* Selected checkmark */}
@@ -72,20 +72,20 @@ export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isU
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-end gap-1.5 mb-2">
-        <span className={`text-sm font-bold text-hebrew-heading ${cfg.nameColor}`}>{cfg.name}</span>
+      <div className="flex items-center justify-end gap-1 mb-1.5">
+        <span className={`text-xs font-bold text-hebrew-heading ${cfg.nameColor}`}>{cfg.name}</span>
         <span className={cfg.iconColor}>{cfg.icon}</span>
       </div>
 
       {/* Description */}
-      <p className="text-xs text-gray-500 dark:text-gray-400 text-right text-hebrew-body mb-2 leading-relaxed">
+      <p className="text-[11px] text-gray-500 dark:text-gray-400 text-right text-hebrew-body mb-1.5 leading-snug">
         {cfg.description}
       </p>
 
       {/* Benefit tags */}
-      <div className="flex flex-wrap justify-end gap-1 mb-2">
+      <div className="flex flex-wrap justify-end gap-1 mb-1.5">
         {cfg.benefits.map((b) => (
-          <span key={b} className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 dark:bg-navy-600 text-gray-600 dark:text-gray-300 text-hebrew-body">
+          <span key={b} className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-navy-600 text-gray-600 dark:text-gray-300 text-hebrew-body">
             {b}
           </span>
         ))}
@@ -93,9 +93,9 @@ export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isU
 
       {/* Remaining / disabled */}
       {isDisabled ? (
-        <p className="text-[11px] text-red-500 font-bold text-center mt-1 text-hebrew-body">מגבלה הושגה</p>
+        <p className="text-[10px] text-red-500 font-bold text-center mt-0.5 text-hebrew-body">מגבלה הושגה</p>
       ) : (
-        <p className="text-[11px] text-gray-500 dark:text-gray-300 text-right text-hebrew-body">
+        <p className="text-[10px] text-gray-500 dark:text-gray-300 text-right text-hebrew-body">
           נותר {remaining == null ? "∞" : remaining} מתוך {totalAllowed ?? "∞"}
         </p>
       )}

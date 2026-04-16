@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 const supabase = createClient();
 import { useAuth } from "@/contexts/AuthContext";
@@ -56,10 +57,7 @@ export function useExpirationPolicy(slug: string): ExpirationPolicyResult {
         if (cancelled) return;
 
         if (profileRes.error || templateRes.error) {
-          console.error("Expiration policy fetch error:", {
-            profile: profileRes.error,
-            template: templateRes.error,
-          });
+          toast.error("לא הצלחנו לטעון את מדיניות התוקף. נסו שוב.");
           setLoading(false);
           return;
         }
@@ -77,7 +75,7 @@ export function useExpirationPolicy(slug: string): ExpirationPolicyResult {
 
         const days = tier !== "free" ? policy.paid_days : policy.free_days;
         if (!Number.isFinite(days)) {
-          console.error("Invalid expiration policy days:", policy);
+          toast.error("מדיניות התוקף אינה תקינה כרגע.");
           setLoading(false);
           return;
         }
@@ -90,7 +88,7 @@ export function useExpirationPolicy(slug: string): ExpirationPolicyResult {
 
         setExpirationDate(`${dd}/${mm}/${yyyy}`);
       } catch (err) {
-        console.error("Failed to fetch expiration policy:", err);
+        toast.error("לא הצלחנו לחשב את תוקף היצירה. נסו שוב.");
       } finally {
         if (!cancelled) setLoading(false);
       }

@@ -12,15 +12,24 @@
 
 import { SupabaseClient } from "@supabase/supabase-js";
 import { ActionError } from "@/lib/action-response";
+import { checkAndDowngradeSubscription } from "@/lib/subscription/checkAndDowngradeSubscription";
+import { CREATION_ACTION_ERRORS } from "@/lib/creation-flow/errors";
 
 // ── Types ────────────────────────────────────────────────────────────────
 
 export interface ProfileQuotaData {
+  id: string;
   subscription_tier: string | null;
+  premium_expiry: string | null;
   creations_count_free: number;
   creations_count_pro: number;
   additional_creation_free: number;
   additional_creation_pro: number;
+  subscription_expired: boolean;
+}
+
+interface RawProfileQuotaData extends Omit<ProfileQuotaData, "subscription_expired"> {
+  premium_start?: string | null;
 }
 
 // ── Fetch Profile ────────────────────────────────────────────────────────
@@ -36,7 +45,7 @@ export async function fetchProfileForQuota(
   const { data: profile, error: profErr } = await supabase
     .from("profiles")
     .select(
-      "subscription_tier, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro",
+      "id, subscription_tier, premium_expiry, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro, premium_start",
     )
     .eq("id", userId)
     .single();
@@ -48,7 +57,14 @@ export async function fetchProfileForQuota(
     );
   }
 
-  return profile as ProfileQuotaData;
+  const rawProfile = profile as RawProfileQuotaData;
+  const { profile: normalizedProfile, wasExpired } =
+    await checkAndDowngradeSubscription(rawProfile);
+
+  return {
+    ...normalizedProfile,
+    subscription_expired: wasExpired,
+  };
 }
 
 // ── Fetch Policy Limit ───────────────────────────────────────────────────
@@ -80,7 +96,7 @@ export function checkPremiumAccess(
   userTier: string,
 ): void {
   if (isPremiumTemplate && userTier === "free") {
-    throw new ActionError("TEMPLATE_NOT_ALLOWED", 402);
+    throw new ActionError(CREATION_ACTION_ERRORS.TEMPLATE_NOT_ALLOWED, 402);
   }
 }
 
@@ -103,7 +119,7 @@ export function checkQuotaLimit(
     const totalAllowed = limit + (profile.additional_creation_free ?? 0);
 
     if (profile.creations_count_free >= totalAllowed) {
-      throw new ActionError("QUOTA_EXCEEDED", 403);
+      throw new ActionError(CREATION_ACTION_ERRORS.QUOTA_EXCEEDED, 403);
     }
   }
 }

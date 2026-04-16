@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { X, Crown } from "lucide-react";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
@@ -17,24 +17,24 @@ export function PremiumTemplateUpgradeModal({
   useLockBodyScroll(isOpen);
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          key="premium-template-upgrade-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center backdrop-blur-sm"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md mx-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden"
-          >
+    <motion.div
+      key="premium-template-upgrade-overlay"
+      initial={false}
+      animate={{ opacity: isOpen ? 1 : 0 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      className={`fixed inset-0 z-[999] flex items-center justify-center bg-black/60 ${
+        isOpen ? "pointer-events-auto" : "pointer-events-none"
+      }`}
+      aria-hidden={!isOpen}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={false}
+        animate={{ scale: isOpen ? 1 : 0.98, y: isOpen ? 0 : 12, opacity: isOpen ? 1 : 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md mx-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden"
+      >
             <div className="relative bg-gradient-to-br from-[#2e3c52] to-[#1a2535] p-6 text-center">
               <button
                 onClick={onClose}
@@ -99,9 +99,7 @@ export function PremiumTemplateUpgradeModal({
                 המשך לערוך
               </button>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </motion.div>
+    </motion.div>
   );
 }

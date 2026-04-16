@@ -25,7 +25,7 @@ export type CreateCreationInput = z.infer<typeof CreateCreationRequestSchema>;
 
 /** Response after creating a creation (mirrors CreateCreationResponse). */
 export const CreateCreationResponseSchema = z.object({
-  id: z.string().uuid(),
+  creationId: z.string().uuid(),
   expires_at: z.string().nullable().default(null),
 });
 export type CreateCreationResponse = z.infer<typeof CreateCreationResponseSchema>;

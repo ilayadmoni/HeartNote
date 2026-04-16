@@ -4,36 +4,58 @@ import { useEffect } from "react";
  * Prevents background scroll when a modal/dialog is open.
  *
  * Strategy:
- * - Toggles `.scroll-locked` on `<html>` which uses `!important` to override
- *   the `overflow-y: scroll` rule from `scrollbar.css`.
+ * - Toggles `.scroll-locked` on `<html>` which applies `overflow: hidden !important`.
  * - Sets `overflow: hidden` on `<body>` as a belt-and-suspenders measure.
  * - For iOS Safari touch events: sets `touch-action: none` on `<body>`.
+ *
+ * Layout-shift prevention is handled by the dual-direction architecture:
+ * `<html dir="ltr">` keeps the scrollbar on the right side, so hiding
+ * overflow causes zero horizontal shift. No manual padding needed.
  *
  * Does NOT use `position: fixed` on body — that technique causes visible
  * scroll-jump artifacts because it breaks `sticky` header positioning and
  * requires scroll-position save/restore which flickers on repaint.
  */
+let activeScrollLocks = 0;
+
+let previousOverflow = "";
+let previousTouchAction = "";
+
+function applyScrollLock(): void {
+  const html = document.documentElement;
+  const body = document.body;
+
+  previousOverflow = body.style.overflow;
+  previousTouchAction = body.style.touchAction;
+
+  html.classList.add("scroll-locked");
+  body.style.overflow = "hidden";
+  body.style.touchAction = "none";
+}
+
+function releaseScrollLock(): void {
+  const html = document.documentElement;
+  const body = document.body;
+
+  html.classList.remove("scroll-locked");
+  body.style.overflow = previousOverflow;
+  body.style.touchAction = previousTouchAction;
+}
+
 export function useLockBodyScroll(isLocked: boolean): void {
   useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
+    if (!isLocked) return;
 
-    if (isLocked) {
-      // Toggle the CSS class that uses !important to beat scrollbar.css specificity
-      html.classList.add("scroll-locked");
-      body.style.overflow = "hidden";
-      // iOS Safari: prevent touch-scroll on the body
-      body.style.touchAction = "none";
-    } else {
-      html.classList.remove("scroll-locked");
-      body.style.overflow = "";
-      body.style.touchAction = "";
+    activeScrollLocks += 1;
+    if (activeScrollLocks === 1) {
+      applyScrollLock();
     }
 
     return () => {
-      html.classList.remove("scroll-locked");
-      body.style.overflow = "";
-      body.style.touchAction = "";
+      activeScrollLocks = Math.max(0, activeScrollLocks - 1);
+      if (activeScrollLocks === 0) {
+        releaseScrollLock();
+      }
     };
   }, [isLocked]);
 }

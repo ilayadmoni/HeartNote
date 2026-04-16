@@ -21,13 +21,42 @@
 "use server";
 
 import { protectedAction } from "@/lib/protectedAction";
-import { ActionError, type ActionResult } from "@/lib/action-response";
+import { ActionError } from "@/lib/action-response";
 import {
   fetchProfileForQuota,
   checkPremiumAccess,
 } from "./helpers/quotaCheck";
 import { calculateExpiry } from "./helpers/expiryCalc";
 import { logger } from "@/lib/utils/logger";
+import {
+  CREATION_ACTION_ERRORS,
+  type CreationActionResult,
+} from "@/lib/creation-flow/errors";
+
+interface SupabaseInsertErrorLike {
+  message?: unknown;
+  details?: unknown;
+  hint?: unknown;
+  code?: unknown;
+}
+
+function normalizeInsertError(error: unknown): {
+  message: string;
+  details: string;
+  hint: string;
+  code: string;
+} {
+  const e = (error ?? {}) as SupabaseInsertErrorLike;
+  const toText = (value: unknown): string =>
+    typeof value === "string" ? value : "";
+
+  return {
+    message: toText(e.message),
+    details: toText(e.details),
+    hint: toText(e.hint),
+    code: toText(e.code),
+  };
+}
 
 /** Strictly allowed storage bucket names for file uploads. */
 const ALLOWED_BUCKETS = ["image_steamy_Window"] as const;
@@ -39,7 +68,7 @@ function isAllowedBucket(name: string): name is AllowedBucket {
 
 export async function submitGenericCreation(
   formData: FormData,
-): Promise<ActionResult<{ creationId: string }>> {
+): Promise<CreationActionResult> {
   return protectedAction(async (user, supabase) => {
     // ── Extract form fields ────────────────────────────────────────
     const templateSlug = formData.get("templateSlug") as string | null;
@@ -121,10 +150,14 @@ export async function submitGenericCreation(
     // ── Quota & premium guard ──────────────────────────────────────
     const profile = await fetchProfileForQuota(supabase, user.id);
     const userTier = profile.subscription_tier ?? "free";
+    const quotaPreference = rawQuotaPreference === "free" ? "free" : "pro";
+
+    if (profile.subscription_expired && (template.is_premium || quotaPreference === "pro")) {
+      throw new ActionError(CREATION_ACTION_ERRORS.SUBSCRIPTION_EXPIRED, 403);
+    }
 
     checkPremiumAccess(template.is_premium, userTier);
 
-    const quotaPreference = rawQuotaPreference === "free" ? "free" : "pro";
     const appliedQuota: "free" | "pro" = template.is_premium
       ? "pro"
       : userTier === "free"
@@ -142,7 +175,7 @@ export async function submitGenericCreation(
     const freeTotalAllowed = freeLimit + (profile.additional_creation_free ?? 0);
 
     if (appliedQuota === "free" && profile.creations_count_free >= freeTotalAllowed) {
-      throw new ActionError("QUOTA_EXCEEDED", 403);
+      throw new ActionError(CREATION_ACTION_ERRORS.QUOTA_EXCEEDED, 403);
     }
 
     let paidDefaultExpirySeconds: number | null = null;
@@ -161,7 +194,7 @@ export async function submitGenericCreation(
         proTotalAllowed != null &&
         profile.creations_count_pro >= proTotalAllowed
       ) {
-        throw new ActionError("QUOTA_EXCEEDED", 403);
+        throw new ActionError(CREATION_ACTION_ERRORS.QUOTA_EXCEEDED, 403);
       }
 
       paidDefaultExpirySeconds = Number(tierPolicy?.default_expiry ?? 0);
@@ -173,6 +206,7 @@ export async function submitGenericCreation(
     // ── Expiry & insert ────────────────────────────────────────────
     parsedMetadata.has_watermark = !isPremiumBehavior;
     parsedMetadata.applied_quota = appliedQuota;
+    parsedMetadata.is_paid = isPremiumBehavior;
 
     const expiresAt = calculateExpiry(
       template.expiration_policy as Record<string, unknown>,
@@ -189,15 +223,27 @@ export async function submitGenericCreation(
         template_id: template.id,
         metadata: parsedMetadata,
         is_paid: isPremiumBehavior,
-        has_watermark: !isPremiumBehavior,
         expires_at: expiresAt,
       })
       .select("id")
       .single();
 
     if (insertErr || !creation) {
+      const insertInfo = normalizeInsertError(insertErr);
+
+      // Keep explicit logs while debugging quota trigger failures.
+      console.log("[submitGenericCreation] insert error.message:", insertInfo.message);
+      console.log("[submitGenericCreation] insert error.details:", insertInfo.details);
       throw new ActionError(
-        `Failed to create card: ${insertErr?.message ?? "Unknown error"}`,
+        process.env.NODE_ENV !== "production"
+          ? `Failed to create card: ${[
+              insertInfo.code && `code=${insertInfo.code}`,
+              insertInfo.message && `message=${insertInfo.message}`,
+              insertInfo.details && `details=${insertInfo.details}`,
+            ]
+              .filter(Boolean)
+              .join(" | ") || "Unknown error"}`
+          : "Failed to create card. Please try again.",
         500,
       );
     }

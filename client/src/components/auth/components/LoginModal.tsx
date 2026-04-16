@@ -508,7 +508,7 @@ export function LoginModal({
           animate={{ opacity: 1, pointerEvents: "auto" }}
           exit={{ opacity: 0, pointerEvents: "none" }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[200] overscroll-contain touch-none"
+          className="fixed inset-0 z-[999] overscroll-contain touch-none"
         >
           <FocusTrap active={isOpen} onEscape={handleClose}>
             {/* Backdrop — stronger dimming (60 %) to darken page title */}

@@ -31,6 +31,7 @@ import Cropper from "react-easy-crop";
 import type { Area } from "react-easy-crop";
 import { SteamyWindowPreview } from "./SteamyWindowPreview";
 import { ConfirmationModal } from "./ConfirmationModal";
+import { toast } from "sonner";
 
 /* ------------------------------------------------------------------ */
 /*  Crop utility helpers                                               */
@@ -194,7 +195,7 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
       setRawImageUrl(null);
       setIsCropping(false);
     } catch (err) {
-      console.error("Crop failed:", err);
+      toast.error("חיתוך התמונה נכשל. נסו שוב.");
     }
   }, [rawImageUrl, croppedAreaPixels, onChange]);
 

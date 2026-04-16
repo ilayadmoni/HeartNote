@@ -64,6 +64,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isPremiumTemplate, setIsPremiumTemplate] = useState(false);
+  const [templateFreeDays, setTemplateFreeDays] = useState<number>(1);
   const [activeModal, setActiveModal] = useState<ActiveModal>("none");
   const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
   const [loginRedirect, setLoginRedirect] = useState(`/create/${templateId}`);
@@ -139,12 +140,14 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
       const { data: templateData } = await accessClient
         .from("templates")
-        .select("is_premium")
+        .select("is_premium, expiration_policy")
         .eq("slug", templateId)
         .single();
 
       if (!cancelled) {
         setIsPremiumTemplate(Boolean(templateData?.is_premium));
+        const policy = templateData?.expiration_policy as { free_days?: number } | null;
+        setTemplateFreeDays(Number(policy?.free_days ?? 1) || 1);
       }
     };
 
@@ -484,6 +487,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         templateSlug={templateId}
         templateName={config.title}
         isPremiumTemplate={isPremiumTemplate}
+        templateFreeDays={templateFreeDays}
       />
 
       <LoginModal

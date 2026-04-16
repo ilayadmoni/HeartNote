@@ -65,7 +65,7 @@ export interface CreateCreationRequest {
 }
 
 export interface CreateCreationResponse {
-  id: string
+  creationId: string
   expires_at: string | null
 }
 

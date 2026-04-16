@@ -49,8 +49,10 @@ export function UserPageClient({
     <div className="min-h-screen flex flex-col text-slate-900 bg-[#faf7f5]">
       {isPaid ? (
         /* ═══ Paid User — clean render, no watermark ═══ */
-        <div className="flex-1 grid place-items-center lg:block bg-[#faf7f5]">
-          <TemplateRenderer componentKey={componentKey} data={contentData} />
+        <div className="flex-1 flex items-center justify-center py-6 bg-[#faf7f5]">
+          <div className="w-full md:max-w-[620px] lg:max-w-[700px]">
+            <TemplateRenderer componentKey={componentKey} data={contentData} />
+          </div>
         </div>
       ) : (
         /* ═══ Free User — 3-Tier Watermark Sandwich ═══
@@ -62,7 +64,7 @@ export function UserPageClient({
          * TIER 3  Template      — relative z-20, bg-transparent root lets watermark
          *                         show through; inner cards have bg-white for solidity
          */
-        <div className="relative flex-1 w-full min-h-[450px] bg-white isolate overflow-hidden flex flex-col justify-center items-center">
+        <div className="relative flex-1 flex items-center justify-center py-6 bg-white isolate overflow-hidden">
           {/* TIER 2: Watermark pattern — semi-transparent on solid white base */}
           <div
             className="absolute inset-0 z-10 pointer-events-none opacity-20"
@@ -75,7 +77,7 @@ export function UserPageClient({
           />
 
           {/* TIER 3: Template — bg-transparent root, content cards are solid white */}
-          <div className="relative z-20 w-full">
+          <div className="relative z-20 w-full md:max-w-[620px] lg:max-w-[700px]">
             <TemplateRenderer componentKey={componentKey} data={contentData} />
           </div>
         </div>

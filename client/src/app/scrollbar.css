@@ -2,16 +2,9 @@
    Custom Scrollbar (Premier Design)
    ==================================== */
 
-html {
-  overflow-y: scroll;
-  scrollbar-gutter: stable;
-}
-
-/* Applied by useLockBodyScroll hook — !important is required here
-   to override the `overflow-y: scroll` rule above from the same file. */
+/* Applied by useLockBodyScroll hook — locks background scroll when modals are open. */
 html.scroll-locked {
   overflow: hidden !important;
-  overflow-y: hidden !important;
 }
 
 /* Firefox: Standard Properties */

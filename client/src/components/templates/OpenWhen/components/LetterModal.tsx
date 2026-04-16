@@ -30,7 +30,7 @@ export function LetterModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 pointer-events-auto"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999] pointer-events-auto"
           />
 
           {/* Letter - Centered on both Desktop and Mobile */}
@@ -38,7 +38,7 @@ export function LetterModal({
             initial={{ opacity: 0, scale: 0.8, y: 50 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 50 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
+            className="fixed inset-0 z-[999] flex items-center justify-center p-4 pointer-events-none"
           >
             <div
               className="bg-[#fffef8] dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] relative pointer-events-auto flex flex-col"

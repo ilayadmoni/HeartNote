@@ -53,6 +53,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isPremiumTemplate, setIsPremiumTemplate] = useState(false);
+  const [templateFreeDays, setTemplateFreeDays] = useState<number>(1);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loginRedirect, setLoginRedirect] = useState(`/create/${templateId}`);
   const [activeModal, setActiveModal] = useState<ActiveModal>("none");
@@ -120,12 +121,14 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
 
       const { data: templateData } = await accessClient
         .from("templates")
-        .select("is_premium")
+        .select("is_premium, expiration_policy")
         .eq("slug", templateId)
         .single();
 
       if (!cancelled) {
         setIsPremiumTemplate(Boolean(templateData?.is_premium));
+        const policy = templateData?.expiration_policy as { free_days?: number } | null;
+        setTemplateFreeDays(Number(policy?.free_days ?? 1) || 1);
       }
     };
 
@@ -467,6 +470,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
         templateSlug={templateId}
         templateName={config.title}
         isPremiumTemplate={isPremiumTemplate}
+        templateFreeDays={templateFreeDays}
       />
 
       <LoginModal

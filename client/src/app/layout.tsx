@@ -87,11 +87,11 @@ export default function RootLayout({
   return (
     <html
       lang="he"
-      dir="rtl"
+      dir="ltr"
       suppressHydrationWarning
       className={`${inter.variable} ${glacialIndifference.variable} ${openSans.variable}`}
     >
-      <body className={`${inter.className} overflow-x-hidden`}>
+      <body dir="rtl" className={`${inter.className} overflow-x-hidden`}>
         {/* Inline script to prevent FOUT: applies app-loading class before React hydrates.
             This ensures the loading screen is shown before any unstyled content paints.
             The FontReadyGateway component removes this class once fonts are ready. */}

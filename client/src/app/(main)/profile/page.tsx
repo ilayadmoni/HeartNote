@@ -12,6 +12,7 @@
 
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { checkAndDowngradeSubscription } from "@/lib/subscription/checkAndDowngradeSubscription";
 import { ProfileClient } from "@/components/profile/ProfileClient";
 import type {
   ProfileResponse,
@@ -97,10 +98,19 @@ export default async function ProfilePage() {
     notFound();
   }
 
-  const profile: ProfileResponse = buildProfileResponse(profileRow);
+  const { profile: normalizedProfileRow } =
+    await checkAndDowngradeSubscription(profileRow as Record<string, unknown> & {
+      id: string;
+      subscription_tier: string | null;
+      premium_start: string | null;
+      premium_expiry: string | null;
+      creations_count_pro: number;
+    });
+
+  const profile: ProfileResponse = buildProfileResponse(normalizedProfileRow);
 
   // ── 3. Fetch subscription policy for the user's tier ─────────────────
-  const userTier = (profileRow.subscription_tier as string) ?? "free";
+  const userTier = (normalizedProfileRow.subscription_tier as string) ?? "free";
 
   const { data: freePolicyRow } = await supabase
     .from("subscription_policies")
@@ -120,7 +130,7 @@ export default async function ProfilePage() {
 
   const freePolicyLimit: number | null =
     (freePolicyRow?.creation_limit as number) ?? null;
-  const additionalFree = (profileRow.additional_creation_free as number) ?? 0;
+  const additionalFree = (normalizedProfileRow.additional_creation_free as number) ?? 0;
   const freeTotalAllowed =
     freePolicyLimit != null ? freePolicyLimit + additionalFree : null;
 
@@ -128,24 +138,24 @@ export default async function ProfilePage() {
     paidPolicyRow != null
       ? ((paidPolicyRow.creation_limit as number | null) ?? null)
       : null;
-  const additionalPro = (profileRow.additional_creation_pro as number) ?? 0;
+  const additionalPro = (normalizedProfileRow.additional_creation_pro as number) ?? 0;
   const paidTotalAllowed =
     paidPolicyLimit != null ? paidPolicyLimit + additionalPro : null;
 
   const subscriptionUsage = {
     free: {
-      used: (profileRow.creations_count_free as number) ?? 0,
+      used: (normalizedProfileRow.creations_count_free as number) ?? 0,
       limit: freeTotalAllowed,
     },
     paid:
-      userTier !== "free"
+      userTier !== "free" && isSubscriptionActive(normalizedProfileRow)
         ? {
             tier: userTier as "lite" | "premium",
-            used: (profileRow.creations_count_pro as number) ?? 0,
+            used: (normalizedProfileRow.creations_count_pro as number) ?? 0,
             limit: paidTotalAllowed,
-            startDate: (profileRow.premium_start as string) ?? null,
-            expiryDate: (profileRow.premium_expiry as string) ?? null,
-            isActive: isSubscriptionActive(profileRow),
+            startDate: (normalizedProfileRow.premium_start as string) ?? null,
+            expiryDate: (normalizedProfileRow.premium_expiry as string) ?? null,
+            isActive: isSubscriptionActive(normalizedProfileRow),
           }
         : undefined,
   };
