@@ -6,7 +6,7 @@
  */
 
 import { motion } from "framer-motion";
-import { Calendar, AlertCircle, CheckCircle, Crown } from "lucide-react";
+import { Calendar, AlertCircle, CheckCircle, Crown, AlertTriangle } from "lucide-react";
 import { TIER_CONFIGS } from "../constants";
 import type { SubscriptionTier } from "../types";
 
@@ -24,6 +24,8 @@ interface SubscriptionCardProps {
   onUpgrade: () => void;
   freeCreationLimit: number | null;
   paidCreationLimit?: number | null;
+  /** True when the paid plan is active but all creation slots have been used. */
+  isPaidQuotaFull?: boolean;
 }
 
 export function SubscriptionCard({
@@ -33,6 +35,7 @@ export function SubscriptionCard({
   onUpgrade,
   freeCreationLimit,
   paidCreationLimit,
+  isPaidQuotaFull = false,
 }: SubscriptionCardProps) {
   const hasActivePaidSubscription = Boolean(paidSubscription?.isActive);
 
@@ -48,7 +51,9 @@ export function SubscriptionCard({
         <SingleSubscriptionPlanCard
           subscription={paidSubscription}
           creationLimit={paidCreationLimit}
+          isQuotaFull={isPaidQuotaFull}
           onRenew={paidSubscription.isActive ? undefined : onRenew}
+          onUpgrade={isPaidQuotaFull ? onUpgrade : undefined}
         />
       )}
     </div>
@@ -58,11 +63,13 @@ export function SubscriptionCard({
 function SingleSubscriptionPlanCard({
   subscription,
   creationLimit,
+  isQuotaFull = false,
   onRenew,
   onUpgrade,
 }: {
   subscription: SubscriptionData;
   creationLimit: number | null | undefined;
+  isQuotaFull?: boolean;
   onRenew?: () => void;
   onUpgrade?: () => void;
 }) {
@@ -82,7 +89,7 @@ function SingleSubscriptionPlanCard({
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -100,8 +107,18 @@ function SingleSubscriptionPlanCard({
           </div>
         </div>
 
-        <StatusBadge isActive={subscription.isActive} />
+        <StatusBadge isActive={subscription.isActive} isQuotaFull={isQuotaFull} />
       </div>
+
+      {/* Secondary line — shown only when quota is full and subscription is active */}
+      {subscription.tier !== "free" && isQuotaFull && subscription.isActive && (
+        <p
+          className="text-xs text-amber-700 dark:text-amber-400 mb-4 text-right leading-relaxed"
+          style={{ fontFamily: "'Open Sans', sans-serif" }}
+        >
+          נוצלו כל היצירות בתוכנית. המנוי פעיל עד {expiryDate}.
+        </p>
+      )}
 
       <div className="space-y-3 mb-6">
         <DateRow
@@ -123,27 +140,49 @@ function SingleSubscriptionPlanCard({
         {subscription.tier !== "free" && onRenew && (
           <ActionButton label="חידוש מנוי" onClick={onRenew} variant="primary" />
         )}
+        {subscription.tier !== "free" && isQuotaFull && subscription.isActive && onUpgrade && (
+          <ActionButton
+            label={subscription.tier === "lite" ? "שדרג לפרו" : "הוסף ברכות"}
+            onClick={onUpgrade}
+            variant="primary"
+          />
+        )}
       </div>
     </div>
   );
 }
 
-function StatusBadge({ isActive }: { isActive: boolean }) {
+function StatusBadge({
+  isActive,
+  isQuotaFull = false,
+}: {
+  isActive: boolean;
+  isQuotaFull?: boolean;
+}) {
+  const isQuotaFullAndActive = isActive && isQuotaFull;
+
+  const colorClass = isQuotaFullAndActive
+    ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+    : isActive
+      ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+      : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400";
+
+  const icon = isQuotaFullAndActive
+    ? <AlertTriangle size={14} />
+    : isActive
+      ? <CheckCircle size={14} />
+      : <AlertCircle size={14} />;
+
+  const label = isQuotaFullAndActive ? "מכסה מלאה" : isActive ? "פעיל" : "פג תוקף";
+
   return (
     <motion.div
       initial={{ scale: 0.9 }}
       animate={{ scale: 1 }}
-      className={`
-        flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium
-        ${
-          isActive
-            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-            : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-        }
-      `}
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${colorClass}`}
     >
-      {isActive ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
-      <span className="text-hebrew-body">{isActive ? "פעיל" : "פג תוקף"}</span>
+      {icon}
+      <span className="text-hebrew-body">{label}</span>
     </motion.div>
   );
 }

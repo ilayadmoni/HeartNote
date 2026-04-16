@@ -167,6 +167,10 @@ export function ProfileClient({
     [avatarMutation],
   );
 
+  // ── Slide-over state ──────────────────────────────────────────────────
+
+  const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
+
   // ── Simple navigations ────────────────────────────────────────────────
 
   const handleRenew = () => {
@@ -174,7 +178,7 @@ export function ProfileClient({
   };
 
   const handleUpgrade = () => {
-    router.push("/pricing");
+    setIsSlideOverOpen(true);
   };
 
   const handleViewTemplate = (slug: string) => {
@@ -209,6 +213,8 @@ export function ProfileClient({
     onDeleteAccount: handleDeleteAccount,
     onEditProfile: handleEditProfile,
     onAvatarSelect: handleAvatarSelect,
+    isSlideOverOpen,
+    onCloseSlideOver: () => setIsSlideOverOpen(false),
     className: "",
   };
 

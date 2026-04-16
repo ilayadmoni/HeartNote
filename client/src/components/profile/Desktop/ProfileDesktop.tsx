@@ -20,6 +20,7 @@ import {
   AvatarSelector,
   DeleteAccountCard,
 } from "../components";
+import { UpgradeSlideOver } from "@/components/ui/UpgradeSlideOver";
 
 interface Props extends ProfileDesktopProps {
   profile: UserProfile;
@@ -33,6 +34,8 @@ interface Props extends ProfileDesktopProps {
   onEditProfile: (firstName: string, lastName: string) => Promise<void>;
   onAvatarSelect: (avatarUrl: string) => Promise<boolean>;
   onDeleteAccount: () => Promise<void>;
+  isSlideOverOpen: boolean;
+  onCloseSlideOver: () => void;
 }
 
 export function ProfileDesktop({
@@ -47,6 +50,8 @@ export function ProfileDesktop({
   onEditProfile,
   onAvatarSelect,
   onDeleteAccount,
+  isSlideOverOpen,
+  onCloseSlideOver,
 }: Props) {
   const premiumExpiryRaw = profile.subscription.premium_expiry;
   const premiumExpiryDate = premiumExpiryRaw ? new Date(premiumExpiryRaw) : null;
@@ -54,6 +59,12 @@ export function ProfileDesktop({
     premiumExpiryDate &&
       !Number.isNaN(premiumExpiryDate.getTime()) &&
       premiumExpiryDate > new Date(),
+  );
+
+  const isPaidQuotaFull = Boolean(
+    subscriptionUsage.paid?.isActive &&
+      subscriptionUsage.paid.limit !== null &&
+      subscriptionUsage.paid.used >= subscriptionUsage.paid.limit,
   );
 
   const freeSubscriptionData = {
@@ -133,6 +144,7 @@ export function ProfileDesktop({
                 onUpgrade={onUpgrade}
                 freeCreationLimit={subscriptionUsage.free.limit}
                 paidCreationLimit={subscriptionUsage.paid?.limit}
+                isPaidQuotaFull={isPaidQuotaFull}
               />
             </motion.div>
           </div>
@@ -151,7 +163,7 @@ export function ProfileDesktop({
                   limit: subscriptionUsage.free.limit,
                 }}
                 paidUsage={
-                  subscriptionUsage.paid
+                  subscriptionUsage.paid && isPaidSubscriptionActive
                     ? {
                         tier: subscriptionUsage.paid.tier,
                         used: subscriptionUsage.paid.used,
@@ -196,6 +208,14 @@ export function ProfileDesktop({
           </div>
         </div>
       </div>
+
+      <UpgradeSlideOver
+        isOpen={isSlideOverOpen}
+        onClose={onCloseSlideOver}
+        tier={subscriptionUsage.paid?.tier ?? "lite"}
+        creationLimit={subscriptionUsage.paid?.limit ?? 0}
+        expiryDate={subscriptionUsage.paid?.expiryDate ?? null}
+      />
     </div>
   );
 }

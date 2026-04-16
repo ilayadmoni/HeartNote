@@ -15,7 +15,9 @@ import { EditorSidebar } from "../components/EditorSidebar";
 import { EditorPreview } from "../components/EditorPreview";
 import { SuccessModal } from "../components/SuccessModal";
 import { QuotaModal } from "../components/QuotaModal";
+import { PaidQuotaModal } from "../components/PaidQuotaModal";
 import { PremiumTemplateUpgradeModal } from "../components/PremiumTemplateUpgradeModal";
+import { UpgradeSlideOver } from "@/components/ui/UpgradeSlideOver";
 import { CreationConfirmModal } from "../components/CreationConfirmModal";
 import { validateQuizQuestions } from "../components/QuestionsEditor";
 import { EDITOR_CONFIGS } from "../configs";
@@ -27,10 +29,16 @@ import { useTemplateData } from "@/hooks/useTemplateData";
 import { saveGuestDraft } from "@/lib/draftServices";
 import { createClient } from "@/lib/supabase/client";
 import { claimGuestDraft } from "@/actions/draftActions";
-import { pushToDataLayer } from "@/utils/gtm";
 import { toast } from "sonner";
 import type { TemplateEditorProps } from "../types";
 import type { QuizQuestion } from "@/components/templates/types";
+import {
+  isSubscriptionEffectivelyFree,
+  resolveBlockedModalFromCreationResult,
+} from "@/lib/creation-flow/errors";
+
+type BlockingModal = "none" | "quota" | "paid-quota" | "upgrade";
+type ActiveModal = "none" | "confirm" | "upgrade" | "quota" | "paid-quota";
 
 export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const router = useRouter();
@@ -40,7 +48,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const [isRestoringDraft, setIsRestoringDraft] = useState(!!initialDraftId);
   const { user, loading } = useAuth();
   const { isProfileComplete } = useProfileComplete();
-  const { profile } = useProfile();
+  const { profile, loading: profileLoading } = useProfile();
   const config = EDITOR_CONFIGS[templateId];
   const previewRef = useRef<HTMLDivElement>(null);
   const [previewHeight, setPreviewHeight] = useState<number | null>(null);
@@ -52,18 +60,18 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     setChoices,
     logData,
   } = useTemplateData(templateId, config?.defaultData || {});
+
   const [isPublishing, setIsPublishing] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isPremiumTemplate, setIsPremiumTemplate] = useState(false);
+  const [activeModal, setActiveModal] = useState<ActiveModal>("none");
+  const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
+  const [loginRedirect, setLoginRedirect] = useState(`/create/${templateId}`);
   const [successData, setSuccessData] = useState<{
     url: string;
     expiresAt: string | null;
   } | null>(null);
-  const [showQuotaModal, setShowQuotaModal] = useState(false);
-  const [showPremiumTemplateUpgradeModal, setShowPremiumTemplateUpgradeModal] =
-    useState(false);
-  const [loginRedirect, setLoginRedirect] = useState(`/create/${templateId}`);
+
   // Store the deferred upload function from ImageUploader (via sidebar)
   const pendingUploadRef = useRef<(() => Promise<string | null>) | null>(null);
 
@@ -74,7 +82,31 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     [],
   );
 
-  // Track preview height to sync sidebar max-height
+  const isEffectivelyFreeUser = useMemo(
+    () =>
+      isSubscriptionEffectivelyFree(
+        profile?.subscription.tier,
+        profile?.subscription.premium_expiry,
+      ),
+    [profile?.subscription.premium_expiry, profile?.subscription.tier],
+  );
+
+  const isPaidQuotaFull = useMemo(() => {
+    if (!profile || isEffectivelyFreeUser) return false;
+    const { creations_count_pro, creation_limit, additional_creation_pro } = profile.subscription;
+    if (creation_limit === null) return false;
+    return creations_count_pro >= creation_limit + (additional_creation_pro ?? 0);
+  }, [profile, isEffectivelyFreeUser]);
+
+  const isSubscriptionLoading = loading || profileLoading;
+
+  const showBlockingModal = useCallback(
+    (modal: Exclude<ActiveModal, "none" | "confirm">) => {
+      setActiveModal(modal);
+    },
+    [],
+  );
+
   useEffect(() => {
     if (!previewRef.current) return;
 
@@ -84,17 +116,14 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       }
     };
 
-    // Initial measurement
     updateHeight();
 
-    // Use ResizeObserver for dynamic updates
     const resizeObserver = new ResizeObserver(updateHeight);
     resizeObserver.observe(previewRef.current);
 
     return () => resizeObserver.disconnect();
   }, [data]);
 
-  // Extract primitive to avoid unstable searchParams dependency
   const draftId = searchParams.get("draft_id");
   const supabase = createClient();
 
@@ -108,14 +137,14 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         return;
       }
 
-      const { data } = await accessClient
+      const { data: templateData } = await accessClient
         .from("templates")
         .select("is_premium")
         .eq("slug", templateId)
         .single();
 
       if (!cancelled) {
-        setIsPremiumTemplate(Boolean(data?.is_premium));
+        setIsPremiumTemplate(Boolean(templateData?.is_premium));
       }
     };
 
@@ -126,9 +155,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     };
   }, [templateId]);
 
-  // Restore DB draft from auth callback
   useEffect(() => {
-    // 1. Strict guard clauses — hasClaimed lock is NOT set until all pass
     if (loading || !user || !draftId || hasClaimed.current) {
       if (!loading && !draftId) setIsRestoringDraft(false);
       if (!loading && !user) setIsRestoringDraft(false);
@@ -136,36 +163,27 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     }
 
     const restoreDraft = async () => {
-      // 2. Lock IMMEDIATELY to prevent double-fire
       hasClaimed.current = true;
       setIsRestoringDraft(true);
 
       try {
-        // 3. Force mobile browser to settle cookies before the Server Action
         await supabase.auth.getSession();
-
         const res = await claimGuestDraft(draftId);
 
         if (res.success && res.metadata) {
-          // 4a. Commit React state FIRST
           setChoices(res.metadata as Record<string, unknown>);
-          setShowConfirmModal(true);
-
-          // 5. Defer URL cleanup so Next.js navigation doesn't interrupt the state batch
+          setActiveModal("confirm");
           setTimeout(() => {
             router.replace(pathname, { scroll: false });
           }, 150);
         } else if (res.success) {
-          // 4b. isAlreadyProcessed — draft was already claimed, no metadata to restore
-          // Silently clean up the URL
           setTimeout(() => {
             router.replace(pathname, { scroll: false });
           }, 150);
         } else {
           toast.error(res.error || "לא הצלחנו לשחזר את הטיוטה.");
         }
-      } catch (e) {
-        console.error("[EditorDesktop] Draft restore failed:", e);
+      } catch (error) {
         toast.error("שגיאה בשחזור הטיוטה. נסו שוב.");
       } finally {
         setIsRestoringDraft(false);
@@ -173,13 +191,13 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     };
 
     restoreDraft();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, user, draftId]);
 
   const prepareGuestDraft = async (submissionData: Record<string, unknown>) => {
-    let file: File | undefined = undefined;
+    let file: File | undefined;
     const blobUrl = Object.values(submissionData).find(
-      (value) => typeof value === "string" && value.startsWith("blob:")
+      (value) => typeof value === "string" && value.startsWith("blob:"),
     ) as string | undefined;
 
     if (blobUrl) {
@@ -188,7 +206,8 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       const ext = blob.type.split("/")[1] || "jpeg";
       file = new File([blob], `upload.${ext}`, { type: blob.type || "image/jpeg" });
     }
-    return await saveGuestDraft(templateId, submissionData, file);
+
+    return saveGuestDraft(templateId, submissionData, file);
   };
 
   if (!config) {
@@ -210,13 +229,14 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     );
   }
 
-  // Show confirmation modal instead of immediately creating
   const handlePublish = async () => {
-    // Validate quiz questions if this is a relationship-quiz template
+    if (isSubscriptionLoading) {
+      return;
+    }
+
     if (templateId === "relationship-quiz" && data.questions) {
       const validation = validateQuizQuestions(data.questions as QuizQuestion[]);
       if (!validation.isValid) {
-        // Show the first error as a toast notification
         toast.error(validation.errors[0] || "יש להשלים את כל השאלות לפני היצירה");
         return;
       }
@@ -225,47 +245,55 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     if (!user) {
       setIsPublishing(true);
       try {
-        const draftId = await prepareGuestDraft(data);
-        setLoginRedirect(`/create/${templateId}?draft_id=${draftId}`);
-        setShowConfirmModal(false);
+        const createdDraftId = await prepareGuestDraft(data);
+        setLoginRedirect(`/create/${templateId}?draft_id=${createdDraftId}`);
+        setActiveModal("none");
         setIsLoginModalOpen(true);
-      } catch (err) {
-        console.error(err);
-        alert("שמירת טיוטה נכשלה");
+      } catch (error) {
+        toast.error("שמירת טיוטה נכשלה. נסו שוב.");
       } finally {
         setIsPublishing(false);
       }
       return;
     }
 
-    if (isPremiumTemplate && profile?.subscription.tier === "free") {
-      setShowPremiumTemplateUpgradeModal(true);
-      setShowConfirmModal(false);
+    if (isPremiumTemplate && isEffectivelyFreeUser) {
+      setActiveModal("upgrade");
       return;
     }
 
-    // Action-based guard: user is logged in but profile incomplete.
-    // Save their work and redirect to onboarding.
     if (!isProfileComplete) {
       setIsPublishing(true);
       try {
-        const draftId = await prepareGuestDraft(data);
-        const redirectPath = encodeURIComponent(`/create/${templateId}?draft_id=${draftId}`);
+        const createdDraftId = await prepareGuestDraft(data);
+        const redirectPath = encodeURIComponent(
+          `/create/${templateId}?draft_id=${createdDraftId}`,
+        );
+        setActiveModal("none");
         window.location.href = `/complete-profile?returnTo=${redirectPath}&reason=incomplete_profile`;
-      } catch (err) {
-        console.error(err);
-        alert("שמירת טיוטה נכשלה");
+      } catch (error) {
+        toast.error("שמירת טיוטה נכשלה. נסו שוב.");
       } finally {
         setIsPublishing(false);
       }
       return;
     }
 
+    // Proactive paid-quota guard: block before the confirm dialog if the user
+    // is a paid subscriber with an active subscription but no remaining slots.
+    if (!isEffectivelyFreeUser && profile) {
+      const { creations_count_pro, creation_limit, additional_creation_pro } = profile.subscription;
+      const proTotalAllowed = creation_limit + (additional_creation_pro ?? 0);
+      if (creations_count_pro >= proTotalAllowed) {
+        setActiveModal("paid-quota");
+        return;
+      }
+    }
+
+    setActiveModal("confirm");
     setIsLoginModalOpen(false);
-    setShowConfirmModal(true);
   };
 
-  // Handle the actual creation after confirmation
   const handleConfirmCreation = async (
     quotaPreference: "free" | "pro",
     submissionData: Record<string, unknown> = data,
@@ -273,27 +301,26 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
     if (!user) {
       setIsPublishing(true);
       try {
-        const draftId = await prepareGuestDraft(submissionData);
-        setLoginRedirect(`/create/${templateId}?draft_id=${draftId}`);
-        setShowConfirmModal(false);
+        const createdDraftId = await prepareGuestDraft(submissionData);
+        setLoginRedirect(`/create/${templateId}?draft_id=${createdDraftId}`);
+        setActiveModal("none");
         setIsLoginModalOpen(true);
-      } catch (err) {
-        console.error(err);
-        alert("שמירת טיוטה נכשלה. נסה שוב.");
+      } catch (error) {
+        toast.error("שמירת טיוטה נכשלה. נסה שוב.");
       } finally {
         setIsPublishing(false);
       }
       return;
     }
 
-    if (isPremiumTemplate && profile?.subscription.tier === "free") {
-      setShowPremiumTemplateUpgradeModal(true);
-      setShowConfirmModal(false);
+    if (isPremiumTemplate && isEffectivelyFreeUser) {
+      setActiveModal("upgrade");
       return;
     }
 
     logData("שליחה");
     setIsPublishing(true);
+
     try {
       const formData = new FormData();
       formData.append("templateSlug", templateId);
@@ -316,36 +343,25 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       }
 
       const result = await submitGenericCreation(formData);
+      const blockedModal = resolveBlockedModalFromCreationResult(result);
 
-      if (!result.success) {
-        if (result.code === 403 && result.error === "QUOTA_EXCEEDED") {
-          setShowQuotaModal(true);
-          setShowConfirmModal(false);
-          return;
-        }
-
-        if (result.code === 402 && result.error === "TEMPLATE_NOT_ALLOWED") {
-          alert(
-            "תבנית זו אינה זמינה במנוי הנוכחי שלך. שדרג את המנוי כדי להשתמש בה.",
-          );
-          setShowConfirmModal(false);
-          return;
-        }
-
-        alert("שגיאה ביצירת הכרטיס. נסה שוב.");
+      if (blockedModal) {
+        showBlockingModal(blockedModal);
         return;
       }
 
-      // Show success modal with shareable link instead of redirecting
-      setShowConfirmModal(false);
-      // TODO: Clear DB draft on success
+      if (!result.success) {
+        toast.error("שגיאה ביצירת הכרטיס. נסה שוב.");
+        return;
+      }
+
+      setActiveModal("none");
       setSuccessData({
         url: `${window.location.origin}/p/${result.data.creationId}`,
         expiresAt: null,
       });
-    } catch (error: unknown) {
-      console.error("Failed to publish:", error);
-      alert("שגיאה ביצירת הכרטיס. נסה שוב.");
+    } catch (error) {
+      toast.error("שגיאה ביצירת הכרטיס. נסה שוב.");
     } finally {
       setIsPublishing(false);
     }
@@ -361,8 +377,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   }
 
   return (
-    <div className="min-h-[200px] 2xl:min-h-[calc(100vh-16rem)] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
-      {/* Compact Toolbar */}
+    <div className="min-h-[200px] xl:min-h-[calc(100vh-16rem)] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
       <div className="flex-shrink-0 bg-[#faf7f5] dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
@@ -374,13 +389,13 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handlePublish}
-          disabled={isPublishing}
+          disabled={isPublishing || isSubscriptionLoading}
           className="flex items-center gap-2 px-5 py-2 bg-[#d4826f] hover:bg-[#c4735f] text-white rounded-full shadow-md transition-colors text-hebrew-heading disabled:opacity-50"
         >
-          <span>
-            {isPublishing ? "יוצר..." : user ? "יצירה" : "יצירה"}
-          </span>
+          <span>{isPublishing || isSubscriptionLoading ? "טוען..." : "יצירה"}</span>
           {isPublishing ? (
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : isSubscriptionLoading ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
             <Send size={16} />
@@ -388,14 +403,43 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         </motion.button>
       </div>
 
-      {/* Main Content - Grid layout for aligned heights */}
+      {/* Paid-quota notification banner — shown when subscription is active but all slots used */}
+      {!isSubscriptionLoading && isPaidQuotaFull && profile && (
+        <div
+          className="flex-shrink-0 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800/30 px-6 py-2.5 flex items-center justify-between gap-4"
+          dir="rtl"
+        >
+          <p
+            className="text-sm text-amber-800 dark:text-amber-300 flex-1"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
+            {profile.subscription.tier === "lite"
+              ? `הגעת למגבלת הברכות בתוכנית Lite. המנוי שלך פעיל עד ${
+                  profile.subscription.premium_expiry
+                    ? new Date(profile.subscription.premium_expiry).toLocaleDateString("he-IL")
+                    : "—"
+                }. רוצה ליצור עוד?`
+              : `הגעת למגבלת הברכות בתוכנית Pro. המנוי שלך פעיל עד ${
+                  profile.subscription.premium_expiry
+                    ? new Date(profile.subscription.premium_expiry).toLocaleDateString("he-IL")
+                    : "—"
+                }. ניתן להוסיף ברכות נוספות`}
+          </p>
+          <button
+            onClick={() => setIsSlideOverOpen(true)}
+            className="flex-shrink-0 text-sm font-bold text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-200 transition-colors underline underline-offset-2 whitespace-nowrap"
+            style={{ fontFamily: "'Open Sans', sans-serif" }}
+          >
+            {profile.subscription.tier === "lite" ? "שדרג לפרו ↗" : "הוסף ברכות ↗"}
+          </button>
+        </div>
+      )}
+
       <div className="flex-1 flex p-6 gap-6 items-stretch">
-        {/* Preview Area - Auto height with responsive minimum */}
         <main className="flex-1 min-h-[390px] flex flex-col">
           <EditorPreview ref={previewRef} templateId={templateId} data={data} />
         </main>
 
-        {/* Sidebar - Max height matches preview, scrolls when content exceeds */}
         <aside
           className="w-80 bg-faf7f5 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-y-auto flex-shrink-0"
           style={{ height: previewHeight ? `${previewHeight}px` : "auto" }}
@@ -410,7 +454,6 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         </aside>
       </div>
 
-      {/* Success Modal */}
       <SuccessModal
         isOpen={!!successData}
         onClose={() => setSuccessData(null)}
@@ -418,21 +461,25 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         expiresAt={successData?.expiresAt || ""}
       />
 
-      {/* Quota Exceeded Modal */}
       <QuotaModal
-        isOpen={showQuotaModal}
-        onClose={() => setShowQuotaModal(false)}
+        isOpen={activeModal === "quota"}
+        onClose={() => setActiveModal("none")}
+      />
+
+      <PaidQuotaModal
+        isOpen={activeModal === "paid-quota"}
+        onClose={() => setActiveModal("none")}
+        onRequestUpgrade={() => { setActiveModal("none"); setIsSlideOverOpen(true); }}
       />
 
       <PremiumTemplateUpgradeModal
-        isOpen={showPremiumTemplateUpgradeModal}
-        onClose={() => setShowPremiumTemplateUpgradeModal(false)}
+        isOpen={activeModal === "upgrade"}
+        onClose={() => setActiveModal("none")}
       />
 
-      {/* Creation Confirmation Modal */}
       <CreationConfirmModal
-        isOpen={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
+        isOpen={activeModal === "confirm"}
+        onClose={() => setActiveModal("none")}
         onConfirm={handleConfirmCreation}
         templateSlug={templateId}
         templateName={config.title}
@@ -443,6 +490,18 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         redirectTo={loginRedirect}
+      />
+
+      <UpgradeSlideOver
+        isOpen={isSlideOverOpen}
+        onClose={() => setIsSlideOverOpen(false)}
+        tier={profile?.subscription.tier === "premium" ? "premium" : "lite"}
+        creationLimit={
+          profile
+            ? (profile.subscription.creation_limit ?? 0) + (profile.subscription.additional_creation_pro ?? 0)
+            : 0
+        }
+        expiryDate={profile?.subscription.premium_expiry ?? null}
       />
     </div>
   );

@@ -46,10 +46,10 @@ export function UserPageClient({
   }, []);
 
   return (
-    <div className="text-slate-900">
+    <div className="min-h-screen flex flex-col text-slate-900 bg-[#faf7f5]">
       {isPaid ? (
         /* ═══ Paid User — clean render, no watermark ═══ */
-        <div className="min-h-[100dvh] lg:min-h-0 grid place-items-center lg:block bg-[#faf7f5]">
+        <div className="flex-1 grid place-items-center lg:block bg-[#faf7f5]">
           <TemplateRenderer componentKey={componentKey} data={contentData} />
         </div>
       ) : (
@@ -62,7 +62,7 @@ export function UserPageClient({
          * TIER 3  Template      — relative z-20, bg-transparent root lets watermark
          *                         show through; inner cards have bg-white for solidity
          */
-        <div className="relative w-full min-h-[450px] bg-white isolate overflow-hidden flex flex-col justify-center items-center">
+        <div className="relative flex-1 w-full min-h-[450px] bg-white isolate overflow-hidden flex flex-col justify-center items-center">
           {/* TIER 2: Watermark pattern — semi-transparent on solid white base */}
           <div
             className="absolute inset-0 z-10 pointer-events-none opacity-20"

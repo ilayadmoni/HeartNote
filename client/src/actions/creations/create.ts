@@ -28,6 +28,32 @@ import {
   checkPremiumAccess,
 } from "./helpers/quotaCheck";
 import { calculateExpiry } from "./helpers/expiryCalc";
+import { CREATION_ACTION_ERRORS } from "@/lib/creation-flow/errors";
+
+interface SupabaseInsertErrorLike {
+  message?: unknown;
+  details?: unknown;
+  hint?: unknown;
+  code?: unknown;
+}
+
+function normalizeInsertError(error: unknown): {
+  message: string;
+  details: string;
+  hint: string;
+  code: string;
+} {
+  const e = (error ?? {}) as SupabaseInsertErrorLike;
+  const toText = (value: unknown): string =>
+    typeof value === "string" ? value : "";
+
+  return {
+    message: toText(e.message),
+    details: toText(e.details),
+    hint: toText(e.hint),
+    code: toText(e.code),
+  };
+}
 
 export async function createCreation(
   input: CreateCreationInput,
@@ -70,10 +96,14 @@ export async function createCreation(
     // ── Step 3-5: Profile, premium guard, quota ────────────────────
     const profile = await fetchProfileForQuota(supabase, user.id);
     const userTier = profile.subscription_tier ?? "free";
+    const quotaPreference = parsed.data.quotaPreference === "free" ? "free" : "pro";
+
+    if (profile.subscription_expired && (template.is_premium || quotaPreference === "pro")) {
+      throw new ActionError(CREATION_ACTION_ERRORS.SUBSCRIPTION_EXPIRED, 403);
+    }
 
     checkPremiumAccess(template.is_premium, userTier);
 
-    const quotaPreference = parsed.data.quotaPreference === "free" ? "free" : "pro";
     const appliedQuota: "free" | "pro" = template.is_premium
       ? "pro"
       : userTier === "free"
@@ -91,7 +121,7 @@ export async function createCreation(
     const freeTotalAllowed = freeLimit + (profile.additional_creation_free ?? 0);
 
     if (appliedQuota === "free" && profile.creations_count_free >= freeTotalAllowed) {
-      throw new ActionError("QUOTA_EXCEEDED", 403);
+      throw new ActionError(CREATION_ACTION_ERRORS.QUOTA_EXCEEDED, 403);
     }
 
     let paidDefaultExpirySeconds: number | null = null;
@@ -110,7 +140,9 @@ export async function createCreation(
         proTotalAllowed != null &&
         profile.creations_count_pro >= proTotalAllowed
       ) {
-        throw new ActionError("QUOTA_EXCEEDED", 403);
+        // Subscription is still active (expiry guard fired above).
+        // Use a distinct code so the UI can show the paid-quota modal.
+        throw new ActionError(CREATION_ACTION_ERRORS.PAID_QUOTA_EXCEEDED, 403);
       }
 
       paidDefaultExpirySeconds = Number(tierPolicy?.default_expiry ?? 0);
@@ -124,6 +156,7 @@ export async function createCreation(
       ...(parsed.data.metadata as Record<string, unknown>),
       has_watermark: !isPremiumBehavior,
       applied_quota: appliedQuota,
+      is_paid: isPremiumBehavior,
     };
 
     const expiresAt = calculateExpiry(
@@ -141,18 +174,49 @@ export async function createCreation(
         template_id: parsed.data.template_id,
         metadata: metadataWithBehavior,
         is_paid: isPremiumBehavior,
-        has_watermark: !isPremiumBehavior,
         expires_at: expiresAt,
       })
       .select("id, expires_at")
       .single();
 
     if (insertErr || !creation) {
-      throw new ActionError("Failed to create card", 500);
+      const insertInfo = normalizeInsertError(insertErr);
+
+      // Keep explicit logs while debugging quota trigger failures.
+      console.log("[createCreation] insert error.message:", insertInfo.message);
+      console.log("[createCreation] insert error.details:", insertInfo.details);
+      console.error("[createCreation] Insert failed", {
+        code: insertInfo.code,
+        hint: insertInfo.hint,
+        message: insertInfo.message,
+        details: insertInfo.details,
+        userId: user.id,
+        templateId: parsed.data.template_id,
+        appliedQuota,
+        isPremiumBehavior,
+      });
+
+      const debugParts = [
+        insertInfo.code && `code=${insertInfo.code}`,
+        insertInfo.message && `message=${insertInfo.message}`,
+        insertInfo.details && `details=${insertInfo.details}`,
+      ].filter(Boolean);
+
+      if (process.env.NODE_ENV !== "production") {
+        throw new ActionError(
+          `Failed to create card: ${debugParts.join(" | ") || "Unknown error"}`,
+          500,
+        );
+      }
+
+      throw new ActionError(
+        "Failed to create card. Please try again.",
+        500,
+      );
     }
 
     return {
-      id: creation.id as string,
+      creationId: creation.id as string,
       expires_at: (creation.expires_at as string) ?? null,
     };
   });

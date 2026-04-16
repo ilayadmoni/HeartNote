@@ -20,6 +20,7 @@ import {
   AvatarSelector,
   DeleteAccountCard,
 } from "../components";
+import { UpgradeSlideOver } from "@/components/ui/UpgradeSlideOver";
 
 interface Props extends ProfileMobileProps {
   profile: UserProfile;
@@ -33,6 +34,8 @@ interface Props extends ProfileMobileProps {
   onEditProfile: (firstName: string, lastName: string) => Promise<void>;
   onAvatarSelect: (avatarUrl: string) => Promise<boolean>;
   onDeleteAccount: () => Promise<void>;
+  isSlideOverOpen: boolean;
+  onCloseSlideOver: () => void;
 }
 
 export function ProfileMobile({
@@ -47,6 +50,8 @@ export function ProfileMobile({
   onEditProfile,
   onAvatarSelect,
   onDeleteAccount,
+  isSlideOverOpen,
+  onCloseSlideOver,
 }: Props) {
   const premiumExpiryRaw = profile.subscription.premium_expiry;
   const premiumExpiryDate = premiumExpiryRaw ? new Date(premiumExpiryRaw) : null;
@@ -54,6 +59,12 @@ export function ProfileMobile({
     premiumExpiryDate &&
       !Number.isNaN(premiumExpiryDate.getTime()) &&
       premiumExpiryDate > new Date(),
+  );
+
+  const isPaidQuotaFull = Boolean(
+    subscriptionUsage.paid?.isActive &&
+      subscriptionUsage.paid.limit !== null &&
+      subscriptionUsage.paid.used >= subscriptionUsage.paid.limit,
   );
 
   const freeSubscriptionData = {
@@ -143,7 +154,7 @@ export function ProfileMobile({
                 limit: subscriptionUsage.free.limit,
               }}
               paidUsage={
-                subscriptionUsage.paid
+                subscriptionUsage.paid && isPaidSubscriptionActive
                   ? {
                       tier: subscriptionUsage.paid.tier,
                       used: subscriptionUsage.paid.used,
@@ -166,6 +177,7 @@ export function ProfileMobile({
               onUpgrade={onUpgrade}
               freeCreationLimit={subscriptionUsage.free.limit}
               paidCreationLimit={subscriptionUsage.paid?.limit}
+              isPaidQuotaFull={isPaidQuotaFull}
             />
           </motion.div>
 
@@ -190,6 +202,14 @@ export function ProfileMobile({
           </motion.div>
         </div>
       </div>
+
+      <UpgradeSlideOver
+        isOpen={isSlideOverOpen}
+        onClose={onCloseSlideOver}
+        tier={subscriptionUsage.paid?.tier ?? "lite"}
+        creationLimit={subscriptionUsage.paid?.limit ?? 0}
+        expiryDate={subscriptionUsage.paid?.expiryDate ?? null}
+      />
     </div>
   );
 }
