@@ -83,23 +83,13 @@ export function EditorField({ field, value, onChange, userId, onFileReady }: Edi
         </select>
       )}
 
-      {(field.type as string) === "number" && (
+      {field.type === "number" && (
         <input
           type="number"
           value={(value as number) || 0}
           onChange={(e) => onChange(Number(e.target.value))}
           placeholder={field.placeholder}
           className={baseInputClass}
-          min={
-            (field as unknown as Record<string, unknown>).min as
-              | number
-              | undefined
-          }
-          max={
-            (field as unknown as Record<string, unknown>).max as
-              | number
-              | undefined
-          }
         />
       )}
 

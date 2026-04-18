@@ -11,6 +11,11 @@ import {
   DecisionWheelPreview,
   SteamyWindowPreview,
   SurpriseGiftPreview,
+  SlotMachinePreview,
+  PunchingBagPreview,
+  ApologySearchPreview,
+  BirthdayCandlesPreview,
+  ExcuseGeneratorPreview,
 } from "./MorePreviews";
 import { LivePreview } from "./LivePreview";
 import type { TemplateComponentKey } from "../types";
@@ -39,6 +44,16 @@ export function TemplatePreview({ componentKey }: TemplatePreviewProps) {
       return <SteamyWindowPreview />;
     case "SurpriseGift":
       return <SurpriseGiftPreview />;
+    case "SlotMachine":
+      return <SlotMachinePreview />;
+    case "PunchingBag":
+      return <PunchingBagPreview />;
+    case "ApologySearch":
+      return <ApologySearchPreview />;
+    case "BirthdayCandles":
+      return <BirthdayCandlesPreview />;
+    case "ExcuseGenerator":
+      return <ExcuseGeneratorPreview />;
     default:
       return <LivePreview componentKey={componentKey} />;
   }

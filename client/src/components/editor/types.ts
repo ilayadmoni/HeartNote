@@ -12,6 +12,7 @@ export type EditorFieldType =
   | "image"
   | "select"
   | "toggle"
+  | "number"
   | "events"
   | "envelopes"
   | "questions"

@@ -27,14 +27,20 @@ export type TemplateComponentKey =
   | "OpenWhen"
   | "DecisionWheel"
   | "SteamyWindow"
-  | "SurpriseGift";
+  | "SurpriseGift"
+  | "SlotMachine"
+  | "PunchingBag"
+  | "ApologySearch"
+  | "BirthdayCandles"
+  | "ExcuseGenerator";
 
 export type TemplateCategory =
   | "all"
   | "romantic"
   | "fun"
   | "memories"
-  | "gifts";
+  | "gifts"
+  | "birthday";
 
 export interface TemplateBadge {
   type: "heart" | "star" | "new" | "free" | "premium";

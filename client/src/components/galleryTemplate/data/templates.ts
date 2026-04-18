@@ -11,6 +11,7 @@ export const FILTER_TABS: FilterTab[] = [
   { id: "fun", label: "משחקים", emoji: "🎮" },
   { id: "memories", label: "זיכרונות", emoji: "📸" },
   { id: "gifts", label: "מתנות", emoji: "🎁" },
+  { id: "birthday", label: "יום הולדת", emoji: "🎂" },
 ];
 
 export const TEMPLATES: Template[] = [
@@ -115,6 +116,60 @@ export const TEMPLATES: Template[] = [
     badge: { type: "new", color: "#8b5cf6" },
     linkText: "חדש!",
   },
+  {
+    id: "slot-machine",
+    title: "מכונת ההבטחות",
+    description: "סובבו את הגלגלים וגלו הבטחה מתוקה מאחד שאוהב אתכם! 🎰",
+    category: "fun",
+    isFree: true,
+    componentKey: "SlotMachine",
+    link: "/create/slot-machine",
+    badge: { type: "new", color: "#8b5cf6" },
+    linkText: "חדש!",
+  },
+  {
+    id: "punching-bag",
+    title: "שק האיגרוף",
+    description: "תנו מכות לשק ובסוף גלו מסר מיוחד שמחכה לכם! 🥊",
+    category: "fun",
+    isFree: true,
+    componentKey: "PunchingBag",
+    link: "/create/punching-bag",
+    badge: { type: "new", color: "#8b5cf6" },
+    linkText: "חדש!",
+  },
+  {
+    id: "apology-search",
+    title: "חיפוש סליחה",
+    description: "חיפוש שמקליד את הסליחה לבד ומגיע לתוצאה הכי מרגשת ברשת! 🔍",
+    category: "romantic",
+    isFree: true,
+    componentKey: "ApologySearch",
+    link: "/create/apology-search",
+    badge: { type: "new", color: "#8b5cf6" },
+    linkText: "חדש!",
+  },
+  {
+    id: "birthday-candles",
+    title: "כיבוי נרות",
+    description: "כבו את הנרות אחד אחד, בקשו משאלה, וגלו הפתעה מתוקה ליום ההולדת! 🎂",
+    category: "birthday",
+    isPremium: true,
+    componentKey: "BirthdayCandles",
+    link: "/create/birthday-candles",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
+  {
+    id: "excuse-generator",
+    title: "מכונת התירוצים",
+    description: "לחצו על הכפתור וקבלו תירוץ אוטומטי ומושלם לכל מצב! ⚙️",
+    category: "fun",
+    isFree: true,
+    componentKey: "ExcuseGenerator",
+    link: "/create/excuse-generator",
+    badge: { type: "free", color: "#22c55e" },
+  },
 ];
 
 // Sample data for live previews
@@ -166,12 +221,58 @@ export const PREVIEW_DATA = {
     revealMessage: "❤️",
     emoji: "💖",
   },
+  SlotMachine: {
+    title: "מכונת ההבטחות",
+    reel1Options: ["אני מבטיח", "מחר בבוקר"],
+    reel2Options: ["להזמין לנו", "לפנק אותך"],
+    reel3Options: ["פיצה ענקית.", "מסאז'."],
+    targetReel1: "אני מבטיח",
+    targetReel2: "להזמין לנו",
+    targetReel3: "פיצה ענקית.",
+    primaryColor: "#d4826f",
+  },
   SurpriseGift: {
     title: "יש לך הפתעה! 🎁",
     greeting: "אוהב/ת אותך מכל הלב ❤️",
     boxColor: "#e74c5e",
     ribbonColor: "#ffd700",
     clicksRequired: 5,
+    primaryColor: "#d4826f",
+  },
+  PunchingBag: {
+    introTitle: "מערכת לשחרור לחצים",
+    introSubtitle: "תני לזה כמה מכות טובות",
+    hitsRequired: 5,
+    resultMessage: "סליחה שהייתי מניאק ❤️",
+    bagColor: "#d4826f",
+    primaryColor: "#d4826f",
+  },
+  ApologySearch: {
+    searchQuery: "איך לבקש סליחה מהבן זוג שלי?",
+    resultTitle: "סליחה שהייתי עצבנית",
+    resultSubtitle: "אתה צודק. אוהבת אותך.",
+    primaryColor: "#d4826f",
+  },
+  BirthdayCandles: {
+    title: "מערכת כיבוי נרות",
+    subtitle: "הקישי על הלהבות",
+    candleCount: 3,
+    cakeColor: "#d4826f",
+    flameColor: "#ffde59",
+    celebrationTitle: "מזל טוב!!! 🎂",
+    celebrationMessage: "שתמיד תהיי מוקפת באהבה!",
+    primaryColor: "#d4826f",
+  },
+  ExcuseGenerator: {
+    title: "מכונת התירוצים האוטומטית",
+    subtitle: "לא בא לך לצאת? יש לנו תירוץ בשבילך.",
+    excuses: [
+      "הכלב שלי אכל את הזמן הפנוי שלי.",
+      "הגשם גרם לי לחשוב מחדש.",
+      "הצמח שלי חלה ואני צריך/ה לטפל בו.",
+    ],
+    buttonLabel: "ג'נרט תירוץ",
+    disclaimer: "* החברה אינה אחראית לתוצאות השימוש בתירוצים אלו.",
     primaryColor: "#d4826f",
   },
 };
@@ -196,4 +297,14 @@ export const TEMPLATE_INFO_TEXT: Record<string, string> = {
     "זוכרים שפעם היינו מציירים לבבות על חלונות עם אדים באוטו? אז כזה, רק בדיגיטל, ובלי שצריך לנקות את השמשות אחר כך!",
   "surprise-gift":
     "קופסת מתנה וירטואלית שצריך ללחוץ עליה עד שהיא נפתחת כדי לגלות את ההפתעה. מתאים במיוחד לאנשים שאין להם סבלנות!",
+  "slot-machine":
+    "מכונת גלגלים שמסתירה הבטחה! כל סיבוב מגלה קצת יותר, עד שבסיבוב האחרון נחשפת ההבטחה המלאה. כי ככה מבטיחים דברים עם סטייל.",
+  "punching-bag":
+    "לפעמים צריך לשחרר קצת לחץ. כאן אפשר לתת מכות לשק האיגרוף הדיגיטלי — ובסוף מגלים שמאחורי השק מסתתרת הפתעה מתוקה. טיפול זוגי ממש לא יצליח להתחרות בזה.",
+  "apology-search":
+    "מדמים חיפוש בגוגל — רק שהפעם מה שמחפשים זה סליחה. האנימציה מקלידה את השאלה לבד, ואחרי כמה שניות מתח מופיע הכרטיס עם ההודעה האישית. כי גם סליחה צריכה להופיע בתוצאות החיפוש.",
+  "excuse-generator":
+    "מה אנחנו עושים כאן? מכונה שמייצרת תירוצים אוטומטית! לוחצים, הגלגל עם השיניים מסתובב, ומתוך מאגר התירוצים שהכנתם מראש יוצא התירוץ המושלם. לא צריכים להיות יצירתיים — הגאדג'ט עושה את העבודה.",
+  "birthday-candles":
+    "עוגת יום הולדת דיגיטלית אמיתית! כל לחיצה כובה נר, ובסוף כשכל הנרות כבויים, מופיעה הודעת המזל טוב האישית. כי ריח העוגה לא מגיע בדיגיטל, אבל הרגש — כן!",
 };

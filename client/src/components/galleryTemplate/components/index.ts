@@ -11,4 +11,5 @@ export {
   DecisionWheelPreview,
   SteamyWindowPreview,
   SurpriseGiftPreview,
+  ExcuseGeneratorPreview,
 } from "./MorePreviews";

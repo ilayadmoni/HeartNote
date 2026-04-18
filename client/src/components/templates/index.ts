@@ -22,6 +22,11 @@ export { LoveCoupons } from "./LoveCoupons/LoveCoupons";
 export { RelationshipQuiz } from "./RelationshipQuiz/RelationshipQuiz";
 export { OpenWhen } from "./OpenWhen/OpenWhen";
 export { SurpriseGift } from "./SurpriseGift/SurpriseGift";
+export { SlotMachine } from "./SlotMachine/SlotMachine";
+export { PunchingBag } from "./PunchingBag/PunchingBag";
+export { ApologySearch } from "./ApologySearch/ApologySearch";
+export { BirthdayCandles } from "./BirthdayCandles/BirthdayCandles";
+export { ExcuseGenerator } from "./ExcuseGenerator/ExcuseGenerator";
 
 // Dynamic Renderer
 export { TemplateRenderer, type TemplateRendererProps } from "./TemplateRenderer";

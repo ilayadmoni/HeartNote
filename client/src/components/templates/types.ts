@@ -140,6 +140,76 @@ export interface SurpriseGiftData {
 }
 
 // =============================================================================
+// 10. SLOT MACHINE
+// =============================================================================
+export interface SlotMachineData {
+  title?: string;           // "מכונת ההבטחות"
+  subtitle?: string;        // "סובבי 3 פעמים כדי לגלות..."
+  reel1Options: string[];   // labels shown while spinning
+  reel2Options: string[];
+  reel3Options: string[];
+  targetReel1: string;      // locked message on final spin
+  targetReel2: string;
+  targetReel3: string;
+  spinsRequired?: number;   // default 3, min 1, max 5
+  spinButtonLabel?: string; // "סובבי"
+  successEmoji?: string;    // "🎉"
+  primaryColor?: string;
+}
+
+// =============================================================================
+// 11. PUNCHING BAG
+// =============================================================================
+export interface PunchingBagData {
+  introTitle?: string;       // "מערכת לשחרור לחצים"
+  introSubtitle?: string;    // "תני לזה כמה מכות טובות. הכל בסדר."
+  hitsRequired?: number;     // default 5, min 1, max 20
+  hitInstructions?: string;  // "הקישי על השק כדי להרביץ"
+  resultTitle?: string;      // "אאוץ׳... זה שחרר?"
+  resultMessage: string;     // personalised apology text
+  bagColor?: string;         // palette color for bag fill
+  primaryColor?: string;
+}
+
+// =============================================================================
+// 12. APOLOGY SEARCH
+// =============================================================================
+export interface ApologySearchData {
+  searchQuery: string;         // "איך לבקש סליחה מהבן זוג שלי?"
+  resultTitle: string;         // "סליחה שהייתי עצבנית"
+  resultSubtitle?: string;     // "אתה צודק. אוהבת אותך."
+  startButtonLabel?: string;   // "התחל חיפוש"
+  typingSpeedMs?: number;      // default 80
+  primaryColor?: string;
+}
+
+// =============================================================================
+// 13. BIRTHDAY CANDLES
+// =============================================================================
+export interface BirthdayCandlesData {
+  title?: string;              // "מערכת כיבוי נרות דיגיטלית"
+  subtitle?: string;           // "הקישי על הלהבות..."
+  candleCount: number;         // default 3, min 1, max 10
+  cakeColor?: string;          // palette color for the cake body
+  flameColor?: string;         // palette color for the flames
+  celebrationTitle: string;    // "מזל טוב!!! 🎂"
+  celebrationMessage: string;  // "שתמיד תהיי מוקפת באהבה..."
+  primaryColor?: string;
+}
+
+// =============================================================================
+// 14. EXCUSE GENERATOR
+// =============================================================================
+export interface ExcuseGeneratorData {
+  title?: string;              // "מכונת התירוצים האוטומטית"
+  subtitle?: string;           // "לא בא לך לצאת?..."
+  excuses: string[];           // pool of 3–20 excuse strings
+  buttonLabel?: string;        // "ג'נרט תירוץ"
+  disclaimer?: string;         // "* החברה אינה אחראית..."
+  primaryColor?: string;
+}
+
+// =============================================================================
 // COMPONENT PROPS
 // =============================================================================
 export interface TemplateComponentProps<T> {

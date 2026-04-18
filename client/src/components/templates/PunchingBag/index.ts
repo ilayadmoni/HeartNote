@@ -1,0 +1,1 @@
+export { PunchingBag } from "./PunchingBag";

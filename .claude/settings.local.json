@@ -5,7 +5,15 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Skill(update-config)",
-      "Skill(update-config:*)"
+      "Skill(update-config:*)",
+      "mcp__claude_ai_Supabase__list_projects",
+      "mcp__claude_ai_Supabase__execute_sql",
+      "Bash(npx next *)",
+      "Bash(npx eslint *)",
+      "Bash(xargs grep *)",
+      "Bash(python3 *)",
+      "Bash(xargs cat *)",
+      "Bash(xargs ls *)"
     ]
   }
 }
