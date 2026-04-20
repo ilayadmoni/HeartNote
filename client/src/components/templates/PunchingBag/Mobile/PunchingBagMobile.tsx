@@ -5,6 +5,7 @@ import type { PunchingBagMobileProps } from "../types";
 import {
   FooterBranding,
   BackToGallery,
+  TemplateResetButton,
 } from "@/components/templates/components";
 
 export function PunchingBagMobile({
@@ -14,6 +15,7 @@ export function PunchingBagMobile({
   isDone,
   isTilting,
   bagColor,
+  primaryColor,
   onHit,
   onReset,
 }: PunchingBagMobileProps) {
@@ -35,10 +37,16 @@ export function PunchingBagMobile({
             >
               {/* Header */}
               <div className="text-center">
-                <h2 className="text-xl font-bold text-[#1b263b] text-hebrew-heading mb-1">
+                <h2
+                  className="text-xl font-bold text-hebrew-heading mb-1 break-words"
+                  style={{ color: primaryColor }}
+                >
                   {data.introTitle ?? "מערכת לשחרור לחצים"}
                 </h2>
-                <p className="text-sm text-[#415a77] text-hebrew-body">
+                <p
+                  className="text-sm text-hebrew-body break-words"
+                  style={{ color: primaryColor, opacity: 0.75 }}
+                >
                   {data.introSubtitle ?? "תני לזה כמה מכות טובות. הכל בסדר."}
                 </p>
               </div>
@@ -68,7 +76,8 @@ export function PunchingBagMobile({
               <motion.p
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="text-sm text-[#415a77] font-medium text-hebrew-body"
+                className="text-sm font-medium text-hebrew-body break-words text-center max-w-[260px]"
+                style={{ color: primaryColor, opacity: 0.7 }}
               >
                 {data.hitInstructions ?? "הקישי על השק כדי להרביץ"}
               </motion.p>
@@ -91,8 +100,8 @@ export function PunchingBagMobile({
                   width="56"
                   height="56"
                   viewBox="0 0 24 24"
-                  fill="#d4826f"
-                  stroke="#d4826f"
+                  fill={primaryColor}
+                  stroke={primaryColor}
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -102,20 +111,18 @@ export function PunchingBagMobile({
                 </svg>
               </motion.div>
 
-              <h2 className="text-2xl font-bold text-[#1b263b] text-hebrew-heading">
+              <h2
+                className="text-2xl font-bold text-hebrew-heading break-words"
+                style={{ color: primaryColor }}
+              >
                 {data.resultTitle ?? "אאוץ׳... זה שחרר?"}
               </h2>
 
-              <p className="text-lg text-[#415a77] max-w-xs text-hebrew-body leading-relaxed">
+              <p className="text-lg text-[#415a77] max-w-xs text-hebrew-body leading-relaxed break-words">
                 {data.resultMessage}
               </p>
 
-              <button
-                onClick={onReset}
-                className="text-sm text-[#415a77] hover:text-[#1b263b] underline transition-colors text-hebrew-body mt-2"
-              >
-                אני עדיין עצבנית, תביא את השק
-              </button>
+              <TemplateResetButton onClick={onReset} label="אני עדיין עצבנית, תביא את השק" className="mt-2" />
             </motion.div>
           )}
         </AnimatePresence>

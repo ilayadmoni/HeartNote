@@ -81,7 +81,7 @@ function wrapText(
   maxWidth: number,
   fontSize: number
 ): string[] {
-  ctx.font = `bold ${fontSize}px sans-serif`;
+  ctx.font = `bold ${fontSize}px "Open Sans", sans-serif`;
   
   // If text fits on one line, return it
   if (ctx.measureText(text).width <= maxWidth) {
@@ -188,7 +188,7 @@ function drawWrappedText(
   fontSize: number,
   lineHeight: number
 ): void {
-  ctx.font = `bold ${fontSize}px sans-serif`;
+  ctx.font = `bold ${fontSize}px "Open Sans", sans-serif`;
   ctx.fillStyle = "#2e3c52";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";

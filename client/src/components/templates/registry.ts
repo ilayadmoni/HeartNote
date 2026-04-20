@@ -22,6 +22,9 @@ import { PunchingBag } from "./PunchingBag/PunchingBag";
 import { ApologySearch } from "./ApologySearch/ApologySearch";
 import { BirthdayCandles } from "./BirthdayCandles/BirthdayCandles";
 import { ExcuseGenerator } from "./ExcuseGenerator/ExcuseGenerator";
+import { WeddingGlass } from "./WeddingGlass/WeddingGlass";
+import { HolidayCard } from "./HolidayCard/HolidayCard";
+import { BarBatMitzvah } from "./BarBatMitzvah/BarBatMitzvah";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyTemplateComponent = ComponentType<{ data: any }>;
@@ -47,6 +50,9 @@ export const TEMPLATE_REGISTRY: Record<string, AnyTemplateComponent> = {
   ApologySearch: ApologySearch as AnyTemplateComponent,
   BirthdayCandles: BirthdayCandles as AnyTemplateComponent,
   ExcuseGenerator: ExcuseGenerator as AnyTemplateComponent,
+  WeddingGlass: WeddingGlass as AnyTemplateComponent,
+  HolidayCard: HolidayCard as AnyTemplateComponent,
+  BarBatMitzvah: BarBatMitzvah as AnyTemplateComponent,
 };
 
 /**

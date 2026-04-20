@@ -9,6 +9,7 @@
 import { motion } from "framer-motion";
 import { getScoreMessageByPercentage } from "../constants";
 import { useReducedMotion } from "@/components/accessibility";
+import { TemplateResetButton } from "@/components/templates/components";
 
 interface QuizResultsProps {
   score: number;
@@ -105,14 +106,7 @@ export function QuizResults({ score, total, onPlayAgain }: QuizResultsProps) {
       </p>
 
       {/* Retry Button - theme color */}
-      <motion.button
-        whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
-        whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
-        onClick={onPlayAgain}
-        className="px-10 py-4 bg-[#d4826f] hover:bg-[#c4735f] text-white font-bold rounded-full text-hebrew-heading transition-colors shadow-lg shadow-[#d4826f]/30"
-      >
-        לשחק שוב
-      </motion.button>
+      <TemplateResetButton onClick={onPlayAgain} label="לשחק שוב" />
     </div>
   );
 }

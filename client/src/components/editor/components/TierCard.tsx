@@ -58,7 +58,7 @@ export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isU
     >
       {/* Selected checkmark */}
       {isSelected && (
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-2 left-2">
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-2 right-2">
           <CheckCircle2 className="h-4 w-4 text-coral-500" />
         </motion.div>
       )}
@@ -77,13 +77,10 @@ export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isU
         <span className={cfg.iconColor}>{cfg.icon}</span>
       </div>
 
-      {/* Description */}
-      <p className="text-[11px] text-gray-500 dark:text-gray-400 text-right text-hebrew-body mb-1.5 leading-snug">
-        {cfg.description}
-      </p>
+
 
       {/* Benefit tags */}
-      <div className="flex flex-wrap justify-end gap-1 mb-1.5">
+      <div className="flex flex-wrap justify-center gap-1 mb-1.5">
         {cfg.benefits.map((b) => (
           <span key={b} className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-navy-600 text-gray-600 dark:text-gray-300 text-hebrew-body">
             {b}

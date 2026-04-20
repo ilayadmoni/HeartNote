@@ -5,6 +5,7 @@ import type { PunchingBagDesktopProps } from "../types";
 import {
   FooterBranding,
   BackToGallery,
+  TemplateResetButton,
 } from "@/components/templates/components";
 
 export function PunchingBagDesktop({
@@ -14,6 +15,7 @@ export function PunchingBagDesktop({
   isDone,
   isTilting,
   bagColor,
+  primaryColor,
   onHit,
   onReset,
 }: PunchingBagDesktopProps) {
@@ -40,10 +42,16 @@ export function PunchingBagDesktop({
                 transition={{ duration: 0.4 }}
                 className="text-center mb-10"
               >
-                <h2 className="text-2xl font-bold text-[#1b263b] text-hebrew-heading mb-2">
+                <h2
+                  className="text-2xl font-bold text-hebrew-heading mb-2 break-words"
+                  style={{ color: primaryColor }}
+                >
                   {data.introTitle ?? "מערכת לשחרור לחצים"}
                 </h2>
-                <p className="text-[#415a77] text-hebrew-body">
+                <p
+                  className="text-hebrew-body break-words"
+                  style={{ color: primaryColor, opacity: 0.75 }}
+                >
                   {data.introSubtitle ?? "תני לזה כמה מכות טובות. הכל בסדר."}
                 </p>
               </motion.div>
@@ -77,7 +85,8 @@ export function PunchingBagDesktop({
               <motion.p
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="text-[#415a77] font-medium text-hebrew-body"
+                className="font-medium text-hebrew-body break-words text-center max-w-xs"
+                style={{ color: primaryColor, opacity: 0.7 }}
               >
                 {data.hitInstructions ?? "הקישי על השק כדי להרביץ"}
               </motion.p>
@@ -102,8 +111,8 @@ export function PunchingBagDesktop({
                   width="64"
                   height="64"
                   viewBox="0 0 24 24"
-                  fill="#d4826f"
-                  stroke="#d4826f"
+                  fill={primaryColor}
+                  stroke={primaryColor}
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -113,20 +122,18 @@ export function PunchingBagDesktop({
                 </svg>
               </motion.div>
 
-              <h2 className="text-3xl font-bold text-[#1b263b] text-hebrew-heading mb-4">
+              <h2
+                className="text-3xl font-bold text-hebrew-heading mb-4 break-words"
+                style={{ color: primaryColor }}
+              >
                 {data.resultTitle ?? "אאוץ׳... זה שחרר?"}
               </h2>
 
-              <p className="text-xl text-[#415a77] max-w-md mb-8 text-hebrew-body leading-relaxed">
+              <p className="text-xl text-[#415a77] max-w-md mb-8 text-hebrew-body leading-relaxed break-words">
                 {data.resultMessage}
               </p>
 
-              <button
-                onClick={onReset}
-                className="text-sm text-[#415a77] hover:text-[#1b263b] underline transition-colors text-hebrew-body"
-              >
-                אני עדיין עצבנית, תביא את השק
-              </button>
+              <TemplateResetButton onClick={onReset} label="אני עדיין עצבנית, תביא את השק" />
             </motion.div>
           )}
         </AnimatePresence>

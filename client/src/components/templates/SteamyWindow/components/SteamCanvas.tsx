@@ -15,6 +15,7 @@
 import { useRef, useEffect, useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
+import { TemplateResetButton } from "@/components/templates/components";
 
 interface SteamCanvasProps {
   /** Width in px */
@@ -152,6 +153,23 @@ export function SteamCanvas({
     checkReveal();
   };
 
+  const handleReset = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    setRevealed(false);
+    setHasInteracted(false);
+    isDrawing.current = false;
+    initFog(ctx, width, height);
+  }, [height, initFog, width]);
+
   return (
     <div
       className="relative rounded-2xl overflow-hidden shadow-xl select-none"
@@ -219,6 +237,12 @@ export function SteamCanvas({
             העבירו את האצבע כדי לגלות
           </p>
         </motion.div>
+      )}
+
+      {revealed && (
+        <div className="absolute bottom-4 left-1/2 z-30 -translate-x-1/2">
+          <TemplateResetButton onClick={handleReset} label="גלה שוב" />
+        </div>
       )}
     </div>
   );

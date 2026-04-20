@@ -7,6 +7,7 @@
 
 import { motion } from "framer-motion";
 import { RotateCcw } from "lucide-react";
+import { usePathname } from "next/navigation";
 import type { CouponsViewProps } from "../types";
 import { useCoupons } from "../hooks/useCoupons";
 import { CouponCard } from "../components";
@@ -19,6 +20,8 @@ import { FloatingIcons } from "../../OpenWhen/components";
 
 
 export function LoveCouponsDesktop({ data }: CouponsViewProps) {
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
   const { coupons, handleRedeem, handleReset } = useCoupons(data.coupons);
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
@@ -52,8 +55,8 @@ export function LoveCouponsDesktop({ data }: CouponsViewProps) {
           ))}
         </div>
 
-        {/* Reset/Replay Button */}
-        {coupons.some((c) => c.isRedeemed) && (
+        {/* Reset/Replay Button — hidden inside the editor (creation phase) */}
+        {!isCreateRoute && coupons.some((c) => c.isRedeemed) && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

@@ -32,7 +32,10 @@ export type TemplateComponentKey =
   | "PunchingBag"
   | "ApologySearch"
   | "BirthdayCandles"
-  | "ExcuseGenerator";
+  | "ExcuseGenerator"
+  | "WeddingGlass"
+  | "HolidayCard"
+  | "BarBatMitzvah";
 
 export type TemplateCategory =
   | "all"
@@ -40,7 +43,10 @@ export type TemplateCategory =
   | "fun"
   | "memories"
   | "gifts"
-  | "birthday";
+  | "birthday"
+  | "wedding"
+  | "holidays"
+  | "mitzvah";
 
 export interface TemplateBadge {
   type: "heart" | "star" | "new" | "free" | "premium";

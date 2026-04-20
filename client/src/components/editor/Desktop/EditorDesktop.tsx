@@ -406,40 +406,10 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         </motion.button>
       </div>
 
-      {/* Paid-quota notification banner — shown when subscription is active but all slots used */}
-      {!isSubscriptionLoading && isPaidQuotaFull && profile && (
-        <div
-          className="flex-shrink-0 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800/30 px-6 py-2.5 flex items-center justify-between gap-4"
-          dir="rtl"
-        >
-          <p
-            className="text-sm text-amber-800 dark:text-amber-300 flex-1"
-            style={{ fontFamily: "'Open Sans', sans-serif" }}
-          >
-            {profile.subscription.tier === "lite"
-              ? `הגעת למגבלת הברכות בתוכנית Lite. המנוי שלך פעיל עד ${
-                  profile.subscription.premium_expiry
-                    ? new Date(profile.subscription.premium_expiry).toLocaleDateString("he-IL")
-                    : "—"
-                }. רוצה ליצור עוד?`
-              : `הגעת למגבלת הברכות בתוכנית Pro. המנוי שלך פעיל עד ${
-                  profile.subscription.premium_expiry
-                    ? new Date(profile.subscription.premium_expiry).toLocaleDateString("he-IL")
-                    : "—"
-                }. ניתן להוסיף ברכות נוספות`}
-          </p>
-          <button
-            onClick={() => setIsSlideOverOpen(true)}
-            className="flex-shrink-0 text-sm font-bold text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-200 transition-colors underline underline-offset-2 whitespace-nowrap"
-            style={{ fontFamily: "'Open Sans', sans-serif" }}
-          >
-            {profile.subscription.tier === "lite" ? "שדרג לפרו ↗" : "הוסף ברכות ↗"}
-          </button>
-        </div>
-      )}
+  
 
       <div className="flex-1 flex p-6 gap-6 items-stretch">
-        <main className="flex-1 min-h-[390px] flex flex-col">
+        <main className="flex-1 min-h-[390px] 2xl:min-h-[650px] flex flex-col">
           <EditorPreview ref={previewRef} templateId={templateId} data={data} />
         </main>
 

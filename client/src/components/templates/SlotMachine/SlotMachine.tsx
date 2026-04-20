@@ -33,6 +33,16 @@ export function SlotMachine({ data }: TemplateComponentProps<SlotMachineData>) {
   const spinsRequired = data.spinsRequired ?? 3;
   const primaryColor = data.primaryColor ?? DEFAULT_PRIMARY_COLOR;
 
+  const handleReset = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    spinCountRef.current = 0;
+    isSpinningRef.current = false;
+    setSpinCount(0);
+    setIsSpinning(false);
+    setReelTexts(INITIAL_TEXTS);
+    setHasWon(false);
+  }, []);
+
   const handleSpin = useCallback(() => {
     if (spinCountRef.current >= spinsRequired || isSpinningRef.current) return;
 
@@ -85,6 +95,7 @@ export function SlotMachine({ data }: TemplateComponentProps<SlotMachineData>) {
     primaryColor,
     spinsRequired,
     onSpin: handleSpin,
+    onReset: handleReset,
   };
 
   return isMobile ? (

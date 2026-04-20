@@ -142,10 +142,26 @@ export default async function ProfilePage() {
   const paidTotalAllowed =
     paidPolicyLimit != null ? paidPolicyLimit + additionalPro : null;
 
+  // ── 3b. Fetch creation lifespan from templates.expiration_policy ─────
+  const { data: templatePolicyRow } = await supabase
+    .from("templates")
+    .select("expiration_policy")
+    .eq("is_active", true)
+    .limit(1)
+    .single();
+
+  const expirationPolicy = (templatePolicyRow?.expiration_policy ?? {}) as {
+    free_days?: number;
+    paid_days?: number;
+  };
+  const freeExpiryDays = expirationPolicy.free_days ?? null;
+  const paidExpiryDays = expirationPolicy.paid_days ?? null;
+
   const subscriptionUsage = {
     free: {
       used: (normalizedProfileRow.creations_count_free as number) ?? 0,
       limit: freeTotalAllowed,
+      expiryDays: freeExpiryDays,
     },
     paid:
       userTier !== "free" && isSubscriptionActive(normalizedProfileRow)
@@ -155,6 +171,7 @@ export default async function ProfilePage() {
             limit: paidTotalAllowed,
             startDate: (normalizedProfileRow.premium_start as string) ?? null,
             expiryDate: (normalizedProfileRow.premium_expiry as string) ?? null,
+            expiryDays: paidExpiryDays,
             isActive: isSubscriptionActive(normalizedProfileRow),
           }
         : undefined,

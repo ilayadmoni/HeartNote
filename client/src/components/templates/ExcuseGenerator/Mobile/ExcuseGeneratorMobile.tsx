@@ -1,10 +1,5 @@
 "use client";
 
-/**
- * ExcuseGeneratorMobile Component
- * Mobile layout — compact stacked layout with cog icon and cycling animation
- */
-
 import { useState, useRef } from "react";
 import { motion, useAnimationControls } from "framer-motion";
 import { RefreshCw } from "lucide-react";
@@ -12,6 +7,7 @@ import { usePathname } from "next/navigation";
 import {
   FooterBranding,
   BackToGallery,
+  TemplateResetButton,
 } from "@/components/templates/components";
 import type { ExcuseGeneratorViewProps } from "../types";
 
@@ -55,6 +51,14 @@ export function ExcuseGeneratorMobile({ data }: ExcuseGeneratorViewProps) {
     }, 80);
   }
 
+  function handleReset() {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    cogControls.stop();
+    cogControls.set({ rotate: 0 });
+    setDisplayText(null);
+    setGenerating(false);
+  }
+
   return (
     <div
       className={`bg-transparent px-4 relative isolate overflow-hidden flex flex-col justify-between items-center gap-4 py-6 ${
@@ -94,7 +98,7 @@ export function ExcuseGeneratorMobile({ data }: ExcuseGeneratorViewProps) {
         <motion.h1
           initial={{ opacity: 0, y: -14 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-center text-hebrew-heading"
+          className="text-2xl font-bold text-center text-hebrew-heading break-words"
           style={{ color: accent }}
         >
           {data.title || "מכונת התירוצים האוטומטית"}
@@ -105,7 +109,7 @@ export function ExcuseGeneratorMobile({ data }: ExcuseGeneratorViewProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15 }}
-          className="text-sm text-gray-500 text-center text-hebrew-body"
+          className="text-sm text-gray-500 text-center text-hebrew-body break-words"
         >
           {data.subtitle || "לא בא לך לצאת? יש לנו תירוץ בשבילך."}
         </motion.p>
@@ -120,7 +124,10 @@ export function ExcuseGeneratorMobile({ data }: ExcuseGeneratorViewProps) {
               style={{ backgroundColor: `${accent}22` }}
             />
           )}
-          <p className="text-base font-bold text-[#2e3c52] text-center relative z-10 text-hebrew-body">
+          <p
+            className="text-base font-black text-center relative z-10 text-hebrew-body break-words"
+            style={{ color: accent }}
+          >
             {displayText
               ? `"${displayText}"`
               : '"לחץ על הכפתור וקבל תירוץ מושלם"'}
@@ -138,6 +145,17 @@ export function ExcuseGeneratorMobile({ data }: ExcuseGeneratorViewProps) {
           <RefreshCw size={18} />
           {generating ? "מחשב תירוץ..." : data.buttonLabel || "ג'נרט תירוץ"}
         </motion.button>
+
+        {/* Reset button — shown after first excuse is generated */}
+        {displayText && !generating && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <TemplateResetButton onClick={handleReset} label="אפס" />
+          </motion.div>
+        )}
 
         {/* Disclaimer */}
         {(data.disclaimer !== undefined ? data.disclaimer : true) && (

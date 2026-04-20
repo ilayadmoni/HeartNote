@@ -58,8 +58,8 @@ export function LoveCouponsMobile({ data }: CouponsViewProps) {
           ))}
         </div>
 
-        {/* Reset/Replay Button */}
-        {coupons.some((c) => c.isRedeemed) && (
+        {/* Reset/Replay Button \u2014 hidden inside the editor (creation phase) */}
+        {!isCreateRoute && coupons.some((c) => c.isRedeemed) && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

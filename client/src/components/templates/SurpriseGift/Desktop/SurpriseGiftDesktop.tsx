@@ -10,6 +10,7 @@ import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
   FooterBranding,
   BackToGallery,
+  TemplateResetButton,
 } from "@/components/templates/components";
 import type { SurpriseGiftProps } from "../types";
 import { FloatingIcons } from "../../OpenWhen/components";
@@ -71,82 +72,84 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
+    <div className="flex flex-col h-full min-h-[390px] 2xl:min-h-[650px] bg-transparent relative isolate overflow-hidden">
       <FloatingIcons />
       <BackToGallery className="top-4 right-4 absolute" />
       {/* Content Area */}
-      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto px-6 py-8">
+      <div className="flex-1 flex flex-col w-full max-w-md 2xl:max-w-2xl mx-auto px-6 pt-6 pb-4 2xl:pt-8 2xl:pb-6">
         {/* Title */}
         <h1
-          className="text-3xl font-bold dark:text-white mb-8 text-hebrew-heading text-center"
+          className="text-3xl 2xl:text-5xl font-bold dark:text-white mb-4 2xl:mb-6 text-hebrew-heading text-center"
           style={{ color: primaryColor }}
         >
           {title}
         </h1>
 
-        {/* Gift Box – clickable, shakes - hide when opened */}
-        {!isOpen && (
-          <motion.button
-            onClick={handleClick}
-            animate={shaking ? { rotate: [0, -8, 8, -6, 6, -3, 3, 0] } : {}}
-            transition={{ duration: 0.4 }}
-            whileHover={{ scale: 1.05 }}
-            className="cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
-            style={
-              { focusVisibleRingColor: primaryColor } as React.CSSProperties
-            }
-            aria-label={`לחצו לנער את המתנה (${clicks}/${needed})`}
-          >
-            <GiftBox
-              boxColor={boxColor}
-              ribbonColor={ribbonColor}
-              isOpen={false}
-              size={220}
-            />
-          </motion.button>
-        )}
-
-        {/* Revealed greeting */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: 40, scale: 0.7 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 180,
-                damping: 14,
-                delay: 0.2,
-              }}
-              className="w-full max-w-md rounded-2xl shadow-lg bg-white dark:bg-gray-800 p-6 md:p-8"
+        <div className="flex-1 w-full flex items-center justify-center overflow-hidden">
+          {/* Gift Box – clickable, shakes - hide when opened */}
+          {!isOpen && (
+            <motion.button
+              onClick={handleClick}
+              animate={shaking ? { rotate: [0, -8, 8, -6, 6, -3, 3, 0] } : {}}
+              transition={{ duration: 0.4 }}
+              whileHover={{ scale: 1.05 }}
+              className="cursor-pointer 2xl:scale-150 focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
+              style={
+                { focusVisibleRingColor: primaryColor } as React.CSSProperties
+              }
+              aria-label={`לחצו לנער את המתנה (${clicks}/${needed})`}
             >
-              <div className="max-h-[60vh] overflow-y-auto w-full flex justify-center text-center">
-                <p
-                  className="text-center text-2xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words w-full"
-                  style={{ color: primaryColor }}
-                >
-                  {greeting}
-                </p>
-              </div>
-              {showReset && (
-                <motion.button
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.4 }}
-                  onClick={handleReset}
-                  className="w-full mt-6 text-sm font-medium underline text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                >
-                  נסו שוב
-                </motion.button>
-              )}
-            </motion.div>
+              <GiftBox
+                boxColor={boxColor}
+                ribbonColor={ribbonColor}
+                isOpen={false}
+                size={240}
+              />
+            </motion.button>
           )}
-        </AnimatePresence>
+
+          {/* Revealed greeting */}
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 40, scale: 0.7 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 180,
+                  damping: 14,
+                  delay: 0.2,
+                }}
+                className="w-full max-w-md 2xl:max-w-2xl rounded-2xl 2xl:rounded-3xl shadow-lg bg-white dark:bg-gray-800 p-6 md:p-8 2xl:p-12"
+              >
+                <div className="w-full flex justify-center text-center">
+                  <p
+                    className="text-center text-2xl 2xl:text-4xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words w-full"
+                    style={{ color: primaryColor }}
+                  >
+                    {greeting}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
+        {showReset && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="flex justify-center mb-3"
+          >
+            <TemplateResetButton onClick={handleReset} label="שחק שוב" />
+          </motion.div>
+        )}
+
       {/* Footer Credit */}
-      <FooterBranding className="shrink-0 pb-4" />
+      <FooterBranding className="shrink-0 mt-auto pb-4" />
     </div>
   );
 }

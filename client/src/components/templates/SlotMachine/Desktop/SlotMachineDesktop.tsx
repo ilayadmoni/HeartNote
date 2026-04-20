@@ -6,6 +6,7 @@ import { Reel } from "../components/Reel";
 import {
   FooterBranding,
   BackToGallery,
+  TemplateResetButton,
 } from "@/components/templates/components";
 
 export function SlotMachineDesktop({
@@ -17,13 +18,14 @@ export function SlotMachineDesktop({
   primaryColor,
   spinsRequired,
   onSpin,
+  onReset,
 }: SlotMachineDesktopProps) {
   const remaining = spinsRequired - spinCount;
   const spinLabel = data.spinButtonLabel ?? "סובבי";
   const successEmoji = data.successEmoji ?? "🎉";
 
   return (
-    <div className="flex flex-col min-h-[390px] bg-transparent relative isolate overflow-hidden">
+    <div className="flex flex-col h-full min-h-[390px] bg-transparent relative isolate overflow-hidden">
       <BackToGallery className="absolute top-4 right-4" />
 
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl mx-auto px-6 py-8 relative z-10">
@@ -34,10 +36,16 @@ export function SlotMachineDesktop({
           transition={{ duration: 0.4 }}
           className="text-center mb-8"
         >
-          <h2 className="text-2xl font-bold text-[#1b263b] text-hebrew-heading mb-2">
+          <h2
+            className="text-2xl font-bold text-hebrew-heading mb-2 break-words"
+            style={{ color: primaryColor }}
+          >
             {data.title ?? "מכונת ההבטחות"}
           </h2>
-          <p className="text-[#415a77] text-hebrew-body">
+          <p
+            className="text-hebrew-body break-words"
+            style={{ color: primaryColor, opacity: 0.75 }}
+          >
             {data.subtitle ?? "סובבי 3 פעמים כדי לגלות מה מחכה לך הערב..."}
           </p>
         </motion.div>
@@ -78,9 +86,21 @@ export function SlotMachineDesktop({
             ? `${spinLabel}...`
             : `${spinLabel} (${remaining} נותרו)`}
         </motion.button>
+
+        {/* Reset button — shown after winning */}
+        {hasWon && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-5"
+          >
+            <TemplateResetButton onClick={onReset} label="שחק שוב" />
+          </motion.div>
+        )}
       </div>
 
-      <FooterBranding className="shrink-0 pb-4 relative z-10" />
+      <FooterBranding className="shrink-0 mt-auto pb-4 relative z-10" />
     </div>
   );
 }

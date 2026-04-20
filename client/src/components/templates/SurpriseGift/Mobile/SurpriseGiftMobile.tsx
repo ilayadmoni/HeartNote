@@ -11,6 +11,7 @@ import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
   FooterBranding,
   BackToGallery,
+  TemplateResetButton,
 } from "@/components/templates/components";
 import type { SurpriseGiftProps } from "../types";
 import { FloatingIcons } from "../../OpenWhen/components";
@@ -135,21 +136,21 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
                   {greeting}
                 </p>
               </div>
-              {showReset && (
-                <motion.button
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.4 }}
-                  onClick={handleReset}
-                  className="w-full mt-5 text-sm font-medium underline text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                >
-                  נסו שוב
-                </motion.button>
-              )}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {showReset && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="flex justify-center mb-3"
+        >
+          <TemplateResetButton onClick={handleReset} label="שחק שוב" />
+        </motion.div>
+      )}
 
       {/* Footer Credit - Bottom */}
       <FooterBranding className="mx-auto" />

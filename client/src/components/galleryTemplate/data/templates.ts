@@ -12,6 +12,9 @@ export const FILTER_TABS: FilterTab[] = [
   { id: "memories", label: "זיכרונות", emoji: "📸" },
   { id: "gifts", label: "מתנות", emoji: "🎁" },
   { id: "birthday", label: "יום הולדת", emoji: "🎂" },
+  { id: "wedding", label: "חתונה", emoji: "💍" },
+  { id: "holidays", label: "חגים", emoji: "🍯" },
+  { id: "mitzvah", label: "בר/בת מצווה", emoji: "🎉" },
 ];
 
 export const TEMPLATES: Template[] = [
@@ -170,6 +173,42 @@ export const TEMPLATES: Template[] = [
     link: "/create/excuse-generator",
     badge: { type: "free", color: "#22c55e" },
   },
+  {
+    id: "wedding-glass",
+    title: "שבירת כוס",
+    description:
+      "חתן וכלה חכמים משם וכוס שנשברת בכל לחיצה! מזל טוב ודרך מושלמת לחגוג את החתונה. 💍",
+    category: "wedding",
+    isPremium: true,
+    componentKey: "WeddingGlass",
+    link: "/create/wedding-glass",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
+  {
+    id: "holiday-card",
+    title: "מפעל החגים",
+    description:
+      "בחרו חג אהוב ותאימו ברכה אישית לכל החג — ראש השנה, חנוכה, פורים, פסח ועוד. 🍯",
+    category: "holidays",
+    isPremium: true,
+    componentKey: "HolidayCard",
+    link: "/create/holiday-card",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
+  {
+    id: "bar-bat-mitzvah",
+    title: "בר/בת מצווה",
+    description:
+      "כרטיס אינטראקטיבי לחגיגת בר או בת מצווה! בחרו את הסוג, לחצו על הכתר או הספר, וגלו הודעת ברכה מרגשת. 🎉",
+    category: "mitzvah",
+    isPremium: true,
+    componentKey: "BarBatMitzvah",
+    link: "/create/bar-bat-mitzvah",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
 ];
 
 // Sample data for live previews
@@ -275,6 +314,29 @@ export const PREVIEW_DATA = {
     disclaimer: "* החברה אינה אחראית לתוצאות השימוש בתירוצים אלו.",
     primaryColor: "#d4826f",
   },
+  WeddingGlass: {
+    title: "שבירת כוס דיגיטלית",
+    subtitle: "לחצו על הכפתור כדי שהחתן ישבור את הכוס",
+    stompButtonLabel: "שבור את הכוס!",
+    mazalTovTitle: "מזל טוב! 💍",
+    mazalTovMessage: "שתזכו לבנות יחד בית מלא באהבה, צחוק ושמחה.",
+    primaryColor: "#d4826f",
+  },
+  HolidayCard: {
+    holidayKind: "rosh" as const,
+    customTitle: "",
+    customGreeting: "שנה טובה ומתוקה!",
+    primaryColor: "#d4826f",
+  },
+  BarBatMitzvah: {
+    kind: "bat" as const,
+    introTitle: "מכונת ההתבגרות",
+    introSubtitle: "לחצו על הכתר או הספר כדי לגלות את הברכה",
+    blessingTitle: "הגיע הזמן לחגוג! 🎉",
+    blessingMessage: "ברוכים הבאים לגיל הבגרות. שתיהיי מוקפת בחברים, אהבה וגאווה למשפחה.",
+    tapHintLabel: "לחצו על הכתר",
+    primaryColor: "#d4826f",
+  },
 };
 
 /** Funny "how it works" descriptions shown in the info modal */
@@ -307,4 +369,10 @@ export const TEMPLATE_INFO_TEXT: Record<string, string> = {
     "מה אנחנו עושים כאן? מכונה שמייצרת תירוצים אוטומטית! לוחצים, הגלגל עם השיניים מסתובב, ומתוך מאגר התירוצים שהכנתם מראש יוצא התירוץ המושלם. לא צריכים להיות יצירתיים — הגאדג'ט עושה את העבודה.",
   "birthday-candles":
     "עוגת יום הולדת דיגיטלית אמיתית! כל לחיצה כובה נר, ובסוף כשכל הנרות כבויים, מופיעה הודעת המזל טוב האישית. כי ריח העוגה לא מגיע בדיגיטל, אבל הרגש — כן!",
+  "wedding-glass":
+    "קלאסיקה חתונה דיגיטלית! החתן והכלה עומדים זה לצד זה, כוס שבורה במרכז, ולחיצה אחת — הכוס נשברת לשרדים עם אנימציה מפוצצת! בסוף הודעת מזל טוב אישית. כי ממש שום דבר לא מרגיש כמו חתונה בדיגיטל.",
+  "holiday-card":
+    "בחרו חג שלנו — ראש השנה, חנוכה, פורים או פסח — וכתבו ברכה אישית. כל חג בעל דיוק משלו: צבעים, ציוני כיתוב, ודרכו של העונה שזה שלנו. כי כל חג ראוי לבחינת תמונה איכותית וברכה מיוחדת.",
+  "bar-bat-mitzvah":
+    "כרטיס אינטראקטיבי לחגיגה של בר או בת מצווה! בחרו האם זה בר או בת, התאימו את הברכה, וכשהמקבל/ת לוחץ/ת על הכתר או הספר — ההודעה המרגשת שלכם מופיעה בפני עיניו/ה. כי ההתבגרות זה רגע שצריך חגיגה דיגיטלית.",
 };

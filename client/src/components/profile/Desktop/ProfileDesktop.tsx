@@ -54,23 +54,32 @@ export function ProfileDesktop({
   onCloseSlideOver,
 }: Props) {
   const premiumExpiryRaw = profile.subscription.premium_expiry;
-  const premiumExpiryDate = premiumExpiryRaw ? new Date(premiumExpiryRaw) : null;
+  const premiumExpiryDate = premiumExpiryRaw
+    ? new Date(premiumExpiryRaw)
+    : null;
   const isPaidSubscriptionActive = Boolean(
     premiumExpiryDate &&
-      !Number.isNaN(premiumExpiryDate.getTime()) &&
-      premiumExpiryDate > new Date(),
+    !Number.isNaN(premiumExpiryDate.getTime()) &&
+    premiumExpiryDate > new Date(),
   );
 
   const isPaidQuotaFull = Boolean(
     subscriptionUsage.paid?.isActive &&
-      subscriptionUsage.paid.limit !== null &&
-      subscriptionUsage.paid.used >= subscriptionUsage.paid.limit,
+    subscriptionUsage.paid.limit !== null &&
+    subscriptionUsage.paid.used >= subscriptionUsage.paid.limit,
   );
+
+  /** Format creation lifespan days as a Hebrew duration string */
+  const formatExpiryDays = (days: number | null | undefined): string => {
+    if (days == null) return "ללא תוקף";
+    if (days === 1) return "יום אחד";
+    return `${days} ימים`;
+  };
 
   const freeSubscriptionData = {
     tier: "free" as const,
     startDate: profile.createdAt?.split("T")[0],
-    expiryDate: "ללא תוקף",
+    expiryDate: formatExpiryDays(subscriptionUsage.free.expiryDays),
     isActive: true,
   };
 
@@ -78,11 +87,7 @@ export function ProfileDesktop({
     ? {
         tier: subscriptionUsage.paid.tier,
         startDate: subscriptionUsage.paid.startDate ?? undefined,
-        expiryDate: subscriptionUsage.paid.expiryDate
-          ? new Date(subscriptionUsage.paid.expiryDate).toLocaleDateString(
-              "he-IL",
-            )
-          : "—",
+        expiryDate: formatExpiryDays(subscriptionUsage.paid.expiryDays),
         isActive: isPaidSubscriptionActive,
       }
     : undefined;

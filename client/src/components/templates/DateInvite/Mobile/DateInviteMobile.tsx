@@ -14,6 +14,7 @@ import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
   FooterBranding,
   BackToGallery,
+  TemplateResetButton,
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
 
@@ -28,6 +29,7 @@ export function DateInviteMobile({
   const pathname = usePathname();
   const isCreateRoute = pathname?.includes('/create/');
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
+  const displayTitle = data.title?.trim() || "הזמנה לדייט";
 
   return (
     <div className={`w-full h-full flex flex-col justify-between gap-6 bg-transparent px-5 py-1 overflow-hidden relative isolate ${
@@ -39,6 +41,13 @@ export function DateInviteMobile({
       {/* Main Content - Top */}
       <div className="flex-1 flex flex-col items-center justify-center w-full relative z-10">
         <BackToGallery className="mb-3" />
+
+        <h1
+          className="mb-3 text-2xl font-bold text-hebrew-heading text-center break-words w-full max-w-[320px]"
+          style={{ color: primaryColor }}
+        >
+          {displayTitle}
+        </h1>
 
         {/* Main Card */}
         <motion.div
@@ -141,13 +150,7 @@ export function DateInviteMobile({
                 ידעתי שהתשובה שלך תהיה כן 😉
               </p>
 
-              <button
-                onClick={onReset}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-gray-400 transition-all bg-gray-50 dark:bg-gray-700/50 rounded-full text-hebrew-body"
-              >
-                <RotateCcw size={12} />
-                <span>שאל שוב</span>
-              </button>
+              <TemplateResetButton onClick={onReset} label="שאל שוב" />
             </motion.div>
           )}
         </motion.div>

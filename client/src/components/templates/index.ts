@@ -27,6 +27,9 @@ export { PunchingBag } from "./PunchingBag/PunchingBag";
 export { ApologySearch } from "./ApologySearch/ApologySearch";
 export { BirthdayCandles } from "./BirthdayCandles/BirthdayCandles";
 export { ExcuseGenerator } from "./ExcuseGenerator/ExcuseGenerator";
+export { WeddingGlass } from "./WeddingGlass/WeddingGlass";
+export { HolidayCard } from "./HolidayCard/HolidayCard";
+export { BarBatMitzvah } from "./BarBatMitzvah/BarBatMitzvah";
 
 // Dynamic Renderer
 export { TemplateRenderer, type TemplateRendererProps } from "./TemplateRenderer";

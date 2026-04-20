@@ -16,6 +16,9 @@ import {
   ApologySearchPreview,
   BirthdayCandlesPreview,
   ExcuseGeneratorPreview,
+  WeddingGlassPreview,
+  HolidayCardPreview,
+  BarBatMitzvahPreview,
 } from "./MorePreviews";
 import { LivePreview } from "./LivePreview";
 import type { TemplateComponentKey } from "../types";
@@ -54,6 +57,12 @@ export function TemplatePreview({ componentKey }: TemplatePreviewProps) {
       return <BirthdayCandlesPreview />;
     case "ExcuseGenerator":
       return <ExcuseGeneratorPreview />;
+    case "WeddingGlass":
+      return <WeddingGlassPreview />;
+    case "HolidayCard":
+      return <HolidayCardPreview />;
+    case "BarBatMitzvah":
+      return <BarBatMitzvahPreview />;
     default:
       return <LivePreview componentKey={componentKey} />;
   }

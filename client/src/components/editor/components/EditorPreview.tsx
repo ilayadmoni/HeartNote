@@ -29,7 +29,7 @@ export const EditorPreview = React.memo(
 
     if (!Component) {
       return (
-        <div className="min-h-[390px] flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900 rounded-xl">
+        <div className="min-h-[390px] 2xl:min-h-[650px] flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900 rounded-xl">
           <p className="text-gray-400 text-sm text-hebrew-body">
             תבנית לא נמצאה
           </p>
@@ -41,7 +41,7 @@ export const EditorPreview = React.memo(
     return (
       <div
         ref={ref}
-        className="w-full min-h-[390px] rounded-xl overflow-hidden shadow-lg"
+        className="w-full min-h-[390px] 2xl:min-h-[650px] rounded-xl overflow-hidden shadow-lg"
       >
         <Component data={data} />
       </div>

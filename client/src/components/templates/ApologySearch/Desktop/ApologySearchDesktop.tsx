@@ -2,7 +2,11 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+  TemplateResetButton,
+} from "@/components/templates/components";
 import type { ApologySearchDesktopProps } from "../types";
 
 export function ApologySearchDesktop({
@@ -14,7 +18,7 @@ export function ApologySearchDesktop({
   onReset,
 }: ApologySearchDesktopProps) {
   return (
-    <div className="flex flex-col min-h-[390px] bg-transparent relative isolate overflow-hidden">
+    <div className="flex flex-col h-full min-h-[390px] bg-transparent relative isolate overflow-hidden">
       <BackToGallery className="absolute top-4 right-4" />
 
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl mx-auto px-6 py-10 relative z-10">
@@ -35,7 +39,10 @@ export function ApologySearchDesktop({
                 className="flex flex-col items-center gap-2"
               >
                 <Search size={48} color={primaryColor} strokeWidth={1.5} />
-                <p className="text-[#415a77] text-sm text-hebrew-body">
+                <p
+                  className="text-2xl font-bold text-hebrew-body break-words"
+                  style={{ color: primaryColor }}
+                >
                   חיפוש סליחה
                 </p>
               </motion.div>
@@ -45,7 +52,7 @@ export function ApologySearchDesktop({
                 <Search size={20} color="#415a77" />
                 <span
                   dir="rtl"
-                  className="flex-1 text-lg text-[#1b263b] bg-transparent outline-none text-hebrew-body min-h-[1.5rem]"
+                  className="flex-1 text-lg text-[#1b263b] bg-transparent outline-none text-hebrew-body min-h-[1.5rem] break-words"
                 >
                   {typedText || (
                     <span className="text-[#9baab5]">הקלידי חיפוש...</span>
@@ -137,28 +144,23 @@ export function ApologySearchDesktop({
 
               {/* Result card */}
               <div className="bg-[#fdf6f2] border border-[#e8ddd8] rounded-[32px] px-10 py-8 shadow-xl flex flex-col items-center gap-3 max-w-sm">
-                <h2 className="text-3xl font-extrabold text-[#1b263b] text-hebrew-heading">
+                <h2 className="text-3xl font-extrabold text-[#1b263b] text-hebrew-heading break-words w-full">
                   {data.resultTitle}
                 </h2>
                 {data.resultSubtitle && (
-                  <p className="text-[#415a77] text-hebrew-body leading-relaxed">
+                  <p className="text-[#415a77] text-hebrew-body leading-relaxed break-words w-full">
                     {data.resultSubtitle}
                   </p>
                 )}
               </div>
 
-              <button
-                onClick={onReset}
-                className="text-sm text-[#9baab5] hover:text-[#415a77] underline transition-colors text-hebrew-body"
-              >
-                חפש שוב
-              </button>
+              <TemplateResetButton onClick={onReset} label="חפש שוב" />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <FooterBranding className="shrink-0 pb-4 relative z-10" />
+      <FooterBranding className="shrink-0 mt-auto pb-4 relative z-10" />
     </div>
   );
 }

@@ -30,7 +30,7 @@ export function LetterModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999] pointer-events-auto"
+            className="fixed inset-0 bg-black/75 backdrop-blur-md z-[999] pointer-events-auto"
           />
 
           {/* Letter - Centered on both Desktop and Mobile */}
@@ -59,9 +59,26 @@ export function LetterModal({
               {/* Header section (non-scrolling) */}
               <div className="px-6 md:px-8 pt-6 md:pt-8 flex-shrink-0">
                 {/* Title */}
-                <h2 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-2 text-center text-hebrew-heading">
+                <h2
+                  className="text-2xl font-black mb-1 text-center text-hebrew-heading break-words"
+                  style={{ color: primaryColor }}
+                >
                   {envelope.title}
                 </h2>
+
+                {/* Unlock date */}
+                {envelope.dateOpen && (
+                  <p
+                    className="text-sm font-semibold text-center mb-3 tracking-wide"
+                    style={{ color: primaryColor, opacity: 0.8 }}
+                  >
+                    {new Date(envelope.dateOpen).toLocaleDateString("he-IL", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                )}
 
                 {/* Divider */}
                 <div

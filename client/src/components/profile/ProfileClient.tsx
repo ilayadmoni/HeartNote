@@ -35,6 +35,8 @@ export interface SubscriptionUsage {
   free: {
     used: number;
     limit: number | null;
+    /** Creation lifespan in days (from templates.expiration_policy.free_days) */
+    expiryDays: number | null;
   };
   paid?: {
     tier: "lite" | "premium";
@@ -42,6 +44,8 @@ export interface SubscriptionUsage {
     limit: number | null;
     startDate: string | null;
     expiryDate: string | null;
+    /** Creation lifespan in days (from templates.expiration_policy.paid_days) */
+    expiryDays: number | null;
     isActive: boolean;
   };
 }

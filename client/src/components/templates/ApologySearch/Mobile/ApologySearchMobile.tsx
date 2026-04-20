@@ -2,7 +2,11 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
-import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import {
+  FooterBranding,
+  BackToGallery,
+  TemplateResetButton,
+} from "@/components/templates/components";
 import type { ApologySearchMobileProps } from "../types";
 
 export function ApologySearchMobile({
@@ -14,7 +18,7 @@ export function ApologySearchMobile({
   onReset,
 }: ApologySearchMobileProps) {
   return (
-    <div className="flex flex-col min-h-[390px] bg-transparent relative isolate overflow-hidden">
+    <div className="flex flex-col h-full min-h-[390px] bg-transparent relative isolate overflow-hidden">
       <BackToGallery className="absolute top-3 right-3" />
 
       <div className="flex-1 flex flex-col items-center justify-center w-full px-5 py-8 relative z-10">
@@ -30,7 +34,10 @@ export function ApologySearchMobile({
               {/* Search icon heading */}
               <div className="flex flex-col items-center gap-1">
                 <Search size={36} color={primaryColor} strokeWidth={1.5} />
-                <p className="text-[#415a77] text-xs text-hebrew-body">
+                <p
+                  className="text-xl font-bold text-hebrew-body break-words"
+                  style={{ color: primaryColor }}
+                >
                   חיפוש סליחה
                 </p>
               </div>
@@ -40,7 +47,7 @@ export function ApologySearchMobile({
                 <Search size={16} color="#415a77" />
                 <span
                   dir="rtl"
-                  className="flex-1 text-base text-[#1b263b] bg-transparent outline-none text-hebrew-body min-h-[1.25rem]"
+                  className="flex-1 text-base text-[#1b263b] bg-transparent outline-none text-hebrew-body min-h-[1.25rem] break-words"
                 >
                   {typedText || (
                     <span className="text-[#9baab5]">הקלידי חיפוש...</span>
@@ -130,28 +137,23 @@ export function ApologySearchMobile({
               </motion.div>
 
               <div className="bg-[#fdf6f2] border border-[#e8ddd8] rounded-[24px] px-6 py-6 shadow-lg flex flex-col items-center gap-2 w-full max-w-xs">
-                <h2 className="text-2xl font-extrabold text-[#1b263b] text-hebrew-heading">
+                <h2 className="text-2xl font-extrabold text-[#1b263b] text-hebrew-heading break-words w-full">
                   {data.resultTitle}
                 </h2>
                 {data.resultSubtitle && (
-                  <p className="text-[#415a77] text-sm text-hebrew-body leading-relaxed">
+                  <p className="text-[#415a77] text-sm text-hebrew-body leading-relaxed break-words w-full">
                     {data.resultSubtitle}
                   </p>
                 )}
               </div>
 
-              <button
-                onClick={onReset}
-                className="text-sm text-[#9baab5] hover:text-[#415a77] underline transition-colors text-hebrew-body"
-              >
-                חפש שוב
-              </button>
+              <TemplateResetButton onClick={onReset} label="חפש שוב" />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <FooterBranding className="shrink-0 pb-3 relative z-10" />
+      <FooterBranding className="shrink-0 mt-auto pb-3 relative z-10" />
     </div>
   );
 }

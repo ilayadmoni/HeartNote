@@ -28,6 +28,9 @@ export interface EditorField {
   defaultValue?: unknown;
   /** Custom character limit for text/textarea fields (overrides default) */
   maxLength?: number;
+  /** Min/max item count for options fields */
+  min?: number;
+  max?: number;
 }
 
 export interface EditorConfig {

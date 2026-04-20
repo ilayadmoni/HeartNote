@@ -76,66 +76,72 @@ export function TemplateInfoModal({
             className="
               relative z-10 w-full sm:max-w-md
               bg-white dark:bg-gray-800
-              rounded-2xl
+              rounded-2xl border border-gray-100 dark:border-gray-700
               shadow-2xl overflow-hidden touch-pan-y
               max-h-[85vh] flex flex-col
             "
           >
-            {/* Header */}
-            <div className="relative flex items-center justify-center px-5 py-4 bg-[#2e3c52] dark:bg-gray-900">
-              <h3 className="text-lg font-bold text-white text-hebrew-heading text-center">
+            {/* Header — centered title on white/dark surface, close btn floats left */}
+            <div className="relative flex items-center justify-center px-6 py-5">
+              <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading text-center whitespace-nowrap tracking-tight">
                 {title}
               </h3>
               <button
                 onClick={onClose}
                 className="
-                  absolute left-4
+                  absolute left-4 top-1/2 -translate-y-1/2
                   w-8 h-8 flex items-center justify-center rounded-full
-                  bg-white/10 hover:bg-white/20
-                  text-white
+                  bg-gray-100 hover:bg-gray-200
+                  dark:bg-gray-700 dark:hover:bg-gray-600
+                  text-[#2e3c52] dark:text-gray-200
                   transition-colors duration-150
                 "
                 aria-label="סגור"
               >
-                <X size={18} />
+                <X size={16} strokeWidth={2.5} />
               </button>
             </div>
 
+            {/* Hairline divider */}
+            <div className="h-px bg-gray-100 dark:bg-gray-700 mx-6" />
+
             {/* Body */}
-            <div className="px-5 py-4 overflow-y-auto flex-1" dir="rtl">
+            <div className="px-6 pt-5 pb-2 overflow-y-auto flex-1" dir="rtl">
               {/* Description */}
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 leading-relaxed text-hebrew-body">
+              <p className="text-[15px] text-[#2e3c52] dark:text-gray-100 font-medium leading-relaxed text-hebrew-body">
                 {description}
               </p>
 
-              {/* Divider */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
-                <span className="text-xs font-medium text-gray-400 dark:text-gray-500 tracking-wider text-hebrew-body">
-                  💡 איך זה עובד?
-                </span>
-                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
+              {/* "How it works" callout card — replaces the divider + emoji */}
+              <div
+                className="
+                  mt-5 px-[18px] py-4 rounded-2xl
+                  bg-[#f7f4f1] border border-[#eee6df]
+                  dark:bg-gray-700/50 dark:border-gray-600
+                "
+              >
+                <div className="text-xs font-bold text-[#d4826f] tracking-[0.08em] uppercase mb-2 text-hebrew-heading">
+                  איך זה עובד
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-300 leading-[1.8] text-hebrew-body">
+                  {infoText}
+                </p>
               </div>
-
-              {/* Funny info text */}
-              <p className="text-sm text-[#2e3c52] dark:text-gray-200 leading-[1.8] text-hebrew-body">
-                {infoText}
-              </p>
             </div>
 
             {/* Footer CTA */}
-            <div className="px-5 pb-5 pt-2">
+            <div className="px-6 pb-5 pt-4">
               <button
                 onClick={onClose}
                 className="
-                  w-full py-2.5 rounded-xl font-bold text-sm
-                  bg-[#2e3c52] hover:bg-[#1B263B]
+                  w-full py-3 rounded-xl font-bold text-[15px]
+                  bg-[#d4826f] hover:bg-[#c4735f]
                   text-white transition-all duration-200
                   text-hebrew-heading
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52] focus-visible:ring-offset-2
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f] focus-visible:ring-offset-2
                 "
               >
-                הבנתי! 👍
+                הבנתי
               </button>
             </div>
           </motion.div>

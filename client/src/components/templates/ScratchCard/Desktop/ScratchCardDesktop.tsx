@@ -15,6 +15,7 @@ import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
   FooterBranding,
   BackToGallery,
+  TemplateResetButton,
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
 
@@ -82,14 +83,17 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
   const colorDark = adjustBrightness(primaryColor, -25); // Darker for border
 
   return (
-    <div className="flex flex-col min-h-[390px] bg-transparent relative isolate overflow-hidden">
+    <div className="flex flex-col min-h-[390px] 2xl:min-h-[650px] bg-transparent relative isolate overflow-hidden">
       <FloatingIcons />
       <BackToGallery className="top-4 right-4 absolute" />
       {/* Content Area */}
-      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto px-6 py-8">
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md 2xl:max-w-2xl mx-auto px-6 py-8 2xl:py-10">
         {/* Title */}
         {data.title && (
-          <h1 className="text-2xl font-bold text-center text-[#5d4e37] dark:text-white mb-6 text-hebrew-heading break-words max-w-[320px]">
+          <h1
+            className="text-2xl 2xl:text-4xl font-bold text-center mb-6 2xl:mb-8 text-hebrew-heading break-words max-w-[320px] 2xl:max-w-[520px]"
+            style={{ color: colorDark }}
+          >
             {data.title.length > 50
               ? `${data.title.substring(0, 50)}...`
               : data.title}
@@ -100,7 +104,7 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="relative w-full max-w-md rounded-2xl border-4 shadow-2xl overflow-hidden"
+          className="relative w-full max-w-md 2xl:max-w-2xl rounded-2xl 2xl:rounded-3xl border-4 shadow-2xl overflow-hidden"
           style={{
             backgroundColor: colorLight,
             borderColor: colorDark,
@@ -108,7 +112,7 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
         >
           {/* Top Badge */}
           <div
-            className="relative py-4 px-6 flex items-center justify-center border-b-2 border-dashed border-white/40"
+            className="relative py-4 px-6 2xl:py-6 2xl:px-10 flex items-center justify-center border-b-2 border-dashed border-white/40"
             style={{ 
               backgroundColor: primaryColor,
               boxShadow: "inset 0px 4px 6px rgba(255, 255, 255, 0.25)"
@@ -118,17 +122,17 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
               <motion.span
                 animate={{ rotate: [-10, 10, -10], scale: [1, 1.1, 1] }}
                 transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                className="text-xl drop-shadow-md"
+                className="text-xl 2xl:text-3xl drop-shadow-md"
               >
                 ✨
               </motion.span>
-              <h2 className="text-lg font-bold text-white tracking-widest text-hebrew-heading drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
+              <h2 className="text-lg 2xl:text-3xl font-bold text-white tracking-widest text-hebrew-heading drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
                 גרד כאן
               </h2>
               <motion.span
                 animate={{ rotate: [10, -10, 10], scale: [1, 1.1, 1] }}
                 transition={{ repeat: Infinity, duration: 2, ease: "easeInOut", delay: 0.2 }}
-                className="text-xl drop-shadow-md"
+                className="text-xl 2xl:text-3xl drop-shadow-md"
               >
                 ✨
               </motion.span>
@@ -147,19 +151,19 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
 
           {/* Scratch Area */}
           <div
-            className="relative min-h-[120px] m-4 rounded-xl overflow-hidden"
+            className="relative min-h-[120px] 2xl:min-h-[180px] m-4 2xl:m-6 rounded-xl 2xl:rounded-2xl overflow-hidden"
             style={{ backgroundColor: primaryColor + "15" }}
           >
             {/* Prize Layer (Behind) */}
-            <div className="flex flex-col items-center justify-center p-6 py-8 z-0">
+            <div className="flex flex-col items-center justify-center p-6 py-8 2xl:p-10 2xl:py-12 z-0">
               <p
-                className="text-xs mb-2 text-hebrew-body tracking-widest"
+                className="text-xs 2xl:text-sm mb-2 2xl:mb-3 text-hebrew-body tracking-widest"
                 style={{ color: primaryColor }}
               >
                 CONGRATULATIONS
               </p>
               <p
-                className="text-xl md:text-2xl font-bold text-center text-hebrew-heading leading-relaxed break-words max-w-[300px]"
+                className="text-xl md:text-2xl 2xl:text-4xl font-bold text-center text-hebrew-heading leading-relaxed break-words max-w-[300px] 2xl:max-w-[520px]"
                 style={{ color: colorDark }}
               >
                 {getPrizeContent(data)}
@@ -212,23 +216,23 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
         </motion.div>
 
         {/* Hint Text */}
-        <p className="mt-4 text-sm text-gray-800 dark:text-gray-500 text-hebrew-heading">
+        <p
+          className="mt-4 2xl:mt-6 text-sm 2xl:text-base text-hebrew-heading"
+          style={{ color: colorDark }}
+        >
           👆 גררו את הכרטיס עם האצבע
         </p>
 
         {/* Reload Button */}
         {isRevealed && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleReset}
-            className="mt-3 w-10 h-10 rounded-full bg-white dark:bg-gray-700 shadow-md flex items-center justify-center text-gray-500 hover:text-[#d4826f] transition-colors"
-            aria-label="שחק מחדש"
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mt-3 2xl:mt-5"
           >
-            <RotateCcw size={18} />
-          </motion.button>
+            <TemplateResetButton onClick={handleReset} label="שחק שוב" />
+          </motion.div>
         )}
       </div>
 

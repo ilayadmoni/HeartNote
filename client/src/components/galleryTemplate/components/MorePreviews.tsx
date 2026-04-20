@@ -383,3 +383,168 @@ export function ExcuseGeneratorPreview() {
     </div>
   );
 }
+
+// ── Wedding Glass ───────────────────────────────────────────────────────────
+
+export function WeddingGlassPreview() {
+  return (
+    <div className="h-full w-full flex items-center justify-center p-3">
+      <div className="flex flex-col items-center gap-2">
+        {/* Groom & Bride mini figures with glass */}
+        <div className="relative w-20 h-16 flex items-end justify-center">
+          {/* Groom (left) */}
+          <div className="absolute left-0 bottom-0 w-5 h-10">
+            <svg viewBox="0 0 50 80" className="w-full h-full">
+              <path d="M 20,30 L 20,60 L 25,60 L 25,30 Z" fill="#1b263b" />
+              <path d="M 25,30 L 25,60 L 30,60 L 30,30 Z" fill="#1b263b" />
+              <path d="M 18,8 R 10,10 L 32,8 Z" fill="#f2e9e4" />
+              <path d="M 18,10 L 32,10 L 30,28 L 20,28 Z" fill="#1b263b" />
+            </svg>
+          </div>
+
+          {/* Glass (center) */}
+          <motion.div
+            animate={{ scale: [1, 1, 0.9] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+            className="absolute left-1/2 -translate-x-1/2 bottom-4 w-2.5 h-3.5 bg-[#415a77] opacity-60 rounded-sm shadow"
+          />
+
+          {/* Bride (right) */}
+          <div className="absolute right-0 bottom-0 w-5 h-10">
+            <svg viewBox="0 0 50 80" className="w-full h-full">
+              <path d="M 25,20 C 20,25 10,50 8,65 L 42,65 C 40,50 30,25 25,20 Z" fill="#fffcfa" />
+              <path d="M 25,12 C 15,8 10,10 15,20 Z" fill="#cb8e7c" />
+              <circle cx="25" cy="10" r="5" fill="#f2e9e4" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Stomp button */}
+        <motion.div
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 1.2, repeat: Infinity }}
+          className="px-2 py-1 rounded-full bg-[#d4826f] text-white text-[6px] font-bold shadow"
+        >
+          💍 שבור!
+        </motion.div>
+
+        {/* Mazal Tov hint */}
+        <motion.p
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="text-[5px] text-[#415a77] font-medium"
+        >
+          לחצו לשבירה
+        </motion.p>
+      </div>
+    </div>
+  );
+}
+
+// ── Holiday Card ────────────────────────────────────────────────────────────
+
+const HOLIDAY_ICONS = {
+  rosh: { emoji: "🍎", bgColor: "#fff5f2", label: "ראש השנה" },
+  hanukkah: { emoji: "🕎", bgColor: "#f0f4f8", label: "חנוכה" },
+  purim: { emoji: "🎭", bgColor: "#f8f0f8", label: "פורים" },
+  pesach: { emoji: "🍷", bgColor: "#fffaeb", label: "פסח" },
+};
+
+export function HolidayCardPreview() {
+  return (
+    <div className="h-full w-full flex items-center justify-center p-3">
+      <div className="flex flex-col gap-2 w-full">
+        {/* Holiday selector */}
+        <div className="text-[9px] font-bold text-stone-600 dark:text-stone-300 text-center mb-1">
+          בחר חג
+        </div>
+
+        {/* Small card showing current holiday */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-[110px] mx-auto p-2 rounded-xl flex flex-col items-center text-center"
+          style={{ backgroundColor: HOLIDAY_ICONS.rosh.bgColor }}
+        >
+          <motion.div
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-2xl mb-1"
+          >
+            {HOLIDAY_ICONS.rosh.emoji}
+          </motion.div>
+          <p className="text-[7px] font-bold text-stone-700 dark:text-stone-800">
+            {HOLIDAY_ICONS.rosh.label}
+          </p>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+// ── Bar/Bat Mitzvah ─────────────────────────────────────────────────────────
+
+export function BarBatMitzvahPreview() {
+  return (
+    <div className="h-full w-full flex items-center justify-center p-3">
+      <div className="flex flex-col items-center gap-2">
+        {/* Toggle indicator */}
+        <div className="text-[8px] font-bold text-stone-600 dark:text-stone-300 mb-1">
+          בר / בת
+        </div>
+
+        {/* Simple figure (bat with crown) */}
+        <motion.div
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="w-12 h-14 flex items-end justify-center relative"
+        >
+          <svg viewBox="0 0 100 120" className="w-full h-full">
+            {/* Dress */}
+            <path
+              d="M 50,40 C 35,55 20,80 15,120 L 85,120 C 80,80 65,55 50,40 Z"
+              fill="#fffcfa"
+              stroke="#d4826f"
+              strokeWidth="1.5"
+            />
+            {/* Head */}
+            <circle cx="50" cy="30" r="10" fill="#f2e9e4" />
+            {/* Hair */}
+            <path
+              d="M 40,25 C 35,20 30,25 35,35 C 40,28 60,28 65,35 C 70,25 65,20 60,25 Z"
+              fill="#1b263b"
+            />
+            {/* Crown (pulsing) */}
+            <g className="origin-center">
+              <path
+                d="M 38,20 L 42,12 L 50,18 L 58,12 L 62,20 Z"
+                fill="#d4826f"
+              />
+              <circle cx="42" cy="15" r="1.5" fill="#fffcfa" />
+              <circle cx="50" cy="20" r="2" fill="#fffcfa" />
+              <circle cx="58" cy="15" r="1.5" fill="#fffcfa" />
+            </g>
+          </svg>
+        </motion.div>
+
+        {/* Tap hint */}
+        <motion.div
+          animate={{ y: [0, -2, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="px-2 py-1 rounded-full bg-[#d4826f] text-white text-[6px] font-bold shadow"
+        >
+          לחצו
+        </motion.div>
+
+        {/* Blessing preview */}
+        <motion.p
+          animate={{ opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 2.5, repeat: Infinity }}
+          className="text-[5px] text-[#d4826f] font-bold text-center px-2 leading-tight"
+        >
+          ברכה מרגשת מחכה 🎉
+        </motion.p>
+      </div>
+    </div>
+  );
+}

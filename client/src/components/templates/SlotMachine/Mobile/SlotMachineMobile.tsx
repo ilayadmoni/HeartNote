@@ -6,6 +6,7 @@ import { Reel } from "../components/Reel";
 import {
   FooterBranding,
   BackToGallery,
+  TemplateResetButton,
 } from "@/components/templates/components";
 
 export function SlotMachineMobile({
@@ -17,6 +18,7 @@ export function SlotMachineMobile({
   primaryColor,
   spinsRequired,
   onSpin,
+  onReset,
 }: SlotMachineMobileProps) {
   const remaining = spinsRequired - spinCount;
   const spinLabel = data.spinButtonLabel ?? "סובבי";
@@ -34,10 +36,16 @@ export function SlotMachineMobile({
           transition={{ duration: 0.4 }}
           className="text-center"
         >
-          <h2 className="text-xl font-bold text-[#1b263b] text-hebrew-heading mb-1">
+          <h2
+            className="text-xl font-bold text-hebrew-heading mb-1 break-words"
+            style={{ color: primaryColor }}
+          >
             {data.title ?? "מכונת ההבטחות"}
           </h2>
-          <p className="text-sm text-[#415a77] text-hebrew-body">
+          <p
+            className="text-sm text-hebrew-body break-words"
+            style={{ color: primaryColor, opacity: 0.75 }}
+          >
             {data.subtitle ?? "סובבי 3 פעמים כדי לגלות מה מחכה לך הערב..."}
           </p>
         </motion.div>
@@ -77,6 +85,17 @@ export function SlotMachineMobile({
             ? `${spinLabel}...`
             : `${spinLabel} (${remaining} נותרו)`}
         </motion.button>
+
+        {/* Reset button — shown after winning */}
+        {hasWon && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <TemplateResetButton onClick={onReset} label="שחק שוב" />
+          </motion.div>
+        )}
       </div>
 
       <FooterBranding className="mx-auto mt-4" />

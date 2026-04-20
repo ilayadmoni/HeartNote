@@ -13,6 +13,7 @@ export interface SlotMachineBaseProps {
   primaryColor: string;
   spinsRequired: number;
   onSpin: () => void;
+  onReset: () => void;
 }
 
 export type SlotMachineDesktopProps = SlotMachineBaseProps;

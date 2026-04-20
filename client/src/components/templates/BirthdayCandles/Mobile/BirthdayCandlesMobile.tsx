@@ -15,6 +15,7 @@ export function BirthdayCandlesMobile({
   candleCount,
   cakeColor,
   flameColor,
+  primaryColor,
   onBlow,
   onRelight,
 }: BirthdayCandlesMobileProps) {
@@ -25,10 +26,13 @@ export function BirthdayCandlesMobile({
       <div className="flex-1 flex flex-col items-center justify-center gap-6">
         {/* Header */}
         <div className="text-center">
-          <h2 className="text-xl font-bold text-[#1b263b] text-hebrew-heading mb-1">
+          <h2
+            className="text-xl font-bold text-hebrew-heading mb-1 break-words"
+            style={{ color: primaryColor }}
+          >
             {data.title ?? "מערכת כיבוי נרות דיגיטלית"}
           </h2>
-          <p className="text-sm text-[#415a77] text-hebrew-body">
+          <p className="text-sm text-[#415a77] text-hebrew-body break-words">
             {data.subtitle ?? "הקישי על הלהבות כדי לכבות את הנרות."}
           </p>
         </div>
@@ -43,11 +47,18 @@ export function BirthdayCandlesMobile({
               transition={{ duration: 0.35 }}
               className="flex flex-col items-center"
             >
-              <div className="relative pt-1">
-                {/* Candles */}
+              <div className="relative pt-1 w-56">
+                {/* Candles — gap computed to always fit within w-56 (224px) cake */}
                 <div
-                  className="flex justify-center relative z-10"
-                  style={{ gap: candleCount > 5 ? "8px" : "16px", marginBottom: "-2px" }}
+                  className="flex justify-center relative z-10 overflow-hidden"
+                  style={{
+                    marginBottom: "-2px",
+                    gap: `${
+                      candleCount > 1
+                        ? Math.max(0, (224 - candleCount * 24) / (candleCount - 1))
+                        : 0
+                    }px`,
+                  }}
                 >
                   {litCandles.map((isLit, i) => (
                     <Candle
@@ -96,11 +107,14 @@ export function BirthdayCandlesMobile({
                 🎂
               </motion.div>
 
-              <h2 className="text-2xl font-black text-[#d4826f] text-hebrew-heading">
+              <h2
+                className="text-2xl font-black text-hebrew-heading break-words w-full"
+                style={{ color: primaryColor }}
+              >
                 {data.celebrationTitle}
               </h2>
 
-              <p className="text-base text-[#415a77] max-w-xs text-hebrew-body leading-relaxed">
+              <p className="text-base text-[#415a77] max-w-xs text-hebrew-body leading-relaxed break-words">
                 {data.celebrationMessage}
               </p>
 

@@ -387,37 +387,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
         </div>
       </div>
 
-      {/* Paid-quota notification banner — shown when subscription is active but all slots used */}
-      {!isSubscriptionLoading && isPaidQuotaFull && profile && (
-        <div
-          className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800/30 px-4 py-2.5 flex items-center justify-between gap-3"
-          dir="rtl"
-        >
-          <p
-            className="text-xs text-amber-800 dark:text-amber-300 flex-1 leading-relaxed"
-            style={{ fontFamily: "'Open Sans', sans-serif" }}
-          >
-            {profile.subscription.tier === "lite"
-              ? `הגעת למגבלת Lite. המנוי פעיל עד ${
-                  profile.subscription.premium_expiry
-                    ? new Date(profile.subscription.premium_expiry).toLocaleDateString("he-IL")
-                    : "—"
-                }.`
-              : `הגעת למגבלת Pro. המנוי פעיל עד ${
-                  profile.subscription.premium_expiry
-                    ? new Date(profile.subscription.premium_expiry).toLocaleDateString("he-IL")
-                    : "—"
-                }.`}
-          </p>
-          <button
-            onClick={() => setIsSlideOverOpen(true)}
-            className="flex-shrink-0 text-xs font-bold text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-200 transition-colors underline underline-offset-2 whitespace-nowrap"
-            style={{ fontFamily: "'Open Sans', sans-serif" }}
-          >
-            {profile.subscription.tier === "lite" ? "שדרג ↗" : "הוסף ↗"}
-          </button>
-        </div>
-      )}
+
 
       <div className="overflow-hidden relative">
         <EditorPreview templateId={templateId} data={data} isMobile />

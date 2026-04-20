@@ -30,6 +30,7 @@ export function PunchingBag({ data }: TemplateComponentProps<PunchingBagData>) {
     if (isDone) return;
 
     setHits((prev) => {
+      if (prev >= hitsRequired) return prev;
       const next = prev + 1;
       if (next >= hitsRequired) {
         setTimeout(() => setIsDone(true), 350);

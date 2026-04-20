@@ -4,6 +4,7 @@
 
 export interface DateInviteBaseProps {
   data: {
+    title?: string;
     question: string;
     yesText: string;
     noText: string;

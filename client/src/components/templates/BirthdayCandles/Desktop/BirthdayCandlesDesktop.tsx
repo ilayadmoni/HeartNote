@@ -15,6 +15,7 @@ export function BirthdayCandlesDesktop({
   candleCount,
   cakeColor,
   flameColor,
+  primaryColor,
   onBlow,
   onRelight,
 }: BirthdayCandlesDesktopProps) {
@@ -30,10 +31,13 @@ export function BirthdayCandlesDesktop({
           transition={{ duration: 0.4 }}
           className="text-center mb-10"
         >
-          <h2 className="text-2xl font-bold text-[#1b263b] text-hebrew-heading mb-2">
+          <h2
+            className="text-2xl font-bold text-hebrew-heading mb-2 break-words"
+            style={{ color: primaryColor }}
+          >
             {data.title ?? "מערכת כיבוי נרות דיגיטלית"}
           </h2>
-          <p className="text-[#415a77] text-hebrew-body">
+          <p className="text-[#415a77] text-hebrew-body break-words">
             {data.subtitle ?? "הקישי על הלהבות כדי לכבות את הנרות ולבקש משאלה."}
           </p>
         </motion.div>
@@ -49,10 +53,21 @@ export function BirthdayCandlesDesktop({
               className="flex flex-col items-center"
             >
               {/* Candles row sitting on top of the cake */}
-              <div className="relative pt-1">
+              <div className="relative pt-1 w-72">
                 <div
-                  className="flex justify-center relative z-10"
-                  style={{ gap: candleCount > 6 ? "12px" : "24px", marginBottom: "-2px" }}
+                  className="flex justify-center relative z-10 overflow-hidden"
+                  style={{
+                    marginBottom: "-2px",
+                    gap: `${
+                      candleCount > 1
+                        ? Math.max(
+                            2,
+                            (288 - candleCount * (candleCount > 6 ? 24 : 32)) /
+                              (candleCount - 1)
+                          )
+                        : 0
+                    }px`,
+                  }}
                 >
                   {litCandles.map((isLit, i) => (
                     <Candle
@@ -102,11 +117,14 @@ export function BirthdayCandlesDesktop({
                 🎂
               </motion.div>
 
-              <h2 className="text-3xl font-black text-[#d4826f] text-hebrew-heading mb-3">
+              <h2
+                className="text-3xl font-black text-hebrew-heading mb-3 break-words w-full"
+                style={{ color: primaryColor }}
+              >
                 {data.celebrationTitle}
               </h2>
 
-              <p className="text-lg text-[#415a77] max-w-md mb-8 text-hebrew-body leading-relaxed">
+              <p className="text-lg text-[#415a77] max-w-md mb-8 text-hebrew-body leading-relaxed break-words">
                 {data.celebrationMessage}
               </p>
 

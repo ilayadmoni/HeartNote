@@ -16,6 +16,7 @@ import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
   FooterBranding,
   BackToGallery,
+  TemplateResetButton,
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
 
@@ -225,17 +226,14 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
 
       {/* Reload Button */}
       {isRevealed && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={handleReset}
-          className="mt-3 w-9 h-9 rounded-full bg-white dark:bg-gray-700 shadow-md flex items-center justify-center text-gray-500 hover:text-[#d4826f] transition-colors"
-          aria-label="שחק מחדש"
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mt-3"
         >
-          <RotateCcw size={16} />
-        </motion.button>
+          <TemplateResetButton onClick={handleReset} label="שחק שוב" />
+        </motion.div>
       )}
 
       {/* Spacer for footer */}

@@ -13,6 +13,7 @@ import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
   FooterBranding,
   BackToGallery,
+  TemplateResetButton,
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
 
@@ -25,28 +26,36 @@ export function DateInviteDesktop({
   onNoHover,
 }: DateInviteDesktopProps) {
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
+  const displayTitle = data.title?.trim() || "הזמנה לדייט";
 
   // Calculate a slightly darker hover color
   const hoverColor = adjustBrightness(primaryColor, -15);
 
   return (
-    <div className="flex flex-col min-h-[390px] bg-transparent relative isolate overflow-hidden">
+    <div className="flex flex-col min-h-[390px] 2xl:min-h-[650px] bg-transparent relative isolate overflow-hidden">
      <FloatingIcons/>
       <BackToGallery className="absolute top-4 right-4" />
       {/* Content Area */}
-      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-sm mx-auto px-5 py-6 relative z-10">
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-sm 2xl:max-w-2xl mx-auto px-5 py-6 relative z-10">
+        <h1
+          className="mb-3 2xl:mb-5 text-2xl 2xl:text-4xl font-bold text-hebrew-heading text-center break-words w-full max-w-sm 2xl:max-w-2xl"
+          style={{ color: primaryColor }}
+        >
+          {displayTitle}
+        </h1>
+
         {/* Main Card - Compact */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="relative z-10 w-full max-w-sm bg-white dark:bg-gray-800 rounded-[24px] shadow-xl shadow-black/8 dark:shadow-black/25 p-6 flex flex-col items-center text-center overflow-hidden"
+          className="relative z-10 w-full max-w-sm 2xl:max-w-2xl bg-white dark:bg-gray-800 rounded-[24px] shadow-xl shadow-black/8 dark:shadow-black/25 p-6 2xl:p-12 flex flex-col items-center text-center overflow-hidden"
         >
           {!answered ? (
             <>
               {/* Icon Container - Smaller */}
               <div
-                className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-md"
+                className="w-14 h-14 2xl:w-24 2xl:h-24 rounded-xl flex items-center justify-center mb-5 2xl:mb-7 shadow-md"
                 style={{
                   background: `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}10)`,
                   boxShadow: `0 4px 12px ${primaryColor}15`,
@@ -55,19 +64,19 @@ export function DateInviteDesktop({
                 <motion.span
                   animate={{ scale: [1, 1.1, 1] }}
                   transition={{ repeat: Infinity, duration: 2 }}
-                  className="text-2xl"
+                  className="text-2xl 2xl:text-4xl"
                 >
                   💌
                 </motion.span>
               </div>
 
               {/* Question - Smaller */}
-              <h1 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-1.5 text-hebrew-heading leading-tight break-words w-full overflow-hidden">
+              <h1 className="text-xl 2xl:text-4xl font-bold text-[#2e3c52] dark:text-white mb-1.5 2xl:mb-2.5 text-hebrew-heading leading-tight break-words w-full overflow-hidden">
                 {data.question}
               </h1>
 
               {/* Subtitle */}
-              <p className="text-xs text-gray-800 mb-6 text-hebrew-body">
+              <p className="text-xs 2xl:text-base text-gray-800 mb-6 2xl:mb-10 text-hebrew-body">
                 כדאי לך לבחור את התשובה הנכונה...
               </p>
 
@@ -78,7 +87,7 @@ export function DateInviteDesktop({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={onYes}
-                  className="relative z-10 flex-1 h-12 text-white text-sm font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
+                  className="relative z-10 flex-1 h-12 2xl:h-16 text-white text-sm 2xl:text-lg font-bold rounded-full shadow-lg text-hebrew-heading flex items-center justify-center gap-2 transition-all"
                   style={{
                     backgroundColor: primaryColor,
                     boxShadow: `0 10px 25px ${primaryColor}30`,
@@ -107,7 +116,7 @@ export function DateInviteDesktop({
                     mass: 0.4,
                   }}
                   onHoverStart={onNoHover}
-                  className="relative z-0 flex-1 h-12 text-sm font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-all text-hebrew-heading hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-center overflow-hidden"
+                  className="relative z-0 flex-1 h-12 2xl:h-16 text-sm 2xl:text-lg font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-full transition-all text-hebrew-heading hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-center overflow-hidden"
                 >
                   <span className="truncate px-2">{data.noText}</span>
                 </motion.button>
@@ -130,7 +139,7 @@ export function DateInviteDesktop({
               </motion.div>
 
               <h2
-                className="text-xl font-bold text-hebrew-heading mb-1.5 break-words w-full overflow-hidden"
+                className="text-xl 2xl:text-4xl font-bold text-hebrew-heading mb-1.5 2xl:mb-2.5 break-words w-full overflow-hidden"
                 style={{ color: primaryColor }}
               >
                 {data.successMessage}
@@ -140,18 +149,7 @@ export function DateInviteDesktop({
                       ידעתי שהתשובה שלך תהיה כן 😉
               </p>
 
-              <button
-                onClick={onReset}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-gray-400 transition-all bg-gray-50 dark:bg-gray-700/50 rounded-full text-hebrew-body"
-                style={{ "--hover-color": primaryColor } as React.CSSProperties}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color = primaryColor)
-                }
-                onMouseLeave={(e) => (e.currentTarget.style.color = "")}
-              >
-                <RotateCcw size={12} />
-                <span>שאל שוב</span>
-              </button>
+              <TemplateResetButton onClick={onReset} label="שאל שוב" />
             </motion.div>
           )}
         </motion.div>

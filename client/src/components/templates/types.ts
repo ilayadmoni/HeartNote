@@ -13,6 +13,7 @@ export const DEFAULT_PRIMARY_COLOR = "#d4826f";
 // 1. DATE INVITE
 // =============================================================================
 export interface DateInviteData {
+  title?: string;             // "הזמנה לדייט"
   question: string;           // "?האם תצאי איתי לדייט"
   yesText: string;            // "כן"
   noText: string;             // "לא"
@@ -207,6 +208,45 @@ export interface ExcuseGeneratorData {
   buttonLabel?: string;        // "ג'נרט תירוץ"
   disclaimer?: string;         // "* החברה אינה אחראית..."
   primaryColor?: string;
+}
+
+// =============================================================================
+// 15. WEDDING GLASS
+// =============================================================================
+export interface WeddingGlassData {
+  title?: string;              // "שבירת כוס דיגיטלית"
+  subtitle?: string;           // "לחצו על הכפתור..."
+  stompButtonLabel?: string;   // "שבור את הכוס!"
+  mazalTovTitle: string;       // "מזל טוב! 💍"
+  mazalTovMessage: string;     // "שתזכו לבנות יחד..."
+  primaryColor?: string;
+}
+
+// =============================================================================
+// 16. HOLIDAY CARD
+// =============================================================================
+export type HolidayKind = "rosh" | "hanukkah" | "purim" | "pesach";
+
+export interface HolidayCardData {
+  holidayKind: HolidayKind;    // select: one of 4
+  customTitle?: string;        // optional override of preset title
+  customGreeting?: string;     // the user's message
+  primaryColor?: string;       // palette; overrides auto-theme accent
+}
+
+// =============================================================================
+// 17. BAR/BAT MITZVAH
+// =============================================================================
+export type MitzvahKind = "bar" | "bat";
+
+export interface BarBatMitzvahData {
+  kind: MitzvahKind;               // user selects in editor ("bar" or "bat")
+  introTitle?: string;             // "מכונת ההתבגרות"
+  introSubtitle?: string;          // "לחצו על הכתר / הספר..."
+  blessingTitle: string;           // "הגיע הזמן לחגוג! 🎉"
+  blessingMessage: string;         // "ברוכים הבאים לגיל הבגרות..."
+  tapHintLabel?: string;           // "לחצו על הכתר" / "לחצו על הספר"
+  primaryColor?: string;           // palette color
 }
 
 // =============================================================================
