@@ -12,7 +12,6 @@ import { WheelCanvas } from "../components";
 
 import {
   FooterBranding,
-  BackToGallery,
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
 
@@ -24,7 +23,7 @@ export function DecisionWheelMobile({ data }: DecisionWheelViewProps) {
 
   return (
     <div className={`bg-transparent px-4 relative isolate overflow-hidden flex flex-col justify-between items-center gap-6 py-6 ${
-      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
     }`}>
       <FloatingIcons />
       {/* Decorative blobs */}
@@ -33,8 +32,6 @@ export function DecisionWheelMobile({ data }: DecisionWheelViewProps) {
 
       {/* Main Content - Top */}
       <div className="flex-1 max-w-sm mx-auto flex flex-col items-center justify-center w-full">
-        <BackToGallery className="mb-3" />
-
         {/* Title */}
         {data.title && (
           <motion.h1

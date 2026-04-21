@@ -24,7 +24,9 @@
       "Bash(mv *)",
       "Bash(cat *)",
       "Bash(ls *)",
-      "Bash(grep *)"
+      "Bash(grep *)",
+      "Bash(npx --no-install eslint src/hooks/useTemplatesQuery.ts src/hooks/useActiveTemplates.ts src/hooks/useExpirationPolicy.ts src/components/editor/Desktop/EditorDesktop.tsx src/components/editor/Mobile/EditorMobile.tsx)",
+      "Bash(echo \"EXIT=$?\")"
     ]
   }
 }

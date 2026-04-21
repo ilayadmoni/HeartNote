@@ -4,6 +4,14 @@
  */
 
 import type { Template, FilterTab } from "../types";
+import { COLOR_PALETTE } from "@/constants/colors";
+
+const SURPRISE_GIFT_BOX_COLOR = COLOR_PALETTE.find(
+  (color) => color.name === "Bright Red",
+)!.hex;
+const SURPRISE_GIFT_RIBBON_COLOR = COLOR_PALETTE.find(
+  (color) => color.name === "Bright Yellow",
+)!.hex;
 
 export const CATEGORY_EMOJI_MAP: Record<string, string> = {
   "רומנטי": "💕",
@@ -281,8 +289,8 @@ export const PREVIEW_DATA = {
   SurpriseGift: {
     title: "יש לך הפתעה! 🎁",
     greeting: "אוהב/ת אותך מכל הלב ❤️",
-    boxColor: "#e74c5e",
-    ribbonColor: "#ffd700",
+    boxColor: SURPRISE_GIFT_BOX_COLOR,
+    ribbonColor: SURPRISE_GIFT_RIBBON_COLOR,
     clicksRequired: 5,
     primaryColor: "#d4826f",
   },

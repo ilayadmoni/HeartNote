@@ -6,7 +6,6 @@ import { RefreshCw } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
   FooterBranding,
-  BackToGallery,
   TemplateResetButton,
 } from "@/components/templates/components";
 import type { ExcuseGeneratorViewProps } from "../types";
@@ -62,7 +61,7 @@ export function ExcuseGeneratorMobile({ data }: ExcuseGeneratorViewProps) {
   return (
     <div
       className={`bg-transparent px-4 relative isolate overflow-hidden flex flex-col justify-between items-center gap-4 py-6 ${
-        isCreateRoute ? "min-h-[400px]" : "min-h-[650px]"
+        isCreateRoute ? "min-h-[450px]" : "min-h-[650px]"
       }`}
     >
       {/* Decorative blobs */}
@@ -70,8 +69,6 @@ export function ExcuseGeneratorMobile({ data }: ExcuseGeneratorViewProps) {
       <div className="absolute bottom-10 right-0 w-36 h-36 bg-[#fca5a5]/15 rounded-full blur-2xl pointer-events-none" />
 
       <div className="flex-1 max-w-sm mx-auto flex flex-col items-center justify-center w-full gap-4">
-        <BackToGallery className="mb-1" />
-
         {/* Cog icon */}
         <motion.div
           animate={cogControls}

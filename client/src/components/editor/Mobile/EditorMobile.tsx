@@ -8,7 +8,7 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Send } from "lucide-react";
+import { Eye, Edit2, Send, ChevronLeft, ChevronRight } from "lucide-react";
 import { LoginModal } from "@/components/auth";
 import { EditorSidebar } from "../components/EditorSidebar";
 import { EditorPreview } from "../components/EditorPreview";
@@ -19,13 +19,13 @@ import { PremiumTemplateUpgradeModal } from "../components/PremiumTemplateUpgrad
 import { UpgradeSlideOver } from "@/components/ui/UpgradeSlideOver";
 import { CreationConfirmModal } from "../components/CreationConfirmModal";
 import { validateQuizQuestions } from "../components/QuestionsEditor";
-import { BottomSheet } from "@/components/ui";
 import { EDITOR_CONFIGS } from "../configs";
 import { submitGenericCreation } from "@/actions/creations";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfileComplete } from "@/hooks/useProfileComplete";
 import { useProfile } from "@/hooks/useProfile";
 import { useTemplateData } from "@/hooks/useTemplateData";
+import { useTemplateBySlug } from "@/hooks/useTemplatesQuery";
 import { saveGuestDraft } from "@/lib/draftServices";
 import { createClient } from "@/lib/supabase/client";
 import { claimGuestDraft } from "@/actions/draftActions";
@@ -50,10 +50,14 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   const { isProfileComplete } = useProfileComplete();
   const { profile, loading: profileLoading } = useProfile();
   const config = EDITOR_CONFIGS[templateId];
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"edit" | "preview">("preview");
   const [isPublishing, setIsPublishing] = useState(false);
-  const [isPremiumTemplate, setIsPremiumTemplate] = useState(false);
-  const [templateFreeDays, setTemplateFreeDays] = useState<number>(1);
+  const { template: cachedTemplate } = useTemplateBySlug(templateId);
+  const isPremiumTemplate = Boolean(cachedTemplate?.is_premium);
+  const templateFreeDays = useMemo(() => {
+    const policy = cachedTemplate?.expiration_policy as { free_days?: number } | null;
+    return Number(policy?.free_days ?? 1) || 1;
+  }, [cachedTemplate?.expiration_policy]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loginRedirect, setLoginRedirect] = useState(`/create/${templateId}`);
   const [activeModal, setActiveModal] = useState<ActiveModal>("none");
@@ -108,36 +112,6 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
 
   const draftId = searchParams.get("draft_id");
   const supabase = createClient();
-
-  useEffect(() => {
-    let cancelled = false;
-    const accessClient = createClient();
-
-    const fetchTemplateAccess = async () => {
-      if (!templateId) {
-        if (!cancelled) setIsPremiumTemplate(false);
-        return;
-      }
-
-      const { data: templateData } = await accessClient
-        .from("templates")
-        .select("is_premium, expiration_policy")
-        .eq("slug", templateId)
-        .single();
-
-      if (!cancelled) {
-        setIsPremiumTemplate(Boolean(templateData?.is_premium));
-        const policy = templateData?.expiration_policy as { free_days?: number } | null;
-        setTemplateFreeDays(Number(policy?.free_days ?? 1) || 1);
-      }
-    };
-
-    fetchTemplateAccess();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [templateId]);
 
   useEffect(() => {
     if (loading || !user || !draftId || hasClaimed.current) {
@@ -196,7 +170,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
 
   if (!config) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900 p-4">
+      <div className="flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900 p-4">
         <div className="text-center">
           <p className="text-2xl mb-4">❌</p>
           <p className="text-gray-600 dark:text-gray-400 text-hebrew-body">
@@ -353,7 +327,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
 
   if (isRestoringDraft) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-50/80">
+      <div className="flex w-full flex-col items-center justify-center bg-gray-50/80">
         <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
         <p className="mt-4 text-lg font-medium text-gray-700">משחזר את היצירה שלך...</p>
       </div>
@@ -361,54 +335,83 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   }
 
   return (
-    <div className="bg-[#faf7f5] dark:bg-gray-900">
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-base font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
-              {config.title}
-            </h1>
-          </div>
+    <div className="flex flex-col bg-[#faf7f5] dark:bg-gray-900">
+      {/* Sticky top bar */}
+      <div
+        className="sticky top-0 z-10 flex items-center justify-between px-4 py-2.5 border-b"
+        style={{
+          backgroundColor: "var(--header-bg)",
+          borderColor: "var(--header-border)",
+        }}
+      >
+               <button
+          onClick={() => router.push("/gallery")}
+          className="inline-flex items-center gap-1.5 bg-transparent text-[#9a6a52] hover:text-[#4a2e1e] font-normal text-[15px] text-hebrew-body px-1.5 py-[11px] border-none transition-colors duration-150"
+        >
+          <ChevronRight size={14} strokeWidth={2} />
+          <span>חזרה</span>
+        </button>
+        <button
+          onClick={handlePublish}
+          disabled={isPublishing || isSubscriptionLoading}
+          className="inline-flex items-center gap-2 bg-[#C47A5A] hover:bg-[#a86244] hover:-translate-y-px active:scale-[0.97] text-white font-medium text-[15px] text-hebrew-heading px-5 py-[11px] rounded-[10px] transition-all duration-150 disabled:opacity-50 disabled:hover:translate-y-0"
+        >
+          <span>{isPublishing || isSubscriptionLoading ? "טוען..." : "יצירה"}</span>
+          {isPublishing || isSubscriptionLoading ? (
+            <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Send size={14} strokeWidth={2} />
+          )}
+        </button>
 
-          <button
-            onClick={handlePublish}
-            disabled={isPublishing || isSubscriptionLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-[#d4826f] hover:bg-[#c4735f] text-white rounded-full text-sm font-semibold text-hebrew-heading disabled:opacity-50 shadow-sm shadow-[#d4826f]/20 transition-all"
-          >
-            <span>{isPublishing || isSubscriptionLoading ? "טוען..." : "יצירה"}</span>
-            {isPublishing ? (
-              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : isSubscriptionLoading ? (
-              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <Send size={14} />
-            )}
-          </button>
+ 
+      </div>
+
+      {/* Tab bar */}
+      <div className="flex mx-4 my-3 p-1 rounded-xl bg-coral-50 dark:bg-navy-800">
+        <button
+          onClick={() => setActiveTab("preview")}
+          className={`flex-1 text-center text-xs py-2 px-2 rounded-lg transition-colors text-hebrew-small flex items-center justify-center gap-1.5 ${
+            activeTab === "preview"
+              ? "font-bold bg-white dark:bg-navy-700 text-coral-600 dark:text-coral-400 shadow-sm"
+              : "font-medium text-navy-400 dark:text-gray-400 hover:text-coral-500"
+          }`}
+        >
+          
+          <span>תצוגה מקדימה</span>
+          <Eye size={14} />
+        </button>
+        <button
+          onClick={() => setActiveTab("edit")}
+          className={`flex-1 text-center text-xs py-2 px-2 rounded-lg transition-colors text-hebrew-small flex items-center justify-center gap-1.5 ${
+            activeTab === "edit"
+              ? "font-bold bg-white dark:bg-navy-700 text-coral-600 dark:text-coral-400 shadow-sm"
+              : "font-medium text-navy-400 dark:text-gray-400 hover:text-coral-500"
+          }`}
+        >
+          
+          <span>עריכה</span>
+          <Edit2 size={14} />
+        </button>
+      </div>
+
+      {/* Scrollable content — both tabs mounted to preserve state, one hidden */}
+      <div className="flex-1 overflow-y-auto [-webkit-overflow-scrolling:touch]">
+        <div className={` ${activeTab === "edit" ? "block" : "hidden"}`}>
+          <EditorSidebar
+            config={config}
+            data={data}
+            onChange={handleChange}
+            userId={user?.id}
+            onFileReady={handleFileReady}
+          />
+        </div>
+        <div className={` ${activeTab === "preview" ? "block" : "hidden"}`}>
+          <EditorPreview templateId={templateId} data={data} isMobile />
         </div>
       </div>
 
 
-
-      <div className="overflow-hidden relative">
-        <EditorPreview templateId={templateId} data={data} isMobile />
-      </div>
-
-      <BottomSheet
-        isOpen={isFormOpen}
-        onOpenChange={setIsFormOpen}
-        collapsedHeight={72}
-        expandedHeight={75}
-        label="ערוך מאפיינים"
-        expandedLabel="סגור עריכה"
-      >
-        <EditorSidebar
-          config={config}
-          data={data}
-          onChange={handleChange}
-          userId={user?.id}
-          onFileReady={handleFileReady}
-        />
-      </BottomSheet>
 
       <SuccessModal
         isOpen={!!successData}

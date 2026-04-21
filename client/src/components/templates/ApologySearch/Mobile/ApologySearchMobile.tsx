@@ -1,10 +1,10 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
 import {
   FooterBranding,
-  BackToGallery,
   TemplateResetButton,
 } from "@/components/templates/components";
 import type { ApologySearchMobileProps } from "../types";
@@ -17,10 +17,13 @@ export function ApologySearchMobile({
   onStart,
   onReset,
 }: ApologySearchMobileProps) {
-  return (
-    <div className="flex flex-col h-full min-h-[390px] bg-transparent relative isolate overflow-hidden">
-      <BackToGallery className="absolute top-3 right-3" />
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
 
+  return (
+    <div className={`flex flex-col h-full bg-transparent relative isolate overflow-hidden ${
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
+    }`}>
       <div className="flex-1 flex flex-col items-center justify-center w-full px-5 py-8 relative z-10">
         <AnimatePresence mode="wait">
           {phase !== "result" ? (

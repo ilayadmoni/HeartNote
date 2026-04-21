@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BackToGallery, FooterBranding, TemplateResetButton } from "@/components/templates/components";
+import { FooterBranding, TemplateResetButton } from "@/components/templates/components";
 import { GroomFigure } from "../components/GroomFigure";
 import { BrideFigure } from "../components/BrideFigure";
 import { GlassWithShards } from "../components/GlassWithShards";
@@ -26,10 +26,13 @@ export function WeddingGlassMobile({
   onShatterComplete,
   onReset,
 }: WeddingGlassMobileProps) {
-  return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center p-4">
-      <BackToGallery />
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
 
+  return (
+    <div className={`relative w-full h-full flex flex-col items-center justify-center p-4 ${
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
+    }`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

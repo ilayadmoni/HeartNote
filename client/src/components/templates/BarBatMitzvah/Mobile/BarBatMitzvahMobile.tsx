@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { BatFigure } from "../components/BatFigure";
 import { BarFigure } from "../components/BarFigure";
 import {
-  BackToGallery,
   FooterBranding,
   TemplateResetButton,
 } from "@/components/templates/components";
@@ -30,10 +30,13 @@ export function BarBatMitzvahMobile({
     data.tapHintLabel ||
     (data.kind === "bat" ? "לחצו על הכתר" : "לחצו על הספר");
 
-  return (
-    <div className="relative w-full bg-white rounded-3xl shadow-lg border border-cream p-6 flex flex-col items-center min-h-screen">
-      <BackToGallery />
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
 
+  return (
+    <div className={`relative w-full bg-white rounded-3xl shadow-lg border border-cream p-6 flex flex-col items-center ${
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-screen'
+    }`}>
       <div className="flex-1 flex flex-col items-center justify-center w-full">
         <h1
           className="text-2xl font-bold text-center mb-3 text-hebrew-heading break-words w-full"

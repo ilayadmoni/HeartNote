@@ -11,7 +11,6 @@ import type { SteamyWindowViewProps } from "../types";
 import { SteamCanvas } from "../components";
 import {
   FooterBranding,
-  BackToGallery,
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
 
@@ -21,7 +20,7 @@ export function SteamyWindowMobile({ data }: SteamyWindowViewProps) {
 
   return (
     <div className={`bg-transparent px-4 py-6 relative isolate overflow-hidden flex flex-col justify-between items-center gap-6 ${
-      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
     }`}>
       <FloatingIcons />
       {/* Decorative blob */}
@@ -29,8 +28,6 @@ export function SteamyWindowMobile({ data }: SteamyWindowViewProps) {
 
       {/* Main Content - Top */}
       <div className="flex-1 max-w-sm mx-auto flex flex-col items-center justify-center w-full">
-        <BackToGallery className="mb-3" />
-
         {/* Title */}
         {data.title && (
           <motion.h1

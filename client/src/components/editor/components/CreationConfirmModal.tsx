@@ -55,8 +55,8 @@ export function CreationConfirmModal({ isOpen, onClose, onConfirm, templateSlug,
   const remainingAfterCreate = selectedQuota === "free"
     ? Math.max(0, freeRemaining - 1)
     : proRemaining === Infinity ? Infinity : Math.max(0, proRemaining - 1);
-  const freeFallbackSeconds = templateFreeDays * 24 * 60 * 60;
-  const freeExpiryDate = formatDate(freePolicy.expirySeconds ?? freeFallbackSeconds) ?? "ללא תוקף";
+  const freeExpirySeconds = templateFreeDays * 24 * 60 * 60;
+  const freeExpiryDate = formatDate(freeExpirySeconds) ?? "ללא תוקף";
   const proExpiryDate  = formatDate(paidPolicy.expirySeconds) ?? "לא זמין";
   const selectedExpirationDate = selectedQuota === "free" ? freeExpiryDate : proExpiryDate;
   const avatar   = profile?.avatarUrl;

@@ -7,7 +7,6 @@
  */
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { motion } from "framer-motion";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Send } from "lucide-react";
 import { LoginModal } from "@/components/auth";
@@ -18,6 +17,7 @@ import { QuotaModal } from "../components/QuotaModal";
 import { PaidQuotaModal } from "../components/PaidQuotaModal";
 import { PremiumTemplateUpgradeModal } from "../components/PremiumTemplateUpgradeModal";
 import { UpgradeSlideOver } from "@/components/ui/UpgradeSlideOver";
+import { BackToGallery } from "@/components/templates/components";
 import { CreationConfirmModal } from "../components/CreationConfirmModal";
 import { validateQuizQuestions } from "../components/QuestionsEditor";
 import { EDITOR_CONFIGS } from "../configs";
@@ -26,6 +26,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfileComplete } from "@/hooks/useProfileComplete";
 import { useProfile } from "@/hooks/useProfile";
 import { useTemplateData } from "@/hooks/useTemplateData";
+import { useTemplateBySlug } from "@/hooks/useTemplatesQuery";
 import { saveGuestDraft } from "@/lib/draftServices";
 import { createClient } from "@/lib/supabase/client";
 import { claimGuestDraft } from "@/actions/draftActions";
@@ -63,8 +64,12 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
   const [isPublishing, setIsPublishing] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isPremiumTemplate, setIsPremiumTemplate] = useState(false);
-  const [templateFreeDays, setTemplateFreeDays] = useState<number>(1);
+  const { template: cachedTemplate } = useTemplateBySlug(templateId);
+  const isPremiumTemplate = Boolean(cachedTemplate?.is_premium);
+  const templateFreeDays = useMemo(() => {
+    const policy = cachedTemplate?.expiration_policy as { free_days?: number } | null;
+    return Number(policy?.free_days ?? 1) || 1;
+  }, [cachedTemplate?.expiration_policy]);
   const [activeModal, setActiveModal] = useState<ActiveModal>("none");
   const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
   const [loginRedirect, setLoginRedirect] = useState(`/create/${templateId}`);
@@ -127,36 +132,6 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
   const draftId = searchParams.get("draft_id");
   const supabase = createClient();
-
-  useEffect(() => {
-    let cancelled = false;
-    const accessClient = createClient();
-
-    const fetchTemplateAccess = async () => {
-      if (!templateId) {
-        if (!cancelled) setIsPremiumTemplate(false);
-        return;
-      }
-
-      const { data: templateData } = await accessClient
-        .from("templates")
-        .select("is_premium, expiration_policy")
-        .eq("slug", templateId)
-        .single();
-
-      if (!cancelled) {
-        setIsPremiumTemplate(Boolean(templateData?.is_premium));
-        const policy = templateData?.expiration_policy as { free_days?: number } | null;
-        setTemplateFreeDays(Number(policy?.free_days ?? 1) || 1);
-      }
-    };
-
-    fetchTemplateAccess();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [templateId]);
 
   useEffect(() => {
     if (loading || !user || !draftId || hasClaimed.current) {
@@ -382,28 +357,26 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   return (
     <div className="min-h-[200px] xl:min-h-[calc(100vh-16rem)] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
       <div className="flex-shrink-0 bg-[#faf7f5] dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-3">
+          
           <h1 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
             {config.title}
           </h1>
+          
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+        <button
           onClick={handlePublish}
           disabled={isPublishing || isSubscriptionLoading}
-          className="flex items-center gap-2 px-5 py-2 bg-[#d4826f] hover:bg-[#c4735f] text-white rounded-full shadow-md transition-colors text-hebrew-heading disabled:opacity-50"
+          className="inline-flex items-center gap-2 bg-[#C47A5A] hover:bg-[#a86244] hover:-translate-y-px active:scale-[0.97] text-white font-medium text-[15px] text-hebrew-heading px-5 py-[11px] rounded-[10px] transition-all duration-150 disabled:opacity-50 disabled:hover:translate-y-0"
         >
           <span>{isPublishing || isSubscriptionLoading ? "טוען..." : "יצירה"}</span>
-          {isPublishing ? (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : isSubscriptionLoading ? (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          {isPublishing || isSubscriptionLoading ? (
+            <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
-            <Send size={16} />
+            <Send size={14} strokeWidth={2} />
           )}
-        </motion.button>
+        </button>
       </div>
 
   

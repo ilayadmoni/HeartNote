@@ -13,7 +13,6 @@ import { useCoupons } from "../hooks/useCoupons";
 import { CouponCard } from "../components";
 import {
   FooterBranding,
-  BackToGallery,
 } from "@/components/templates/components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import { FloatingIcons } from "../../OpenWhen/components";
@@ -26,13 +25,11 @@ export function LoveCouponsMobile({ data }: CouponsViewProps) {
 
   return (
     <div className={`bg-transparent px-4 py-6 relative isolate flex flex-col justify-between items-center gap-6 ${
-      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
     }`}>
       <FloatingIcons />
       {/* Main Content - Top */}
       <div className="flex-1 max-w-lg mx-auto w-full flex flex-col justify-center">
-        <BackToGallery className="mb-3" />
-
         {/* Title */}
         {data.title && (
           <motion.h1

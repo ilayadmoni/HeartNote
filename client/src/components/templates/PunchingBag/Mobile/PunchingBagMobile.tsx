@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { PunchingBagMobileProps } from "../types";
 import {
   FooterBranding,
-  BackToGallery,
   TemplateResetButton,
 } from "@/components/templates/components";
 
@@ -21,10 +20,13 @@ export function PunchingBagMobile({
 }: PunchingBagMobileProps) {
   const remaining = hitsRequired - hits;
 
-  return (
-    <div className="w-full flex flex-col min-h-[500px] bg-transparent relative isolate overflow-hidden px-4 py-6">
-      <BackToGallery className="mb-4" />
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
 
+  return (
+    <div className={`w-full flex flex-col bg-transparent relative isolate overflow-hidden px-4 py-6 ${
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
+    }`}>
       <div className="flex-1 flex flex-col items-center justify-center gap-6">
         <AnimatePresence mode="wait">
           {!isDone ? (

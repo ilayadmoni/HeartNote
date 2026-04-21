@@ -13,7 +13,6 @@ import type { DateInviteMobileProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
   FooterBranding,
-  BackToGallery,
   TemplateResetButton,
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
@@ -33,15 +32,13 @@ export function DateInviteMobile({
 
   return (
     <div className={`w-full h-full flex flex-col justify-between gap-6 bg-transparent px-5 py-1 overflow-hidden relative isolate ${
-      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
     }`}>
       {/* Background Hearts Pattern */}
       <FloatingIcons />
 
       {/* Main Content - Top */}
       <div className="flex-1 flex flex-col items-center justify-center w-full relative z-10">
-        <BackToGallery className="mb-3" />
-
         <h1
           className="mb-3 text-2xl font-bold text-hebrew-heading text-center break-words w-full max-w-[320px]"
           style={{ color: primaryColor }}

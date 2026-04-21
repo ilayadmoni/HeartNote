@@ -41,6 +41,7 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
   );
   const [isRevealed, setIsRevealed] = useState(false);
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
+  const isPrimaryBlack = primaryColor.toUpperCase() === "#000000";
 
   // Trigger confetti when card is revealed
   useEffect(() => {
@@ -81,6 +82,10 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
   // Create 3-level color scale from primaryColor
   const colorLight = adjustBrightness(primaryColor, 80); // Very light tint for background
   const colorDark = adjustBrightness(primaryColor, -25); // Darker for border
+  const cardBackgroundColor = isPrimaryBlack ? "#FFFFFF" : colorLight;
+  const cardTextColor = isPrimaryBlack ? "#000000" : colorDark;
+  const badgeBackgroundColor = isPrimaryBlack ? "#FFFFFF" : primaryColor;
+  const badgeTextColor = isPrimaryBlack ? "#000000" : "#FFFFFF";
 
   return (
     <div className="flex flex-col min-h-[390px] 2xl:min-h-[650px] bg-transparent relative isolate overflow-hidden">
@@ -92,7 +97,7 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
         {data.title && (
           <h1
             className="text-2xl 2xl:text-4xl font-bold text-center mb-6 2xl:mb-8 text-hebrew-heading break-words max-w-[320px] 2xl:max-w-[520px]"
-            style={{ color: colorDark }}
+            style={{ color: cardTextColor }}
           >
             {data.title.length > 50
               ? `${data.title.substring(0, 50)}...`
@@ -106,15 +111,15 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
           animate={{ opacity: 1, scale: 1 }}
           className="relative w-full max-w-md 2xl:max-w-2xl rounded-2xl 2xl:rounded-3xl border-4 shadow-2xl overflow-hidden"
           style={{
-            backgroundColor: colorLight,
-            borderColor: colorDark,
+            backgroundColor: cardBackgroundColor,
+            borderColor: cardTextColor,
           }}
         >
           {/* Top Badge */}
           <div
             className="relative py-4 px-6 2xl:py-6 2xl:px-10 flex items-center justify-center border-b-2 border-dashed border-white/40"
             style={{ 
-              backgroundColor: primaryColor,
+              backgroundColor: badgeBackgroundColor,
               boxShadow: "inset 0px 4px 6px rgba(255, 255, 255, 0.25)"
             }}
           >
@@ -126,7 +131,10 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
               >
                 ✨
               </motion.span>
-              <h2 className="text-lg 2xl:text-3xl font-bold text-white tracking-widest text-hebrew-heading drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
+              <h2
+                className="text-lg 2xl:text-3xl font-bold tracking-widest text-hebrew-heading drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]"
+                style={{ color: badgeTextColor }}
+              >
                 גרד כאן
               </h2>
               <motion.span
@@ -164,7 +172,7 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
               </p>
               <p
                 className="text-xl md:text-2xl 2xl:text-4xl font-bold text-center text-hebrew-heading leading-relaxed break-words max-w-[300px] 2xl:max-w-[520px]"
-                style={{ color: colorDark }}
+                style={{ color: cardTextColor }}
               >
                 {getPrizeContent(data)}
               </p>
@@ -218,7 +226,7 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
         {/* Hint Text */}
         <p
           className="mt-4 2xl:mt-6 text-sm 2xl:text-base text-hebrew-heading"
-          style={{ color: colorDark }}
+          style={{ color: cardTextColor }}
         >
           👆 גררו את הכרטיס עם האצבע
         </p>
@@ -231,7 +239,7 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
             transition={{ duration: 0.3 }}
             className="mt-3 2xl:mt-5"
           >
-            <TemplateResetButton onClick={handleReset} label="שחק שוב" />
+            <TemplateResetButton onClick={handleReset} label="גרד שוב" />
           </motion.div>
         )}
       </div>

@@ -53,7 +53,7 @@ export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isU
       whileHover={isClickable ? { scale: 1.02 } : {}}
       whileTap={isClickable ? { scale: 0.98 } : {}}
       onClick={isClickable ? onSelect : undefined}
-      className={`relative rounded-xl border-2 p-2 transition-all select-none ${borderClass}`}
+      className={`relative overflow-hidden rounded-xl border-2 p-2 transition-all select-none ${borderClass}`}
       aria-pressed={isSelected}
     >
       {/* Selected checkmark */}
@@ -63,12 +63,19 @@ export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isU
         </motion.div>
       )}
 
-      {/* Upgrade badge */}
+      {/* Disabled dim overlay + corner-to-corner upgrade ribbon */}
       {isUpgradeRequired && (
-        <Link href="/pricing" onClick={(e) => e.stopPropagation()}
-          className="absolute top-2 left-2 bg-amber-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-full hover:bg-amber-500 transition-colors">
-          שדרג
-        </Link>
+        <>
+          <div className="pointer-events-none absolute inset-0 bg-black/30 dark:bg-black/50 z-[5]" aria-hidden />
+          <Link
+            href="/pricing"
+            onClick={(e) => e.stopPropagation()}
+            aria-label="שדרג"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] rotate-[-45deg] bg-amber-400/70 hover:bg-amber-400/90 text-white text-[11px] font-bold text-center py-1 shadow-sm transition-colors text-hebrew-heading z-10"
+          >
+          לחץ לשדרג
+          </Link>
+        </>
       )}
 
       {/* Header */}
@@ -93,7 +100,7 @@ export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isU
         <p className="text-[10px] text-red-500 font-bold text-center mt-0.5 text-hebrew-body">מגבלה הושגה</p>
       ) : (
         <p className="text-[10px] text-gray-500 dark:text-gray-300 text-right text-hebrew-body">
-          נותר {remaining == null ? "∞" : remaining} מתוך {totalAllowed ?? "∞"}
+          נותר {remaining == null ? "0" : remaining} מתוך {totalAllowed ?? "0"}
         </p>
       )}
     </motion.div>

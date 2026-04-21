@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BackToGallery } from "@/components/templates/components";
 import { FooterBranding } from "@/components/templates/components";
 import { HOLIDAY_PRESETS } from "../constants/holidays";
 import type { HolidayCardData } from "../../types";
@@ -19,10 +18,13 @@ export function HolidayCardMobile({
   const displayTitle = data.customTitle || preset.defaultTitle;
   const displayGreeting = data.customGreeting || preset.defaultGreeting;
 
-  return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center p-4">
-      <BackToGallery />
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
 
+  return (
+    <div className={`relative w-full h-full flex flex-col items-center justify-center p-4 ${
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
+    }`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

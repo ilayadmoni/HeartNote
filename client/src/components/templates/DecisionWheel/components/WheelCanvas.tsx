@@ -75,13 +75,21 @@ function getSliceGeometry(
  * Wrap text into multiple lines that fit within maxWidth.
  * Uses word-breaking for long words and natural word wrapping otherwise.
  */
+function getOpenSansFamily(): string {
+  if (typeof window === "undefined") return '"OpenSans", sans-serif';
+  const v = getComputedStyle(document.documentElement)
+    .getPropertyValue("--font-open-sans")
+    .trim();
+  return `${v || '"OpenSans"'}, sans-serif`;
+}
+
 function wrapText(
   ctx: CanvasRenderingContext2D,
   text: string,
   maxWidth: number,
   fontSize: number
 ): string[] {
-  ctx.font = `bold ${fontSize}px "Open Sans", sans-serif`;
+  ctx.font = `bold ${fontSize}px ${getOpenSansFamily()}`;
   
   // If text fits on one line, return it
   if (ctx.measureText(text).width <= maxWidth) {
@@ -188,7 +196,7 @@ function drawWrappedText(
   fontSize: number,
   lineHeight: number
 ): void {
-  ctx.font = `bold ${fontSize}px "Open Sans", sans-serif`;
+  ctx.font = `bold ${fontSize}px ${getOpenSansFamily()}`;
   ctx.fillStyle = "#2e3c52";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";

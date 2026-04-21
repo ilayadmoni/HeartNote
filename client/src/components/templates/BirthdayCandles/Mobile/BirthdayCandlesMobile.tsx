@@ -5,7 +5,6 @@ import type { BirthdayCandlesMobileProps } from "../types";
 import { Candle } from "../components/Candle";
 import {
   FooterBranding,
-  BackToGallery,
 } from "@/components/templates/components";
 
 export function BirthdayCandlesMobile({
@@ -19,10 +18,13 @@ export function BirthdayCandlesMobile({
   onBlow,
   onRelight,
 }: BirthdayCandlesMobileProps) {
-  return (
-    <div className="w-full flex flex-col min-h-[500px] bg-transparent relative isolate overflow-hidden px-4 py-6">
-      <BackToGallery className="mb-4" />
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
 
+  return (
+    <div className={`w-full flex flex-col bg-transparent relative isolate overflow-hidden px-4 py-6 ${
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
+    }`}>
       <div className="flex-1 flex flex-col items-center justify-center gap-6">
         {/* Header */}
         <div className="text-center">

@@ -8,9 +8,14 @@ import { usePathname } from "next/navigation";
 import confetti from "canvas-confetti";
 import { GiftBox } from "../components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
+import { COLOR_PALETTE } from "@/constants/colors";
+
+const DEFAULT_BOX_COLOR = COLOR_PALETTE.find((c) => c.name === "Bright Red")!.hex;
+const DEFAULT_RIBBON_COLOR = COLOR_PALETTE.find((c) => c.name === "Bright Yellow")!.hex;
+const CONFETTI_ACCENT_PINK = COLOR_PALETTE.find((c) => c.name === "Pink")!.hex;
+const CONFETTI_ACCENT_YELLOW = COLOR_PALETTE.find((c) => c.name === "Bright Yellow")!.hex;
 import {
   FooterBranding,
-  BackToGallery,
   TemplateResetButton,
 } from "@/components/templates/components";
 import type { SurpriseGiftProps } from "../types";
@@ -22,8 +27,8 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
   const {
     title = "יש לך הפתעה! 🎁",
     greeting = "!אוהב/ת אותך",
-    boxColor = "#e74c5e",
-    ribbonColor = "#ffd700",
+    boxColor = DEFAULT_BOX_COLOR,
+    ribbonColor = DEFAULT_RIBBON_COLOR,
     clicksRequired = DEFAULT_CLICKS,
     primaryColor = DEFAULT_PRIMARY_COLOR,
   } = data;
@@ -41,7 +46,7 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
   useEffect(() => {
     if (!isOpen) return;
     const { primaryColor: pc, ribbonColor: rc } = colorsRef.current;
-    const colors = [pc, rc, "#ff6b8a", "#ffd700"];
+    const colors = [pc, rc, CONFETTI_ACCENT_PINK, CONFETTI_ACCENT_YELLOW];
     confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors });
     const t1 = setTimeout(
       () =>
@@ -78,14 +83,12 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
   return (
     <div
       className={`w-full flex flex-col justify-between items-center gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate ${
-        isCreateRoute ? "min-h-[400px]" : "min-h-[650px]"
+        isCreateRoute ? "min-h-[450px]" : "min-h-[650px]"
       }`}
     >
       <FloatingIcons />
       {/* Main Content - Top */}
       <div className="flex-1 flex flex-col items-center justify-center w-full">
-        <BackToGallery className="mb-3" />
-
         {/* Title */}
         <h1
           className="text-2xl font-bold dark:text-white mb-6 text-hebrew-heading text-center"

@@ -7,7 +7,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 interface BackToGalleryProps {
   className?: string;
@@ -22,10 +22,10 @@ export function BackToGallery({ className = "" }: BackToGalleryProps) {
   return (
     <Link
       href="/gallery"
-      className={`inline-flex items-center gap-1.5 self-start rounded-lg border border-coral-200 bg-coral-50/90 px-3 py-1.5 text-sm font-medium text-navy-700 shadow-sm backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-coral-300 hover:bg-coral-100 hover:text-coral-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-400 focus-visible:ring-offset-2 dark:border-navy-500 dark:bg-navy-800/80 dark:text-navy-100 dark:hover:border-coral-400 dark:hover:bg-navy-700 dark:hover:text-coral-200 dark:focus-visible:ring-coral-300 dark:focus-visible:ring-offset-navy-900 text-hebrew-body ${className}`}
+      className={`inline-flex items-center gap-1.5 self-start bg-transparent text-[#9a6a52] hover:text-[#4a2e1e] font-normal text-[15px] text-hebrew-body px-1.5 py-[11px] border-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-400 focus-visible:ring-offset-2 rounded dark:text-navy-100 dark:hover:text-coral-200 ${className}`}
       aria-label="חזרה לגלריה"
     >
-      <ArrowRight size={16} />
+      <ChevronRight size={14} strokeWidth={2} />
       <span>חזרה לגלריה</span>
     </Link>
   );

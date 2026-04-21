@@ -13,7 +13,6 @@ import { EnvelopeCard, LetterModal, FloatingIcons } from "../components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
   FooterBranding,
-  BackToGallery,
 } from "@/components/templates/components";
 
 export function OpenWhenMobile({ data }: OpenWhenViewProps) {
@@ -33,13 +32,11 @@ export function OpenWhenMobile({ data }: OpenWhenViewProps) {
 
   return (
     <div className={`bg-transparent py-8 px-4 relative isolate flex flex-col justify-between items-center ${
-      isCreateRoute ? 'min-h-[400px]' : 'min-h-[650px]'
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
     }`}>
       <FloatingIcons />
 
       <div className="flex-1 max-w-md mx-auto relative z-10 flex flex-col justify-center items-center">
-        <BackToGallery className="mb-3" />
-
         {/* Title */}
         {data.title && (
           <motion.h1

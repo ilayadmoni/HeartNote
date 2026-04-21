@@ -5,7 +5,6 @@ import type { SlotMachineMobileProps } from "../types";
 import { Reel } from "../components/Reel";
 import {
   FooterBranding,
-  BackToGallery,
   TemplateResetButton,
 } from "@/components/templates/components";
 
@@ -24,10 +23,13 @@ export function SlotMachineMobile({
   const spinLabel = data.spinButtonLabel ?? "סובבי";
   const successEmoji = data.successEmoji ?? "🎉";
 
-  return (
-    <div className="w-full flex flex-col min-h-[500px] bg-transparent relative isolate overflow-hidden px-4 py-6">
-      <BackToGallery className="mb-4" />
+  const pathname = usePathname();
+  const isCreateRoute = pathname?.includes('/create/');
 
+  return (
+    <div className={`w-full flex flex-col bg-transparent relative isolate overflow-hidden px-4 py-6 ${
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
+    }`}>
       <div className="flex-1 flex flex-col items-center justify-center gap-6">
         {/* Header */}
         <motion.div

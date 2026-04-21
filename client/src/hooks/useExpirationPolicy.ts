@@ -1,20 +1,20 @@
+"use client";
+
 /**
  * useExpirationPolicy Hook
- * Fetches the user's subscription tier and the template's expiration policy,
- * then calculates and returns the formatted expiration date (DD/MM/YYYY).
+ * Reads the template's expiration policy from the shared templates cache
+ * and the user's tier from `useProfile`, then derives the formatted
+ * expiration date (DD/MM/YYYY) without issuing any new network requests.
  */
 
-import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useEffect } from "react";
 import { toast } from "sonner";
-
-const supabase = createClient();
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "./useProfile";
+import { useTemplateBySlug } from "./useTemplatesQuery";
 
 interface ExpirationPolicyResult {
-  /** Formatted expiration date string (DD/MM/YYYY) or null */
   expirationDate: string | null;
-  /** Whether the data is still loading */
   loading: boolean;
 }
 
@@ -23,83 +23,44 @@ interface ExpirationPolicy {
   paid_days: number;
 }
 
+function formatDate(d: Date): string {
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+
 export function useExpirationPolicy(slug: string): ExpirationPolicyResult {
   const { user } = useAuth();
-  const [expirationDate, setExpirationDate] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { profile, loading: profileLoading } = useProfile();
+  const { template, isLoading: templatesLoading, error } = useTemplateBySlug(slug);
 
   useEffect(() => {
-    if (!user || !slug) {
-      setLoading(false);
-      return;
-    }
+    if (error) toast.error("לא הצלחנו לטעון את מדיניות התוקף. נסו שוב.");
+  }, [error]);
 
-    setLoading(true);
-    setExpirationDate(null);
+  if (!user || !slug) return { expirationDate: null, loading: false };
+  if (templatesLoading || profileLoading) {
+    return { expirationDate: null, loading: true };
+  }
 
-    let cancelled = false;
+  const policyRaw = template?.expiration_policy ?? null;
+  const policy =
+    typeof policyRaw === "string"
+      ? (JSON.parse(policyRaw) as ExpirationPolicy)
+      : (policyRaw as unknown as ExpirationPolicy | null);
 
-    async function fetchPolicy() {
-      try {
-        const [profileRes, templateRes] = await Promise.all([
-          supabase
-            .from("profiles")
-            .select("subscription_tier")
-            .eq("id", user!.id)
-            .single(),
-          supabase
-            .from("templates")
-            .select("expiration_policy")
-            .eq("slug", slug)
-            .single(),
-        ]);
+  if (!policy) return { expirationDate: null, loading: false };
 
-        if (cancelled) return;
+  const tier = profile?.subscription.tier ?? "free";
+  const days = tier !== "free" ? policy.paid_days : policy.free_days;
 
-        if (profileRes.error || templateRes.error) {
-          toast.error("לא הצלחנו לטעון את מדיניות התוקף. נסו שוב.");
-          setLoading(false);
-          return;
-        }
-        const tier = profileRes.data?.subscription_tier ?? "free";
-        const policyRaw = templateRes.data?.expiration_policy ?? null;
-        const policy =
-          typeof policyRaw === "string"
-            ? (JSON.parse(policyRaw) as ExpirationPolicy)
-            : (policyRaw as ExpirationPolicy | null);
+  if (!Number.isFinite(days)) {
+    return { expirationDate: null, loading: false };
+  }
 
-        if (!policy) {
-          setLoading(false);
-          return;
-        }
+  const expDate = new Date();
+  expDate.setDate(expDate.getDate() + days);
 
-        const days = tier !== "free" ? policy.paid_days : policy.free_days;
-        if (!Number.isFinite(days)) {
-          toast.error("מדיניות התוקף אינה תקינה כרגע.");
-          setLoading(false);
-          return;
-        }
-        const expDate = new Date();
-        expDate.setDate(expDate.getDate() + days);
-
-        const dd = String(expDate.getDate()).padStart(2, "0");
-        const mm = String(expDate.getMonth() + 1).padStart(2, "0");
-        const yyyy = expDate.getFullYear();
-
-        setExpirationDate(`${dd}/${mm}/${yyyy}`);
-      } catch (err) {
-        toast.error("לא הצלחנו לחשב את תוקף היצירה. נסו שוב.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    
-    fetchPolicy();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [user, slug]);
-
-  return { expirationDate, loading };
+  return { expirationDate: formatDate(expDate), loading: false };
 }

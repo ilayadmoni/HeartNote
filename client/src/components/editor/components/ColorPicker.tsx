@@ -2,7 +2,7 @@
 
 /**
  * ColorPicker Component
- * Restricted swatch palette — only HeartNote's 12 approved colors.
+ * Restricted swatch palette — only HeartNote's 13 approved colors.
  * No arbitrary hex input.
  */
 
@@ -49,7 +49,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
         <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-hebrew-body">
           {COLOR_PALETTE.find(
             (c) => c.hex.toUpperCase() === value.toUpperCase(),
-          )?.nameHe ?? value}
+          )?.nameHe ?? "צבע נבחר"}
         </p>
       )}
     </div>

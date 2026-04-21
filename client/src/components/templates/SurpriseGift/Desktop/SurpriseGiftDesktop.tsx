@@ -7,6 +7,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { GiftBox } from "../components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
+import { COLOR_PALETTE } from "@/constants/colors";
+
+const DEFAULT_BOX_COLOR = COLOR_PALETTE.find((c) => c.name === "Bright Red")!.hex;
+const DEFAULT_RIBBON_COLOR = COLOR_PALETTE.find((c) => c.name === "Bright Yellow")!.hex;
+const CONFETTI_ACCENT_PINK = COLOR_PALETTE.find((c) => c.name === "Pink")!.hex;
+const CONFETTI_ACCENT_YELLOW = COLOR_PALETTE.find((c) => c.name === "Bright Yellow")!.hex;
 import {
   FooterBranding,
   BackToGallery,
@@ -21,8 +27,8 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
   const {
     title = "יש לך הפתעה! 🎁",
     greeting = "!אוהב/ת אותך",
-    boxColor = "#e74c5e",
-    ribbonColor = "#ffd700",
+    boxColor = DEFAULT_BOX_COLOR,
+    ribbonColor = DEFAULT_RIBBON_COLOR,
     clicksRequired = DEFAULT_CLICKS,
     primaryColor = DEFAULT_PRIMARY_COLOR,
   } = data;
@@ -40,7 +46,7 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
   useEffect(() => {
     if (!isOpen) return;
     const { primaryColor: pc, ribbonColor: rc } = colorsRef.current;
-    const colors = [pc, rc, "#ff6b8a", "#ffd700"];
+    const colors = [pc, rc, CONFETTI_ACCENT_PINK, CONFETTI_ACCENT_YELLOW];
     confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors });
     const t1 = setTimeout(
       () =>

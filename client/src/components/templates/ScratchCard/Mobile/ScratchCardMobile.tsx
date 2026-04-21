@@ -15,7 +15,6 @@ import type { ScratchCardProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {
   FooterBranding,
-  BackToGallery,
   TemplateResetButton,
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
@@ -44,6 +43,7 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
   );
   const [isRevealed, setIsRevealed] = useState(false);
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
+  const isPrimaryBlack = primaryColor.toUpperCase() === "#000000";
 
   // Trigger confetti when card is revealed
   useEffect(() => {
@@ -82,6 +82,10 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
   // Create 3-level color scale from primaryColor
   const colorLight = adjustBrightness(primaryColor, 80); // Very light tint for background
   const colorDark = adjustBrightness(primaryColor, -25); // Darker for border
+  const cardBackgroundColor = isPrimaryBlack ? "#FFFFFF" : colorLight;
+  const cardTextColor = isPrimaryBlack ? "#000000" : colorDark;
+  const badgeBackgroundColor = isPrimaryBlack ? "#FFFFFF" : primaryColor;
+  const badgeTextColor = isPrimaryBlack ? "#000000" : "#FFFFFF";
 
   return (
     <div
@@ -90,11 +94,14 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
       }`}
     >
       <FloatingIcons />
-      <BackToGallery className="mb-3" />
+
 
       {/* Title */}
       {data.title && (
-        <h1 className="text-xl font-bold text-center text-[#5d4e37] dark:text-white mb-4 text-hebrew-heading break-words max-w-[280px]">
+        <h1
+          className="text-xl font-bold text-center mb-4 text-hebrew-heading break-words max-w-[280px]"
+          style={{ color: cardTextColor }}
+        >
           {data.title.length > 50
             ? `${data.title.substring(0, 50)}...`
             : data.title}
@@ -107,15 +114,15 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
         animate={{ opacity: 1, scale: 1 }}
         className="relative w-full max-w-[320px] rounded-2xl border-4 shadow-xl overflow-hidden"
         style={{
-          backgroundColor: colorLight,
-          borderColor: colorDark,
+          backgroundColor: cardBackgroundColor,
+          borderColor: cardTextColor,
         }}
       >
         {/* Top Badge */}
         <div
           className="relative py-3 px-4 flex items-center justify-center border-b-2 border-dashed border-white/40"
           style={{ 
-            backgroundColor: primaryColor,
+            backgroundColor: badgeBackgroundColor,
             boxShadow: "inset 0px 4px 6px rgba(255, 255, 255, 0.25)"
           }}
         >
@@ -127,7 +134,10 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
             >
               ✨
             </motion.span>
-            <h2 className="text-sm font-bold text-white tracking-widest text-hebrew-heading drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
+            <h2
+              className="text-sm font-bold tracking-widest text-hebrew-heading drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]"
+              style={{ color: badgeTextColor }}
+            >
               גרד כאן
             </h2>
             <motion.span
@@ -165,7 +175,7 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
             </p>
             <p
               className="text-base font-bold text-center text-hebrew-heading leading-relaxed break-words max-w-[240px]"
-              style={{ color: colorDark }}
+              style={{ color: cardTextColor }}
             >
               {getPrizeContent(data)}
             </p>
@@ -232,7 +242,7 @@ export function ScratchCardMobile({ data }: ScratchCardProps) {
           transition={{ duration: 0.3 }}
           className="mt-3"
         >
-          <TemplateResetButton onClick={handleReset} label="שחק שוב" />
+          <TemplateResetButton onClick={handleReset} label="גרד שוב" />
         </motion.div>
       )}
 
