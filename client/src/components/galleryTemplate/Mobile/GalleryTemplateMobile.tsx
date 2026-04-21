@@ -6,27 +6,37 @@
  * Now dynamically fetches template metadata (categories, premium status) from Supabase
  */
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FilterTabs, TemplateCard } from "../components";
-import { TEMPLATES } from "../data/templates";
+import { TEMPLATES, CATEGORY_EMOJI_MAP } from "../data/templates";
 import { useActiveTemplates } from "@/hooks/useActiveTemplates";
-import type { GalleryTemplateProps, TemplateCategory } from "../types";
+import type { GalleryTemplateProps } from "../types";
 
 export function GalleryTemplateMobile({
   className = "",
   onTemplateClick,
 }: GalleryTemplateProps) {
-  const [activeTab, setActiveTab] = useState<TemplateCategory>("all");
+  const [activeTab, setActiveTab] = useState("all");
 
   // Fetch active templates with metadata from Supabase
   const { enrichedTemplates, loading, error } = useActiveTemplates(TEMPLATES);
 
+  // Derive tabs dynamically from the categories present in active templates
+  const tabs = useMemo(() => {
+    const seen = new Set<string>();
+    const dynamic = enrichedTemplates.flatMap((t) => t.categories ?? []).filter((cat) => {
+      if (seen.has(cat)) return false;
+      seen.add(cat);
+      return true;
+    }).map((cat) => ({ id: cat, label: cat, emoji: CATEGORY_EMOJI_MAP[cat] }));
+    return [{ id: "all", label: "הכל", emoji: "✨" }, ...dynamic];
+  }, [enrichedTemplates]);
+
   // Filter templates by category
   const filteredTemplates = enrichedTemplates.filter((template) => {
     if (activeTab === "all") return true;
-    // Check if selected category is in the template's categories array
-    return template.categories?.includes(activeTab) || template.category === activeTab;
+    return template.categories?.includes(activeTab) ?? false;
   });
 
   return (
@@ -66,6 +76,7 @@ export function GalleryTemplateMobile({
         <div className="mb-6 -mx-4 px-4">
           <div className="flex flex-wrap gap-2">
             <FilterTabs
+              tabs={tabs}
               activeTab={activeTab}
               onTabChange={setActiveTab}
               className="flex flex-wrap gap-2"

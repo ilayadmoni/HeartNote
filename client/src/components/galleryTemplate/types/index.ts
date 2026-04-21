@@ -54,7 +54,7 @@ export interface TemplateBadge {
 }
 
 export interface FilterTab {
-  id: TemplateCategory;
+  id: string;
   label: string;
   emoji?: string;
 }
@@ -72,8 +72,9 @@ export interface TemplateCardProps {
 }
 
 export interface FilterTabsProps {
-  activeTab: TemplateCategory;
-  onTabChange: (tab: TemplateCategory) => void;
+  tabs: FilterTab[];
+  activeTab: string;
+  onTabChange: (tab: string) => void;
   className?: string;
 }
 

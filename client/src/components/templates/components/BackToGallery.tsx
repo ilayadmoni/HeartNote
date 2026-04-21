@@ -22,7 +22,7 @@ export function BackToGallery({ className = "" }: BackToGalleryProps) {
   return (
     <Link
       href="/gallery"
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full shadow-sm hover:shadow-md hover:text-[#d4826f] dark:hover:text-[#e8917a] transition-all duration-200 text-hebrew-body self-start ${className}`}
+      className={`inline-flex items-center gap-1.5 self-start rounded-lg border border-coral-200 bg-coral-50/90 px-3 py-1.5 text-sm font-medium text-navy-700 shadow-sm backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-coral-300 hover:bg-coral-100 hover:text-coral-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-400 focus-visible:ring-offset-2 dark:border-navy-500 dark:bg-navy-800/80 dark:text-navy-100 dark:hover:border-coral-400 dark:hover:bg-navy-700 dark:hover:text-coral-200 dark:focus-visible:ring-coral-300 dark:focus-visible:ring-offset-navy-900 text-hebrew-body ${className}`}
       aria-label="חזרה לגלריה"
     >
       <ArrowRight size={16} />

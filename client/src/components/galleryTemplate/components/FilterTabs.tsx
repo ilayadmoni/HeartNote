@@ -6,10 +6,10 @@
  */
 
 import { motion } from "framer-motion";
-import { FILTER_TABS } from "../data/templates";
 import type { FilterTabsProps } from "../types";
 
 export function FilterTabs({
+  tabs,
   activeTab,
   onTabChange,
   className = "",
@@ -22,7 +22,7 @@ export function FilterTabs({
         ${className}
       `}
     >
-      {FILTER_TABS.map((tab, index) => (
+      {tabs.map((tab, index) => (
         <motion.button
           key={tab.id}
           initial={{ opacity: 0, y: 10 }}
