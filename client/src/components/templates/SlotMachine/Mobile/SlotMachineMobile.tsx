@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import type { SlotMachineMobileProps } from "../types";
 import { Reel } from "../components/Reel";
 import {
@@ -95,7 +96,7 @@ export function SlotMachineMobile({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <TemplateResetButton onClick={onReset} label="שחק שוב" />
+            <TemplateResetButton onClick={onReset} label="נסה שוב" />
           </motion.div>
         )}
       </div>

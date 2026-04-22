@@ -29,7 +29,7 @@ export function OpenWhenDesktop({ data }: OpenWhenViewProps) {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
+    <div className="flex flex-col h-full min-h-[390px] bg-transparent relative isolate">
       <FloatingIcons />
       <BackToGallery className="top-4 right-4 absolute" />
 
@@ -61,7 +61,7 @@ export function OpenWhenDesktop({ data }: OpenWhenViewProps) {
       </div>
 
       {/* Footer Credit */}
-      <FooterBranding className="shrink-0 pb-4 z-10" />
+      <FooterBranding className="mt-auto shrink-0 pb-4 z-10" />
 
       {/* Letter Modal */}
       <LetterModal

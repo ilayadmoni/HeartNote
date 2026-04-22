@@ -10,12 +10,17 @@
  *     No Supabase interaction at this point.
  *  2. The parent retrieves the `uploadPreparedFile` function (via
  *     `onFileReady`) and calls it only when the user confirms creation.
+ *
+ * Optional cropping:
+ *  When `cropAspect` is set, an ImageCropperModal opens after file
+ *  selection so the user can crop before the preview is accepted.
  */
 
 import { useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, X, ImageIcon, Loader2 } from "lucide-react";
 import { useImageUpload } from "@/hooks/useImageUpload";
+import { ImageCropperModal } from "./ImageCropperModal";
 
 interface ImageUploaderProps {
   /** Current image URL (blob preview or remote URL from form state) */
@@ -32,6 +37,8 @@ interface ImageUploaderProps {
    * during the creation flow to get the final Supabase public URL.
    */
   onFileReady?: (uploadFn: (() => Promise<string | null>) | null) => void;
+  /** When set, opens a crop modal enforcing this aspect ratio (e.g. 3/4) */
+  cropAspect?: number;
 }
 
 export function ImageUploader({
@@ -40,26 +47,34 @@ export function ImageUploader({
   userId,
   label = " ",
   onFileReady,
+  cropAspect,
 }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  // ── Cropper state ────────────────────────────────────────────────
+  const [rawImageUrl, setRawImageUrl] = useState<string | null>(null);
+  const [isCropping, setIsCropping] = useState(false);
 
   const { prepareFile, uploadPreparedFile, isUploading, error, reset } =
     useImageUpload({
       userId,
       onPreviewReady: (localUrl) => {
-        // Set the local blob URL as the value for the preview
-        onChange(localUrl);
-        // Expose the deferred upload function to the parent
-        onFileReady?.(uploadPreparedFile);
+        if (cropAspect) {
+          // Open the crop modal instead of accepting immediately
+          setRawImageUrl(localUrl);
+          setIsCropping(true);
+        } else {
+          // No cropping needed — push directly to parent
+          onChange(localUrl);
+          onFileReady?.(uploadPreparedFile);
+        }
       },
     });
 
   // ── Handlers ────────────────────────────────────────────────────
   const handleFile = useCallback(
     async (file: File) => {
-      // Step 1 only: validate, resize, generate local preview.
-      // NO Supabase interaction.
       await prepareFile(file);
     },
     [prepareFile],
@@ -79,7 +94,6 @@ export function ImageUploader({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) handleFile(file);
-      // Reset the input so re-selecting the same file works
       e.target.value = "";
     },
     [handleFile],
@@ -90,6 +104,28 @@ export function ImageUploader({
     onChange("");
     onFileReady?.(null);
   }, [onChange, reset, onFileReady]);
+
+  /** Crop confirmed → push the cropped blob URL to parent */
+  const handleCropDone = useCallback(
+    (croppedUrl: string) => {
+      // Revoke the raw (uncropped) preview
+      if (rawImageUrl) URL.revokeObjectURL(rawImageUrl);
+      setRawImageUrl(null);
+      setIsCropping(false);
+
+      onChange(croppedUrl);
+      onFileReady?.(uploadPreparedFile);
+    },
+    [rawImageUrl, onChange, onFileReady, uploadPreparedFile],
+  );
+
+  /** Crop cancelled → discard raw image */
+  const handleCropCancel = useCallback(() => {
+    if (rawImageUrl) URL.revokeObjectURL(rawImageUrl);
+    setRawImageUrl(null);
+    setIsCropping(false);
+    reset();
+  }, [rawImageUrl, reset]);
 
   // ── Render ──────────────────────────────────────────────────────
   return (
@@ -185,6 +221,16 @@ export function ImageUploader({
       {/* Error message */}
       {error && (
         <p className="text-sm text-red-500 text-hebrew-body">{error}</p>
+      )}
+
+      {/* ── Crop modal (only when cropAspect is set) ── */}
+      {isCropping && rawImageUrl && cropAspect && (
+        <ImageCropperModal
+          imageSrc={rawImageUrl}
+          aspect={cropAspect}
+          onCropDone={handleCropDone}
+          onCancel={handleCropCancel}
+        />
       )}
     </div>
   );

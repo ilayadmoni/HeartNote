@@ -88,7 +88,6 @@ export async function createCallbackClient() {
  * (≤ 600 ms total) bridges that gap.
  */
 export async function fetchProfileWithRetry(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
   userId: string,
 ): Promise<ProfileRow | null> {

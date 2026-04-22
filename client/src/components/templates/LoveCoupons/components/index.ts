@@ -3,3 +3,4 @@
  */
 
 export { CouponCard } from "./CouponCard";
+export { CouponRedeemModal } from "./CouponRedeemModal";

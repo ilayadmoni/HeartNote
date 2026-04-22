@@ -1,93 +1,78 @@
-/**
- * Redeem Coupon Server Action
- *
- * Marks a single coupon as redeemed inside the creation's metadata JSONB.
- * No auth required — the viewer (public link recipient) redeems coupons.
- *
- * SEC-HIGH-1: Validates input UUIDs with Zod before querying DB.
- * SEC-HIGH-1: Uses logger for PII-safe logging.
- */
-
 "use server";
 
 import { z } from "zod";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { ok, fail, type ActionResult } from "@/lib/action-response";
+import { validateOrigin } from "@/lib/utils/csrf";
+import { createRateLimiter } from "@/lib/utils/rate-limiter";
 import { logger } from "@/lib/utils/logger";
 
-const RedeemInputSchema = z.object({
-  creationId: z.string().uuid("Invalid creation ID format"),
-  couponId: z.string().uuid("Invalid coupon ID format"),
+const RedeemSchema = z.object({
+  creationId: z.string().uuid(),
+  couponId: z.string().min(1),
 });
 
-/**
- * Marks a coupon as redeemed inside the creation's metadata.
- *
- * metadata.coupons[] is an array of { id, title, ..., isRedeemed, redeemedAt }.
- * We find the matching coupon by `couponId`, flip `isRedeemed` to true,
- * and set `redeemedAt` to the current ISO timestamp.
- */
-export async function redeemCoupon(
+const redeemLimiter = createRateLimiter({
+  maxRequests: 10,
+  windowMs: 60_000,
+  prefix: "redeem-coupon",
+});
+
+export interface RedeemedCoupon {
+  id: string;
+  isRedeemed: true;
+  redeemedAt: string;
+}
+
+export async function redeemCouponAction(
   creationId: string,
   couponId: string,
-): Promise<{ success: true } | { error: string; status: number }> {
+): Promise<ActionResult<RedeemedCoupon>> {
   try {
-    // ── Input validation ──────────────────────────────────────────
-    const parsed = RedeemInputSchema.safeParse({ creationId, couponId });
+    const originOk = await validateOrigin();
+    if (!originOk) {
+      console.error("[redeemCouponAction] CSRF origin validation failed", { creationId, couponId });
+      return fail("Invalid origin", 403);
+    }
+
+    const parsed = RedeemSchema.safeParse({ creationId, couponId });
     if (!parsed.success) {
-      return { error: "Invalid input", status: 400 };
+      console.error("[redeemCouponAction] Zod validation failed", { creationId, couponId, errors: parsed.error.issues });
+      return fail("Invalid input", 400);
+    }
+
+    const headerStore = await headers();
+    const ip =
+      headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+    const rateLimitResult = await redeemLimiter.check(ip);
+    if (!rateLimitResult.success) {
+      console.error("[redeemCouponAction] Rate limit exceeded", { ip });
+      return fail("Too many requests", 429);
     }
 
     const supabase = await createClient();
-
-    // Fetch the creation's metadata
-    const { data, error: fetchErr } = await supabase
-      .from("creations")
-      .select("metadata")
-      .eq("id", creationId)
-      .eq("is_deleted", false)
-      .single();
-
-    if (fetchErr || !data) {
-      return { error: "Creation not found", status: 404 };
-    }
-
-    const metadata = (data.metadata ?? {}) as Record<string, unknown>;
-    const coupons = Array.isArray(metadata.coupons) ? metadata.coupons : [];
-
-    // Find and mark the coupon
-    let found = false;
-    const updatedCoupons = coupons.map((c: Record<string, unknown>) => {
-      if (c.id === couponId) {
-        found = true;
-        return { ...c, isRedeemed: true, redeemedAt: new Date().toISOString() };
-      }
-      return c;
+    const { data, error } = await supabase.rpc("redeem_love_coupon", {
+      p_creation_id: parsed.data.creationId,
+      p_coupon_id: parsed.data.couponId,
     });
 
-    if (!found) {
-      return { error: "Coupon not found", status: 404 };
+    if (error) {
+      console.error("[redeemCouponAction] RPC failed", { error: error.message, code: error.code, details: error.details });
+      logger.error("[redeemCouponAction] RPC failed", { error: error.message });
+      return fail("Failed to redeem coupon", 500);
     }
 
-    // Persist back
-    const { error: updateErr } = await supabase
-      .from("creations")
-      .update({ metadata: { ...metadata, coupons: updatedCoupons } })
-      .eq("id", creationId);
-
-    if (updateErr) {
-      logger.error("[redeemCoupon] Update failed", { error: updateErr.message });
-      return {
-        error: "Failed to redeem coupon",
-        status: 500,
-      };
+    // RPC returns NULL on not-found OR already-redeemed → surface 409.
+    if (data === null) {
+      console.error("[redeemCouponAction] RPC returned null — coupon not found or already redeemed", { creationId, couponId });
+      return fail("Coupon unavailable", 409);
     }
 
-    return { success: true };
+    return ok(data as RedeemedCoupon);
   } catch (e) {
-    logger.error("[redeemCoupon] Unexpected error", { error: e });
-    return {
-      error: "Failed to redeem coupon",
-      status: 500,
-    };
+    console.error("[redeemCouponAction] Unexpected error", e);
+    logger.error("[redeemCouponAction] Unexpected", { error: e });
+    return fail("Failed to redeem coupon", 500);
   }
 }

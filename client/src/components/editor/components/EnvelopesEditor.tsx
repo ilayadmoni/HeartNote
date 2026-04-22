@@ -13,6 +13,7 @@ import type { OpenWhenEnvelope } from "@/components/templates/types";
 import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
 
 const MAX_ENVELOPES = 6;
+const MIN_ENVELOPES = 1;
 
 /** Default emoji choices for new envelopes (internal, not shown to user) */
 const FALLBACK_EMOJIS = ["💌", "😢", "😊", "💪", "🎉", "💖"];
@@ -24,6 +25,7 @@ interface EnvelopesEditorProps {
 
 export function EnvelopesEditor({ envelopes = [], onChange }: EnvelopesEditorProps) {
   const canAddMore = envelopes.length < MAX_ENVELOPES;
+  const canRemove = envelopes.length > MIN_ENVELOPES;
 
   const addEnvelope = () => {
     if (!canAddMore) return;
@@ -37,6 +39,7 @@ export function EnvelopesEditor({ envelopes = [], onChange }: EnvelopesEditorPro
   };
 
   const removeEnvelope = (id: string) => {
+    if (!canRemove) return;
     onChange(envelopes.filter((e) => e.id !== id));
   };
 
@@ -54,6 +57,7 @@ export function EnvelopesEditor({ envelopes = [], onChange }: EnvelopesEditorPro
             index={index}
             onRemove={removeEnvelope}
             onUpdate={updateEnvelope}
+            canRemove={canRemove}
           />
         ))}
       </AnimatePresence>
@@ -79,9 +83,10 @@ interface EnvelopeItemProps {
   index: number;
   onRemove: (id: string) => void;
   onUpdate: (id: string, field: keyof OpenWhenEnvelope, value: string) => void;
+  canRemove: boolean;
 }
 
-function EnvelopeItem({ envelope, index, onRemove, onUpdate }: EnvelopeItemProps) {
+function EnvelopeItem({ envelope, index, onRemove, onUpdate, canRemove }: EnvelopeItemProps) {
   const inputClass =
     "w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f]/50 text-hebrew-body";
 
@@ -98,13 +103,15 @@ function EnvelopeItem({ envelope, index, onRemove, onUpdate }: EnvelopeItemProps
         <span className="text-xs font-bold text-gray-500 dark:text-gray-400 text-hebrew-body">
           מעטפה {index + 1}
         </span>
-        <button
-          onClick={() => onRemove(envelope.id)}
-          className="p-1 text-gray-400 hover:text-red-500 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
-          title="מחק מעטפה"
-        >
-          <Trash2 size={14} />
-        </button>
+        {canRemove && (
+          <button
+            onClick={() => onRemove(envelope.id)}
+            className="p-1 text-gray-400 hover:text-red-500 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
+            title="מחק מעטפה"
+          >
+            <Trash2 size={14} />
+          </button>
+        )}
       </div>
 
       {/* Title */}

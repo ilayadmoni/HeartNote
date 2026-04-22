@@ -1,44 +1,68 @@
 "use client";
 
-/**
- * useCoupons Hook
- * Manages coupon redemption state with reset support.
- * Syncs with upstream prop changes (e.g. editor live-preview).
- * When creationId is provided (viewer mode), persists redemptions server-side.
- */
-
-import { useState, useCallback, useEffect } from "react";
-import { redeemCoupon } from "@/actions/creations";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { redeemCouponAction } from "@/actions/creations";
 import type { LoveCoupon } from "../types";
 
-export function useCoupons(initialCoupons: LoveCoupon[], creationId?: string) {
-  const [coupons, setCoupons] = useState<LoveCoupon[]>(initialCoupons);
+export function useCoupons(initial: LoveCoupon[], creationId?: string) {
+  const [coupons, setCoupons] = useState<LoveCoupon[]>(initial);
+  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Sync when the upstream array changes (editor typing, add/remove)
-  useEffect(() => {
-    setCoupons(initialCoupons);
-  }, [initialCoupons]);
+  // Sync with editor live-preview changes
+  useEffect(() => setCoupons(initial), [initial]);
 
-  const handleRedeem = useCallback((couponId: string) => {
+  const requestRedeem = (id: string) => setPendingId(id);
+  const cancelRedeem = () => {
+    if (!isSubmitting) setPendingId(null);
+  };
+
+  const confirmRedeem = async () => {
+    if (!pendingId) return;
+    const id = pendingId;
+    const snapshot = coupons;
+
+    // Optimistic update
     setCoupons((prev) =>
-      prev.map((coupon) =>
-        coupon.id === couponId
-          ? { ...coupon, isRedeemed: true, redeemedAt: new Date().toISOString() }
-          : coupon,
+      prev.map((c) =>
+        c.id === id
+          ? { ...c, isRedeemed: true, redeemedAt: new Date().toISOString() }
+          : c,
       ),
     );
 
-    // Persist to DB when viewing a saved creation
-    if (creationId) {
-      redeemCoupon(creationId, couponId).catch(console.error);
+    // Editor mode — no persistence, just close
+    if (!creationId) {
+      setPendingId(null);
+      return;
     }
-  }, [creationId]);
 
-  const handleReset = useCallback(() => {
+    setIsSubmitting(true);
+    const result = await redeemCouponAction(creationId, id);
+    setIsSubmitting(false);
+    setPendingId(null);
+
+    if (!result.success) {
+      setCoupons(snapshot); // rollback
+      toast.error(result.code === 409 ? "הקופון כבר מומש" : "שגיאה במימוש");
+    }
+  };
+
+  const handleReset = () =>
     setCoupons((prev) =>
-      prev.map((coupon) => ({ ...coupon, isRedeemed: false, redeemedAt: undefined })),
+      prev.map((c) => ({ ...c, isRedeemed: false, redeemedAt: undefined })),
     );
-  }, []);
 
-  return { coupons, handleRedeem, handleReset };
+  const pendingCoupon = coupons.find((c) => c.id === pendingId) ?? null;
+
+  return {
+    coupons,
+    pendingCoupon,
+    isSubmitting,
+    requestRedeem,
+    confirmRedeem,
+    cancelRedeem,
+    handleReset,
+  };
 }

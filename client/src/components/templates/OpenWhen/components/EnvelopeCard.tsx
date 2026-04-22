@@ -73,7 +73,7 @@ export function EnvelopeCard({
         ${unlocked ? "cursor-pointer" : "cursor-not-allowed"}
       `}
       style={{
-        aspectRatio: "5 / 6",
+        aspectRatio: "4 / 5",
         filter: unlocked ? undefined : "saturate(0.3) brightness(0.82)",
       }}
     >
@@ -83,9 +83,9 @@ export function EnvelopeCard({
       <div
         className="absolute left-0 right-0 bottom-0 rounded-b-lg"
         style={{
-          top: "35%",
+          top: "30%",
           background: `linear-gradient(180deg, ${base} 0%, ${dark} 100%)`,
-          boxShadow: "0 3px 12px rgba(0,0,0,0.10)",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.14), 0 2px 6px rgba(0,0,0,0.08)",
         }}
       />
 
@@ -94,7 +94,7 @@ export function EnvelopeCard({
         viewBox="0 0 100 42"
         preserveAspectRatio="none"
         className="absolute left-0 right-0 w-full pointer-events-none"
-        style={{ top: "14%", height: "23%" }}
+        style={{ top: "10%", height: "23%" }}
         aria-hidden="true"
       >
         <defs>
@@ -114,7 +114,7 @@ export function EnvelopeCard({
       <div
         className="absolute left-0 right-0 bottom-0 rounded-b-lg pointer-events-none"
         style={{
-          top: "35%",
+          top: "30%",
           border: "1px solid rgba(0,0,0,0.06)",
           borderTop: "none",
         }}
@@ -126,12 +126,12 @@ export function EnvelopeCard({
           justify-center overflow-hidden
           transition-shadow duration-300 group-hover:shadow-lg"
         style={{
-          left: "11%",
-          right: "11%",
+          left: "8%",
+          right: "8%",
           top: "2%",
-          bottom: "30%",
+          bottom: "28%",
           background: "linear-gradient(180deg, #ffffff 0%, #fefcf9 100%)",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)",
           border: "1px solid rgba(0,0,0,0.05)",
           borderRadius: "4px",
         }}
@@ -169,7 +169,7 @@ export function EnvelopeCard({
         className="absolute left-0 right-0 pointer-events-none z-[3]"
         style={{
           bottom: "0",
-          height: "46%",
+          height: "40%",
           background: "linear-gradient(180deg, rgba(0,0,0,0.04) 0%, transparent 20%)",
         }}
       />
@@ -211,14 +211,15 @@ export function EnvelopeCard({
       />
 
       {/* ═══ Heart seal at flap junction ═══════════════ */}
-      <div
-        className="absolute z-[6] left-1/2 -translate-x-1/2 pointer-events-none
-          transition-transform duration-300 group-hover:scale-110"
-        style={{ bottom: "20%" }}
+      <motion.div
+        className="absolute z-[6] left-1/2 -translate-x-1/2 pointer-events-none"
+        style={{ bottom: "19%" }}
+        whileHover={{ scale: unlocked ? 1.2 : 1 }}
+        transition={{ type: "spring", stiffness: 400, damping: 15 }}
       >
         <div
-          className="w-7 h-7 rounded-full flex items-center justify-center
-            text-white text-xs select-none"
+          className="w-9 h-9 rounded-full flex items-center justify-center
+            text-white text-sm select-none"
           style={{
             background: `radial-gradient(circle at 40% 35%, ${lighten(primaryColor, 0.05)}, ${dark})`,
             boxShadow: `0 2px 6px ${dark}, inset 0 1px 2px rgba(255,255,255,0.3)`,
@@ -226,7 +227,7 @@ export function EnvelopeCard({
         >
           ♥
         </div>
-      </div>
+      </motion.div>
     </motion.button>
   );
 }

@@ -31,6 +31,8 @@ export interface EditorField {
   /** Min/max item count for options fields */
   min?: number;
   max?: number;
+  /** For image fields: enforce a crop modal with this aspect ratio (e.g. 3/4) */
+  cropAspect?: number;
 }
 
 export interface EditorConfig {

@@ -4,42 +4,46 @@ import { useEffect } from "react";
  * Prevents background scroll when a modal/dialog is open.
  *
  * Strategy:
- * - Toggles `.scroll-locked` on `<html>` which applies `overflow: hidden !important`.
- * - Sets `overflow: hidden` on `<body>` as a belt-and-suspenders measure.
- * - For iOS Safari touch events: sets `touch-action: none` on `<body>`.
- *
- * Layout-shift prevention is handled by the dual-direction architecture:
- * `<html dir="ltr">` keeps the scrollbar on the right side, so hiding
- * overflow causes zero horizontal shift. No manual padding needed.
- *
- * Does NOT use `position: fixed` on body — that technique causes visible
- * scroll-jump artifacts because it breaks `sticky` header positioning and
- * requires scroll-position save/restore which flickers on repaint.
+ * - Prevent background scrolling with the iOS-safe fixed-body technique.
+ * - Preserve the current scroll position and restore it on cleanup.
+ * - Keep the implementation reference-counted so nested dialogs do not fight.
  */
 let activeScrollLocks = 0;
 
 let previousOverflow = "";
 let previousTouchAction = "";
+let previousPosition = "";
+let previousTop = "";
+let previousWidth = "";
+let lockedScrollY = 0;
 
 function applyScrollLock(): void {
-  const html = document.documentElement;
   const body = document.body;
 
   previousOverflow = body.style.overflow;
   previousTouchAction = body.style.touchAction;
+  previousPosition = body.style.position;
+  previousTop = body.style.top;
+  previousWidth = body.style.width;
+  lockedScrollY = window.scrollY;
 
-  html.classList.add("scroll-locked");
   body.style.overflow = "hidden";
+  body.style.position = "fixed";
+  body.style.top = `-${lockedScrollY}px`;
+  body.style.width = "100%";
   body.style.touchAction = "none";
 }
 
 function releaseScrollLock(): void {
-  const html = document.documentElement;
   const body = document.body;
 
-  html.classList.remove("scroll-locked");
   body.style.overflow = previousOverflow;
+  body.style.position = previousPosition;
+  body.style.top = previousTop;
+  body.style.width = previousWidth;
   body.style.touchAction = previousTouchAction;
+
+  window.scrollTo(0, lockedScrollY);
 }
 
 export function useLockBodyScroll(isLocked: boolean): void {

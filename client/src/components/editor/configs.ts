@@ -234,6 +234,8 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         key: "envelopes",
         label: "מעטפות",
         type: "envelopes",
+        min: 1,
+        max: 6,
       },
     ],
     defaultData: {
@@ -389,6 +391,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
         label: "תמונת רקע",
         type: "image_url",
         placeholder: "העלו תמונה לרקע",
+        cropAspect: 3 / 4,
       },
       {
         key: "primaryColor",
@@ -487,8 +490,8 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
     fields: [
       { key: "title", label: "כותרת", type: "text", placeholder: "מכונת התירוצים האוטומטית", maxLength: 60 },
       { key: "subtitle", label: "כותרת משנה", type: "text", placeholder: "לא בא לך לצאת? יש לנו תירוץ בשבילך.", maxLength: 120 },
-      { key: "excuses", label: "תירוצים", type: "options", min: 1, max: 8 },
-      { key: "buttonLabel", label: "טקסט כפתור", type: "text", placeholder: "ג'נרט תירוץ", maxLength: 20 },
+      { key: "excuses", label: "תירוצים", type: "options", min: 1, max: 8, maxLength: 80 },
+      { key: "buttonLabel", label: "טקסט כפתור", type: "text", placeholder: "ג'נרט תירוץ", maxLength: 40 },
       { key: "disclaimer", label: "כתב ויתור", type: "textarea", placeholder: "* החברה אינה אחראית לתוצאות השימוש בתירוצים אלו.", maxLength: 60 },
       { key: "primaryColor", label: "צבע ראשי", type: "color" },
     ],
@@ -512,7 +515,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
     title: "חיפוש סליחה",
     description: "חיפוש שמדמה גוגל — מקליד את הסליחה ומגיע לתוצאה מרגשת!",
     fields: [
-      { key: "searchQuery", label: "שאילתת חיפוש", type: "text", placeholder: "איך לבקש סליחה מהבן זוג שלי?", maxLength: 150 },
+      { key: "searchQuery", label: "שאילתת חיפוש", type: "text", placeholder: "איך לבקש סליחה מהבן זוג שלי?", maxLength: 70 },
       { key: "resultTitle", label: "כותרת תוצאה", type: "text", placeholder: "סליחה שהייתי עצבנית", maxLength: 30 },
       { key: "resultSubtitle", label: "תיאור תוצאה", type: "textarea", placeholder: "אתה צודק. אוהבת אותך.", maxLength: 100 },
       { key: "startButtonLabel", label: "כפתור התחלה", type: "text", placeholder: "התחל חיפוש", maxLength: 40 },

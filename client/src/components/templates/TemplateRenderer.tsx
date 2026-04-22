@@ -12,11 +12,13 @@ import { getTemplateComponent } from "./registry";
 export interface TemplateRendererProps {
   componentKey: string;
   data: unknown;
+  creationId?: string;
 }
 
 export function TemplateRenderer({
   componentKey,
   data,
+  creationId,
 }: TemplateRendererProps) {
   const Component = getTemplateComponent(componentKey);
 
@@ -35,7 +37,7 @@ export function TemplateRenderer({
 
   return (
     <Suspense fallback={<TemplateLoader />}>
-      <Component data={data} />
+      <Component data={data} creationId={creationId} />
     </Suspense>
   );
 }

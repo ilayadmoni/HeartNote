@@ -64,7 +64,7 @@ export function OpenWhenMobile({ data }: OpenWhenViewProps) {
       </div>
 
       {/* Footer Credit */}
-      <FooterBranding className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10" />
+      <FooterBranding className="mt-6 shrink-0 z-10" />
 
       {/* Letter Modal */}
       <LetterModal

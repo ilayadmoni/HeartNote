@@ -1,10 +1,7 @@
 "use client";
 
-/**
- * LetterModal Component
- * Full-screen modal with paper-style letter, handwritten font, close button
- */
-
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import type { OpenWhenEnvelope } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
@@ -20,7 +17,39 @@ export function LetterModal({
   onClose,
   primaryColor = DEFAULT_PRIMARY_COLOR,
 }: LetterModalProps) {
-  return (
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (!envelope) return;
+
+    const body = document.body;
+    const originalOverflow = body.style.overflow;
+    const originalPosition = body.style.position;
+    const originalTop = body.style.top;
+    const originalWidth = body.style.width;
+    const originalTouchAction = body.style.touchAction;
+    const scrollY = window.scrollY;
+
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+    body.style.touchAction = "none";
+
+    return () => {
+      body.style.overflow = originalOverflow;
+      body.style.position = originalPosition;
+      body.style.top = originalTop;
+      body.style.width = originalWidth;
+      body.style.touchAction = originalTouchAction;
+      window.scrollTo(0, scrollY);
+    };
+  }, [envelope]);
+
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {envelope && (
         <>
@@ -91,9 +120,6 @@ export function LetterModal({
               <div className="flex-1 overflow-y-auto px-6 md:px-8 pb-6 md:pb-8">
                 <div
                   className="text-[#2e3c52] dark:text-gray-200 text-lg leading-relaxed break-words whitespace-pre-wrap text-hebrew-body"
-                  style={{
-                    fontFamily: "'Segoe Script', 'Brush Script MT', cursive",
-                  }}
                 >
                   {envelope.content}
                 </div>
@@ -105,6 +131,7 @@ export function LetterModal({
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

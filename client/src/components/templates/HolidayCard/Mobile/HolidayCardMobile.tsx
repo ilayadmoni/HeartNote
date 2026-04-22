@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { FooterBranding } from "@/components/templates/components";
 import { HOLIDAY_PRESETS } from "../constants/holidays";
 import type { HolidayCardData } from "../../types";

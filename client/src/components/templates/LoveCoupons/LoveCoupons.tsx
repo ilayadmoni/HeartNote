@@ -1,21 +1,20 @@
 "use client";
 
-/**
- * LoveCoupons Component
- * Responsive wrapper — delegates to Desktop or Mobile layout
- */
-
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { LoveCouponsDesktop } from "./Desktop/LoveCouponsDesktop";
 import { LoveCouponsMobile } from "./Mobile/LoveCouponsMobile";
 import type { TemplateComponentProps, LoveCouponsData } from "./types";
 
-export function LoveCoupons({ data }: TemplateComponentProps<LoveCouponsData>) {
+interface LoveCouponsProps extends TemplateComponentProps<LoveCouponsData> {
+  creationId?: string;
+}
+
+export function LoveCoupons({ data, creationId }: LoveCouponsProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return isMobile ? (
-    <LoveCouponsMobile data={data} />
+    <LoveCouponsMobile data={data} creationId={creationId} />
   ) : (
-    <LoveCouponsDesktop data={data} />
+    <LoveCouponsDesktop data={data} creationId={creationId} />
   );
 }

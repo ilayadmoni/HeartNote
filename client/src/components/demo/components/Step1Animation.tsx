@@ -93,7 +93,7 @@ export function Step1Animation() {
           <div className="p-5 flex flex-col text-right">
             <h4 className="text-[#d98574] text-hebrew-heading text-[22px] font-bold mb-2 leading-none">הזמנה לדייט</h4>
             <p className="text-[14px] text-hebrew-body text-slate-600 mb-5 leading-relaxed">
-              כרטיס אינטראקטיבי שבו כפתור ה"לא" בורח מהאצבע. אי אפשר לסרב לזה! 💕
+              כרטיס אינטראקטיבי שבו כפתור ה&quot;לא&quot; בורח מהאצבע. אי אפשר לסרב לזה! 💕
             </p>
             <motion.button
               id="date-btn"

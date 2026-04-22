@@ -133,6 +133,7 @@ export default async function PublicPage({ params }: PageProps) {
       templateKey={creation.template_slug}
       contentData={creation.metadata}
       isPaid={!!creation.is_paid}
+      creationId={creation.id}
     />
   );
 }

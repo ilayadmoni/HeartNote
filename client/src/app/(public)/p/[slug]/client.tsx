@@ -17,12 +17,14 @@ interface UserPageClientProps {
   templateKey: string;
   contentData: Record<string, unknown>;
   isPaid: boolean;
+  creationId: string;
 }
 
 export function UserPageClient({
   templateKey,
   contentData,
   isPaid,
+  creationId,
 }: UserPageClientProps) {
   const componentKey = templateKey
     .split("-")
@@ -51,7 +53,7 @@ export function UserPageClient({
         /* ═══ Paid User — clean render, no watermark ═══ */
         <div className="flex-1 flex items-center justify-center py-6 bg-[#faf7f5]">
           <div className="w-full md:max-w-[620px] lg:max-w-[700px]">
-            <TemplateRenderer componentKey={componentKey} data={contentData} />
+            <TemplateRenderer componentKey={componentKey} data={contentData} creationId={creationId} />
           </div>
         </div>
       ) : (
@@ -78,7 +80,7 @@ export function UserPageClient({
 
           {/* TIER 3: Template — bg-transparent root, content cards are solid white */}
           <div className="relative z-20 w-full md:max-w-[620px] lg:max-w-[700px]">
-            <TemplateRenderer componentKey={componentKey} data={contentData} />
+            <TemplateRenderer componentKey={componentKey} data={contentData} creationId={creationId} />
           </div>
         </div>
       )}

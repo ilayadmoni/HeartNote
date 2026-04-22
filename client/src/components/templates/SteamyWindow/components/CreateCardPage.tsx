@@ -6,7 +6,7 @@
  * Main creation form for the "Steamy Window" card.
  *
  * Flow:
- *  1. User picks an image  → opens a 3:4 crop overlay (react-easy-crop)
+ *  1. User picks an image  → opens ImageCropperModal (square aspect)
  *  2. User confirms the crop → cropped blob URL is pushed into the REAL
  *     creation object via `onChange("background_image", url)`
  *  3. User writes a dedication text → `onChange("revealMessage", text)`
@@ -23,66 +23,15 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import { SteamyWindowPreview } from "./SteamyWindowPreview";
+import { SteamyWindowCropModal } from "./SteamyWindowCropModal";
+import { ConfirmationModal } from "./ConfirmationModal";
 
 const supabase = createClient();
-import Cropper from "react-easy-crop";
-import type { Area } from "react-easy-crop";
-import { SteamyWindowPreview } from "./SteamyWindowPreview";
-import { ConfirmationModal } from "./ConfirmationModal";
-import { toast } from "sonner";
 
-/* ------------------------------------------------------------------ */
-/*  Crop utility helpers                                               */
-/* ------------------------------------------------------------------ */
-function loadImage(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.addEventListener("load", () => resolve(img));
-    img.addEventListener("error", reject);
-    img.setAttribute("crossOrigin", "anonymous");
-    img.src = src;
-  });
-}
-
-async function getCroppedImg(
-  imageSrc: string,
-  pixelCrop: Area,
-): Promise<string> {
-  const img = await loadImage(imageSrc);
-  const canvas = document.createElement("canvas");
-  canvas.width = pixelCrop.width;
-  canvas.height = pixelCrop.height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("No 2d context");
-
-  ctx.drawImage(
-    img,
-    pixelCrop.x,
-    pixelCrop.y,
-    pixelCrop.width,
-    pixelCrop.height,
-    0,
-    0,
-    pixelCrop.width,
-    pixelCrop.height,
-  );
-
-  return new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) {
-          reject(new Error("Failed to create blob"));
-          return;
-        }
-        resolve(URL.createObjectURL(blob));
-      },
-      "image/jpeg",
-      0.92,
-    );
-  });
-}
 
 /* ------------------------------------------------------------------ */
 /*  Props                                                              */
@@ -101,9 +50,6 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
   /* ── Cropping UI state (temporary, NOT part of creation data) ──── */
   const [rawImageUrl, setRawImageUrl] = useState<string | null>(null);
   const [isCropping, setIsCropping] = useState(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
   /* ── Modal state ────────────────────────────────────────────────── */
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -114,6 +60,7 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
 
   /* ── Blob URL lifecycle tracking ────────────────────────────────── */
   const croppedUrlRef = useRef<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   /* ── Read from parent data (keys match steamy-window config) ────── */
   const previewUrl = (data.background_image as string) || "";
@@ -149,7 +96,7 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
 
   /* ── Handlers ───────────────────────────────────────────────────── */
 
-  /** Select a file → open the cropper overlay */
+  /** Select a file → open the cropper modal */
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -161,9 +108,6 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
       const url = URL.createObjectURL(file);
       setRawImageUrl(url);
       setIsCropping(true);
-      setCrop({ x: 0, y: 0 });
-      setZoom(1);
-      setCroppedAreaPixels(null);
 
       // Reset input so re-selecting the same file works
       e.target.value = "";
@@ -171,33 +115,23 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
     [rawImageUrl],
   );
 
-  /** react-easy-crop fires this on every crop/zoom change */
-  const onCropComplete = useCallback((_: Area, pixels: Area) => {
-    setCroppedAreaPixels(pixels);
-  }, []);
-
-  /** Confirm the crop → generate cropped blob → push into parent data */
-  const handleCropConfirm = useCallback(async () => {
-    if (!rawImageUrl || !croppedAreaPixels) return;
-
-    try {
+  /** Cropper confirmed → store cropped blob → push into parent data */
+  const handleCropDone = useCallback(
+    (croppedUrl: string) => {
       // Revoke previous cropped blob URL
       if (croppedUrlRef.current) URL.revokeObjectURL(croppedUrlRef.current);
-
-      const url = await getCroppedImg(rawImageUrl, croppedAreaPixels);
-      croppedUrlRef.current = url;
+      croppedUrlRef.current = croppedUrl;
 
       // ✅ Push the cropped URL into the REAL creation object
-      onChange("background_image", url);
+      onChange("background_image", croppedUrl);
 
       // Cleanup raw image & close cropper
-      URL.revokeObjectURL(rawImageUrl);
+      if (rawImageUrl) URL.revokeObjectURL(rawImageUrl);
       setRawImageUrl(null);
       setIsCropping(false);
-    } catch (err) {
-      toast.error("חיתוך התמונה נכשל. נסו שוב.");
-    }
-  }, [rawImageUrl, croppedAreaPixels, onChange]);
+    },
+    [rawImageUrl, onChange],
+  );
 
   /** Cancel the crop → discard raw image */
   const handleCropCancel = useCallback(() => {
@@ -230,8 +164,11 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
                 בחרו תמונה
               </label>
 
-              <label
-                htmlFor="card-image"
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => fileInputRef.current?.click()}
+                onKeyDown={(e) => e.key === "Enter" && fileInputRef.current?.click()}
                 className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer hover:border-[#c77d67] transition-colors bg-white dark:bg-gray-800"
               >
                 {previewUrl ? (
@@ -239,7 +176,7 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
                     ✓ תמונה נבחרה — לחצו לשינוי
                   </p>
                 ) : (
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center pointer-events-none">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="w-8 h-8 text-gray-400 mb-2"
@@ -259,15 +196,16 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
                     </span>
                   </div>
                 )}
+              </div>
 
-                <input
-                  id="card-image"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-              </label>
+              {/* Hidden input — triggered imperatively, Safari-safe */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
             </div>
 
             {/* Dedication textarea */}
@@ -304,11 +242,12 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
           <div className="flex items-start justify-center">
             {previewUrl ? (
               <SteamyWindowPreview
+                key={previewUrl}
                 previewUrl={previewUrl}
                 dedicationText={dedicationText || "ההקדשה שלכם תופיע כאן…"}
               />
             ) : (
-              <div className="aspect-[3/4] w-full max-w-sm mx-auto rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 flex items-center justify-center">
+              <div className="aspect-square w-full max-w-sm mx-auto rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 flex items-center justify-center">
                 <p className="text-sm text-gray-400 dark:text-gray-500 text-hebrew-body">
                   התצוגה המקדימה תופיע כאן
                 </p>
@@ -318,59 +257,17 @@ export function CreateCardPage({ data, onChange }: CreateCardPageProps) {
         </div>
       </div>
 
-      {/* ── Crop overlay (full-screen, z-50) ────────────────────── */}
-      {isCropping && rawImageUrl && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex flex-col">
-          {/* Cropper area */}
-          <div className="relative flex-1">
-            <Cropper
-              image={rawImageUrl}
-              crop={crop}
-              zoom={zoom}
-              aspect={3 / 4}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onCropComplete={onCropComplete}
-            />
-          </div>
-
-          {/* Zoom slider */}
-          <div className="px-8 py-3 flex items-center gap-4 justify-center bg-black/60">
-            <span className="text-white text-sm">🔍</span>
-            <input
-              type="range"
-              min={1}
-              max={3}
-              step={0.1}
-              value={zoom}
-              onChange={(e) => setZoom(Number(e.target.value))}
-              className="w-48 accent-[#c77d67]"
-            />
-          </div>
-
-          {/* Confirm / cancel buttons */}
-          <div
-            dir="rtl"
-            className="flex items-center justify-center gap-4 px-6 py-4 bg-black/60"
-          >
-            <button
-              type="button"
-              onClick={handleCropConfirm}
-              className="px-8 py-2.5 rounded-xl text-white font-semibold text-sm cursor-pointer hover:opacity-90 transition-opacity text-hebrew-body"
-              style={{ backgroundColor: "#c77d67" }}
-            >
-              אישור חיתוך
-            </button>
-            <button
-              type="button"
-              onClick={handleCropCancel}
-              className="px-8 py-2.5 rounded-xl border border-white/30 text-white font-semibold text-sm cursor-pointer hover:bg-white/10 transition-colors text-hebrew-body"
-            >
-              ביטול
-            </button>
-          </div>
-        </div>
-      )}
+      {/* ── Crop modal ────────────────────────────────────────────── */}
+      {isCropping && rawImageUrl &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <SteamyWindowCropModal
+            imageSrc={rawImageUrl}
+            onCropDone={handleCropDone}
+            onCancel={handleCropCancel}
+          />,
+          document.body,
+        )}
 
       {/* ── Confirmation modal ──────────────────────────────────── */}
       <ConfirmationModal

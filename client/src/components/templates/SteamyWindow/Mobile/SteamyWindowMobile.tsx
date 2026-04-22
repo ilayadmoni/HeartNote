@@ -10,6 +10,10 @@ import { usePathname } from "next/navigation";
 import type { SteamyWindowViewProps } from "../types";
 import { SteamCanvas } from "../components";
 import {
+  STEAMY_WINDOW_MOBILE_CANVAS_WIDTH,
+  STEAMY_WINDOW_MOBILE_CANVAS_HEIGHT,
+} from "../constants";
+import {
   FooterBranding,
 } from "@/components/templates/components";
 import { FloatingIcons } from "../../OpenWhen/components";
@@ -20,7 +24,7 @@ export function SteamyWindowMobile({ data }: SteamyWindowViewProps) {
 
   return (
     <div className={`bg-transparent px-4 py-6 relative isolate overflow-hidden flex flex-col justify-between items-center gap-6 ${
-      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
+      isCreateRoute ? 'min-h-[560px]' : 'min-h-[720px]'
     }`}>
       <FloatingIcons />
       {/* Decorative blob */}
@@ -57,8 +61,8 @@ export function SteamyWindowMobile({ data }: SteamyWindowViewProps) {
           transition={{ delay: 0.2, type: "spring", stiffness: 120 }}
         >
           <SteamCanvas
-            width={320}
-            height={280}
+            width={STEAMY_WINDOW_MOBILE_CANVAS_WIDTH}
+            height={STEAMY_WINDOW_MOBILE_CANVAS_HEIGHT}
             revealMessage={data.revealMessage || "אני אוהב אותך! ❤️"}
             primaryColor={data.primaryColor}
             backgroundImage={data.background_image}

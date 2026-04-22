@@ -26,8 +26,7 @@ import { WeddingGlass } from "./WeddingGlass/WeddingGlass";
 import { HolidayCard } from "./HolidayCard/HolidayCard";
 import { BarBatMitzvah } from "./BarBatMitzvah/BarBatMitzvah";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyTemplateComponent = ComponentType<{ data: any }>;
+export type AnyTemplateComponent = ComponentType<{ data: any; creationId?: string }>;
 
 /**
  * Registry: PascalCase key → React component.

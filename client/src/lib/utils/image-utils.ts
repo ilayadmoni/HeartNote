@@ -117,3 +117,69 @@ export function buildStoragePath(userId: string, originalFileName: string): stri
   const baseName = safeName.replace(/\.[^.]+$/, "");
   return `uploads/${userId}/${timestamp}_${baseName}.webp`;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Canvas-based image cropping (used with react-easy-crop)            */
+/* ------------------------------------------------------------------ */
+
+/** Load an image element from a URL (supports cross-origin). */
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.addEventListener("load", () => resolve(img));
+    img.addEventListener("error", reject);
+    img.setAttribute("crossOrigin", "anonymous");
+    img.src = src;
+  });
+}
+
+/**
+ * Crop an image on the client and return a blob Object URL.
+ *
+ * @param imageSrc    – source URL (blob URL or remote)
+ * @param pixelCrop   – `Area` from react-easy-crop's `onCropComplete`
+ * @param outputWidth – output canvas width in px (default 390)
+ * @param outputHeight – output canvas height in px (default 520)
+ * @param quality     – JPEG quality (0–1, default 0.92)
+ * @returns Object URL pointing to the cropped blob
+ */
+export async function getCroppedImg(
+  imageSrc: string,
+  pixelCrop: { x: number; y: number; width: number; height: number },
+  outputWidth = 390,
+  outputHeight = 520,
+  quality = 0.92,
+): Promise<string> {
+  const img = await loadImage(imageSrc);
+  const canvas = document.createElement("canvas");
+  canvas.width = outputWidth;
+  canvas.height = outputHeight;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("No 2d context");
+
+  ctx.drawImage(
+    img,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    outputWidth,
+    outputHeight,
+  );
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error("Failed to create cropped blob"));
+          return;
+        }
+        resolve(URL.createObjectURL(blob));
+      },
+      "image/jpeg",
+      quality,
+    );
+  });
+}

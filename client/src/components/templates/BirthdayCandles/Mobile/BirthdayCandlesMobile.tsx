@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 import type { BirthdayCandlesMobileProps } from "../types";
 import { Candle } from "../components/Candle";
 import {

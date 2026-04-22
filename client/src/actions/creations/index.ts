@@ -9,4 +9,5 @@ export { createCreation } from "./create";
 export { submitGenericCreation } from "./submit";
 export { getMyCreations, getCreation } from "./read";
 export { deleteCreation } from "./delete";
-export { redeemCoupon } from "./redeem";
+export { redeemCouponAction } from "./redeem";
+export type { RedeemedCoupon } from "./redeem";

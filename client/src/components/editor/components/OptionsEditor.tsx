@@ -16,9 +16,14 @@ const MIN_OPTIONS = 2;
 interface OptionsEditorProps {
   options: string[];
   onChange: (options: string[]) => void;
+  maxLength?: number;
 }
 
-export function OptionsEditor({ options = [], onChange }: OptionsEditorProps) {
+export function OptionsEditor({
+  options = [],
+  onChange,
+  maxLength = CHAR_LIMITS.OPTION,
+}: OptionsEditorProps) {
   const canAdd = options.length < MAX_OPTIONS;
   const canRemove = options.length > MIN_OPTIONS;
 
@@ -56,7 +61,7 @@ export function OptionsEditor({ options = [], onChange }: OptionsEditorProps) {
             <LimitedInput
               value={opt}
               onChange={(v) => updateOption(index, v)}
-              maxLength={CHAR_LIMITS.OPTION}
+              maxLength={maxLength}
               placeholder={`אופציה ${index + 1}`}
               className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f]/50 text-hebrew-body"
               wrapperClassName="flex-1 min-w-0"

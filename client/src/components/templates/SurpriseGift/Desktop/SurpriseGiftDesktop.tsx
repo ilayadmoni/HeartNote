@@ -91,55 +91,66 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
           {title}
         </h1>
 
+        {/* Stable transition zone — min-height holds the gift box footprint so
+            neither the box (absolute) nor the greeting (normal flow) can shift
+            surrounding content when they swap. */}
         <div className="flex-1 w-full flex items-center justify-center overflow-hidden">
-          {/* Gift Box – clickable, shakes - hide when opened */}
-          {!isOpen && (
-            <motion.button
-              onClick={handleClick}
-              animate={shaking ? { rotate: [0, -8, 8, -6, 6, -3, 3, 0] } : {}}
-              transition={{ duration: 0.4 }}
-              whileHover={{ scale: 1.05 }}
-              className="cursor-pointer 2xl:scale-150 focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
-              style={
-                { focusVisibleRingColor: primaryColor } as React.CSSProperties
-              }
-              aria-label={`לחצו לנער את המתנה (${clicks}/${needed})`}
-            >
-              <GiftBox
-                boxColor={boxColor}
-                ribbonColor={ribbonColor}
-                isOpen={false}
-                size={240}
-              />
-            </motion.button>
-          )}
+          <div
+            className="relative w-full max-w-md 2xl:max-w-2xl flex items-center justify-center"
+            style={{ minHeight: 260 }}
+          >
+            {/* Gift Box – absolutely positioned so it cannot affect layout height */}
+            <AnimatePresence>
+              {!isOpen && (
+                <motion.button
+                  onClick={handleClick}
+                  animate={shaking ? { rotate: [0, -8, 8, -6, 6, -3, 3, 0] } : {}}
+                  transition={{ duration: 0.4 }}
+                  whileHover={{ scale: 1.05 }}
+                  exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+                  className="absolute cursor-pointer 2xl:scale-150 focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
+                  style={
+                    { focusVisibleRingColor: primaryColor } as React.CSSProperties
+                  }
+                  aria-label={`לחצו לנער את המתנה (${clicks}/${needed})`}
+                >
+                  <GiftBox
+                    boxColor={boxColor}
+                    ribbonColor={ribbonColor}
+                    isOpen={false}
+                    size={240}
+                  />
+                </motion.button>
+              )}
+            </AnimatePresence>
 
-          {/* Revealed greeting */}
-          <AnimatePresence>
-            {isOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 40, scale: 0.7 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 180,
-                  damping: 14,
-                  delay: 0.2,
-                }}
-                className="w-full max-w-md 2xl:max-w-2xl rounded-2xl 2xl:rounded-3xl shadow-lg bg-white dark:bg-gray-800 p-6 md:p-8 2xl:p-12"
-              >
-                <div className="w-full flex justify-center text-center">
-                  <p
-                    className="text-center text-2xl 2xl:text-4xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words w-full"
-                    style={{ color: primaryColor }}
-                  >
-                    {greeting}
-                  </p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            {/* Revealed greeting – normal flow so the container can grow to fit */}
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 40, scale: 0.7 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 180,
+                    damping: 14,
+                    delay: 0.2,
+                  }}
+                  className="w-full rounded-2xl 2xl:rounded-3xl shadow-lg bg-white dark:bg-gray-800 p-6 md:p-8 2xl:p-12"
+                >
+                  <div className="w-full flex justify-center text-center">
+                    <p
+                      className="text-center text-2xl 2xl:text-4xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words w-full"
+                      style={{ color: primaryColor }}
+                    >
+                      {greeting}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
 
@@ -150,7 +161,7 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
             transition={{ duration: 0.4 }}
             className="flex justify-center mb-3"
           >
-            <TemplateResetButton onClick={handleReset} label="שחק שוב" />
+            <TemplateResetButton onClick={handleReset} label="נסה שוב" />
           </motion.div>
         )}
 

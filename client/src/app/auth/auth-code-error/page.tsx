@@ -38,7 +38,7 @@ export default function AuthCodeErrorPage() {
         </h1>
 
         <p className="mt-4 text-[#4b5563] dark:text-gray-300 text-english-body leading-relaxed">
-          במידה ויש בעיה פנו לתמיכה דרך דף 'יצירת קשר'
+          במידה ויש בעיה פנו לתמיכה דרך דף &apos;יצירת קשר&apos;
         </p>
 
         <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:justify-center">

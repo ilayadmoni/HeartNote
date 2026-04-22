@@ -34,19 +34,22 @@ export function TimelineDesktop({ data }: TimelineDesktopProps) {
         >
           {/* Title */}
           {data.title && (
-            <h1 className="text-xl font-bold text-center text-[#2e3c52] dark:text-white mb-6 text-hebrew-heading break-words max-w-[360px] mx-auto">
+            <h1
+              className="text-xl font-bold text-center mb-6 text-hebrew-heading break-words max-w-[360px] mx-auto"
+              style={{ color: primaryColor }}
+            >
               {data.title}
             </h1>
           )}
 
           {/* Timeline Content */}
           {hasEvents ? (
-            <div className="relative">
-              {/* Vertical Line */}
+            <div className="relative" dir="rtl">
+              {/* Vertical dashed line — aligned with icon center (w-9 = 36px → center at 18px from right) */}
               <div
-                className="absolute left-4 top-3 bottom-3 w-0.5 rounded-full"
+                className="absolute right-[18px] top-3 bottom-3 w-[2px] rounded-full"
                 style={{
-                  background: `linear-gradient(to bottom, ${primaryColor}30, ${primaryColor}50, ${primaryColor}30)`,
+                  backgroundImage: `repeating-linear-gradient(to bottom, ${primaryColor}70 0px, ${primaryColor}70 7px, transparent 7px, transparent 13px)`,
                 }}
               />
 
@@ -55,46 +58,56 @@ export function TimelineDesktop({ data }: TimelineDesktopProps) {
                 {data.events.map((event, index) => (
                   <motion.div
                     key={event.id}
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="relative flex items-start gap-4 pr-2"
+                    transition={{ delay: index * 0.1, duration: 0.35, ease: "easeOut" }}
+                    className="relative flex items-start gap-4 pl-1"
                   >
                     {/* Icon Circle */}
                     <div
-                      className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm"
+                      className="relative z-10 flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
                       style={{
-                        background: `linear-gradient(135deg, ${primaryColor}15, ${primaryColor}08)`,
+                        background: `linear-gradient(135deg, ${primaryColor}22, ${primaryColor}0d)`,
+                        boxShadow: `0 0 0 2.5px ${primaryColor}65, 0 3px 10px ${primaryColor}22`,
                       }}
                     >
-                      <span className="text-sm">{event.icon || "📌"}</span>
+                      <span className="text-base leading-none">{event.icon || "📌"}</span>
                     </div>
 
-                    {/* Event Content */}
-                    <div className="flex-1 pb-2">
+                    {/* Event Card */}
+                    <motion.div
+                      className="flex-1 rounded-xl p-3 border cursor-default"
+                      whileHover={{ scale: 1.02, y: -2, boxShadow: `0 6px 20px ${primaryColor}20` }}
+                      transition={{ type: "spring", stiffness: 320, damping: 22 }}
+                      style={{
+                        backgroundColor: `${primaryColor}07`,
+                        borderColor: `${primaryColor}22`,
+                        boxShadow: `0 1px 4px ${primaryColor}10`,
+                      }}
+                    >
                       {/* Date Badge */}
                       <span
-                        className="inline-block px-2 py-0.5 text-[10px] font-bold rounded-full mb-1.5"
+                        className="inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-full mb-1.5 tracking-wide"
                         style={{
                           color: primaryColor,
-                          backgroundColor: `${primaryColor}15`,
+                          backgroundColor: `${primaryColor}18`,
                         }}
                       >
                         {formatDate(event.date)}
                       </span>
 
-                      {/* Title */}
-                      <h3 className="text-sm font-bold text-[#2e3c52] dark:text-white mb-0.5 text-hebrew-heading break-words max-w-[270px]">
+                      {/* Event Title */}
+                      <h3 className="text-sm font-bold text-[#2e3c52] dark:text-white mb-1 text-hebrew-heading break-words leading-snug">
                         {event.title}
                       </h3>
 
                       {/* Description */}
                       {event.description && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 text-hebrew-body leading-relaxed break-words max-w-[270px]">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 text-hebrew-body leading-relaxed break-words">
                           {event.description}
                         </p>
                       )}
-                    </div>
+                    </motion.div>
                   </motion.div>
                 ))}
               </div>

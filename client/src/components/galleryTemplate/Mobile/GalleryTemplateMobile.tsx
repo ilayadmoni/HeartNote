@@ -50,19 +50,7 @@ export function GalleryTemplateMobile({
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 text-center"
         >
-          {/* Floating Hearts */}
-          <div className="flex justify-center gap-2 mb-3">
-            {["💕", "✨", "💕"].map((emoji, i) => (
-              <motion.span
-                key={i}
-                animate={{ y: [0, -5, 0] }}
-                transition={{ repeat: Infinity, duration: 1.5, delay: i * 0.2 }}
-                className="text-xl"
-              >
-                {emoji}
-              </motion.span>
-            ))}
-          </div>
+      
 
           <h1 className="text-2xl font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading">
             בחרו את החוויה הבאה

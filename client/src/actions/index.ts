@@ -17,7 +17,7 @@ export {
   getMyCreations,
   getCreation,
   deleteCreation,
-  redeemCoupon,
+  redeemCouponAction,
 } from "./creations";
 
 // Templates

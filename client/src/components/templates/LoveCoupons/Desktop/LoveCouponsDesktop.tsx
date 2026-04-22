@@ -1,36 +1,34 @@
 "use client";
 
-/**
- * LoveCouponsDesktop Component
- * Desktop layout — centered list of ticket-style coupons
- */
-
 import { motion } from "framer-motion";
 import { RotateCcw } from "lucide-react";
 import { usePathname } from "next/navigation";
 import type { CouponsViewProps } from "../types";
 import { useCoupons } from "../hooks/useCoupons";
-import { CouponCard } from "../components";
-import {
-  FooterBranding,
-  BackToGallery,
-} from "@/components/templates/components";
+import { CouponCard, CouponRedeemModal } from "../components";
+import { FooterBranding, BackToGallery } from "@/components/templates/components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import { FloatingIcons } from "../../OpenWhen/components";
 
-
-export function LoveCouponsDesktop({ data }: CouponsViewProps) {
+export function LoveCouponsDesktop({ data, creationId }: CouponsViewProps) {
   const pathname = usePathname();
-  const isCreateRoute = pathname?.includes('/create/');
-  const { coupons, handleRedeem, handleReset } = useCoupons(data.coupons);
+  const isCreateRoute = pathname?.includes("/create/");
+  const {
+    coupons,
+    pendingCoupon,
+    isSubmitting,
+    requestRedeem,
+    confirmRedeem,
+    cancelRedeem,
+    handleReset,
+  } = useCoupons(data.coupons, creationId);
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
     <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
-        <FloatingIcons />
+      <FloatingIcons />
       <BackToGallery className="top-4 right-4 absolute" />
       <div className="flex-1 w-full max-w-sm mx-auto px-6 py-8">
-        {/* Title */}
         {data.title && (
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
@@ -42,21 +40,20 @@ export function LoveCouponsDesktop({ data }: CouponsViewProps) {
           </motion.h1>
         )}
 
-        {/* Coupons List */}
         <div className="space-y-4">
           {coupons.map((coupon, index) => (
             <CouponCard
               key={coupon.id}
               coupon={coupon}
               index={index}
-              onRedeem={handleRedeem}
+              onRedeem={requestRedeem}
               primaryColor={primaryColor}
             />
           ))}
         </div>
 
-        {/* Reset/Replay Button — hidden inside the editor (creation phase) */}
-        {!isCreateRoute && coupons.some((c) => c.isRedeemed) && (
+        {/* Reset button — only visible in the editor/creation route */}
+        {isCreateRoute && coupons.some((c) => c.isRedeemed) && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -76,8 +73,16 @@ export function LoveCouponsDesktop({ data }: CouponsViewProps) {
         )}
       </div>
 
-      {/* Footer Credit */}
       <FooterBranding className="shrink-0 pb-4" />
+
+      <CouponRedeemModal
+        open={!!pendingCoupon}
+        couponTitle={pendingCoupon?.title ?? ""}
+        isSubmitting={isSubmitting}
+        onConfirm={confirmRedeem}
+        onCancel={cancelRedeem}
+        primaryColor={primaryColor}
+      />
     </div>
   );
 }

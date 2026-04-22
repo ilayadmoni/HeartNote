@@ -97,51 +97,62 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
           {title}
         </h1>
 
-        {/* Gift Box – only show when not opened */}
-        {!isOpen && (
-          <motion.button
-            onClick={handleTap}
-            animate={shaking ? { rotate: [0, -10, 10, -7, 7, -3, 3, 0] } : {}}
-            transition={{ duration: 0.4 }}
-            whileTap={{ scale: 0.95 }}
-            className="cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
-            aria-label={`הקישו לנער (${clicks}/${needed})`}
-          >
-            <GiftBox
-              boxColor={boxColor}
-              ribbonColor={ribbonColor}
-              isOpen={false}
-              size={180}
-            />
-          </motion.button>
-        )}
+        {/* Stable transition zone — min-height holds the gift box footprint so
+            neither the box (absolute) nor the greeting (normal flow) can shift
+            surrounding content when they swap. */}
+        <div
+          className="relative w-full flex items-center justify-center"
+          style={{ minHeight: 200 }}
+        >
+          {/* Gift Box – absolutely positioned so it cannot affect layout height */}
+          <AnimatePresence>
+            {!isOpen && (
+              <motion.button
+                onClick={handleTap}
+                animate={shaking ? { rotate: [0, -10, 10, -7, 7, -3, 3, 0] } : {}}
+                transition={{ duration: 0.4 }}
+                whileTap={{ scale: 0.95 }}
+                exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+                className="absolute cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
+                aria-label={`הקישו לנער (${clicks}/${needed})`}
+              >
+                <GiftBox
+                  boxColor={boxColor}
+                  ribbonColor={ribbonColor}
+                  isOpen={false}
+                  size={180}
+                />
+              </motion.button>
+            )}
+          </AnimatePresence>
 
-        {/* Revealed greeting - only show text when opened */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.7 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 180,
-                damping: 14,
-                delay: 0.2,
-              }}
-              className="w-full rounded-2xl shadow-lg bg-white dark:bg-gray-800 p-4 sm:p-6"
-            >
-              <div className="max-h-[50vh] overflow-y-auto">
-                <p
-                  className="text-lg sm:text-xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words text-center"
-                  style={{ color: primaryColor }}
-                >
-                  {greeting}
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          {/* Revealed greeting – normal flow so the container can grow to fit */}
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 30, scale: 0.7 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 180,
+                  damping: 14,
+                  delay: 0.2,
+                }}
+                className="w-full rounded-2xl shadow-lg bg-white dark:bg-gray-800 p-4 sm:p-6"
+              >
+                <div className="max-h-[50vh] overflow-y-auto">
+                  <p
+                    className="text-lg sm:text-xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words text-center"
+                    style={{ color: primaryColor }}
+                  >
+                    {greeting}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {showReset && (
@@ -151,7 +162,7 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
           transition={{ duration: 0.4 }}
           className="flex justify-center mb-3"
         >
-          <TemplateResetButton onClick={handleReset} label="שחק שוב" />
+          <TemplateResetButton onClick={handleReset} label="נסה שוב" />
         </motion.div>
       )}
 

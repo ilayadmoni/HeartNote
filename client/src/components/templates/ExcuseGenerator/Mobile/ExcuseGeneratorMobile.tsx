@@ -18,11 +18,15 @@ const DEFAULT_EXCUSES = [
   "אמא שלי הזמינה אותי לאכול — לא יכול/ה לסרב.",
 ];
 
+const EXCUSE_MAX_LENGTH = 80;
+
 export function ExcuseGeneratorMobile({ data }: ExcuseGeneratorViewProps) {
   const pathname = usePathname();
   const isCreateRoute = pathname?.includes("/create/");
   const excuses =
-    data.excuses?.length >= 1 ? data.excuses : DEFAULT_EXCUSES;
+    data.excuses
+      ?.map((excuse) => excuse.slice(0, EXCUSE_MAX_LENGTH))
+      .filter((excuse) => excuse.length > 0) || DEFAULT_EXCUSES;
 
   const [displayText, setDisplayText] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -150,7 +154,6 @@ export function ExcuseGeneratorMobile({ data }: ExcuseGeneratorViewProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <TemplateResetButton onClick={handleReset} label="אפס" />
           </motion.div>
         )}
 

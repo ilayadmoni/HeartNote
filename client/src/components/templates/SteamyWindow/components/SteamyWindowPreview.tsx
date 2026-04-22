@@ -3,11 +3,11 @@
 /**
  * SteamyWindowPreview Component
  *
- * Overlays a semi-transparent "steamy" canvas over a 3:4 cropped image
+ * Overlays a semi-transparent "steamy" canvas over a square cropped image
  * and a dedication text. The user wipes the canvas (scratch-off style)
  * to reveal the content underneath.
  *
- * Fixed 3:4 aspect ratio — container uses CSS `aspect-[3/4]`.
+ * Fixed square aspect ratio — container uses CSS `aspect-square`.
  * No dynamic width/height calculations.
  *
  * Layer stack (bottom → top):
@@ -155,7 +155,7 @@ export function SteamyWindowPreview({
     <div
       ref={containerRef}
       dir="rtl"
-      className="aspect-[3/4] w-full max-w-sm mx-auto relative rounded-2xl overflow-hidden shadow-xl select-none"
+      className="aspect-[400/460] w-full max-w-sm mx-auto relative rounded-2xl overflow-hidden shadow-xl select-none"
     >
       {/* Layer 1 – Image (fills container) */}
       {/* eslint-disable-next-line @next/next/no-img-element */}

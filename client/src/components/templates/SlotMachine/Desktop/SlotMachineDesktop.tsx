@@ -95,7 +95,7 @@ export function SlotMachineDesktop({
             transition={{ delay: 0.3 }}
             className="mt-5"
           >
-            <TemplateResetButton onClick={onReset} label="שחק שוב" />
+            <TemplateResetButton onClick={onReset} label="נסה שוב" />
           </motion.div>
         )}
       </div>

@@ -152,6 +152,7 @@ export function EditorField({ field, value, onChange, userId, onFileReady }: Edi
         <OptionsEditor
           options={(value as string[]) || []}
           onChange={onChange}
+          maxLength={field.maxLength}
         />
       )}
 
@@ -161,6 +162,7 @@ export function EditorField({ field, value, onChange, userId, onFileReady }: Edi
           onChange={(url) => onChange(url)}
           userId={userId}
           onFileReady={onFileReady}
+          cropAspect={field.cropAspect}
         />
       )}
     </div>

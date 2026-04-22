@@ -9,6 +9,10 @@ import { motion } from "framer-motion";
 import type { SteamyWindowViewProps } from "../types";
 import { SteamCanvas } from "../components";
 import {
+  STEAMY_WINDOW_DESKTOP_CANVAS_WIDTH,
+  STEAMY_WINDOW_DESKTOP_CANVAS_HEIGHT,
+} from "../constants";
+import {
   FooterBranding,
   BackToGallery,
 } from "@/components/templates/components";
@@ -16,7 +20,7 @@ import { FloatingIcons } from "../../OpenWhen/components";
 
 export function SteamyWindowDesktop({ data }: SteamyWindowViewProps) {
   return (
-    <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
+    <div className="flex flex-col min-h-[720px] bg-transparent relative isolate">
       <FloatingIcons />
       <BackToGallery className="top-4 right-4 absolute" />
       {/* Decorative blobs */}
@@ -54,8 +58,8 @@ export function SteamyWindowDesktop({ data }: SteamyWindowViewProps) {
           transition={{ delay: 0.2, type: "spring", stiffness: 120 }}
         >
           <SteamCanvas
-            width={400}
-            height={320}
+            width={STEAMY_WINDOW_DESKTOP_CANVAS_WIDTH}
+            height={STEAMY_WINDOW_DESKTOP_CANVAS_HEIGHT}
             revealMessage={data.revealMessage || "אני אוהב אותך! ❤️"}
             primaryColor={data.primaryColor}
             backgroundImage={data.background_image}
