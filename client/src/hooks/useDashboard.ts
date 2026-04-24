@@ -32,6 +32,7 @@ export interface DashboardCreation {
   is_expired: boolean;
   is_paid: boolean | null;
   is_deleted: boolean;
+  verification_code: string | null;
 }
 
 export interface DashboardData {

@@ -74,6 +74,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   const [successData, setSuccessData] = useState<{
     url: string;
     expiresAt: string | null;
+    verificationCode: string | null;
   } | null>(null);
 
   const pendingUploadRef = useRef<(() => Promise<string | null>) | null>(null);
@@ -317,6 +318,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
       setSuccessData({
         url: `${window.location.origin}/p/${result.data.creationId}`,
         expiresAt: null,
+        verificationCode: result.data.verification_code ?? null,
       });
     } catch (error) {
       toast.error("שגיאה ביצירת הכרטיס. נסה שוב.");
@@ -418,6 +420,7 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
         onClose={() => setSuccessData(null)}
         url={successData?.url || ""}
         expiresAt={successData?.expiresAt || ""}
+        verificationCode={successData?.verificationCode ?? null}
       />
 
       <QuotaModal

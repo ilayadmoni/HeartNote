@@ -10,7 +10,10 @@ export const CREATION_ACTION_ERRORS = {
 export type CreationActionErrorCode =
   (typeof CREATION_ACTION_ERRORS)[keyof typeof CREATION_ACTION_ERRORS];
 
-export type CreationActionResult = ActionResult<{ creationId: string }>;
+export type CreationActionResult = ActionResult<{
+  creationId: string;
+  verification_code: string;
+}>;
 
 export type BlockedModal = "upgrade" | "quota" | "paid-quota";
 

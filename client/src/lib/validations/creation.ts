@@ -27,6 +27,7 @@ export type CreateCreationInput = z.infer<typeof CreateCreationRequestSchema>;
 export const CreateCreationResponseSchema = z.object({
   creationId: z.string().uuid(),
   expires_at: z.string().nullable().default(null),
+  verification_code: z.string().regex(/^[0-9]{4}$/).nullable().default(null),
 });
 export type CreateCreationResponse = z.infer<typeof CreateCreationResponseSchema>;
 

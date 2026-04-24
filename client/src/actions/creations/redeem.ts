@@ -11,6 +11,7 @@ import { logger } from "@/lib/utils/logger";
 const RedeemSchema = z.object({
   creationId: z.string().uuid(),
   couponId: z.string().min(1),
+  verificationCode: z.string().regex(/^[0-9]{4}$/, "verificationCode must be 4 digits"),
 });
 
 const redeemLimiter = createRateLimiter({
@@ -28,6 +29,7 @@ export interface RedeemedCoupon {
 export async function redeemCouponAction(
   creationId: string,
   couponId: string,
+  verificationCode: string,
 ): Promise<ActionResult<RedeemedCoupon>> {
   try {
     const originOk = await validateOrigin();
@@ -36,7 +38,7 @@ export async function redeemCouponAction(
       return fail("Invalid origin", 403);
     }
 
-    const parsed = RedeemSchema.safeParse({ creationId, couponId });
+    const parsed = RedeemSchema.safeParse({ creationId, couponId, verificationCode });
     if (!parsed.success) {
       console.error("[redeemCouponAction] Zod validation failed", { creationId, couponId, errors: parsed.error.issues });
       return fail("Invalid input", 400);
@@ -55,6 +57,7 @@ export async function redeemCouponAction(
     const { data, error } = await supabase.rpc("redeem_love_coupon", {
       p_creation_id: parsed.data.creationId,
       p_coupon_id: parsed.data.couponId,
+      p_verification_code: parsed.data.verificationCode,
     });
 
     if (error) {

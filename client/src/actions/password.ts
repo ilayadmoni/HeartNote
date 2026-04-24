@@ -23,6 +23,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/utils/logger";
 import { validateOrigin } from "@/lib/utils/csrf";
 import { passwordResetLimiter } from "@/lib/utils/rate-limiter";
+import { logAudit } from "@/lib/audit-logger";
 
 interface ActionResult {
   success?: string;
@@ -192,6 +193,12 @@ export async function requestPasswordReset(
       return { success: GENERIC_SUCCESS };
     }
 
+    await logAudit({
+      eventType: "user.password_reset_requested",
+      userId: null,
+      metadata: { email, attempts },
+    });
+
     return { success: GENERIC_SUCCESS };
   } catch (err) {
     // SEC: Log error details server-side, return generic message to client
@@ -207,6 +214,12 @@ export async function updatePassword(
   formData: FormData,
 ): Promise<ActionResult> {
   try {
+    // ── SEC-HIGH-3: CSRF validation ───────────────────────────────────
+    if (!(await validateOrigin())) {
+      logger.warn("[updatePassword] CSRF validation failed");
+      return { error: "בקשה לא חוקית. נא לרענן את הדף ולנסות שוב." };
+    }
+
     const newPassword = formData.get("password")?.toString();
     if (!newPassword || newPassword.length < 8) {
       return { error: "הסיסמה חייבת להכיל לפחות 8 תווים." };

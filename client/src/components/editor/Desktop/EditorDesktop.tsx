@@ -76,6 +76,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const [successData, setSuccessData] = useState<{
     url: string;
     expiresAt: string | null;
+    verificationCode: string | null;
   } | null>(null);
 
   // Store the deferred upload function from ImageUploader (via sidebar)
@@ -337,6 +338,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       setSuccessData({
         url: `${window.location.origin}/p/${result.data.creationId}`,
         expiresAt: null,
+        verificationCode: result.data.verification_code ?? null,
       });
     } catch (error) {
       toast.error("שגיאה ביצירת הכרטיס. נסה שוב.");
@@ -405,6 +407,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
         onClose={() => setSuccessData(null)}
         url={successData?.url || ""}
         expiresAt={successData?.expiresAt || ""}
+        verificationCode={successData?.verificationCode ?? null}
       />
 
       <QuotaModal

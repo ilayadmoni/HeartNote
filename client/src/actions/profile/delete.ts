@@ -23,6 +23,7 @@ import { ActionError, type ActionResult } from "@/lib/action-response";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { validateOrigin, csrfError } from "@/lib/utils/csrf";
 import { logger } from "@/lib/utils/logger";
+import { logAudit } from "@/lib/audit-logger";
 
 export async function deleteMyAccount(): Promise<ActionResult<null>> {
   // SEC-HIGH-2: CSRF protection for destructive action
@@ -80,6 +81,15 @@ export async function deleteMyAccount(): Promise<ActionResult<null>> {
         500,
       );
     }
+
+    await logAudit({
+      eventType: "user.account_deleted",
+      userId: user.id,
+      metadata: {
+        email: user.email ?? null,
+        reason: "self_deletion",
+      },
+    });
 
     // --- 3. Sign out current session ---
     await supabase.auth.signOut();

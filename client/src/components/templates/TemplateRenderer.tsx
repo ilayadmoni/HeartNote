@@ -13,12 +13,14 @@ export interface TemplateRendererProps {
   componentKey: string;
   data: unknown;
   creationId?: string;
+  verificationCode?: string | null;
 }
 
 export function TemplateRenderer({
   componentKey,
   data,
   creationId,
+  verificationCode,
 }: TemplateRendererProps) {
   const Component = getTemplateComponent(componentKey);
 
@@ -37,7 +39,7 @@ export function TemplateRenderer({
 
   return (
     <Suspense fallback={<TemplateLoader />}>
-      <Component data={data} creationId={creationId} />
+      <Component data={data} creationId={creationId} verificationCode={verificationCode} />
     </Suspense>
   );
 }

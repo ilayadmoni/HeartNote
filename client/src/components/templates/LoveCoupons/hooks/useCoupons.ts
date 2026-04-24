@@ -5,13 +5,25 @@ import { toast } from "sonner";
 import { redeemCouponAction } from "@/actions/creations";
 import type { LoveCoupon } from "../types";
 
-export function useCoupons(initial: LoveCoupon[], creationId?: string) {
+export function useCoupons(
+  initial: LoveCoupon[],
+  creationId?: string,
+  providedCode?: string | null,
+) {
   const [coupons, setCoupons] = useState<LoveCoupon[]>(initial);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [enteredCode, setEnteredCode] = useState("");
+  const [codeError, setCodeError] = useState<string | null>(null);
 
   // Sync with editor live-preview changes
   useEffect(() => setCoupons(initial), [initial]);
+
+  // Reset entered-code state when the pending coupon changes.
+  useEffect(() => {
+    setEnteredCode("");
+    setCodeError(null);
+  }, [pendingId]);
 
   const requestRedeem = (id: string) => setPendingId(id);
   const cancelRedeem = () => {
@@ -23,6 +35,26 @@ export function useCoupons(initial: LoveCoupon[], creationId?: string) {
     const id = pendingId;
     const snapshot = coupons;
 
+    // Editor mode — no persistence, just close
+    if (!creationId) {
+      setCoupons((prev) =>
+        prev.map((c) =>
+          c.id === id
+            ? { ...c, isRedeemed: true, redeemedAt: new Date().toISOString() }
+            : c,
+        ),
+      );
+      setPendingId(null);
+      return;
+    }
+
+    // Require a valid 4-digit code (from URL or user input).
+    const code = (providedCode ?? enteredCode).trim();
+    if (!/^[0-9]{4}$/.test(code)) {
+      setCodeError("יש להזין קוד בן 4 ספרות");
+      return;
+    }
+
     // Optimistic update
     setCoupons((prev) =>
       prev.map((c) =>
@@ -32,21 +64,25 @@ export function useCoupons(initial: LoveCoupon[], creationId?: string) {
       ),
     );
 
-    // Editor mode — no persistence, just close
-    if (!creationId) {
-      setPendingId(null);
-      return;
-    }
-
     setIsSubmitting(true);
-    const result = await redeemCouponAction(creationId, id);
+    const result = await redeemCouponAction(creationId, id, code);
     setIsSubmitting(false);
-    setPendingId(null);
 
     if (!result.success) {
       setCoupons(snapshot); // rollback
-      toast.error(result.code === 409 ? "הקופון כבר מומש" : "שגיאה במימוש");
+      if (result.code === 409) {
+        toast.error("הקופון כבר מומש");
+        setPendingId(null);
+      } else if (result.code === 400) {
+        setCodeError("קוד אימות שגוי");
+      } else {
+        toast.error("שגיאה במימוש");
+        setPendingId(null);
+      }
+      return;
     }
+
+    setPendingId(null);
   };
 
   const handleReset = () =>
@@ -55,6 +91,7 @@ export function useCoupons(initial: LoveCoupon[], creationId?: string) {
     );
 
   const pendingCoupon = coupons.find((c) => c.id === pendingId) ?? null;
+  const needsCodeInput = !!creationId && !providedCode;
 
   return {
     coupons,
@@ -64,5 +101,9 @@ export function useCoupons(initial: LoveCoupon[], creationId?: string) {
     confirmRedeem,
     cancelRedeem,
     handleReset,
+    needsCodeInput,
+    enteredCode,
+    setEnteredCode,
+    codeError,
   };
 }

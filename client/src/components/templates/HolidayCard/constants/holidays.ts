@@ -38,4 +38,11 @@ export const HOLIDAY_PRESETS: Record<
     bgColor: "#fffaeb",
     borderColor: "rgba(234,179,8,0.3)",
   },
+  sukkot: {
+    icon: "🌿",
+    defaultTitle: "חג סוכות שמח!",
+    defaultGreeting: "שנזכה לשבת יחד בסוכה של שלום.",
+    bgColor: "#f3f6ea",
+    borderColor: "rgba(101,130,68,0.3)",
+  },
 };

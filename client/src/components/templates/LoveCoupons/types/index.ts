@@ -12,4 +12,5 @@ export type {
 export interface CouponsViewProps {
   data: import("@/components/templates/types").LoveCouponsData;
   creationId?: string;
+  verificationCode?: string | null;
 }

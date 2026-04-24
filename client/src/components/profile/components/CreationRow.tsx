@@ -87,6 +87,17 @@ export function CreationRow({
             {creation.template_name ? `${creation.template_name} • ` : ""}
             {createdDate}
           </p>
+          {creation.verification_code && !isDeleted && (
+            <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+              <span>קוד אימות:</span>
+              <span
+                className="font-mono font-bold tracking-wider text-[#d4826f] bg-[#d4826f]/10 px-1.5 py-0.5 rounded"
+                dir="ltr"
+              >
+                {creation.verification_code}
+              </span>
+            </p>
+          )}
         </div>
       </div>
 

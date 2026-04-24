@@ -29,6 +29,8 @@ import {
 } from "./helpers/quotaCheck";
 import { calculateExpiry } from "./helpers/expiryCalc";
 import { CREATION_ACTION_ERRORS } from "@/lib/creation-flow/errors";
+import { logAudit } from "@/lib/audit-logger";
+import { validateOrigin } from "@/lib/utils/csrf";
 
 interface SupabaseInsertErrorLike {
   message?: unknown;
@@ -59,6 +61,11 @@ export async function createCreation(
   input: CreateCreationInput,
 ): Promise<ActionResult<CreateCreationResponse>> {
   return protectedAction(async (user, supabase) => {
+    // ── SEC-HIGH-4: CSRF validation ───────────────────────────────────
+    if (!(await validateOrigin())) {
+      throw new ActionError("Invalid origin", 403);
+    }
+
     const parsed = CreateCreationRequestSchema.safeParse(input);
     if (!parsed.success) {
       throw new ActionError(
@@ -167,6 +174,11 @@ export async function createCreation(
       },
     );
 
+    // SEC-CRIT-2: 4-digit verification code required for coupon redemption.
+    const verificationCode = String(
+      Math.floor(Math.random() * 10000),
+    ).padStart(4, "0");
+
     const { data: creation, error: insertErr } = await supabase
       .from("creations")
       .insert({
@@ -175,8 +187,9 @@ export async function createCreation(
         metadata: metadataWithBehavior,
         is_paid: isPremiumBehavior,
         expires_at: expiresAt,
+        verification_code: verificationCode,
       })
-      .select("id, expires_at")
+      .select("id, expires_at, verification_code")
       .single();
 
     if (insertErr || !creation) {
@@ -215,9 +228,22 @@ export async function createCreation(
       );
     }
 
+    await logAudit({
+      eventType: "creation.created",
+      userId: user.id,
+      metadata: {
+        creation_id: creation.id,
+        template_id: template.id,
+        template_slug: template.slug,
+        is_paid: isPremiumBehavior,
+        applied_quota: appliedQuota,
+      },
+    });
+
     return {
       creationId: creation.id as string,
       expires_at: (creation.expires_at as string) ?? null,
+      verification_code: (creation.verification_code as string) ?? verificationCode,
     };
   });
 }

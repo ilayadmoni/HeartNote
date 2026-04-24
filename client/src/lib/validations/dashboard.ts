@@ -27,6 +27,7 @@ export const DashboardCreationSchema = z.object({
   is_expired: z.boolean(),
   is_paid: z.boolean().nullable().default(null),
   is_deleted: z.boolean().default(false),
+  verification_code: z.string().regex(/^[0-9]{4}$/).nullable().default(null),
 });
 export type DashboardCreation = z.infer<typeof DashboardCreationSchema>;
 

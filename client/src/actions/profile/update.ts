@@ -13,6 +13,8 @@ import { ProfileUpdateSchema, type ProfileUpdateInput } from "@/lib/validations"
 import type { ProfileResponse } from "@/lib/validations";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { buildProfileResponse } from "./helpers";
+import { logAudit } from "@/lib/audit-logger";
+import { validateOrigin } from "@/lib/utils/csrf";
 
 /**
  * Partially updates the authenticated user's profile.
@@ -23,6 +25,11 @@ export async function updateMyProfile(
   input: ProfileUpdateInput,
 ): Promise<ActionResult<ProfileResponse>> {
   return protectedAction(async (user, supabase) => {
+    // ── SEC-HIGH-4: CSRF validation ───────────────────────────────────
+    if (!(await validateOrigin())) {
+      throw new ActionError("Invalid origin", 403);
+    }
+
     const parsed = ProfileUpdateSchema.safeParse(input);
     if (!parsed.success) {
       throw new ActionError(
@@ -53,6 +60,28 @@ export async function updateMyProfile(
         `Failed to update profile: ${updateError.message}`,
         500,
       );
+    }
+
+    const changedFields = Object.keys(updateDict);
+
+    await logAudit({
+      eventType: "user.profile_updated",
+      userId: user.id,
+      metadata: { changed_fields: changedFields },
+    });
+
+    if (
+      updateDict.first_name !== undefined ||
+      updateDict.last_name !== undefined
+    ) {
+      await logAudit({
+        eventType: "user.name_changed",
+        userId: user.id,
+        metadata: {
+          first_name: updateDict.first_name,
+          last_name: updateDict.last_name,
+        },
+      });
     }
 
     revalidatePath("/profile");

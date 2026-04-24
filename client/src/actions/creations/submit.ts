@@ -32,6 +32,8 @@ import {
   CREATION_ACTION_ERRORS,
   type CreationActionResult,
 } from "@/lib/creation-flow/errors";
+import { logAudit } from "@/lib/audit-logger";
+import { validateOrigin } from "@/lib/utils/csrf";
 
 interface SupabaseInsertErrorLike {
   message?: unknown;
@@ -70,6 +72,11 @@ export async function submitGenericCreation(
   formData: FormData,
 ): Promise<CreationActionResult> {
   return protectedAction(async (user, supabase) => {
+    // ── SEC-HIGH-4: CSRF validation ───────────────────────────────────
+    if (!(await validateOrigin())) {
+      throw new ActionError("Invalid origin", 403);
+    }
+
     // ── Extract form fields ────────────────────────────────────────
     const templateSlug = formData.get("templateSlug") as string | null;
     const metadataRaw = formData.get("metadata") as string | null;
@@ -216,6 +223,11 @@ export async function submitGenericCreation(
       },
     );
 
+    // SEC-CRIT-2: 4-digit verification code for coupon redemption.
+    const verificationCode = String(
+      Math.floor(Math.random() * 10000),
+    ).padStart(4, "0");
+
     const { data: creation, error: insertErr } = await supabase
       .from("creations")
       .insert({
@@ -224,8 +236,9 @@ export async function submitGenericCreation(
         metadata: parsedMetadata,
         is_paid: isPremiumBehavior,
         expires_at: expiresAt,
+        verification_code: verificationCode,
       })
-      .select("id")
+      .select("id, verification_code")
       .single();
 
     if (insertErr || !creation) {
@@ -248,6 +261,21 @@ export async function submitGenericCreation(
       );
     }
 
-    return { creationId: creation.id as string };
+    await logAudit({
+      eventType: "creation.created",
+      userId: user.id,
+      metadata: {
+        creation_id: creation.id,
+        template_id: template.id,
+        template_slug: templateSlug,
+        is_paid: isPremiumBehavior,
+        applied_quota: appliedQuota,
+      },
+    });
+
+    return {
+      creationId: creation.id as string,
+      verification_code: (creation.verification_code as string) ?? verificationCode,
+    };
   });
 }

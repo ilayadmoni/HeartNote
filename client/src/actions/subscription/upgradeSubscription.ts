@@ -8,6 +8,7 @@ import {
   type UpgradeSubscriptionInput,
   type UpgradeSubscriptionResponse,
 } from "@/lib/validations";
+import { logAudit } from "@/lib/audit-logger";
 
 export async function upgradeSubscription(
   input: UpgradeSubscriptionInput,
@@ -59,6 +60,16 @@ export async function upgradeSubscription(
     if (updateError || !updatedProfile) {
       throw new ActionError("Failed to update subscription", 500);
     }
+
+    await logAudit({
+      eventType: "subscription.purchased",
+      userId: user.id,
+      metadata: {
+        tier_code: tierCode,
+        premium_start: premiumStart.toISOString(),
+        premium_expiry: premiumExpiry.toISOString(),
+      },
+    });
 
     return {
       tierCode: updatedProfile.subscription_tier as "lite" | "premium",

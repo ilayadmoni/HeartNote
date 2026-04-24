@@ -12,6 +12,10 @@ interface Props {
   onConfirm: () => void;
   onCancel: () => void;
   primaryColor?: string;
+  needsCodeInput?: boolean;
+  enteredCode?: string;
+  onEnteredCodeChange?: (code: string) => void;
+  codeError?: string | null;
 }
 
 export function CouponRedeemModal({
@@ -21,6 +25,10 @@ export function CouponRedeemModal({
   onConfirm,
   onCancel,
   primaryColor,
+  needsCodeInput,
+  enteredCode,
+  onEnteredCodeChange,
+  codeError,
 }: Props) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -96,6 +104,48 @@ export function CouponRedeemModal({
                   האם את/ה בטוח/ה? פעולה זו אינה ניתנת לביטול.
                 </p>
               </div>
+
+              {needsCodeInput && (
+                <div className="mb-5">
+                  <label
+                    htmlFor="coupon-verification-code"
+                    className="block text-xs font-medium text-gray-600 mb-2 text-center text-hebrew-body"
+                  >
+                    הזינו את קוד האימות בן 4 הספרות שקיבלתם
+                  </label>
+                  <input
+                    id="coupon-verification-code"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    autoComplete="off"
+                    value={enteredCode ?? ""}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/[^0-9]/g, "").slice(0, 4);
+                      onEnteredCodeChange?.(digits);
+                    }}
+                    disabled={isSubmitting}
+                    dir="ltr"
+                    className={`w-full mx-auto text-center text-2xl font-mono font-bold tracking-[0.6em] py-3 rounded-xl border-2 bg-white focus:outline-none focus:ring-2 focus:ring-offset-1 transition-colors ${
+                      codeError
+                        ? "border-rose-400 focus:ring-rose-300"
+                        : "border-gray-200 focus:ring-coral-300"
+                    }`}
+                    placeholder="••••"
+                    aria-invalid={!!codeError}
+                    aria-describedby={codeError ? "coupon-code-error" : undefined}
+                  />
+                  {codeError && (
+                    <p
+                      id="coupon-code-error"
+                      className="mt-2 text-center text-xs text-rose-500 text-hebrew-body"
+                    >
+                      {codeError}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Buttons */}
               <div className="flex flex-col sm:flex-row-reverse gap-3">

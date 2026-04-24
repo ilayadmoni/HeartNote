@@ -10,7 +10,7 @@ import { FooterBranding, BackToGallery } from "@/components/templates/components
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import { FloatingIcons } from "../../OpenWhen/components";
 
-export function LoveCouponsDesktop({ data, creationId }: CouponsViewProps) {
+export function LoveCouponsDesktop({ data, creationId, verificationCode }: CouponsViewProps) {
   const pathname = usePathname();
   const isCreateRoute = pathname?.includes("/create/");
   const {
@@ -21,7 +21,11 @@ export function LoveCouponsDesktop({ data, creationId }: CouponsViewProps) {
     confirmRedeem,
     cancelRedeem,
     handleReset,
-  } = useCoupons(data.coupons, creationId);
+    needsCodeInput,
+    enteredCode,
+    setEnteredCode,
+    codeError,
+  } = useCoupons(data.coupons, creationId, verificationCode);
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   return (
@@ -82,6 +86,10 @@ export function LoveCouponsDesktop({ data, creationId }: CouponsViewProps) {
         onConfirm={confirmRedeem}
         onCancel={cancelRedeem}
         primaryColor={primaryColor}
+        needsCodeInput={needsCodeInput}
+        enteredCode={enteredCode}
+        onEnteredCodeChange={setEnteredCode}
+        codeError={codeError}
       />
     </div>
   );

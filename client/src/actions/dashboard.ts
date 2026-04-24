@@ -56,7 +56,7 @@ export async function getDashboard(): Promise<ActionResult<DashboardResponse>> {
     const { data: rawCreations } = await supabase
       .from("creations")
       .select(
-        "id, is_paid, expires_at, created_at, is_deleted, templates!inner(slug, name)",
+        "id, is_paid, expires_at, created_at, is_deleted, verification_code, templates!inner(slug, name)",
       )
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
@@ -87,6 +87,7 @@ export async function getDashboard(): Promise<ActionResult<DashboardResponse>> {
         is_expired: isExpired,
         is_paid: (c.is_paid as boolean) ?? null,
         is_deleted: (c.is_deleted as boolean) ?? false,
+        verification_code: (c.verification_code as string) ?? null,
       };
     });
 

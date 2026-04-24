@@ -20,6 +20,7 @@ interface SuccessModalProps {
   url: string;
   expiresAt: string | null;
   templateName?: string;
+  verificationCode?: string | null;
 }
 
 export function SuccessModal({
@@ -28,6 +29,7 @@ export function SuccessModal({
   url,
   expiresAt,
   templateName = "unknown",
+  verificationCode,
 }: SuccessModalProps) {
   const CLOSE_THEN_NAVIGATE_DELAY_MS = 60;
   const router = useRouter();
@@ -43,7 +45,10 @@ export function SuccessModal({
 
   // Build shareable URL with dynamic base
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-  const shareUrl = url || `${baseUrl}/p/card`;
+  const rawUrl = url || `${baseUrl}/p/card`;
+  const shareUrl = verificationCode
+    ? `${rawUrl}${rawUrl.includes("?") ? "&" : "?"}code=${verificationCode}`
+    : rawUrl;
 
   const handleCopy = async () => {
     pushToDataLayer({ event: "share", method: "copy", template_name: templateName });
@@ -113,6 +118,37 @@ export function SuccessModal({
 
             {/* Content */}
             <div className="p-4">
+              {verificationCode && (
+                <div className="mb-4">
+                  <label
+                    className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2"
+                    style={{ fontFamily: "'Open Sans', sans-serif" }}
+                  >
+                    קוד אימות למימוש קופונים
+                  </label>
+                  <div
+                    className="flex justify-center gap-2 mb-2"
+                    dir="ltr"
+                    aria-label="קוד אימות"
+                  >
+                    {verificationCode.split("").map((digit, idx) => (
+                      <span
+                        key={idx}
+                        className="w-10 h-12 flex items-center justify-center rounded-lg bg-[#faf1ee] dark:bg-gray-700 border-2 border-[#d4826f]/30 text-xl font-bold text-[#2e3c52] dark:text-white font-mono"
+                      >
+                        {digit}
+                      </span>
+                    ))}
+                  </div>
+                  <p
+                    className="text-[11px] text-gray-500 dark:text-gray-400 text-center leading-relaxed"
+                    style={{ fontFamily: "'Open Sans', sans-serif" }}
+                  >
+                    אם תשכחו את הקוד, תמיד תוכלו למצוא אותו בעמוד הפרופיל שלכם.
+                  </p>
+                </div>
+              )}
+
               {/* URL Input */}
               <label
                 className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2"

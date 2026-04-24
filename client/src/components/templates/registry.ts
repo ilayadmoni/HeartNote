@@ -26,7 +26,11 @@ import { WeddingGlass } from "./WeddingGlass/WeddingGlass";
 import { HolidayCard } from "./HolidayCard/HolidayCard";
 import { BarBatMitzvah } from "./BarBatMitzvah/BarBatMitzvah";
 
-export type AnyTemplateComponent = ComponentType<{ data: any; creationId?: string }>;
+export type AnyTemplateComponent = ComponentType<{
+  data: any;
+  creationId?: string;
+  verificationCode?: string | null;
+}>;
 
 /**
  * Registry: PascalCase key → React component.

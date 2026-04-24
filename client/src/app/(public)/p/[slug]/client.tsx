@@ -10,6 +10,7 @@
  */
 
 import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { TemplateRenderer } from "@/components/templates";
 import { Footer } from "@/components/footer";
 
@@ -26,6 +27,9 @@ export function UserPageClient({
   isPaid,
   creationId,
 }: UserPageClientProps) {
+  const searchParams = useSearchParams();
+  const rawCode = searchParams?.get("code") ?? null;
+  const verificationCode = rawCode && /^[0-9]{4}$/.test(rawCode) ? rawCode : null;
   const componentKey = templateKey
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -53,7 +57,7 @@ export function UserPageClient({
         /* ═══ Paid User — clean render, no watermark ═══ */
         <div className="flex-1 flex items-center justify-center py-6 bg-[#faf7f5]">
           <div className="w-full md:max-w-[620px] lg:max-w-[700px]">
-            <TemplateRenderer componentKey={componentKey} data={contentData} creationId={creationId} />
+            <TemplateRenderer componentKey={componentKey} data={contentData} creationId={creationId} verificationCode={verificationCode} />
           </div>
         </div>
       ) : (
@@ -80,7 +84,7 @@ export function UserPageClient({
 
           {/* TIER 3: Template — bg-transparent root, content cards are solid white */}
           <div className="relative z-20 w-full md:max-w-[620px] lg:max-w-[700px]">
-            <TemplateRenderer componentKey={componentKey} data={contentData} creationId={creationId} />
+            <TemplateRenderer componentKey={componentKey} data={contentData} creationId={creationId} verificationCode={verificationCode} />
           </div>
         </div>
       )}

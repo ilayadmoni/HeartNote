@@ -25,6 +25,7 @@ import { logger } from "@/lib/utils/logger";
 import { validateOrigin } from "@/lib/utils/csrf";
 import { registrationLimiter } from "@/lib/utils/rate-limiter";
 import { HAPPY_AVATAR_OPTIONS } from "@/components/profile/types";
+import { logAudit } from "@/lib/audit-logger";
 
 interface RegistrationResult {
   success?: string;
@@ -242,7 +243,7 @@ export async function registerUser(
       signUpOptions.emailRedirectTo = emailRedirectTo;
     }
 
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: trimmedEmail,
       password,
       options: signUpOptions,
@@ -252,6 +253,16 @@ export async function registerUser(
       logger.error("[registerUser] signUp error", { error: signUpError });
       return { error: ERR_INTERNAL };
     }
+
+    await logAudit({
+      eventType: "user.registered",
+      userId: signUpData?.user?.id ?? null,
+      metadata: {
+        email: trimmedEmail,
+        first_name: firstName,
+        last_name: lastName,
+      },
+    });
 
     return { success: GENERIC_SUCCESS };
   } catch (err) {

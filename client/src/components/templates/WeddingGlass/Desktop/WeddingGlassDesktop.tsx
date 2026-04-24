@@ -1,35 +1,53 @@
 "use client";
 
 import { motion } from "framer-motion";
+import type { RefObject } from "react";
 import { BackToGallery, FooterBranding, TemplateResetButton } from "@/components/templates/components";
 import { GroomFigure } from "../components/GroomFigure";
 import { BrideFigure } from "../components/BrideFigure";
-import { GlassWithShards } from "../components/GlassWithShards";
+import { ShatteringGlass } from "../components/ShatteringGlass";
 import type { WeddingGlassData } from "../../types";
 
 interface WeddingGlassDesktopProps {
   data: WeddingGlassData;
   primaryColor: string;
+  isStomping: boolean;
   isShattered: boolean;
   showMessage: boolean;
+  shakeKey: number;
+  confettiCanvasRef: RefObject<HTMLCanvasElement>;
   onStomp: () => void;
   onShatterComplete: () => void;
   onReset: () => void;
 }
 
+const shakeAnim = {
+  x: [0, -10, 9, -7, 6, -3, 0],
+  y: [0, 4, -3, 3, -2, 1, 0],
+  rotate: [0, -0.6, 0.5, -0.4, 0.2, 0],
+};
+
 export function WeddingGlassDesktop({
   data,
   primaryColor,
+  isStomping,
   isShattered,
   showMessage,
+  shakeKey,
+  confettiCanvasRef,
   onStomp,
   onShatterComplete,
   onReset,
 }: WeddingGlassDesktopProps) {
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center p-6">
+      <canvas
+        ref={confettiCanvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none z-50"
+      />
       <BackToGallery />
 
+      {/* Fade-in once on mount — no key, no remount flash */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -46,56 +64,56 @@ export function WeddingGlassDesktop({
           {data.subtitle || "לחצו על הכפתור כדי שהחתן ישבור את הכוס ויתחיל את החגיגה!"}
         </p>
 
-        {/* Main Illustration Area */}
-        <div className="relative w-full max-w-lg mx-auto flex justify-center items-end h-72 mb-8 border-b-4 border-cream pb-2 overflow-visible">
-          {/* Groom (Left) */}
-          <div className="absolute left-4 bottom-0 w-40 h-64">
-            <GroomFigure isAnimating={isShattered} />
+        {/* Shake wrapper — key remount has no opacity-0 initial → no flash */}
+        <motion.div
+          key={shakeKey}
+          animate={shakeKey > 0 ? shakeAnim : {}}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="relative w-full max-w-lg mx-auto flex justify-center items-end h-80 mb-8 border-b-4 border-cream pb-2 overflow-visible"
+        >
+          <div className="absolute left-4 bottom-0 w-72 h-96">
+            <GroomFigure isStomping={isStomping} />
           </div>
 
-          {/* Glass (Center) */}
-          <GlassWithShards isShattered={isShattered} onShatterComplete={onShatterComplete} />
+          <div className="absolute left-[45%] -translate-x-1/2 bottom-1 w-24 h-28 z-10">
+            <ShatteringGlass isShattered={isShattered} onShatterComplete={onShatterComplete} />
+          </div>
 
-          {/* Bride (Right) */}
-          <div className="absolute right-4 md:right-8 bottom-0 w-44 h-64">
+          <div className="absolute right-4 md:right-8 bottom-0 w-72 h-96">
             <BrideFigure />
           </div>
-        </div>
+        </motion.div>
 
-        {/* Button */}
         <div className="flex flex-col items-center gap-6">
           <motion.button
-            onClick={onStomp}
-            disabled={isShattered}
-            whileHover={!isShattered ? { scale: 1.05 } : {}}
-            whileTap={!isShattered ? { scale: 0.95 } : {}}
-            className="px-8 py-4 text-lg font-bold rounded-full text-white transition-all shadow-lg"
+            onClick={isShattered ? onReset : onStomp}
+            disabled={isStomping}
+            whileHover={!isStomping ? { scale: 1.05 } : {}}
+            whileTap={!isStomping ? { scale: 0.95 } : {}}
+            className="px-8 py-4 text-lg font-bold rounded-full text-white transition-all shadow-lg backdrop-blur-sm"
             style={{
-              backgroundColor: isShattered ? "#9ca3af" : primaryColor,
-              cursor: isShattered ? "not-allowed" : "pointer",
-              opacity: isShattered ? 0.5 : 1,
+              backgroundColor: primaryColor,
+              cursor: isStomping ? "not-allowed" : "pointer",
             }}
           >
-            {data.stompButtonLabel || "שבור את הכוס!"}
+            {isShattered ? (data.resetButtonLabel || "שבור שוב!") : (data.stompButtonLabel || "שבור את הכוס!")}
           </motion.button>
 
-          {/* Mazal Tov Message */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={showMessage ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={showMessage ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 20, scale: 0.9 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="text-center w-full"
           >
             {showMessage && (
-              <>
+              <div className="mx-auto max-w-md rounded-3xl bg-white/60 backdrop-blur-md border border-white/50 shadow-xl px-8 py-6">
                 <h3 className="text-5xl font-black text-hebrew-heading mb-2" style={{ color: primaryColor }}>
                   {data.mazalTovTitle}
                 </h3>
-                <p className="text-lg text-hebrew-body text-stone-600 mb-6 max-w-md">
+                <p className="text-lg text-hebrew-body text-stone-600 mb-6">
                   {data.mazalTovMessage}
                 </p>
-                <TemplateResetButton onClick={onReset} label="לסדר את הבלאגן (נסה שוב)" />
-              </>
+              </div>
             )}
           </motion.div>
         </div>
