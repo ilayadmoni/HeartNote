@@ -62,6 +62,7 @@ export interface FilterTab {
 export interface GalleryTemplateProps {
   className?: string;
   onTemplateClick?: (template: Template) => void;
+  skipLoadingGate?: boolean;
 }
 
 export interface TemplateCardProps {

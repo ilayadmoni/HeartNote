@@ -566,6 +566,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
           { value: "purim", label: "🎭 פורים" },
           { value: "pesach", label: "🍷 פסח" },
           { value: "sukkot", label: "🌿 סוכות" },
+          { value: "shavuot", label: "🌾 שבועות" },
         ],
       },
       {

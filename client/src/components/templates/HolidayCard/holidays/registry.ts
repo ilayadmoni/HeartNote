@@ -6,6 +6,7 @@ import { HanukkahDecorations } from "./Hanukkah";
 import { PurimDecorations } from "./Purim";
 import { PesachDecorations } from "./Pesach";
 import { SukkotDecorations } from "./Sukkot";
+import { ShavuotDecorations } from "./Shavuot";
 
 export interface HolidayTheme {
   Decorations: ComponentType<HolidayDecorationProps>;
@@ -54,5 +55,12 @@ export const HOLIDAY_REGISTRY: Record<HolidayKind, HolidayTheme> = {
     glowColor: "rgba(132, 204, 22, 0.35)",
     glassTint: "rgba(63, 98, 18, 0.35)",
     glassBorder: "rgba(190, 242, 100, 0.5)",
+  },
+  shavuot: {
+    Decorations: ShavuotDecorations,
+    accentColor: "#78350f",
+    glowColor: "rgba(220, 252, 231, 0.35)",
+    glassTint: "rgba(255, 250, 235, 0.35)",
+    glassBorder: "rgba(212, 180, 86, 0.5)",
   },
 };

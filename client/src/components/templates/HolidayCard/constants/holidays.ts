@@ -45,4 +45,11 @@ export const HOLIDAY_PRESETS: Record<
     bgColor: "#f3f6ea",
     borderColor: "rgba(101,130,68,0.3)",
   },
+  shavuot: {
+    icon: "🌾",
+    defaultTitle: "חג שבועות שמח!",
+    defaultGreeting: "חג הקציר וזמן מתן תורתנו.",
+    bgColor: "#fffaeb",
+    borderColor: "rgba(212,180,86,0.3)",
+  },
 };

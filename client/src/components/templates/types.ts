@@ -225,7 +225,7 @@ export interface WeddingGlassData {
 // =============================================================================
 // 16. HOLIDAY CARD
 // =============================================================================
-export type HolidayKind = "rosh" | "hanukkah" | "purim" | "pesach" | "sukkot";
+export type HolidayKind = "rosh" | "hanukkah" | "purim" | "pesach" | "sukkot" | "shavuot";
 
 export interface HolidayCardData {
   holidayKind: HolidayKind;    // select: one of 4
