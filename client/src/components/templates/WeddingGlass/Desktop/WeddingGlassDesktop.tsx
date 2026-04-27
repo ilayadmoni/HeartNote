@@ -1,8 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import type { RefObject } from "react";
-import { BackToGallery, FooterBranding, TemplateResetButton } from "@/components/templates/components";
+import { BackToGallery, FooterBranding } from "@/components/templates/components";
 import { GroomFigure } from "../components/GroomFigure";
 import { BrideFigure } from "../components/BrideFigure";
 import { ShatteringGlass } from "../components/ShatteringGlass";
@@ -69,18 +69,53 @@ export function WeddingGlassDesktop({
           key={shakeKey}
           animate={shakeKey > 0 ? shakeAnim : {}}
           transition={{ duration: 0.55, ease: "easeOut" }}
-          className="relative w-full max-w-lg mx-auto flex justify-center items-end h-80 mb-8 border-b-4 border-cream pb-2 overflow-visible"
+          className="relative w-full max-w-lg mx-auto h-80 mb-8 border-b-4 border-cream pb-2 overflow-visible"
         >
-          <div className="absolute left-4 bottom-0 w-72 h-96">
-            <GroomFigure isStomping={isStomping} />
-          </div>
+          {/* Stage: single positioning context for both figures and overlay */}
+          <div className="relative w-full h-full flex flex-col items-center justify-center">
+            <motion.div
+              animate={{
+                filter: showMessage ? "blur(6px)" : "blur(0px)",
+                opacity: showMessage ? 0.5 : 1,
+              }}
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0"
+            >
+              <div className="absolute left-4 bottom-0 w-72 h-96">
+                <GroomFigure isStomping={isStomping} />
+              </div>
 
-          <div className="absolute left-[45%] -translate-x-1/2 bottom-1 w-24 h-28 z-10">
-            <ShatteringGlass isShattered={isShattered} onShatterComplete={onShatterComplete} />
-          </div>
+              <div className="absolute left-[45%] -translate-x-1/2 bottom-1 w-24 h-28 z-10">
+                <ShatteringGlass isShattered={isShattered} onShatterComplete={onShatterComplete} />
+              </div>
 
-          <div className="absolute right-4 md:right-8 bottom-0 w-72 h-96">
-            <BrideFigure />
+              <div className="absolute right-4 md:right-8 bottom-0 w-72 h-96">
+                <BrideFigure />
+              </div>
+            </motion.div>
+
+            <AnimatePresence>
+              {showMessage && (
+                <motion.div
+                  key="mazal-overlay"
+                  initial={{ opacity: 0, scale: 0.85, x: "-50%", y: "-50%" }}
+                  animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
+                  exit={{ opacity: 0, scale: 0.85, x: "-50%", y: "-50%" }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute top-1/2 left-1/2 z-50 w-[80%]"
+                  style={{ maxWidth: 448 }}
+                >
+                  <div className="rounded-3xl bg-white/60 backdrop-blur-md border border-white/50 shadow-xl px-8 py-6 text-center">
+                    <h3 className="text-5xl font-black text-hebrew-heading mb-2" style={{ color: primaryColor }}>
+                      {data.mazalTovTitle}
+                    </h3>
+                    <p className="text-lg text-hebrew-body text-stone-600">
+                      {data.mazalTovMessage}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
 
@@ -96,26 +131,8 @@ export function WeddingGlassDesktop({
               cursor: isStomping ? "not-allowed" : "pointer",
             }}
           >
-            {isShattered ? (data.resetButtonLabel || "שבור שוב!") : (data.stompButtonLabel || "שבור את הכוס!")}
+            {isShattered ? "שבור שוב!" : (data.stompButtonLabel || "שבור את הכוס!")}
           </motion.button>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={showMessage ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="text-center w-full"
-          >
-            {showMessage && (
-              <div className="mx-auto max-w-md rounded-3xl bg-white/60 backdrop-blur-md border border-white/50 shadow-xl px-8 py-6">
-                <h3 className="text-5xl font-black text-hebrew-heading mb-2" style={{ color: primaryColor }}>
-                  {data.mazalTovTitle}
-                </h3>
-                <p className="text-lg text-hebrew-body text-stone-600 mb-6">
-                  {data.mazalTovMessage}
-                </p>
-              </div>
-            )}
-          </motion.div>
         </div>
       </motion.div>
 

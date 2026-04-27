@@ -141,7 +141,7 @@ export function LoginModal({
       
       // Use the configured site URL (ngrok in dev, production URL in prod)
       // This ensures cookies and redirects use the same origin
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+      const siteUrl = window.location.origin || process.env.NEXT_PUBLIC_SITE_URL || "";
       
       const currentPath = window.location.pathname + window.location.search;
       const targetPath = redirectTo || currentPath;

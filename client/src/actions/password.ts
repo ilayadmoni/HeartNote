@@ -47,19 +47,26 @@ const ERR_RATE_LIMITED =
 
 /**
  * Build the recovery redirect URL from request headers.
+ * Priority: Origin header → x-forwarded-proto+host → NEXT_PUBLIC_SITE_URL
+ * Using request headers keeps the redirect protocol-agnostic for LAN/HTTP dev.
  */
 async function getRedirectUrl(): Promise<string> {
   const headerStore = await headers();
-  let origin =
-    headerStore.get("origin") ||
-    headerStore.get("x-forwarded-host") ||
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    "http://localhost:3000";
 
-  if (!origin.startsWith("http")) origin = `https://${origin}`;
+  // Origin header is the most reliable — already includes scheme+host.
+  const origin = headerStore.get("origin");
+  if (origin) return new URL("/auth/confirm", origin).toString();
 
-  const url = new URL("/auth/confirm", origin);
-  return url.toString();
+  // x-forwarded-host is host-only (no scheme); pair with x-forwarded-proto.
+  const forwardedHost = headerStore.get("x-forwarded-host");
+  if (forwardedHost) {
+    const proto = headerStore.get("x-forwarded-proto") || "http";
+    return new URL("/auth/confirm", `${proto}://${forwardedHost}`).toString();
+  }
+
+  // Fall back to the configured site URL.
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  return new URL("/auth/confirm", base).toString();
 }
 
 /** Extract client IP from request headers */

@@ -32,7 +32,10 @@ const cspDirectives = [
   "form-action 'self'",
   "base-uri 'self'",
   "object-src 'none'",
-  "upgrade-insecure-requests",
+  // Only upgrade insecure requests in production (HTTPS). In local HTTP dev/LAN
+  // testing this directive causes browsers to silently rewrite all fetches to
+  // HTTPS, which fails because the dev server only listens on HTTP.
+  ...(process.env.NODE_ENV === "production" ? ["upgrade-insecure-requests"] : []),
 ].join("; ");
 
 // Security headers for all routes

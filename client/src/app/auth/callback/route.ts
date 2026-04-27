@@ -20,14 +20,13 @@ const ERROR_PATH = "/auth/auth-code-error";
 const RECOVERY_PATH = "/?modal=reset-password";
 const DRAFT_COOKIE = "pending_oauth_draft";
 
-// ── Get the public site URL (ngrok in dev, production URL in prod) ──
+// ── Get the base URL for redirects ──────────────────────────────────
+// Prefer request.nextUrl.origin: it reflects the exact scheme+host the
+// browser used, so all subsequent redirects stay on the same protocol
+// (critical for HTTP LAN dev). Fall back to NEXT_PUBLIC_SITE_URL only
+// when the request origin is unavailable (e.g. some edge runtimes).
 function getSiteUrl(request: NextRequest): string {
-  // Always prefer the configured site URL for proxy/tunnel scenarios
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, ""); // Remove trailing slash
-  }
-  // Fallback to request origin (works when not behind proxy)
-  return request.nextUrl.origin;
+  return request.nextUrl.origin || process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "";
 }
 
 // ── Inline URL validation (no external imports) ─────────────────────

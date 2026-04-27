@@ -98,9 +98,10 @@ export async function middleware(request: NextRequest) {
     const returnTo = request.nextUrl.searchParams.get("returnTo");
     const destination = nextParam || returnTo || "/";
     
-    // Use NEXT_PUBLIC_SITE_URL for proper ngrok/proxy handling
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin;
-    const redirectUrl = new URL(destination, siteUrl);
+    // Use request origin so the redirect stays on the same protocol as the
+    // incoming request (critical for HTTP LAN dev where NEXT_PUBLIC_SITE_URL
+    // could mismatch the actual scheme the browser is using).
+    const redirectUrl = new URL(destination, request.nextUrl.origin);
     
     return withCookies(
       getResponse(),

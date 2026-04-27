@@ -44,7 +44,7 @@ export function SuccessModal({
   }, []);
 
   // Build shareable URL with dynamic base
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+  const baseUrl = (typeof window !== "undefined" ? window.location.origin : null) || process.env.NEXT_PUBLIC_SITE_URL || "";
   const rawUrl = url || `${baseUrl}/p/card`;
   const shareUrl = verificationCode
     ? `${rawUrl}${rawUrl.includes("?") ? "&" : "?"}code=${verificationCode}`

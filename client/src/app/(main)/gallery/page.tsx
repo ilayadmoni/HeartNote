@@ -3,7 +3,7 @@
  * Browse and select from available HeartNote templates
  */
 
-import { GalleryTemplate } from "@/components/galleryTemplate";
+import { GalleryLoadingWrapper } from "@/components/galleryTemplate/GalleryLoadingWrapper";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,5 +13,5 @@ export const metadata: Metadata = {
 };
 
 export default function GalleryPage() {
-  return <GalleryTemplate />;
+  return <GalleryLoadingWrapper />;
 }

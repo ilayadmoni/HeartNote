@@ -122,8 +122,7 @@ export function CompleteProfileForm() {
       await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
 
       // Hard reload to returnTo path so middleware re-evaluates the now-complete profile.
-      // Use NEXT_PUBLIC_SITE_URL for ngrok/proxy support
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+      const siteUrl = window.location.origin || process.env.NEXT_PUBLIC_SITE_URL || "";
       const fullUrl = returnTo.startsWith("http") ? returnTo : `${siteUrl}${returnTo}`;
 
       window.location.href = fullUrl;

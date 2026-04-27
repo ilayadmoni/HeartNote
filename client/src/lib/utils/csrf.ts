@@ -30,23 +30,36 @@ export const csrfError = () => ({
 /**
  * Build the list of allowed origins from environment ONLY.
  * SEC-HIGH-2: No hardcoded localhost - strict environment-based validation.
+ *
+ * In non-production, both http:// and https:// variants of each configured
+ * origin are accepted. This prevents false CSRF blocks when testing over LAN
+ * on HTTP (where a browser with HSTS or a proxy might send the https:// sibling).
  */
 function getAllowedOrigins(): string[] {
   const origins: string[] = [];
+  const isDev = process.env.NODE_ENV !== "production";
 
-  // Primary site URL (REQUIRED)
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  if (siteUrl) {
-    origins.push(siteUrl.replace(/\/$/, ""));
+  function addOrigin(raw: string) {
+    const cleaned = raw.replace(/\/$/, "");
+    origins.push(cleaned);
+    if (isDev) {
+      if (cleaned.startsWith("http://")) {
+        origins.push(cleaned.replace("http://", "https://"));
+      } else if (cleaned.startsWith("https://")) {
+        origins.push(cleaned.replace("https://", "http://"));
+      }
+    }
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (siteUrl) addOrigin(siteUrl);
+
   // Additional allowed origins from environment (comma-separated)
-  // Use for staging environments or multiple domains
   const additionalOrigins = process.env.ALLOWED_ORIGINS;
   if (additionalOrigins) {
-    additionalOrigins.split(",").forEach((origin) => {
-      const trimmed = origin.trim().replace(/\/$/, "");
-      if (trimmed) origins.push(trimmed);
+    additionalOrigins.split(",").forEach((o) => {
+      const trimmed = o.trim();
+      if (trimmed) addOrigin(trimmed);
     });
   }
 
