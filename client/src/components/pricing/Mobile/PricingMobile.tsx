@@ -1,39 +1,54 @@
 "use client";
 
-/**
- * PricingMobile Component
- * Mobile layout for pricing page with stacked cards
- */
-
-import { Settings } from "lucide-react";
-import { PricingHeader, PricingCard } from "../components";
+import { motion } from "framer-motion";
+import { PricingHeader } from "../components";
+import { MobilePricingCard } from "./components";
 import { PRICING_PLANS } from "../constants";
 import type { PricingProps } from "../types";
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.13 } },
+};
 
 export function PricingMobile({
   className = "",
   upgradesEnabled = false,
   hasActivePaidSubscription = false,
 }: PricingProps) {
-  // Order for mobile: Free (starter), then Lite (manager), then Premium (owner)
   const orderedPlans = [PRICING_PLANS[0], PRICING_PLANS[1], PRICING_PLANS[2]];
 
   return (
     <section
-      className={`relative py-12 px-4 min-h-screen bg-[#faf7f5] dark:bg-gray-900 ${className}`}
+      className={`relative py-14 px-4 min-h-screen bg-[#faf7f5] dark:bg-[#0f1420] overflow-hidden ${className}`}
     >
-      {/* Background Decorative Gear */}
-      <div className="absolute top-10 right-0 opacity-10 pointer-events-none">
-        <Settings size={120} className="animate-spin-slow text-[#2e3c52]" />
-      </div>
+      {/* Ambient background glows */}
+      <div
+        className="absolute top-24 -right-16 w-72 h-72 rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(212,130,111,0.13) 0%, transparent 70%)",
+        }}
+      />
+      <div
+        className="absolute bottom-48 -left-20 w-56 h-56 rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(212,130,111,0.09) 0%, transparent 70%)",
+        }}
+      />
 
       <div className="container mx-auto max-w-md relative z-10">
         <PricingHeader />
 
-        {/* Pricing Cards Stack */}
-        <div className="flex flex-col gap-8">
+        <motion.div
+          className="flex flex-col gap-10 mt-2"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {orderedPlans.map((plan, index) => (
-            <PricingCard
+            <MobilePricingCard
               key={plan.id}
               plan={plan}
               index={index}
@@ -41,7 +56,7 @@ export function PricingMobile({
               hasActivePaidSubscription={hasActivePaidSubscription}
             />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

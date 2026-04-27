@@ -8,5 +8,6 @@ export { ThemeToggle } from './ThemeToggle';
 export { AuthButtons } from './AuthButtons';
 export { HamburgerButton } from './HamburgerButton';
 export { MobileMenu } from './MobileMenu';
+export { MobileNavItem } from './MobileNavItem';
 export { UserMenu } from './UserMenu';
 export { UserAvatar } from './UserAvatar';
