@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { BatFigure } from "../components/BatFigure";
 import { BarFigure } from "../components/BarFigure";
+import { fireCandyShower } from "../components/fireCandyShower";
 import {
   BackToGallery,
   FooterBranding,
@@ -22,6 +23,12 @@ export function BarBatMitzvahDesktop({
   primaryColor,
 }: BarBatMitzvahDesktopProps) {
   const [showGreeting, setShowGreeting] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const handleReveal = useCallback(() => {
+    fireCandyShower(canvasRef.current);
+    setTimeout(() => setShowGreeting(true), 500);
+  }, []);
 
   const introTitle = data.introTitle || "מכונת ההתבגרות";
   const introSubtitle =
@@ -31,7 +38,11 @@ export function BarBatMitzvahDesktop({
     (data.kind === "bat" ? "לחצו על הכתר" : "לחצו על הספר");
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto bg-white rounded-[40px] shadow-xl border border-cream p-12 flex flex-col items-center min-h-screen">
+    <div className="relative w-full h-full flex flex-col items-center justify-center p-6">
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none z-50"
+      />
       <BackToGallery />
 
       <div className="flex-1 flex flex-col items-center justify-center">
@@ -58,7 +69,7 @@ export function BarBatMitzvahDesktop({
                 exit={{ opacity: 0, scale: 0.9 }}
               >
                 <BatFigure
-                  onClick={() => setShowGreeting(true)}
+                  onClick={handleReveal}
                   primaryColor={primaryColor}
                 />
               </motion.div>
@@ -72,7 +83,7 @@ export function BarBatMitzvahDesktop({
                 exit={{ opacity: 0, scale: 0.9 }}
               >
                 <BarFigure
-                  onClick={() => setShowGreeting(true)}
+                  onClick={handleReveal}
                   primaryColor={primaryColor}
                 />
               </motion.div>

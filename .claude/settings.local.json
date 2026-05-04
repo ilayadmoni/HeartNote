@@ -27,7 +27,14 @@
       "Bash(grep *)",
       "Bash(npx --no-install eslint src/hooks/useTemplatesQuery.ts src/hooks/useActiveTemplates.ts src/hooks/useExpirationPolicy.ts src/components/editor/Desktop/EditorDesktop.tsx src/components/editor/Mobile/EditorMobile.tsx)",
       "Bash(echo \"EXIT=$?\")",
-      "Bash(git -C /d/HeartNote ls-files)"
+      "Bash(git -C /d/HeartNote ls-files)",
+      "Bash(xargs -I{} sh -c 'echo \"=== {} ===\" && head -5 \"{}\"')",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"mobile menu navigation RTL Hebrew SaaS animation fade\" --domain ux -n 5)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"mobile menu navigation RTL Hebrew SaaS animation fade\" --domain ux -n 5)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"animation performance transform opacity GPU\" --domain ux -n 4)",
+      "Bash(curl -s \"http://localhost:3000\")",
+      "Bash(curl -s \"http://localhost:3002\")",
+      "Bash(git -C /d/HeartNote diff -- client/src/components/header/components/index.ts client/src/components/pricing/Mobile/PricingMobile.tsx)"
     ]
   }
 }

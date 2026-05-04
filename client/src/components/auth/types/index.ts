@@ -32,6 +32,12 @@ export interface RegisterFormData {
   dateOfBirth: string;
 }
 
+export interface CompleteProfileFormData {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+}
+
 export interface AuthInputProps {
   id: string;
   /** HTML name attribute — required for FormData / useFormState */

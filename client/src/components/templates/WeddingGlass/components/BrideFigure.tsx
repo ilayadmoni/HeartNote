@@ -1,12 +1,17 @@
 "use client";
 
+import Image from "next/image";
+
 export function BrideFigure() {
   return (
-    <img
+    <Image
       src="/assets/images/weddingtemplate/bride_static.svg"
       alt=""
+      fill
       draggable={false}
-      className="w-full h-full object-contain object-bottom select-none pointer-events-none drop-shadow-md"
+      className="object-contain object-bottom select-none pointer-events-none drop-shadow-md"
+      sizes="(max-width: 768px) 128px, 160px"
+      unoptimized
     />
   );
 }

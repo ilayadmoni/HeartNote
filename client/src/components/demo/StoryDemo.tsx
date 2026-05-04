@@ -130,12 +130,12 @@ export function StoryDemo() {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") goToPrevious();
       if (e.key === "ArrowLeft") goToNext();
-      if (e.key === "Escape") handleClose();
+      if (e.key === "Escape") router.push("/");
     };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [goToNext, goToPrevious]);
+  }, [goToNext, goToPrevious, router]);
 
   // Pause/Resume handlers for Instagram-style touch hold
   const handlePauseStart = () => setIsPaused(true);

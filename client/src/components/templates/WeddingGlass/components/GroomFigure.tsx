@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 interface GroomFigureProps {
@@ -9,11 +10,14 @@ interface GroomFigureProps {
 export function GroomFigure({ isStomping = false }: GroomFigureProps) {
   return (
     <div className="relative w-full h-full select-none">
-      <img
+      <Image
         src="/assets/images/weddingtemplate/groom_body.svg"
         alt=""
+        fill
         draggable={false}
-        className="absolute inset-0 w-full h-full object-contain object-bottom pointer-events-none drop-shadow-md"
+        className="object-contain object-bottom pointer-events-none drop-shadow-md"
+        sizes="(max-width: 768px) 112px, 140px"
+        unoptimized
       />
       <motion.img
         src="/assets/images/weddingtemplate/groom_leg_animated.svg"

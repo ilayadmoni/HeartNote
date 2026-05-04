@@ -124,7 +124,7 @@ export function Step4Animation() {
     return () => {
       isActive = false;
     };
-  }, [animate]);
+  }, [animate, scope]);
 
   return (
     <div

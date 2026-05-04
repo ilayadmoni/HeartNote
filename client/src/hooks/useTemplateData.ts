@@ -37,6 +37,11 @@ export function useTemplateData(
   const stateRef = useRef(state);
   stateRef.current = state;
 
+  // Ref so the effect can read the latest defaultData without listing it as a dep
+  // (defaultData is an object — listing it directly would re-run on every render)
+  const defaultDataRef = useRef(defaultData);
+  defaultDataRef.current = defaultData;
+
   // Track which template has been initialized to prevent overwriting
   // async data (e.g. restored drafts) during shallow navigations.
   const initializedForTemplate = useRef<string | null>(null);
@@ -47,7 +52,7 @@ export function useTemplateData(
     if (initializedForTemplate.current !== templateId) {
       setState({
         templateId,
-        userChoices: { ...defaultData },
+        userChoices: { ...defaultDataRef.current },
       });
       initializedForTemplate.current = templateId;
     }
