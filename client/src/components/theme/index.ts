@@ -5,6 +5,6 @@
 
 export { ThemeProvider } from './ThemeProvider';
 export { useThemeContext } from './context/ThemeContext';
-export { useTheme } from './hooks/useTheme';
+export { useTheme } from '@/hooks/useTheme';
 export * from './types';
 export * from './constants';

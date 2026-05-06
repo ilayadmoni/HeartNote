@@ -16,7 +16,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import { FileText } from "lucide-react";
-import { useDeleteCreation, applyDeleteLocks } from "../hooks/useDeleteCreation";
+import { useDeleteCreation, applyDeleteLocks } from "@/hooks/useDeleteCreation";
 import { DeleteConfirmModal } from "./DeleteConfirmModal";
 import { CreationRow } from "./CreationRow";
 import type { DashboardCreation } from "@/hooks/useDashboard";

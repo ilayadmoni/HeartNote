@@ -1,10 +1,5 @@
 'use client';
 
-/**
- * useHeader Hook
- * Manages header state including mobile menu and scroll behavior
- */
-
 import { useState, useCallback, useEffect } from 'react';
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
@@ -20,7 +15,6 @@ export function useHeader(): UseHeaderReturn {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Handle scroll detection
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -30,7 +24,6 @@ export function useHeader(): UseHeaderReturn {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Lock body scroll when mobile menu is open
   useLockBodyScroll(isMobileMenuOpen);
 
   const openMobileMenu = useCallback(() => {

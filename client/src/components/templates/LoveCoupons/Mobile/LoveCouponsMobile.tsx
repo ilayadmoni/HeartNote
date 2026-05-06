@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { RotateCcw } from "lucide-react";
 import { usePathname } from "next/navigation";
 import type { CouponsViewProps } from "../types";
-import { useCoupons } from "../hooks/useCoupons";
+import { useCoupons } from "@/hooks/useCoupons";
 import { CouponCard, CouponRedeemModal } from "../components";
 import { FooterBranding } from "@/components/templates/components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";

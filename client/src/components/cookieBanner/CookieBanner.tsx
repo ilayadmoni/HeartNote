@@ -3,7 +3,7 @@
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { CookieBannerDesktop } from "./Desktop/CookieBannerDesktop";
 import { CookieBannerMobile } from "./Mobile/CookieBannerMobile";
-import { useCookieConsent } from "./hooks/useCookieConsent";
+import { useCookieConsent } from "@/hooks/useCookieConsent";
 
 /**
  * Responsive cookie‑consent banner.

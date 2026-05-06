@@ -1,13 +1,8 @@
 'use client';
 
-/**
- * useTheme Hook
- * Custom hook for managing theme state with localStorage persistence
- */
-
 import { useState, useEffect, useCallback } from 'react';
-import type { Theme } from '../types';
-import { THEME_STORAGE_KEY, DEFAULT_THEME } from '../constants';
+import type { Theme } from '@/components/theme/types';
+import { THEME_STORAGE_KEY, DEFAULT_THEME } from '@/components/theme/constants';
 
 interface UseThemeReturn {
   theme: Theme;
@@ -21,19 +16,16 @@ export function useTheme(storageKey: string = THEME_STORAGE_KEY): UseThemeReturn
   const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Initialize theme from localStorage — strictly default to 'light'
-  // Dark mode only activates if the user explicitly toggled it previously
   useEffect(() => {
     const stored = localStorage.getItem(storageKey) as Theme | null;
-    const initialTheme: Theme = stored === 'dark' ? 'dark' : 'light';
+    const initialTheme: Theme = stored === 'light' ? 'light' : 'dark';
     setThemeState(initialTheme);
     setIsLoaded(true);
   }, [storageKey]);
 
-  // Apply theme to document
   useEffect(() => {
     if (!isLoaded) return;
-    
+
     const root = document.documentElement;
     root.classList.remove('light', 'dark');
     root.classList.add(theme);

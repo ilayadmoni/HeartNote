@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { upgradeSubscription } from "@/actions/subscription";
-import type { PricingPlan } from "../../types";
+import type { PricingPlan } from "@/components/pricing/types";
 
 interface UsePricingUpgradeOptions {
   plan: PricingPlan;

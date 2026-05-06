@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { ActiveSubscriptionWarningModal } from "../../components/ActiveSubscriptionWarningModal";
 import { FeatureList } from "./FeatureList";
 import { PlanBadge } from "./PlanBadge";
-import { usePricingUpgrade } from "./usePricingUpgrade";
+import { usePricingUpgrade } from "@/hooks/usePricingUpgrade";
 import type { PricingCardProps } from "../../types";
 
 const cardVariants = {

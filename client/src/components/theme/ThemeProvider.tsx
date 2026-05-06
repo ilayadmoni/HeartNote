@@ -7,7 +7,7 @@
 
 import type { ThemeProviderProps } from "./types";
 import { ThemeContext } from "./context/ThemeContext";
-import { useTheme } from "./hooks/useTheme";
+import { useTheme } from "@/hooks/useTheme";
 import { THEME_STORAGE_KEY } from "./constants";
 
 export function ThemeProvider({

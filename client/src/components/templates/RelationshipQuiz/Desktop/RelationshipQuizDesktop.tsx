@@ -7,7 +7,7 @@
 
 import { AnimatePresence } from "framer-motion";
 import type { QuizViewProps } from "../types";
-import { useQuiz } from "../hooks/useQuiz";
+import { useQuiz } from "@/hooks/useQuiz";
 import { getScoreMessage } from "../constants";
 import { QuizProgressBar, QuestionCard, QuizResults } from "../components";
 import {

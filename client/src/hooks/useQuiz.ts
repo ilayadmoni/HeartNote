@@ -1,13 +1,7 @@
 "use client";
 
-/**
- * useQuiz Hook
- * Manages quiz state: current question, score, answer feedback, auto-advance
- * Shuffles answer options so the correct answer isn't always in the same position
- */
-
 import { useState, useCallback, useEffect, useMemo } from "react";
-import type { QuizQuestion, AnswerState } from "../types";
+import type { QuizQuestion, AnswerState } from "@/components/templates/RelationshipQuiz/types";
 
 interface ShuffledQuestion {
   question: string;
@@ -15,7 +9,6 @@ interface ShuffledQuestion {
   correctIndex: number;
 }
 
-/** Fisher-Yates shuffle that also remaps correctIndex */
 function shuffleOptions(q: QuizQuestion): ShuffledQuestion {
   const indices = q.options.map((_, i) => i);
   for (let i = indices.length - 1; i > 0; i--) {
@@ -47,11 +40,8 @@ export function useQuiz(questions: QuizQuestion[]): UseQuizReturn {
   const [answerState, setAnswerState] = useState<AnswerState>("none");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isFinished, setIsFinished] = useState(false);
-
-  // Track shuffle generation to allow re-shuffle on reset
   const [shuffleKey, setShuffleKey] = useState(0);
 
-  // Re-shuffle when questions change OR when reset is triggered
   const shuffledQuestions = useMemo(
     () => questions.map(shuffleOptions),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,7 +65,6 @@ export function useQuiz(questions: QuizQuestion[]): UseQuizReturn {
     [answerState, currentIndex, shuffledQuestions],
   );
 
-  /** Reset game progress only — preserves the user's customized questions */
   const reset = useCallback(() => {
     setCurrentIndex(0);
     setScore(0);
@@ -85,7 +74,6 @@ export function useQuiz(questions: QuizQuestion[]): UseQuizReturn {
     setShuffleKey((k) => k + 1);
   }, []);
 
-  // Auto-advance after 1.5s
   useEffect(() => {
     if (answerState === "none") return;
     const timer = setTimeout(() => {

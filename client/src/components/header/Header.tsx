@@ -10,8 +10,8 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import type { HeaderProps } from "./types";
 import { NAV_ITEMS } from "./constants";
-import { useHeader } from "./hooks/useHeader";
-import { usePasswordResetModal } from "./hooks/usePasswordResetModal";
+import { useHeader } from "@/hooks/useHeader";
+import { usePasswordResetModal } from "@/hooks/usePasswordResetModal";
 import {
   Logo,
   NavLinks,
@@ -67,7 +67,7 @@ export function Header({ className = "" }: HeaderProps) {
         aria-label="כותרת ראשית"
         className={`
           ${isMobileMenuOpen ? "fixed" : "sticky"} top-0 z-[100] w-full
-          bg-[#faf7f5] dark:bg-gray-900
+          bg-[#faf8f5f2] dark:bg-[#1a1f2e]
           transition-all duration-300 ease-out
           ${
             isScrolled
@@ -77,7 +77,7 @@ export function Header({ className = "" }: HeaderProps) {
           ${className}
         `}
       >
-        <div className="relative z-[2] w-full px-4 lg:px-8 bg-[#faf7f5] dark:bg-gray-900">
+        <div className="relative z-[2] w-full px-4 lg:px-8 bg-[#faf8f5f2] dark:bg-[#1a1f2e]">
           <div className="flex items-center justify-between h-16 lg:h-18">
             {/* Right Side: Logo (RTL) */}
             <div className="flex-shrink-0">

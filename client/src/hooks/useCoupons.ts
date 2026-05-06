@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { redeemCouponAction } from "@/actions/creations";
-import type { LoveCoupon } from "../types";
+import type { LoveCoupon } from "@/components/templates/LoveCoupons/types";
 
 export function useCoupons(
   initial: LoveCoupon[],
@@ -16,10 +16,8 @@ export function useCoupons(
   const [enteredCode, setEnteredCode] = useState("");
   const [codeError, setCodeError] = useState<string | null>(null);
 
-  // Sync with editor live-preview changes
   useEffect(() => setCoupons(initial), [initial]);
 
-  // Reset entered-code state when the pending coupon changes.
   useEffect(() => {
     setEnteredCode("");
     setCodeError(null);
@@ -35,7 +33,6 @@ export function useCoupons(
     const id = pendingId;
     const snapshot = coupons;
 
-    // Editor mode — no persistence, just close
     if (!creationId) {
       setCoupons((prev) =>
         prev.map((c) =>
@@ -48,14 +45,12 @@ export function useCoupons(
       return;
     }
 
-    // Require a valid 4-digit code (from URL or user input).
     const code = (providedCode ?? enteredCode).trim();
     if (!/^[0-9]{4}$/.test(code)) {
       setCodeError("יש להזין קוד בן 4 ספרות");
       return;
     }
 
-    // Optimistic update
     setCoupons((prev) =>
       prev.map((c) =>
         c.id === id
@@ -69,7 +64,7 @@ export function useCoupons(
     setIsSubmitting(false);
 
     if (!result.success) {
-      setCoupons(snapshot); // rollback
+      setCoupons(snapshot);
       if (result.code === 409) {
         toast.error("הקופון כבר מומש");
         setPendingId(null);

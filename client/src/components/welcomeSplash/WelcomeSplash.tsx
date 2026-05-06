@@ -9,7 +9,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { SplashLogo, GreetingText, SplashProgressBar } from "./components";
-import { useWelcomeSplash } from "./hooks/useWelcomeSplash";
+import { useWelcomeSplash } from "@/hooks/useWelcomeSplash";
 import type { WelcomeSplashProps } from "./types";
 
 const overlayVariants = {

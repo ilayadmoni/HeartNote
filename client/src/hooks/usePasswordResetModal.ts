@@ -2,10 +2,6 @@ import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-/**
- * usePasswordResetModal Hook
- * Handles auto-opening the password reset modal from URL params
- */
 export function usePasswordResetModal(
   setView: (view: "login" | "update-password" | "complete-profile") => void,
   setOpen: (open: boolean) => void
@@ -40,7 +36,6 @@ export function usePasswordResetModal(
 
         hasClearedResetQuery.current = true;
 
-        // Clean URL only after session is confirmed.
         const url = new URL(window.location.href);
         url.searchParams.delete("reset_password");
         url.searchParams.delete("modal");

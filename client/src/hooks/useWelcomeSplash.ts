@@ -1,14 +1,8 @@
 "use client";
 
-/**
- * useWelcomeSplash Hook
- * Manages splash screen visibility via sessionStorage flag.
- * Dismissal is driven by the progress bar calling `dismiss()`.
- */
-
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { SPLASH_STORAGE_KEY } from "../constants";
+import { SPLASH_STORAGE_KEY } from "@/components/welcomeSplash/constants";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 export function useWelcomeSplash() {
@@ -17,7 +11,6 @@ export function useWelcomeSplash() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
-  // Check for the splash trigger flag when user state changes
   useEffect(() => {
     if (!user) return;
 
@@ -31,13 +24,10 @@ export function useWelcomeSplash() {
     setIsVisible(true);
   }, [user]);
 
-  // Lock body scroll while visible
   useLockBodyScroll(isVisible);
 
-  /** Called by the progress bar when it reaches 100% */
   const dismiss = useCallback(() => {
     setIsVisible(false);
-    // Smooth-scroll to top after splash completes
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
