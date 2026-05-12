@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import "./globals.css";
+import "@/app/globals.css";
 import { inter, glacialIndifference, openSans } from "@/lib/fonts";
 import { ThemeProvider } from "@/components/theme";
 import {
   AccessibilityProvider,
   AccessibilityWidget,
+  MotionGuard,
 } from "@/components/accessibility";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { QueryProvider } from "@/providers/QueryProvider";
@@ -75,8 +76,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#faf7f5",
-  colorScheme: "light",
+  themeColor: "#1a1f2e",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
@@ -127,6 +128,7 @@ export default function RootLayout({
 
         <ThemeProvider>
           <AccessibilityProvider>
+            <MotionGuard>
             <FontReadyGateway>
               <div id="a11y-content">
                 <QueryProvider>
@@ -136,6 +138,7 @@ export default function RootLayout({
               </div>
               <AccessibilityWidget />
             </FontReadyGateway>
+            </MotionGuard>
           </AccessibilityProvider>
         </ThemeProvider>
         <Toaster
