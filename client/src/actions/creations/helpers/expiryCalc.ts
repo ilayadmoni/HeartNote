@@ -41,11 +41,17 @@ export function calculateExpiry(
     ).toISOString();
   }
 
-  const expiryDays = options.isPremiumBehavior
-    ? Number(policy.paid_days ?? 14)
-    : Number(policy.free_days ?? 1);
+  const rawDays = options.isPremiumBehavior
+    ? policy.paid_days
+    : policy.free_days;
+
+  if (rawDays == null || !Number.isFinite(Number(rawDays))) {
+    throw new Error(
+      `Template expiration_policy is missing ${options.isPremiumBehavior ? "paid_days" : "free_days"}`,
+    );
+  }
 
   return new Date(
-    Date.now() + expiryDays * 24 * 60 * 60 * 1000,
+    Date.now() + Number(rawDays) * 24 * 60 * 60 * 1000,
   ).toISOString();
 }

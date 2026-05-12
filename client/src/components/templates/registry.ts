@@ -15,7 +15,6 @@ import { LoveCoupons } from "./LoveCoupons/LoveCoupons";
 import { RelationshipQuiz } from "./RelationshipQuiz/RelationshipQuiz";
 import { OpenWhen } from "./OpenWhen/OpenWhen";
 import { DecisionWheel } from "./DecisionWheel/DecisionWheel";
-import { SteamyWindow } from "./SteamyWindow/SteamyWindow";
 import { SurpriseGift } from "./SurpriseGift/SurpriseGift";
 import { SlotMachine } from "./SlotMachine/SlotMachine";
 import { PunchingBag } from "./PunchingBag/PunchingBag";
@@ -46,7 +45,6 @@ export const TEMPLATE_REGISTRY: Record<string, AnyTemplateComponent> = {
   RelationshipQuiz: RelationshipQuiz as AnyTemplateComponent,
   OpenWhen: OpenWhen as AnyTemplateComponent,
   DecisionWheel: DecisionWheel as AnyTemplateComponent,
-  SteamyWindow: SteamyWindow as AnyTemplateComponent,
   SurpriseGift: SurpriseGift as AnyTemplateComponent,
   SlotMachine: SlotMachine as AnyTemplateComponent,
   PunchingBag: PunchingBag as AnyTemplateComponent,

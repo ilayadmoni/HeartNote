@@ -12,6 +12,7 @@
  *   premium → "הוסף ברכות"   — contact support CTA → /contact
  */
 
+import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { X, Zap, ArrowLeft, CheckCircle2 } from "lucide-react";
@@ -51,6 +52,11 @@ export function UpgradeSlideOver({
   expiryDate,
 }: UpgradeSlideOverProps) {
   useLockBodyScroll(isOpen);
+
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (isOpen) closeButtonRef.current?.focus();
+  }, [isOpen]);
 
   const formattedExpiry = formatDate(expiryDate);
   const isLite = tier === "lite";
@@ -93,6 +99,7 @@ export function UpgradeSlideOver({
             >
               <div className="flex items-start justify-between mb-4">
                 <button
+                  ref={closeButtonRef}
                   onClick={onClose}
                   className="p-1.5 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
                   aria-label="סגור"

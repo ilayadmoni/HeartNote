@@ -9,7 +9,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { protectedAction } from "@/lib/protectedAction";
-import { ActionError, type ActionResult } from "@/lib/action-response";
+import { ok, fail, ActionError, type ActionResult } from "@/lib/action-response";
+import { logger } from "@/lib/utils/logger";
 import type { CreationListItem, CreationDetail } from "@/lib/validations";
 
 // ---------------------------------------------------------------------------
@@ -62,7 +63,7 @@ export async function getMyCreations(): Promise<
  */
 export async function getCreation(
   creationId: string,
-): Promise<{ data: CreationDetail } | { error: string; status: number }> {
+): Promise<ActionResult<CreationDetail>> {
   try {
     const supabase = await createClient();
 
@@ -75,11 +76,11 @@ export async function getCreation(
       .single();
 
     if (error || !c) {
-      return { error: "Creation not found", status: 404 };
+      return fail("Creation not found", 404);
     }
 
     if (c.is_deleted) {
-      return { error: "This creation has been deleted", status: 410 };
+      return fail("This creation has been deleted", 410);
     }
 
     // ── SEC-HIGH-7: Expiry date validation ─────────────────────────
@@ -88,7 +89,7 @@ export async function getCreation(
     if (c.expires_at) {
       const expStr = String(c.expires_at);
       let expiryDate: Date;
-      
+
       try {
         // Handle various timestamp formats from Supabase
         // PostgreSQL timestamps can come as:
@@ -96,60 +97,51 @@ export async function getCreation(
         // - "2024-12-31T23:59:59+00:00" (ISO with offset)
         // - "2024-12-31 23:59:59" (space-separated, assumes UTC)
         let normalizedStr = expStr;
-        
+
         // Normalize "+00:00" to "Z" for consistent parsing
         if (normalizedStr.includes("+00:00")) {
           normalizedStr = normalizedStr.replace("+00:00", "Z");
         }
-        
+
         // Add Z suffix if no timezone indicator present (assume UTC)
         if (!normalizedStr.includes("Z") && !normalizedStr.includes("+") && !normalizedStr.includes("-", 10)) {
-          // Replace space with T for ISO format if needed
           normalizedStr = normalizedStr.replace(" ", "T") + "Z";
         }
-        
+
         expiryDate = new Date(normalizedStr);
-        
+
         // Validate the parsed date
         if (isNaN(expiryDate.getTime())) {
-          console.error("[getCreation] Invalid expiry date format:", expStr);
-          return { error: "This creation has expired", status: 410 };
+          logger.error("[getCreation] Invalid expiry date format", { expStr });
+          return fail("This creation has expired", 410);
         }
       } catch (parseError) {
         // If date parsing throws, treat as expired (fail-secure)
-        console.error("[getCreation] Date parsing error:", parseError, "for:", expStr);
-        return { error: "This creation has expired", status: 410 };
+        logger.error("[getCreation] Date parsing error", { parseError, expStr });
+        return fail("This creation has expired", 410);
       }
-      
+
       // Compare against current UTC time
       const nowUtc = new Date();
       if (expiryDate.getTime() < nowUtc.getTime()) {
-        return { error: "This creation has expired", status: 410 };
+        return fail("This creation has expired", 410);
       }
     }
 
     const tmpl = (c.templates as unknown as Record<string, string>) ?? {};
 
-    return {
-      data: {
-        id: c.id as string,
-        template_slug: tmpl.slug ?? "",
-        template_name: tmpl.name ?? "כרטיס",
-        metadata: (c.metadata as Record<string, unknown>) ?? {},
-        is_paid: (c.is_paid as boolean) ?? null,
-        expires_at: (c.expires_at as string) ?? null,
-        created_at: c.created_at as string,
-      },
-    };
+    return ok({
+      id: c.id as string,
+      template_slug: tmpl.slug ?? "",
+      template_name: tmpl.name ?? "כרטיס",
+      metadata: (c.metadata as Record<string, unknown>) ?? {},
+      is_paid: (c.is_paid as boolean) ?? null,
+      expires_at: (c.expires_at as string) ?? null,
+      created_at: c.created_at as string,
+    });
   } catch (e) {
     // SEC-HIGH-6: Never expose internal error details to clients
-    const errorMessage = e instanceof Error ? e.message : String(e);
-    // Log full error server-side for debugging
-    console.error("[getCreation] Internal error:", errorMessage);
-    
-    return {
-      error: "Failed to load creation. Please try again.",
-      status: 500,
-    };
+    logger.error("[getCreation] Internal error", { error: e instanceof Error ? e.message : String(e) });
+    return fail("Failed to load creation. Please try again.", 500);
   }
 }

@@ -394,3 +394,141 @@ npx vitest           # run tests
 - **Security headers**: Configured in `next.config.js` for all routes (X-Frame-Options, CSP-adjacent headers).
 - **Font loading**: Custom fonts (Glacial Indifference, Inter, Open Sans) loaded via `src/lib/fonts.ts` and `FontReadyGateway` component.
 - **Subscription tiers**: Three valid values — `'free'`, `'lite'`, `'premium'` — all enforced by CHECK constraint. `lite` and `premium` are paid tiers with identical benefits but different limits.
+
+---
+
+## Infrastructure
+
+- **Supabase region**: `eu-central-1` (Frankfurt). All DB calls originate from Vercel edge functions co-located in Frankfurt; target round-trip ≤ 80 ms.
+- **Feb 2026 migration**: Consolidated schema snapshot written to `supabase/migrations/000_init.sql`; incremental migrations 001–021 applied on top. New migrations should follow the `NNN_<slug>.sql` naming convention and be tested locally before push.
+
+---
+
+## Agent Skills
+
+| Skill | Purpose |
+|---|---|
+| `modular-code-architect` | Enforces ≤ 150-line file limit; auto-decomposes large files |
+| `ui-ux-pro-max` | UI/UX design intelligence — layouts, palettes, component design |
+| `frontend-design` | Production-grade React/Tailwind components, design tokens |
+| `file-reading` | Smart file reading — selects correct tool per file type |
+| `next-performance` | Enforces Server Components, Suspense, caching, bundle discipline |
+| `supabase-best-practices` | RLS, N+1 prevention, typed client, pgbouncer, service role safety |
+| `typescript-strict` | Zero `any`, explicit return types, discriminated unions |
+| `git-ship` | Full pipeline: build check → diff review → commit → push on `dev` branch. Invoke with `/git-ship` or `/ship` |
+
+---
+
+## Output Rules
+
+- **Plans**: Save implementation plans to `.claude/plans/<slug>.md` before starting non-trivial tasks.
+- **File length**: Hard limit of 150 lines per file. Extract helpers, split components into sub-modules when approaching the limit.
+- **Server Actions**: Follow the `protectedAction` wrapper pattern in `src/lib/protectedAction.ts`.
+- **Supabase JS**: Use `@supabase/ssr` v2 client variants (see Supabase Client Variants section above).
+
+---
+
+## Agent Model Policy — CRITICAL
+
+| Role | Model | Responsibility |
+|---|---|---|
+| Planner | `claude-opus-4-5` | Analyze task, write plan to `.claude/plans/`, decompose steps |
+| Executor | `claude-sonnet-4-5` | Implement each step from the plan, write code, run commands |
+
+### Rules
+- Opus NEVER writes code directly — it produces plans only.
+- Sonnet NEVER plans — it reads the plan and executes step-by-step.
+- If no plan exists for a non-trivial task → Opus creates one first, then Sonnet executes.
+- Trivial tasks (1-liner fixes, renaming) → Sonnet executes directly, no plan required.
+
+---
+
+## Response Style — CRITICAL
+
+All agent responses must be **concise**. This conserves tokens and keeps context lean.
+
+### Rules
+- No filler phrases ("Of course!", "Great question!", "Let me help you with that").
+- No restating the task before answering.
+- Code blocks only — no narrative around obvious code.
+- Errors: state what failed + fix. No explanation of what the error means.
+- Max response length: what's strictly necessary.
+
+---
+
+## Global Skills
+
+Skills are loaded from the global directory: `C:\Users\ilaya\.claude\skills`
+
+| Skill | Path |
+|---|---|
+| `modular-code-architect` | `C:\Users\ilaya\.claude\skills\modular-code-architect\` |
+| `ui-ux-pro-max` | `C:\Users\ilaya\.claude\skills\ui-ux-pro-max\` |
+| `frontend-design` | `C:\Users\ilaya\.claude\skills\frontend-design\` |
+| `file-reading` | `C:\Users\ilaya\.claude\skills\file-reading\` |
+| `next-performance` | `C:\Users\ilaya\.claude\skills\next-performance\` |
+| `supabase-best-practices` | `C:\Users\ilaya\.claude\skills\supabase-best-practices\` |
+| `typescript-strict` | `C:\Users\ilaya\.claude\skills\typescript-strict\` |
+| `git-ship` | `C:\Users\ilaya\.claude\skills\git-ship\` |
+
+Project-specific skills (override globals): `.claude/skills/`
+
+---
+
+## Plan Storage Policy — CRITICAL
+
+ALL plans must be saved locally inside this project. Global Claude storage has been wiped and must not be used.
+
+### Rules (non-negotiable)
+1. NEVER write plans to global Claude storage (`~/.claude/plans/` or `%APPDATA%\Claude\plans\`).
+2. Every new plan → `.claude/plans/<plan-name>.md`
+3. Every updated plan → `.claude/plans/<plan-name>.md`
+4. Every executed plan → `.claude/plans/logs/<plan-name>-<timestamp>.log`
+5. When listing plans → read ONLY from `.claude/plans/`
+6. Global storage has been cleaned — do NOT attempt to read from it.
+
+### Directory structure
+```
+.claude/
+├── settings.json
+└── plans/
+    ├── <plan-name>.md
+    └── logs/
+        └── <plan-name>-<timestamp>.log
+```
+
+### Enforcement
+- Writing outside `.claude/plans/` → STOP, redirect to local path.
+- Plan not found in `.claude/plans/` → report missing, do NOT fall back to global.
+- Applies to ALL sessions, ALL agents, ALL sub-tasks.
+
+### Post-Task Checklist (mandatory after every executed plan)
+
+After completing any planned task, append a checklist block to the plan log file at `.claude/plans/logs/<plan-name>-<timestamp>.log`:
+
+```markdown
+## Post-Execution Checklist — <plan-name> — <timestamp>
+
+### Code Quality
+- [ ] No file exceeds 150 lines
+- [ ] TypeScript: zero `any`, all return types explicit
+- [ ] No raw `console.*` — use `logger.*`
+
+### Correctness
+- [ ] All new server actions use `protectedAction` wrapper
+- [ ] All inputs validated with Zod schema
+- [ ] `validateOrigin()` called in mutating actions
+
+### Supabase
+- [ ] RLS active on any new table
+- [ ] No N+1 queries (use `.select()` with joins)
+- [ ] Service role client (`admin.ts`) not exposed to client
+
+### Git
+- [ ] Working on `dev` branch only
+- [ ] No changes to `main`
+
+### Plan
+- [ ] Plan log written to `.claude/plans/logs/<plan-name>-<timestamp>.log`
+- [ ] All checklist items verified ✅
+```

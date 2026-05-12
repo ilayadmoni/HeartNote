@@ -9,7 +9,6 @@ export { TemplatePreview } from "./TemplatePreview";
 export { LivePreview } from "./LivePreview";
 export {
   DecisionWheelPreview,
-  SteamyWindowPreview,
   SurpriseGiftPreview,
   ExcuseGeneratorPreview,
 } from "./MorePreviews";

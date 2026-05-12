@@ -65,6 +65,7 @@ export function ImageCropperModal({
           type="button"
           onClick={onCancel}
           aria-label="ביטול"
+          autoFocus
           className="w-14 h-14 rounded-full flex items-center justify-center bg-white/10 hover:bg-red-500/20 hover:text-red-400 text-white transition-colors"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none"

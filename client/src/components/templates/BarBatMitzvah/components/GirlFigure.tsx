@@ -1,0 +1,21 @@
+import Image from "next/image";
+
+interface GirlFigureProps {
+  onClick?: () => void;
+}
+
+export function GirlFigure({ onClick }: GirlFigureProps) {
+  return (
+    <Image
+      src="/assets/images/BarBatMitzva/bat_mitzvah_girl.svg"
+      alt="ילדת בת מצווה"
+      width={280}
+      height={360}
+      priority
+      draggable={false}
+      onClick={onClick}
+      className="object-contain pointer-events-auto cursor-pointer drop-shadow-md select-none"
+      unoptimized
+    />
+  );
+}

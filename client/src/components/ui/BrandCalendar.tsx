@@ -6,7 +6,7 @@
  * Mobile: native <input type="date"> for optimal OS picker.
  */
 
-import { useId } from "react";
+import { useId, useRef, useEffect } from "react";
 import { Calendar } from "lucide-react";
 import { useBrandCalendar, MIN_YEAR, MAX_YEAR } from "./useBrandCalendar";
 import { MonthYearSelector } from "./MonthYearSelector";
@@ -41,6 +41,7 @@ export function BrandCalendar({
   disabled = false,
 }: BrandCalendarProps) {
   const uid = useId();
+  const calendarPopupRef = useRef<HTMLDivElement>(null);
   const {
     containerRef,
     isOpen, setIsOpen,
@@ -51,6 +52,13 @@ export function BrandCalendar({
     prevMonth, nextMonth,
     handleSelect, displayValue,
   } = useBrandCalendar({ value, placeholder, onChange });
+
+  useEffect(() => {
+    if (isOpen && calendarPopupRef.current) {
+      const first = calendarPopupRef.current.querySelector<HTMLElement>("button, [tabindex]");
+      first?.focus();
+    }
+  }, [isOpen]);
 
   return (
     <div className={`relative w-full ${className}`} dir="rtl" ref={containerRef}>
@@ -96,6 +104,7 @@ export function BrandCalendar({
 
         {isOpen && (
           <div
+            ref={calendarPopupRef}
             role="dialog"
             aria-label="בחירת תאריך"
             className="absolute top-full z-50 mt-1.5 right-0 w-full max-w-[300px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700"

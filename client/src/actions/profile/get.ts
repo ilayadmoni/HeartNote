@@ -20,7 +20,12 @@ export async function getMyProfile(): Promise<ActionResult<ProfileResponse>> {
   return protectedAction(async (user, supabase) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("*")
+      .select(
+        "id, email, first_name, last_name, date_of_birth, avatar_url, " +
+        "created_at, updated_at, subscription_tier, creations_count_free, " +
+        "creations_count_pro, additional_creation_free, additional_creation_pro, " +
+        "premium_start, premium_expiry",
+      )
       .eq("id", user.id)
       .single();
 
@@ -31,7 +36,7 @@ export async function getMyProfile(): Promise<ActionResult<ProfileResponse>> {
       );
     }
 
-    return buildProfileResponse(data, supabase);
+    return buildProfileResponse(data as unknown as Record<string, unknown>, supabase);
   });
 }
 

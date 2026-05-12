@@ -12,12 +12,6 @@ export interface VisuallyHiddenProps {
   as?: keyof JSX.IntrinsicElements;
 }
 
-export interface LiveRegionProps {
-  children: React.ReactNode;
-  politeness?: "polite" | "assertive" | "off";
-  atomic?: boolean;
-}
-
 export interface FocusTrapProps {
   children: React.ReactNode;
   active: boolean;

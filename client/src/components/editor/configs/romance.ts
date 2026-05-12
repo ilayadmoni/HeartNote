@@ -35,34 +35,6 @@ export const ROMANCE_CONFIGS: Record<string, EditorConfig> = {
       primaryColor: "#d4826f",
     },
   },
-  "steamy-window": {
-    templateId: "steamy-window",
-    title: "חלון עם אדים",
-    description: "הודעה מוסתרת מאחורי אדים — העבירו אצבע כדי לגלות",
-    fields: [
-      { key: "title", label: "כותרת", type: "text", placeholder: "יש לך הודעה..." },
-      {
-        key: "revealMessage",
-        label: "הודעה מוסתרת",
-        type: "textarea",
-        placeholder: "הטקסט שייחשף אחרי הגירוד",
-        maxLength: 18,
-      },
-      {
-        key: "background_image",
-        label: "תמונת רקע",
-        type: "image_url",
-        placeholder: "העלו תמונה לרקע",
-        cropAspect: 3 / 4,
-      },
-      { key: "primaryColor", label: "צבע ראשי", type: "color" },
-    ],
-    defaultData: {
-      title: "יש לך הודעה...",
-      revealMessage: "אני אוהב אותך! ❤️",
-      primaryColor: "#d4826f",
-    },
-  },
   "apology-search": {
     templateId: "apology-search",
     title: "חיפוש סליחה",

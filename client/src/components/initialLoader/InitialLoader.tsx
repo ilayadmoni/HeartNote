@@ -103,7 +103,7 @@ const LOADER_SCRIPT = /* js */ `
 (function () {
   /* — 1. Dark-mode detection (before first paint) — */
   var stored = null;
-  try { stored = localStorage.getItem('heartnote-theme'); } catch (_) {}
+  try { stored = localStorage.getItem('heartnote-theme'); } catch (_) { console.warn('[InitialLoader] localStorage unavailable, falling back to prefers-color-scheme'); }
   var isDark =
     stored === 'dark' ||
     (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);

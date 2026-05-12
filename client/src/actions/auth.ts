@@ -15,6 +15,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/utils/logger";
 import { validateOrigin } from "@/lib/utils/csrf";
 import { loginLimiter } from "@/lib/utils/rate-limiter";
+import { LoginFormSchema } from "@/lib/validations/auth";
 import type { LoginState } from "./auth.types";
 
 /** Extract client IP from request headers */
@@ -42,17 +43,14 @@ export async function loginAction(
     return { error: "בקשה לא חוקית. נא לרענן את הדף ולנסות שוב.", success: false };
   }
 
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  if (!email?.trim() || !password) {
+  const parsed = LoginFormSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+  if (!parsed.success) {
     return { error: "שם משתמש או סיסמה שגויים", success: false };
   }
-
-  /* ── MED-1: Server-side length limits ──────────────────────── */
-  if (email.trim().length > 254 || password.length > 128) {
-    return { error: "שם משתמש או סיסמה שגויים", success: false };
-  }
+  const { email, password } = parsed.data;
 
   /* ── SEC-CRIT-2: Redis rate limiting ─────────────────────────── */
   const clientIp = await getClientIp();
@@ -72,7 +70,7 @@ export async function loginAction(
     const { data: banned } = await admin
       .from("banned_users")
       .select("id")
-      .eq("email", email.trim().toLowerCase())
+      .eq("email", email)
       .maybeSingle();
 
     if (banned) {
@@ -86,10 +84,7 @@ export async function loginAction(
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email: email.trim(),
-    password,
-  });
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     return { error: "שם משתמש או סיסמה שגויים", success: false };

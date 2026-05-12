@@ -8,7 +8,7 @@
  * supports close-on-backdrop + close-on-Escape.
  */
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
@@ -28,6 +28,8 @@ export function TemplateInfoModal({
   description,
   infoText,
 }: TemplateInfoModalProps) {
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
   // Close on Escape key
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -43,6 +45,10 @@ export function TemplateInfoModal({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, handleKeyDown]);
+
+  useEffect(() => {
+    if (isOpen) closeButtonRef.current?.focus();
+  }, [isOpen]);
 
   useLockBodyScroll(isOpen);
 
@@ -87,6 +93,7 @@ export function TemplateInfoModal({
                 {title}
               </h3>
               <button
+                ref={closeButtonRef}
                 onClick={onClose}
                 className="
                   absolute left-4 top-1/2 -translate-y-1/2

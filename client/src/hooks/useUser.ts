@@ -1,12 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/contexts/AuthContext";
-import { createClient } from "@/lib/supabase/client";
+import { useProfileQuery, PROFILE_QUERY_KEY } from "./useProfileQuery";
 
-const supabase = createClient();
-
-export const USER_QUERY_KEY = ["user"] as const;
+export { PROFILE_QUERY_KEY as USER_QUERY_KEY };
 
 export interface UserProfileData {
   id: string;
@@ -17,27 +13,19 @@ export interface UserProfileData {
   email: string | null;
 }
 
-async function fetchUserProfile(userId: string): Promise<UserProfileData | null> {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id, first_name, last_name, date_of_birth, avatar_url, email")
-    .eq("id", userId)
-    .single();
-
-  if (error || !data) {
-    return null;
-  }
-
-  return data as UserProfileData;
-}
-
 export function useUser() {
-  const { user } = useAuth();
+  const result = useProfileQuery();
 
-  return useQuery({
-    queryKey: user ? [...USER_QUERY_KEY, user.id] : USER_QUERY_KEY,
-    queryFn: () => fetchUserProfile(user!.id),
-    enabled: !!user,
-    staleTime: 1000 * 60 * 5,
-  });
+  const data: UserProfileData | null | undefined = result.data
+    ? {
+        id: result.data.id,
+        first_name: result.data.first_name,
+        last_name: result.data.last_name,
+        date_of_birth: result.data.date_of_birth,
+        avatar_url: result.data.avatar_url,
+        email: result.data.email,
+      }
+    : (result.data as null | undefined);
+
+  return { ...result, data };
 }

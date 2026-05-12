@@ -113,17 +113,6 @@ export const TEMPLATES: Template[] = [
     linkText: "פרימיום",
   },
   {
-    id: "steamy-window",
-    title: "חלון עם אדים",
-    description:
-      "העבירו את האצבע על החלון וגלו את ההודעה הסודית שמוסתרת מאחוריו! 🫧",
-    category: "romantic",
-    isFree: true,
-    componentKey: "SteamyWindow",
-    link: "/create/steamy-window",
-    badge: { type: "free", color: "#22c55e" },
-  },
-  {
     id: "surprise-gift",
     title: "מתנה בהפתעה",
     description:
@@ -271,11 +260,6 @@ export const PREVIEW_DATA = {
     title: "גלגל ההחלטות",
     options: ["ארוחה", "סרט", "טיול", "מסאז'"],
   },
-  SteamyWindow: {
-    title: "יש לך הודעה...",
-    revealMessage: "❤️",
-    emoji: "💖",
-  },
   SlotMachine: {
     title: "מכונת ההבטחות",
     reel1Options: ["אני מבטיח", "מחר בבוקר"],
@@ -371,8 +355,6 @@ export const TEMPLATE_INFO_TEXT: Record<string, string> = {
     "המבחן האולטימטיבי! האם הם באמת מקשיבים לכם כשאתם מדברים? תכינו שאלות קשות ותראו מי יקבל תעודת הצטיינות (ומי יישן על הספה).",
   "open-when":
     "מעטפות וירטואליות לרגעים ספציפיים. 'פתח כשאתה עצוב', 'פתח כשאתה מתגעגע'... הרבה יותר מרגש מלהשאיר פתק על המקרר שנופל אחרי יומיים.",
-  "steamy-window":
-    "זוכרים שפעם היינו מציירים לבבות על חלונות עם אדים באוטו? אז כזה, רק בדיגיטל, ובלי שצריך לנקות את השמשות אחר כך!",
   "surprise-gift":
     "קופסת מתנה וירטואלית שצריך ללחוץ עליה עד שהיא נפתחת כדי לגלות את ההפתעה. מתאים במיוחד לאנשים שאין להם סבלנות!",
   "slot-machine":

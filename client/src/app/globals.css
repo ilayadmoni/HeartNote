@@ -31,10 +31,10 @@
    ==================================== */
 .dark {
   --foreground-rgb: 248, 250, 252;
-  --background-start-rgb: 37, 45, 59;
-  --background-end-rgb: 30, 38, 51;
-  --header-bg: rgba(37, 45, 59, 0.95);
-  --header-border: #2e3c52;
+  --background-start-rgb: 26, 31, 46;
+  --background-end-rgb: 20, 25, 38;
+  --header-bg: rgba(26, 31, 46, 0.95);
+  --header-border: #252d3b;
 }
 
 /* ====================================

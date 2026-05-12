@@ -66,6 +66,8 @@ export function WheelCanvas({
             ref={canvasRef}
             style={{ width: size, height: size }}
             className="rounded-full"
+            aria-label={`גלגל החלטות עם ${options.length} אפשרויות: ${options.join(", ")}`}
+            role="img"
           />
         </motion.div>
 

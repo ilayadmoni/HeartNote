@@ -26,7 +26,6 @@ export type TemplateComponentKey =
   | "RelationshipQuiz"
   | "OpenWhen"
   | "DecisionWheel"
-  | "SteamyWindow"
   | "SurpriseGift"
   | "SlotMachine"
   | "PunchingBag"

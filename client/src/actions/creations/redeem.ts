@@ -34,13 +34,13 @@ export async function redeemCouponAction(
   try {
     const originOk = await validateOrigin();
     if (!originOk) {
-      console.error("[redeemCouponAction] CSRF origin validation failed", { creationId, couponId });
+      logger.warn("[redeemCouponAction] CSRF origin validation failed", { creationId, couponId });
       return fail("Invalid origin", 403);
     }
 
     const parsed = RedeemSchema.safeParse({ creationId, couponId, verificationCode });
     if (!parsed.success) {
-      console.error("[redeemCouponAction] Zod validation failed", { creationId, couponId, errors: parsed.error.issues });
+      logger.warn("[redeemCouponAction] Zod validation failed", { creationId, couponId });
       return fail("Invalid input", 400);
     }
 
@@ -49,7 +49,7 @@ export async function redeemCouponAction(
       headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
     const rateLimitResult = await redeemLimiter.check(ip);
     if (!rateLimitResult.success) {
-      console.error("[redeemCouponAction] Rate limit exceeded", { ip });
+      logger.warn("[redeemCouponAction] Rate limit exceeded", { ip });
       return fail("Too many requests", 429);
     }
 
@@ -61,21 +61,19 @@ export async function redeemCouponAction(
     });
 
     if (error) {
-      console.error("[redeemCouponAction] RPC failed", { error: error.message, code: error.code, details: error.details });
-      logger.error("[redeemCouponAction] RPC failed", { error: error.message });
+      logger.error("[redeemCouponAction] RPC failed", { error: error.message, code: error.code });
       return fail("Failed to redeem coupon", 500);
     }
 
     // RPC returns NULL on not-found OR already-redeemed → surface 409.
     if (data === null) {
-      console.error("[redeemCouponAction] RPC returned null — coupon not found or already redeemed", { creationId, couponId });
+      logger.warn("[redeemCouponAction] RPC returned null — coupon not found or already redeemed", { creationId, couponId });
       return fail("Coupon unavailable", 409);
     }
 
     return ok(data as RedeemedCoupon);
   } catch (e) {
-    console.error("[redeemCouponAction] Unexpected error", e);
-    logger.error("[redeemCouponAction] Unexpected", { error: e });
+    logger.error("[redeemCouponAction] Unexpected error", { error: e });
     return fail("Failed to redeem coupon", 500);
   }
 }

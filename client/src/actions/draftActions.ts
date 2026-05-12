@@ -25,6 +25,13 @@ import { logger } from "@/lib/utils/logger";
 
 const DraftIdSchema = z.string().uuid("Invalid draft ID format");
 
+const GuestDraftMetadataSchema = z
+  .object({
+    _template_id: z.string().min(1),
+    _temp_image_path: z.string().optional(),
+  })
+  .passthrough();
+
 export async function claimGuestDraft(draftId: string) {
   // ── Input validation ───────────────────────────────────────────────
   const parsed = DraftIdSchema.safeParse(draftId);
@@ -63,7 +70,12 @@ export async function claimGuestDraft(draftId: string) {
   }
 
   // ── Process guest draft ────────────────────────────────────────────
-  const metadata = draftData.metadata as Record<string, any>;
+  const metaParsed = GuestDraftMetadataSchema.safeParse(draftData.metadata);
+  if (!metaParsed.success) {
+    logger.warn("[claimGuestDraft] Draft metadata failed validation", { draftId });
+    return { success: false, error: "Draft metadata is invalid." };
+  }
+  const metadata = metaParsed.data as Record<string, unknown>;
   const templateSlug = metadata._template_id as string;
   const tempImagePath = metadata._temp_image_path as string | undefined;
 

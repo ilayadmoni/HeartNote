@@ -31,6 +31,7 @@ import { calculateExpiry } from "./helpers/expiryCalc";
 import { CREATION_ACTION_ERRORS } from "@/lib/creation-flow/errors";
 import { logAudit } from "@/lib/audit-logger";
 import { validateOrigin } from "@/lib/utils/csrf";
+import { logger } from "@/lib/utils/logger";
 
 interface SupabaseInsertErrorLike {
   message?: unknown;
@@ -118,11 +119,14 @@ export async function createCreation(
         : quotaPreference;
     const isPremiumBehavior = userTier !== "free" && appliedQuota === "pro";
 
-    const { data: freePolicy } = await supabase
+    const tierCodes = userTier !== "free" ? ["free", userTier] : ["free"];
+    const { data: policies } = await supabase
       .from("subscription_policies")
-      .select("creation_limit")
-      .eq("tier_code", "free")
-      .single();
+      .select("tier_code, creation_limit, default_expiry")
+      .in("tier_code", tierCodes);
+
+    const freePolicy = policies?.find((p) => p.tier_code === "free");
+    const tierPolicy = policies?.find((p) => p.tier_code === userTier);
 
     const freeLimit = Number(freePolicy?.creation_limit ?? 3);
     const freeTotalAllowed = freeLimit + (profile.additional_creation_free ?? 0);
@@ -133,12 +137,6 @@ export async function createCreation(
 
     let paidDefaultExpirySeconds: number | null = null;
     if (isPremiumBehavior) {
-      const { data: tierPolicy } = await supabase
-        .from("subscription_policies")
-        .select("creation_limit, default_expiry")
-        .eq("tier_code", userTier)
-        .single();
-
       const proLimit = tierPolicy?.creation_limit as number | null | undefined;
       const proTotalAllowed =
         proLimit == null ? null : Number(proLimit) + (profile.additional_creation_pro ?? 0);
@@ -174,9 +172,10 @@ export async function createCreation(
       },
     );
 
+    const REDEMPTION_CODE_MAX = parseInt(process.env.REDEMPTION_CODE_MAX || "10000", 10);
     // SEC-CRIT-2: 4-digit verification code required for coupon redemption.
     const verificationCode = String(
-      Math.floor(Math.random() * 10000),
+      Math.floor(Math.random() * REDEMPTION_CODE_MAX),
     ).padStart(4, "0");
 
     const { data: creation, error: insertErr } = await supabase
@@ -195,10 +194,7 @@ export async function createCreation(
     if (insertErr || !creation) {
       const insertInfo = normalizeInsertError(insertErr);
 
-      // Keep explicit logs while debugging quota trigger failures.
-      console.log("[createCreation] insert error.message:", insertInfo.message);
-      console.log("[createCreation] insert error.details:", insertInfo.details);
-      console.error("[createCreation] Insert failed", {
+      logger.error("[createCreation] Insert failed", {
         code: insertInfo.code,
         hint: insertInfo.hint,
         message: insertInfo.message,

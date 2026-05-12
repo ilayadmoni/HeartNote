@@ -4,7 +4,6 @@
  */
 
 export { DecisionWheelPreview } from "../previews/DecisionWheelPreview";
-export { SteamyWindowPreview } from "../previews/SteamyWindowPreview";
 export { SlotMachinePreview } from "../previews/SlotMachinePreview";
 export { PunchingBagPreview } from "../previews/PunchingBagPreview";
 export { ApologySearchPreview } from "../previews/ApologySearchPreview";

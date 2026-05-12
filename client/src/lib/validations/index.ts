@@ -1,3 +1,9 @@
+export { LoginFormSchema, RegisterFormSchema } from "./auth";
+export type { LoginFormInput, RegisterFormInput } from "./auth";
+
+export { ContactFormSchema } from "./contact";
+export type { ContactFormInput } from "./contact";
+
 export { ProfileUpdateSchema, ProfileResponseSchema, SubscriptionInfoSchema, AVATAR_OPTIONS } from "./profile";
 export type { ProfileUpdateInput, ProfileResponse, SubscriptionInfo } from "./profile";
 

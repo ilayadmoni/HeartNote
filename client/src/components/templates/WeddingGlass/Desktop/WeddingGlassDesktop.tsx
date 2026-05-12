@@ -136,7 +136,9 @@ export function WeddingGlassDesktop({
         </div>
       </motion.div>
 
-      <FooterBranding />
+      <div className="mt-8">
+        <FooterBranding />
+      </div>
     </div>
   );
 }

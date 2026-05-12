@@ -19,14 +19,9 @@ const cspDirectives = [
     "https://www.google-analytics.com",
     "https://www.googletagmanager.com",
   ].join(" "),
-  [
-    "connect-src 'self'",
-    "https://*.supabase.co",
-    "wss://*.supabase.co",
-    "https://www.google-analytics.com",
-    "https://www.googletagmanager.com",
-    "https://region1.google-analytics.com",
-  ].join(" "),
+  process.env.NODE_ENV === "production"
+    ? "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://www.googletagmanager.com https://region1.google-analytics.com"
+    : `connect-src 'self' http://localhost:3000 ${process.env.LAN_IP ? `http://${process.env.LAN_IP}:3000` : ""} https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://www.googletagmanager.com https://region1.google-analytics.com`,
   "frame-src 'self' https://www.googletagmanager.com",
   "frame-ancestors 'self'",
   "form-action 'self'",
@@ -47,6 +42,11 @@ const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  // Dev-only: actively clear any cached HSTS so phones/browsers don't auto-upgrade
+  // http://<LAN_IP>:3000 to https://. No-op in production (no header emitted).
+  ...(process.env.NODE_ENV !== "production"
+    ? [{ key: "Strict-Transport-Security", value: "max-age=0" }]
+    : []),
 ];
 
 const nextConfig = {
@@ -55,6 +55,7 @@ const nextConfig = {
     NEXT_PUBLIC_SUPABASE_URL:
       process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:8000",
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || "HeartNote",
+    LAN_IP: process.env.LAN_IP || "",
   },
   images: {
     remotePatterns: [

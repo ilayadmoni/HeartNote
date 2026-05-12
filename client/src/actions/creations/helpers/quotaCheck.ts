@@ -71,19 +71,26 @@ export async function fetchProfileForQuota(
 
 /**
  * Fetches the creation_limit from subscription_policies for a given tier.
- * Returns a fallback of 3 for free tier if the row is missing.
+ * Throws ActionError(500) if the policy row is missing — this is a DB misconfiguration.
  */
 export async function fetchPolicyLimit(
   supabase: SupabaseClient,
   tierCode: string,
 ): Promise<number | null> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("subscription_policies")
     .select("creation_limit")
     .eq("tier_code", tierCode)
     .single();
 
-  return (data?.creation_limit as number) ?? (tierCode === "free" ? 3 : null);
+  if (error || !data) {
+    throw new ActionError(
+      `Subscription policy for tier "${tierCode}" is not configured. Please contact support.`,
+      500,
+    );
+  }
+
+  return data.creation_limit as number | null;
 }
 
 // ── Premium Guard ────────────────────────────────────────────────────────
@@ -115,8 +122,13 @@ export function checkQuotaLimit(
   policyLimit: number | null,
 ): void {
   if (userTier === "free") {
-    const limit = policyLimit ?? 3;
-    const totalAllowed = limit + (profile.additional_creation_free ?? 0);
+    if (policyLimit === null) {
+      throw new ActionError(
+        "Free tier creation limit is not configured. Please contact support.",
+        500,
+      );
+    }
+    const totalAllowed = policyLimit + (profile.additional_creation_free ?? 0);
 
     if (profile.creations_count_free >= totalAllowed) {
       throw new ActionError(CREATION_ACTION_ERRORS.QUOTA_EXCEEDED, 403);

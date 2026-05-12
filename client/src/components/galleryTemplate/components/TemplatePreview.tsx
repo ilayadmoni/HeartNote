@@ -9,7 +9,6 @@
 import { motion } from "framer-motion";
 import {
   DecisionWheelPreview,
-  SteamyWindowPreview,
   SurpriseGiftPreview,
   SlotMachinePreview,
   PunchingBagPreview,
@@ -43,8 +42,6 @@ export function TemplatePreview({ componentKey }: TemplatePreviewProps) {
       return <OpenWhenPreview />;
     case "DecisionWheel":
       return <DecisionWheelPreview />;
-    case "SteamyWindow":
-      return <SteamyWindowPreview />;
     case "SurpriseGift":
       return <SurpriseGiftPreview />;
     case "SlotMachine":

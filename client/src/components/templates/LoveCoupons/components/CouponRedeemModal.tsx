@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
@@ -32,6 +32,11 @@ export function CouponRedeemModal({
 }: Props) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (open) cancelButtonRef.current?.focus();
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -161,6 +166,7 @@ export function CouponRedeemModal({
                 </button>
 
                 <button
+                  ref={cancelButtonRef}
                   type="button"
                   onClick={onCancel}
                   disabled={isSubmitting}

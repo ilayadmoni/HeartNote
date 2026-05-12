@@ -17,6 +17,7 @@ import { escapeHtml } from "@/lib/utils/sanitize";
 import { contactLimiter } from "@/lib/utils/rate-limiter";
 import { logger } from "@/lib/utils/logger";
 import { validateOrigin } from "@/lib/utils/csrf";
+import { ContactFormSchema } from "@/lib/validations/contact";
 
 const resend = new Resend(process.env.RESEND_KEY);
 
@@ -46,26 +47,22 @@ export async function sendContactEmail(
       return { error: "בקשה לא חוקית. נא לרענן את הדף ולנסות שוב." };
     }
 
-    const name = formData.get("name")?.toString().trim();
-    const email = formData.get("email")?.toString().trim();
-    const subject = formData.get("subject")?.toString().trim();
-    const message = formData.get("message")?.toString().trim();
-
-    // ── Basic validation ──────────────────────────────────────────────
-    if (!name || !email || !message) {
+    const formParsed = ContactFormSchema.safeParse({
+      name: formData.get("name"),
+      email: formData.get("email"),
+      subject: formData.get("subject") || undefined,
+      message: formData.get("message"),
+    });
+    if (!formParsed.success) {
+      const issue = formParsed.error.issues[0];
+      const field = String(issue.path[0] ?? "");
+      if (field === "email") return { error: "כתובת האימייל אינה תקינה." };
+      if (field === "name") return { error: "שם ארוך מידי (מקסימום 100 תווים)." };
+      if (field === "subject") return { error: "נושא ארוך מידי (מקסימום 200 תווים)." };
+      if (field === "message") return { error: "ההודעה ארוכה מידי (מקסימום 5000 תווים)." };
       return { error: "נא למלא את כל השדות הנדרשים." };
     }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return { error: "כתובת האימייל אינה תקינה." };
-    }
-
-    // ── MED-2: Server-side length limits ─────────────────────────────
-    if (name.length > 100) return { error: "שם ארוך מידי (מקסימום 100 תווים)." };
-    if (email.length > 254) return { error: "אימייל ארוך מידי." };
-    if (subject && subject.length > 200) return { error: "נושא ארוך מידי (מקסימום 200 תווים)." };
-    if (message.length > 5000) return { error: "ההודעה ארוכה מידי (מקסימום 5000 תווים)." };
+    const { name, email, subject, message } = formParsed.data;
 
     // ── SEC-4: Redis rate limiting ──────────────────────────────────────
     const ip = await getClientIp();

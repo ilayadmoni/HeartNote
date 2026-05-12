@@ -1,61 +1,50 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
-import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { BatFigure } from "../components/BatFigure";
-import { BarFigure } from "../components/BarFigure";
-import { fireCandyShower } from "../components/fireCandyShower";
+import { usePathname } from "next/navigation";
 import { FooterBranding } from "@/components/templates/components";
+import { BoyFigure } from "../components/BoyFigure";
+import { GirlFigure } from "../components/GirlFigure";
+import { CandyBurst } from "../components/CandyBurst";
 import type { BarBatMitzvahData } from "../types";
 
 interface BarBatMitzvahMobileProps {
   data: BarBatMitzvahData;
   primaryColor: string;
+  isThrowing: boolean;
+  showGreeting: boolean;
+  burstKey: number;
+  onReveal: () => void;
+  onReset: () => void;
+  onBurstComplete: () => void;
 }
 
-const CORAL = "#E28F79";
 const NAVY = "#121721";
+const CORAL = "#E28F79";
 
-export function BarBatMitzvahMobile({ data, primaryColor }: BarBatMitzvahMobileProps) {
-  const [showMessage, setShowMessage] = useState(false);
-  const [isThrowing, setIsThrowing] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+export function BarBatMitzvahMobile({
+  data,
+  primaryColor,
+  isThrowing,
+  showGreeting,
+  burstKey,
+  onReveal,
+  onReset,
+  onBurstComplete,
+}: BarBatMitzvahMobileProps) {
   const pathname = usePathname();
   const isCreateRoute = pathname?.includes("/create/");
 
-  const handleThrow = useCallback(() => {
-    if (isThrowing || showMessage) return;
-    setIsThrowing(true);
-    fireCandyShower(canvasRef.current);
-    setTimeout(() => {
-      setShowMessage(true);
-      setIsThrowing(false);
-    }, 600);
-  }, [isThrowing, showMessage]);
-
-  const handleReset = useCallback(() => {
-    setShowMessage(false);
-  }, []);
-
-  const mazalTitle = data.blessingTitle || "מזל טוב!";
-  const mazalMessage =
-    data.blessingMessage ||
-    "שיהיה מסע ההתבגרות שלך מלא במתיקות, שמחה והצלחה.";
-  const buttonLabel = showMessage ? "נסה שוב!" : "זרקו סוכריות!";
+  const buttonLabel = showGreeting ? "נסה שוב!" : "זרקו סוכריות!";
 
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-3xl flex flex-col items-center justify-between p-5 ${
+      dir="rtl"
+      className={`relative w-full overflow-hidden rounded-3xl flex flex-col items-center justify-between p-5 text-right ${
         isCreateRoute ? "min-h-[450px]" : "min-h-screen"
       }`}
       style={{ backgroundColor: NAVY }}
     >
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none z-50"
-      />
-
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -69,14 +58,16 @@ export function BarBatMitzvahMobile({ data, primaryColor }: BarBatMitzvahMobileP
           {data.introTitle || "מכונת ההתבגרות"}
         </h2>
         <p className="text-center text-hebrew-body text-sm text-stone-400 mb-6 break-words">
-          {data.introSubtitle || "לחצו על הכפתור כדי לזרוק סוכריות לחתן הבר מצווה!"}
+          {data.introSubtitle || "לחצו על הכפתור כדי לזרוק סוכריות!"}
         </p>
 
         <div className="relative flex-1 w-full flex items-center justify-center">
+          <CandyBurst key={burstKey} trigger={burstKey > 0} onComplete={onBurstComplete} />
+
           <motion.div
             animate={{
-              filter: showMessage ? "blur(6px)" : "blur(0px)",
-              opacity: showMessage ? 0.45 : 1,
+              filter: showGreeting ? "blur(6px)" : "blur(0px)",
+              opacity: showGreeting ? 0.45 : 1,
               scale: isThrowing ? 1.03 : 1,
             }}
             transition={{ duration: 0.4 }}
@@ -84,15 +75,15 @@ export function BarBatMitzvahMobile({ data, primaryColor }: BarBatMitzvahMobileP
           >
             <div className="scale-90">
               {data.kind === "bat" ? (
-                <BatFigure onClick={handleThrow} primaryColor={primaryColor} />
+                <GirlFigure onClick={!showGreeting ? onReveal : undefined} />
               ) : (
-                <BarFigure onClick={handleThrow} primaryColor={primaryColor} />
+                <BoyFigure onClick={!showGreeting ? onReveal : undefined} />
               )}
             </div>
           </motion.div>
 
           <AnimatePresence>
-            {showMessage && (
+            {showGreeting && (
               <motion.div
                 key="mazal-overlay"
                 initial={{ opacity: 0, scale: 0.85, x: "-50%", y: "-50%" }}
@@ -110,10 +101,10 @@ export function BarBatMitzvahMobile({ data, primaryColor }: BarBatMitzvahMobileP
                     className="text-3xl font-black text-hebrew-heading mb-3"
                     style={{ color: CORAL }}
                   >
-                    {mazalTitle}
+                    {data.blessingTitle || "מזל טוב!"}
                   </h3>
                   <p className="text-sm text-hebrew-body text-stone-100/90 leading-relaxed">
-                    {mazalMessage}
+                    {data.blessingMessage}
                   </p>
                 </div>
               </motion.div>
@@ -122,13 +113,13 @@ export function BarBatMitzvahMobile({ data, primaryColor }: BarBatMitzvahMobileP
         </div>
 
         <motion.button
-          onClick={showMessage ? handleReset : handleThrow}
+          onClick={showGreeting ? onReset : onReveal}
           disabled={isThrowing}
           whileHover={!isThrowing ? { scale: 1.04 } : {}}
           whileTap={!isThrowing ? { scale: 0.96 } : {}}
           className="w-full mt-6 px-6 py-3.5 text-base font-extrabold rounded-full text-white shadow-xl uppercase tracking-wide"
           style={{
-            background: showMessage
+            background: showGreeting
               ? "rgba(255,255,255,0.12)"
               : `linear-gradient(135deg, ${CORAL} 0%, #D17560 100%)`,
             cursor: isThrowing ? "not-allowed" : "pointer",
@@ -138,7 +129,7 @@ export function BarBatMitzvahMobile({ data, primaryColor }: BarBatMitzvahMobileP
         </motion.button>
       </motion.div>
 
-      <div className="mt-4 opacity-80">
+      <div className="mt-8 opacity-80">
         <FooterBranding />
       </div>
     </div>

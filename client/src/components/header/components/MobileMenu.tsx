@@ -55,14 +55,14 @@ export function MobileMenu({
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="
                 absolute top-16 left-0 right-0 z-[95] lg:hidden overflow-hidden
-                bg-white dark:bg-[#1a1f2e]
+                bg-[#faf8f5f2] dark:bg-[#1a1f2e]
               "
               style={{
                 willChange: "opacity, transform",
                 boxShadow:
                   "0 30px 70px -20px rgba(212,130,111,0.35), 0 2px 6px rgba(0,0,0,0.1)",
                 borderTop: "1px solid rgba(212,130,111,0.18)",
-                padding: "26px 22px 22px",
+                padding: "20px 18px 22px",
                 fontFamily: "var(--font-open-sans)",
               }}
               aria-label="תפריט ניווט"
@@ -99,17 +99,18 @@ export function MobileMenu({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 6 }}
                     transition={{ delay: navItems.length * 0.07 + 0.05, duration: 0.2 }}
+                    whileTap={{ scale: 0.97 }}
                     className="
-                      w-full mt-3.5 px-4 py-3.5 rounded-[18px]
+                      w-full mt-5 px-4 py-3.5 rounded-full
                       text-white font-bold text-[15px]
-                      transition-transform duration-150
-                      active:scale-[0.98] cursor-pointer
+                      transition-opacity duration-150
+                      active:opacity-90 cursor-pointer
                       focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]
-                      focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#1a1f2e]
+                      focus-visible:ring-offset-2 focus-visible:ring-offset-[#faf8f5] dark:focus-visible:ring-offset-[#1a1f2e]
                     "
                     style={{
                       background: `linear-gradient(135deg, ${C.coral} 0%, ${C.coralDark} 100%)`,
-                      boxShadow: "0 10px 24px -6px rgba(212,130,111,0.55)",
+                      boxShadow: "0 8px 20px -4px rgba(212,130,111,0.45)",
                       fontFamily: "var(--font-open-sans)",
                     }}
                   >

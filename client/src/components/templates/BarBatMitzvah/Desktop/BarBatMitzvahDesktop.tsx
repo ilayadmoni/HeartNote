@@ -1,158 +1,135 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { BatFigure } from "../components/BatFigure";
-import { BarFigure } from "../components/BarFigure";
-import { fireCandyShower } from "../components/fireCandyShower";
-import {
-  BackToGallery,
-  FooterBranding,
-  TemplateResetButton,
-} from "@/components/templates/components";
+import { BackToGallery, FooterBranding } from "@/components/templates/components";
+import { BoyFigure } from "../components/BoyFigure";
+import { GirlFigure } from "../components/GirlFigure";
+import { CandyBurst } from "../components/CandyBurst";
 import type { BarBatMitzvahData } from "../types";
 
 interface BarBatMitzvahDesktopProps {
   data: BarBatMitzvahData;
   primaryColor: string;
+  isThrowing: boolean;
+  showGreeting: boolean;
+  burstKey: number;
+  onReveal: () => void;
+  onReset: () => void;
+  onBurstComplete: () => void;
 }
 
 export function BarBatMitzvahDesktop({
   data,
   primaryColor,
+  isThrowing,
+  showGreeting,
+  burstKey,
+  onReveal,
+  onReset,
+  onBurstComplete,
 }: BarBatMitzvahDesktopProps) {
-  const [showGreeting, setShowGreeting] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const handleReveal = useCallback(() => {
-    fireCandyShower(canvasRef.current);
-    setTimeout(() => setShowGreeting(true), 500);
-  }, []);
-
   const introTitle = data.introTitle || "מכונת ההתבגרות";
-  const introSubtitle =
-    data.introSubtitle || "לחצו על הכתר או הספר כדי לגלות את הברכה";
-  const tapHintLabel =
-    data.tapHintLabel ||
-    (data.kind === "bat" ? "לחצו על הכתר" : "לחצו על הספר");
+  const introSubtitle = data.introSubtitle || "לחצו על הדמות כדי לגלות את הברכה";
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center p-6">
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none z-50"
-      />
+    <div dir="rtl" className="relative w-full h-full flex flex-col items-center justify-center p-6 text-right">
       <BackToGallery />
 
-      <div className="flex-1 flex flex-col items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-2xl"
+      >
         <h1
-          className="text-3xl font-bold text-center mb-4 text-hebrew-heading break-words w-full"
+          className="text-4xl font-black text-center text-hebrew-heading mb-4 break-words w-full"
           style={{ color: primaryColor }}
         >
           {introTitle}
         </h1>
-        <p
-          className="text-lg text-center mb-8 text-hebrew-body break-words w-full"
-          style={{ color: primaryColor, opacity: 0.75 }}
-        >
+        <p className="text-center text-hebrew-body text-stone-600 mb-8 break-words">
           {introSubtitle}
         </p>
 
-        <div className="relative w-full h-80 flex items-center justify-center border-b-2 border-cream pb-6 mb-6">
-          <AnimatePresence mode="wait">
-            {!showGreeting && data.kind === "bat" && (
-              <motion.div
-                key="bat"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-              >
-                <BatFigure
-                  onClick={handleReveal}
-                  primaryColor={primaryColor}
-                />
-              </motion.div>
-            )}
+        <div className="relative w-full max-w-lg mx-auto h-80 mb-8 border-b-4 border-[#F5EBDD] pb-2 overflow-visible">
+          <div className="relative w-full h-full flex flex-col items-center justify-center">
+            <CandyBurst key={burstKey} trigger={burstKey > 0} onComplete={onBurstComplete} />
 
-            {!showGreeting && data.kind === "bar" && (
-              <motion.div
-                key="bar"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-              >
-                <BarFigure
-                  onClick={handleReveal}
-                  primaryColor={primaryColor}
-                />
-              </motion.div>
-            )}
+            <motion.div
+              animate={{
+                filter: showGreeting ? "blur(6px)" : "blur(0px)",
+                opacity: showGreeting ? 0.5 : 1,
+              }}
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              {data.kind === "bat" ? (
+                <GirlFigure onClick={!showGreeting ? onReveal : undefined} />
+              ) : (
+                <BoyFigure onClick={!showGreeting ? onReveal : undefined} />
+              )}
+            </motion.div>
 
-            {!showGreeting && (
-              <motion.div
-                className="absolute top-8 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md"
-                style={{ backgroundColor: primaryColor }}
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                {tapHintLabel}
-              </motion.div>
-            )}
-
-            {showGreeting && (
-              <motion.div
-                key="greeting"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="absolute inset-0 bg-white flex flex-col items-center justify-center rounded-2xl shadow-2xl p-8 overflow-hidden"
-              >
-                {/* Colored accent bar at top */}
-                <div
-                  className="absolute top-0 left-0 right-0 h-1.5 rounded-t-2xl"
-                  style={{ backgroundColor: primaryColor }}
-                />
-
-                <button
-                  onClick={() => setShowGreeting(false)}
-                  className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+<AnimatePresence>
+              {showGreeting && (
+                <motion.div
+                  key="greeting"
+                  initial={{ opacity: 0, scale: 0.9, x: "-50%", y: "-50%" }}
+                  animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
+                  exit={{ opacity: 0, scale: 0.9, x: "-50%", y: "-50%" }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute top-1/2 left-1/2 z-50 w-[85%]"
+                  style={{ maxWidth: 420 }}
                 >
-                  <X size={24} className="text-dark" />
-                </button>
-
-                <h3
-                  className="text-4xl font-black mb-3 text-hebrew-heading text-center break-words w-full"
-                  style={{ color: primaryColor }}
-                >
-                  {data.blessingTitle || "הגיע הזמן לחגוג! 🎉"}
-                </h3>
-
-                <div
-                  className="w-12 h-0.5 mb-5 rounded-full"
-                  style={{ backgroundColor: primaryColor }}
-                />
-
-                <p className="text-xl text-slate-600 text-center text-hebrew-body leading-relaxed break-words w-full">
-                  {data.blessingMessage}
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  <div className="rounded-3xl bg-white/70 backdrop-blur-md border border-white/50 shadow-2xl px-8 py-6 text-center overflow-hidden">
+                    <div
+                      className="absolute top-0 left-0 right-0 h-1.5 rounded-t-3xl"
+                      style={{ backgroundColor: primaryColor }}
+                    />
+                    <button
+                      onClick={onReset}
+                      className="absolute top-3 left-3 p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                      <X size={20} className="text-slate-600" />
+                    </button>
+                    <h3
+                      className="text-4xl font-black text-hebrew-heading mb-3 break-words"
+                      style={{ color: primaryColor }}
+                    >
+                      {data.blessingTitle || "הגיע הזמן לחגוג! 🎉"}
+                    </h3>
+                    <div className="w-12 h-0.5 mb-4 rounded-full mx-auto" style={{ backgroundColor: primaryColor }} />
+                    <p className="text-lg text-hebrew-body text-slate-600 leading-relaxed break-words">
+                      {data.blessingMessage}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Explicit reset — visible when greeting/blessing panel is open */}
-        {showGreeting && (
-          <div className="flex justify-center mt-4">
-            <TemplateResetButton
-              onClick={() => setShowGreeting(false)}
-              label="חזור להתחלה"
-            />
-          </div>
-        )}
-      </div>
+        <div className="flex justify-center">
+          <motion.button
+            onClick={showGreeting ? onReset : onReveal}
+            disabled={isThrowing}
+            whileHover={!isThrowing ? { scale: 1.05 } : {}}
+            whileTap={!isThrowing ? { scale: 0.95 } : {}}
+            className="px-8 py-4 text-lg font-bold rounded-full text-white shadow-lg"
+            style={{
+              background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}BF 100%)`,
+              cursor: isThrowing ? "not-allowed" : "pointer",
+            }}
+          >
+            {showGreeting ? "חזור להתחלה" : "זרקו סוכריות!"}
+          </motion.button>
+        </div>
+      </motion.div>
 
-      <FooterBranding />
+      <div className="mt-8">
+        <FooterBranding />
+      </div>
     </div>
   );
 }

@@ -191,10 +191,27 @@
   scroll-behavior: auto !important;
 }
 
-/* Force Framer Motion to skip animations via transform override */
+/* Override Framer Motion inline styles, CSS variables, and will-change */
 .a11y-stop-animations [style*="transform"],
-.a11y-stop-animations [style*="opacity"] {
+.a11y-stop-animations [style*="opacity"],
+.a11y-stop-animations [style*="will-change"] {
   transition: none !important;
+  animation: none !important;
+}
+
+.a11y-stop-animations * {
+  will-change: auto !important;
+  /* Reset Framer Motion's CSS motion variables to neutral values */
+  --x: 0px !important;
+  --y: 0px !important;
+  --scale: 1 !important;
+  --scaleX: 1 !important;
+  --scaleY: 1 !important;
+  --rotate: 0deg !important;
+  --rotateX: 0deg !important;
+  --rotateY: 0deg !important;
+  --skewX: 0deg !important;
+  --skewY: 0deg !important;
 }
 
 /* Also respect system preference */

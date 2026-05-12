@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle } from "lucide-react";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
+import { FocusTrap } from "@/components/accessibility";
 
 interface ActiveSubscriptionWarningModalProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ export function ActiveSubscriptionWarningModal({
           className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center backdrop-blur-sm"
           onClick={onCancel}
         >
+          <FocusTrap active={isOpen} onEscape={onCancel}>
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -68,6 +70,7 @@ export function ActiveSubscriptionWarningModal({
               </button>
             </div>
           </motion.div>
+          </FocusTrap>
         </motion.div>
       )}
     </AnimatePresence>

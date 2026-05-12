@@ -13,12 +13,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTemplates } from "@/actions/templates";
 import type { TemplateResponse } from "@/lib/validations";
+import { templateKeys } from "@/lib/queryKeys/templateKeys";
 
-export const templateKeys = {
-  all: ["templates"] as const,
-  list: () => [...templateKeys.all, "list"] as const,
-  detail: (slug: string) => [...templateKeys.all, "detail", slug] as const,
-};
+export { templateKeys };
 
 async function fetchActiveTemplates(): Promise<TemplateResponse[]> {
   const res = await getTemplates();

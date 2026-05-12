@@ -34,7 +34,11 @@
       "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"animation performance transform opacity GPU\" --domain ux -n 4)",
       "Bash(curl -s \"http://localhost:3000\")",
       "Bash(curl -s \"http://localhost:3002\")",
-      "Bash(git -C /d/HeartNote diff -- client/src/components/header/components/index.ts client/src/components/pricing/Mobile/PricingMobile.tsx)"
+      "Bash(git -C /d/HeartNote diff -- client/src/components/header/components/index.ts client/src/components/pricing/Mobile/PricingMobile.tsx)",
+      "PowerShell(Test-Path *)",
+      "PowerShell(Get-Command *)",
+      "PowerShell(New-Item *)",
+      "PowerShell(Get-ChildItem *)"
     ]
   }
 }

@@ -1,12 +1,8 @@
-/**
- * useProfile Hook (Supabase version)
- * Fetches the user profile + subscription data from the `profiles` table.
- * Used by CreationConfirmModal and QuotaModal for quota display.
- */
+"use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { useProfileQuery } from "./useProfileQuery";
 
 const supabase = createClient();
 
@@ -34,52 +30,47 @@ interface UseProfileReturn {
 }
 
 export function useProfile(): UseProfileReturn {
-  const { user } = useAuth();
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: profileData, isLoading, error: queryError } = useProfileQuery();
+  const tier = (profileData?.subscription_tier ?? "free") as "free" | "lite" | "premium";
 
-  const fetchProfile = useCallback(async () => {
-    if (!user) { setProfile(null); setLoading(false); return; }
-    try {
-      setLoading(true);
-      const { data, error: err } = await supabase
-        .from("profiles")
-        .select("first_name, last_name, avatar_url, subscription_tier, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro, premium_expiry")
-        .eq("id", user.id)
-        .single();
-      if (err || !data) throw new Error(err?.message ?? "Failed to load profile");
-
-      // Fetch creation_limit from subscription_policies based on user tier
-      const tier = data.subscription_tier ?? "free";
-      const { data: policy } = await supabase
+  const { data: policyData } = useQuery({
+    queryKey: ["subscription_policies", tier],
+    queryFn: async () => {
+      const { data } = await supabase
         .from("subscription_policies")
         .select("creation_limit")
         .eq("tier_code", tier)
         .single();
+      return data ?? null;
+    },
+    enabled: !!profileData,
+    staleTime: 1000 * 60 * 10,
+  });
 
-      setProfile({
-        firstName: data.first_name ?? "",
-        lastName: data.last_name ?? "",
-        avatarUrl: data.avatar_url ?? null,
+  const profile: ProfileData | null = profileData
+    ? {
+        firstName: profileData.first_name ?? "",
+        lastName: profileData.last_name ?? "",
+        avatarUrl: profileData.avatar_url ?? null,
         subscription: {
-          tier: tier as "free" | "lite" | "premium",
-          creations_count_free: data.creations_count_free ?? 0,
-          creations_count_pro: data.creations_count_pro ?? 0,
-          additional_creation_free: data.additional_creation_free ?? 0,
-          additional_creation_pro: data.additional_creation_pro ?? 0,
-          creation_limit: policy?.creation_limit ?? 3,
-          premium_expiry: data.premium_expiry ?? null,
+          tier,
+          creations_count_free: profileData.creations_count_free ?? 0,
+          creations_count_pro: profileData.creations_count_pro ?? 0,
+          additional_creation_free: profileData.additional_creation_free ?? 0,
+          additional_creation_pro: profileData.additional_creation_pro ?? 0,
+          creation_limit: (policyData?.creation_limit as number | null) ?? 3,
+          premium_expiry: profileData.premium_expiry ?? null,
         },
-      });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Unknown error");
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+      }
+    : null;
 
-  useEffect(() => { fetchProfile(); }, [fetchProfile]);
-
-  return { profile, loading, error };
+  return {
+    profile,
+    loading: isLoading,
+    error: queryError
+      ? queryError instanceof Error
+        ? queryError.message
+        : "Unknown error"
+      : null,
+  };
 }

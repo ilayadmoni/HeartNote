@@ -118,17 +118,6 @@ export interface DecisionWheelData {
 }
 
 // =============================================================================
-// 8. STEAMY WINDOW
-// =============================================================================
-export interface SteamyWindowData {
-  title?: string;             // "חלון מאודה"
-  revealMessage: string;      // Hidden text revealed after scratching
-  emoji?: string;             // Emoji shown above the message: "💖"
-  background_image?: string;  // URL to background image from Supabase Storage
-  primaryColor?: string;      // Accent color for revealed text
-}
-
-// =============================================================================
 // 9. SURPRISE GIFT
 // =============================================================================
 export interface SurpriseGiftData {

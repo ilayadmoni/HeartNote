@@ -2,7 +2,6 @@
 
 /**
  * Registration Server Action
- * ──────────────────────────
  * registerUser – 3-step registration logic:
  *
  *   1. Banned check   → explicit error "מייל לא חוקי"
@@ -26,6 +25,7 @@ import { validateOrigin } from "@/lib/utils/csrf";
 import { registrationLimiter } from "@/lib/utils/rate-limiter";
 import { HAPPY_AVATAR_OPTIONS } from "@/components/profile/types";
 import { logAudit } from "@/lib/audit-logger";
+import { RegisterFormSchema } from "@/lib/validations/auth";
 
 interface RegistrationResult {
   success?: string;
@@ -41,9 +41,6 @@ const ERR_INTERNAL =
 
 const ERR_RATE_LIMITED =
   "יותר מדי ניסיונות הרשמה. אנא נסו שוב מאוחר יותר.";
-
-/** Hebrew character range — blocked in passwords */
-const HEBREW_REGEX = /[\u0590-\u05FF]/;
 
 /** Resend client (lazy init) */
 let resend: Resend | null = null;
@@ -88,7 +85,7 @@ async function sendAlreadyRegisteredEmail(email: string): Promise<void> {
         <body style="font-family: Arial, sans-serif; background-color: #faf7f5; padding: 40px 20px; margin: 0;">
           <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
             <h1 style="color: #2e3c52; font-size: 24px; margin: 0 0 16px; text-align: center;">
-              🎉יש לך כבר חשבון 
+              🎉יש לך כבר חשבון
             </h1>
             <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 24px; text-align: center;">
               זיהינו שניסית להירשם עם אימייל זה, אך כבר קיים חשבון פעיל במערכת.
@@ -135,43 +132,42 @@ export async function registerUser(
     /* ── SEC-CRIT-2: Redis rate limiting ─────────────────────────── */
     const clientIp = await getClientIp();
     const rateLimitResult = await registrationLimiter.check(clientIp);
-    
+
     if (!rateLimitResult.success) {
-      logger.warn("[registerUser] Rate limited", { 
-        ip: clientIp, 
-        remaining: rateLimitResult.remaining 
+      logger.warn("[registerUser] Rate limited", {
+        ip: clientIp,
+        remaining: rateLimitResult.remaining,
       });
       return { error: ERR_RATE_LIMITED };
     }
 
-    /* ── Basic validation ────────────────────────────────────────── */
-    const trimmedEmail = email?.trim().toLowerCase();
-    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      return { error: "נא להזין כתובת אימייל תקינה." };
-    }
-    if (!password || password.length < 8) {
-      return { error: "הסיסמה חייבת להכיל לפחות 8 תווים." };
-    }
-    if (HEBREW_REGEX.test(password)) {
-      return {
-        error:
-          "הסיסמה חייבת להכיל אותיות באנגלית ומספרים בלבד. אין להשתמש בתווים בעברית.",
-      };
-    }
-    if (!firstName?.trim() || !lastName?.trim()) {
-      return { error: "נא להזין שם פרטי ושם משפחה." };
+    /* ── Zod validation ──────────────────────────────────────────── */
+    const formParsed = RegisterFormSchema.safeParse({
+      firstName,
+      lastName,
+      email,
+      password,
+      dateOfBirth,
+      emailRedirectTo,
+    });
+
+    if (!formParsed.success) {
+      const issue = formParsed.error.issues[0];
+      const field = String(issue.path[0] ?? "");
+      if (field === "email") return { error: "נא להזין כתובת אימייל תקינה." };
+      if (field === "password") return { error: issue.message };
+      if (field === "firstName" || field === "lastName") return { error: "נא להזין שם פרטי ושם משפחה." };
+      return { error: "נא למלא את כל השדות הנדרשים." };
     }
 
-    /* ── MED-1: Server-side length limits ─────────────────────── */
-    if (trimmedEmail.length > 254) {
-      return { error: "כתובת האימייל ארוכה מידי." };
-    }
-    if (password.length > 128) {
-      return { error: "הסיסמה ארוכה מידי." };
-    }
-    if (firstName.trim().length > 50 || lastName.trim().length > 50) {
-      return { error: "שם ארוך מידי (מקסימום 50 תווים)." };
-    }
+    const {
+      firstName: fn,
+      lastName: ln,
+      email: trimmedEmail,
+      password: validPassword,
+      dateOfBirth: dob,
+      emailRedirectTo: redirectTo,
+    } = formParsed.data;
 
     /* ── Admin client ────────────────────────────────────────────── */
     let admin;
@@ -202,8 +198,8 @@ export async function registerUser(
       .maybeSingle();
 
     if (existingProfile) {
-      logger.info("[registerUser] Existing user — sending notification", { 
-        email: trimmedEmail 
+      logger.info("[registerUser] Existing user — sending notification", {
+        email: trimmedEmail,
       });
 
       // Send "you already have an account" email (non-blocking)
@@ -213,19 +209,19 @@ export async function registerUser(
     }
 
     /* ── Step 3: New user → create account ───────────────────────── */
-    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+    const fullName = `${fn} ${ln}`.trim();
     const defaultAvatar =
       HAPPY_AVATAR_OPTIONS[
         Math.floor(Math.random() * HAPPY_AVATAR_OPTIONS.length)
       ].url;
     const userMeta: Record<string, string> = {
-      first_name: firstName.trim(),
-      last_name: lastName.trim(),
+      first_name: fn,
+      last_name: ln,
       full_name: fullName,
       avatar_url: defaultAvatar,
     };
-    if (dateOfBirth) {
-      userMeta.date_of_birth = dateOfBirth;
+    if (dob) {
+      userMeta.date_of_birth = dob;
     }
 
     let supabase;
@@ -239,13 +235,13 @@ export async function registerUser(
     const signUpOptions: { data: Record<string, string>; emailRedirectTo?: string } = {
       data: userMeta,
     };
-    if (emailRedirectTo) {
-      signUpOptions.emailRedirectTo = emailRedirectTo;
+    if (redirectTo) {
+      signUpOptions.emailRedirectTo = redirectTo;
     }
 
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: trimmedEmail,
-      password,
+      password: validPassword,
       options: signUpOptions,
     });
 
@@ -259,8 +255,8 @@ export async function registerUser(
       userId: signUpData?.user?.id ?? null,
       metadata: {
         email: trimmedEmail,
-        first_name: firstName,
-        last_name: lastName,
+        first_name: fn,
+        last_name: ln,
       },
     });
 
