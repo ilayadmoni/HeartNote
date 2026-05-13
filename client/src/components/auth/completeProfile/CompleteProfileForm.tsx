@@ -200,7 +200,7 @@ export function CompleteProfileForm() {
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, firstName: e.target.value }))
               }
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2.5 text-sm text-[#2e3c52] dark:text-white"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2.5 text-base text-[#2e3c52] dark:text-white"
             />
           </div>
 
@@ -217,7 +217,7 @@ export function CompleteProfileForm() {
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, lastName: e.target.value }))
               }
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2.5 text-sm text-[#2e3c52] dark:text-white"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2.5 text-base text-[#2e3c52] dark:text-white"
             />
           </div>
 

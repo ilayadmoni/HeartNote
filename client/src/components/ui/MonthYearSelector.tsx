@@ -62,7 +62,7 @@ export function MonthYearSelector({
           <select
             value={viewMonth}
             onChange={(e) => setViewMonth(Number(e.target.value))}
-            className="w-full bg-white/80 hover:bg-white text-sm font-semibold text-[#2e3c52] text-hebrew-heading cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2e3c52] rounded-lg border border-white/40 px-2 py-1.5 appearance-none transition-all"
+            className="w-full bg-white/80 hover:bg-white text-base font-semibold text-[#2e3c52] text-hebrew-heading cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2e3c52] rounded-lg border border-white/40 px-2 py-1.5 appearance-none transition-all"
             aria-label="חודש"
           >
             {MONTHS_HE.map((name, idx) => (

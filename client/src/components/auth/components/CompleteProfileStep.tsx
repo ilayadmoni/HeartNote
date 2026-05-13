@@ -63,7 +63,7 @@ export function CompleteProfileStep({
               type="text"
               value={profileForm.firstName}
               onChange={(e) => setProfileForm({ ...profileForm, firstName: e.target.value })}
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2.5 text-sm text-[#2e3c52] dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52]"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2.5 text-base text-[#2e3c52] dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52]"
             />
           </div>
 
@@ -76,7 +76,7 @@ export function CompleteProfileStep({
               type="text"
               value={profileForm.lastName}
               onChange={(e) => setProfileForm({ ...profileForm, lastName: e.target.value })}
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2.5 text-sm text-[#2e3c52] dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52]"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2.5 text-base text-[#2e3c52] dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52]"
             />
           </div>
 

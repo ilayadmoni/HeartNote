@@ -45,7 +45,7 @@ export function WeddingGlassMobile({
 
   return (
     <div className={`relative w-full h-full flex flex-col items-center justify-center p-4 ${
-      isCreateRoute ? "min-h-[450px]" : "min-h-[650px]"
+      isCreateRoute ? "min-h-[520px]" : "min-h-[680px]"
     }`}>
       <canvas
         ref={confettiCanvasRef}
@@ -65,7 +65,7 @@ export function WeddingGlassMobile({
         >
           {data.title || "שבירת כוס דיגיטלית"}
         </h2>
-        <p className="text-center text-hebrew-body text-sm text-stone-600 mb-6 break-words">
+        <p className="text-center text-hebrew-body text-sm text-stone-600 mb-3 sm:mb-6 break-words">
           {data.subtitle || "לחצו על הכפתור כדי שהחתן ישבור את הכוס!"}
         </p>
 
@@ -74,7 +74,7 @@ export function WeddingGlassMobile({
           key={shakeKey}
           animate={shakeKey > 0 ? shakeAnim : {}}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="relative w-full h-56 mb-6 border-b-4 border-cream pb-2 overflow-visible"
+          className="relative w-full h-[55vh] sm:h-72 mb-3 sm:mb-6 border-b-4 border-cream pb-2 overflow-visible"
         >
           {/* Stage: single positioning context for both figures and overlay */}
           <div className="relative w-full h-full flex flex-col items-center justify-center">
@@ -86,15 +86,15 @@ export function WeddingGlassMobile({
               transition={{ duration: 0.4 }}
               className="absolute inset-0"
             >
-              <div className="absolute left-2 bottom-0 w-28 h-48">
+              <div className="absolute left-1 bottom-0 w-[45%] h-[50vh] sm:w-44 sm:h-72">
                 <GroomFigure isStomping={isStomping} />
               </div>
 
-              <div className="absolute left-1/2 -translate-x-1/2 bottom-1 w-16 h-20 z-10">
+              <div className="absolute left-1/2 -translate-x-1/2 bottom-1 w-20 h-24 z-10">
                 <ShatteringGlass isShattered={isShattered} onShatterComplete={onShatterComplete} />
               </div>
 
-              <div className="absolute right-2 bottom-0 w-32 h-48">
+              <div className="absolute right-1 bottom-0 w-[48%] h-[50vh] sm:w-48 sm:h-72">
                 <BrideFigure />
               </div>
             </motion.div>

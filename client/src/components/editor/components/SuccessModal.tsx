@@ -161,7 +161,7 @@ export function SuccessModal({
                   type="text"
                   value={shareUrl}
                   readOnly
-                  className="flex-1 min-w-0 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-xs border-0 font-mono"
+                  className="flex-1 min-w-0 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-base border-0 font-mono"
                   dir="ltr"
                 />
                 <motion.button

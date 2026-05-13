@@ -43,7 +43,7 @@ function releaseScrollLock(): void {
   body.style.width = previousWidth;
   body.style.touchAction = previousTouchAction;
 
-  window.scrollTo(0, lockedScrollY);
+  window.scrollTo({ top: lockedScrollY, behavior: "instant" });
 }
 
 export function useLockBodyScroll(isLocked: boolean): void {

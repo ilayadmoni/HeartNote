@@ -1,17 +1,8 @@
 "use client";
 
-/**
- * TemplateInfoModal — Lightweight mobile-friendly dialog
- * explaining what a template is and how to use it.
- *
- * Uses Framer Motion for enter/exit animations and
- * supports close-on-backdrop + close-on-Escape.
- */
-
 import { useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 interface TemplateInfoModalProps {
   isOpen: boolean;
@@ -29,8 +20,8 @@ export function TemplateInfoModal({
   infoText,
 }: TemplateInfoModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
 
-  // Close on Escape key
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -41,26 +32,34 @@ export function TemplateInfoModal({
   useEffect(() => {
     if (!isOpen) return;
     document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, handleKeyDown]);
 
   useEffect(() => {
-    if (isOpen) closeButtonRef.current?.focus();
+    if (isOpen) {
+      returnFocusRef.current = document.activeElement as HTMLElement;
+      closeButtonRef.current?.focus();
+    } else {
+      returnFocusRef.current?.focus({ preventScroll: true });
+      returnFocusRef.current = null;
+    }
   }, [isOpen]);
 
-  useLockBodyScroll(isOpen);
+  useEffect(() => {
+    if (!isOpen) document.body.style.pointerEvents = "auto";
+    return () => { document.body.style.pointerEvents = "auto"; };
+  }, [isOpen]);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait" onExitComplete={() => { document.body.style.pointerEvents = "auto"; }}>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          key="template-info-modal-root"
+          initial={{ opacity: 0, pointerEvents: "none" }}
+          animate={{ opacity: 1, pointerEvents: "auto" }}
+          exit={{ opacity: 0, pointerEvents: "none" }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[999] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[999] flex items-center justify-center p-4 overscroll-contain touch-none"
           onClick={onClose}
           role="dialog"
           aria-modal="true"

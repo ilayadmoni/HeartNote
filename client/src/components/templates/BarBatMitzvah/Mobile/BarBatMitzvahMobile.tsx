@@ -19,7 +19,6 @@ interface BarBatMitzvahMobileProps {
   onBurstComplete: () => void;
 }
 
-const NAVY = "#121721";
 const CORAL = "#E28F79";
 
 export function BarBatMitzvahMobile({
@@ -40,11 +39,13 @@ export function BarBatMitzvahMobile({
   return (
     <div
       dir="rtl"
-      className={`relative w-full overflow-hidden rounded-3xl flex flex-col items-center justify-between p-5 text-right ${
+      className={`relative w-full flex flex-col items-center justify-between p-5 text-right ${
         isCreateRoute ? "min-h-[450px]" : "min-h-screen"
       }`}
-      style={{ backgroundColor: NAVY }}
     >
+      {/* Hoisted outside motion wrappers so position:fixed is viewport-relative */}
+      <CandyBurst key={burstKey} trigger={burstKey > 0} onComplete={onBurstComplete} />
+
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -53,17 +54,15 @@ export function BarBatMitzvahMobile({
       >
         <h2
           className="text-2xl font-black text-center text-hebrew-heading mb-1 break-words w-full"
-          style={{ color: "#F5F1EC" }}
+          style={{ color: primaryColor }}
         >
           {data.introTitle || "מכונת ההתבגרות"}
         </h2>
-        <p className="text-center text-hebrew-body text-sm text-stone-400 mb-6 break-words">
+        <p className="text-center text-hebrew-body text-sm text-stone-500 dark:text-stone-400 mb-6 break-words">
           {data.introSubtitle || "לחצו על הכפתור כדי לזרוק סוכריות!"}
         </p>
 
         <div className="relative flex-1 w-full flex items-center justify-center">
-          <CandyBurst key={burstKey} trigger={burstKey > 0} onComplete={onBurstComplete} />
-
           <motion.div
             animate={{
               filter: showGreeting ? "blur(6px)" : "blur(0px)",
@@ -93,17 +92,17 @@ export function BarBatMitzvahMobile({
                 className="absolute top-1/2 left-1/2 z-40 w-[90%]"
                 style={{ maxWidth: 380 }}
               >
-                <div className="rounded-2xl bg-white/15 backdrop-blur-xl border border-white/25 shadow-2xl px-6 py-6 text-center">
-                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
+                <div className="rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-2xl px-6 py-6 text-center">
+                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
                     <span className="text-xl">✡︎</span>
                   </div>
                   <h3
                     className="text-3xl font-black text-hebrew-heading mb-3"
-                    style={{ color: CORAL }}
+                    style={{ color: primaryColor }}
                   >
                     {data.blessingTitle || "מזל טוב!"}
                   </h3>
-                  <p className="text-sm text-hebrew-body text-stone-100/90 leading-relaxed">
+                  <p className="text-base text-hebrew-body text-zinc-700 dark:text-zinc-200 leading-relaxed">
                     {data.blessingMessage}
                   </p>
                 </div>
@@ -117,10 +116,12 @@ export function BarBatMitzvahMobile({
           disabled={isThrowing}
           whileHover={!isThrowing ? { scale: 1.04 } : {}}
           whileTap={!isThrowing ? { scale: 0.96 } : {}}
-          className="w-full mt-6 px-6 py-3.5 text-base font-extrabold rounded-full text-white shadow-xl uppercase tracking-wide"
+          className={`w-full mt-6 px-6 py-3.5 text-base font-extrabold rounded-full text-white shadow-xl uppercase tracking-wide ${
+            showGreeting ? "bg-orange-500 hover:bg-orange-600 active:bg-orange-700" : ""
+          }`}
           style={{
             background: showGreeting
-              ? "rgba(255,255,255,0.12)"
+              ? undefined
               : `linear-gradient(135deg, ${CORAL} 0%, #D17560 100%)`,
             cursor: isThrowing ? "not-allowed" : "pointer",
           }}

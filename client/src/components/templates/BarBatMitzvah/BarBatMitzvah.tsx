@@ -18,6 +18,12 @@ export function BarBatMitzvah({ data }: TemplateComponentProps<BarBatMitzvahData
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    setIsThrowing(false);
+    setShowGreeting(false);
+    setBurstKey(0);
+  }, [data.kind]);
+
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   const handleReveal = useCallback(() => {

@@ -88,7 +88,7 @@ export function EditProfileCard({
               type="text"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg text-sm bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-[#d4826f] dark:focus:border-[#e8917a] transition-all duration-200 text-[#2e3c52] dark:text-white text-right text-hebrew-body focus:outline-none"
+              className="w-full px-3 py-2.5 rounded-lg text-base bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-[#d4826f] dark:focus:border-[#e8917a] transition-all duration-200 text-[#2e3c52] dark:text-white text-right text-hebrew-body focus:outline-none"
               dir="rtl"
             />
           </div>
@@ -106,7 +106,7 @@ export function EditProfileCard({
               type="text"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg text-sm bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-[#d4826f] dark:focus:border-[#e8917a] transition-all duration-200 text-[#2e3c52] dark:text-white text-right text-hebrew-body focus:outline-none"
+              className="w-full px-3 py-2.5 rounded-lg text-base bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-[#d4826f] dark:focus:border-[#e8917a] transition-all duration-200 text-[#2e3c52] dark:text-white text-right text-hebrew-body focus:outline-none"
               dir="rtl"
             />
           </div>

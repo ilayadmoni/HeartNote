@@ -35,7 +35,7 @@ export function MobileNativeDateInput({
           aria-invalid={error ? "true" : "false"}
           className={`
             w-full max-w-full min-w-0 box-border appearance-none
-            pr-10 pl-3 py-2.5 text-sm rounded-lg
+            pr-10 pl-3 py-2.5 text-base rounded-lg
             bg-white dark:bg-gray-700 text-[#2e3c52] dark:text-white
             border-2 transition-all duration-200 text-hebrew-body
             focus:outline-none focus:ring-0
