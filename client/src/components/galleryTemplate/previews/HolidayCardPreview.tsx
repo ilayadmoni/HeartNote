@@ -4,11 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
 const HOLIDAYS = [
-  { emoji: "🍎🍯", label: "ראש השנה", bg: "#fffbeb" },
-  { emoji: "🕎", label: "חנוכה", bg: "#eff6ff" },
-  { emoji: "🎭", label: "פורים", bg: "#fdf4ff" },
-  { emoji: "🍷", label: "פסח", bg: "#fff1f2" },
-];
+  { emoji: "🍎🍯", label: "ראש השנה", bgClass: "bg-coral-50" },
+  { emoji: "🕎", label: "חנוכה", bgClass: "bg-navy-50" },
+  { emoji: "🎭", label: "פורים", bgClass: "bg-secondary-50" },
+  { emoji: "🍷", label: "פסח", bgClass: "bg-primary-50" },
+] as const;
 
 export function HolidayCardPreview() {
   const [idx, setIdx] = useState(0);
@@ -30,8 +30,7 @@ export function HolidayCardPreview() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.4 }}
-            className="flex flex-col items-center gap-1.5 p-3"
-            style={{ backgroundColor: holiday.bg }}
+            className={`flex flex-col items-center gap-1.5 p-3 ${holiday.bgClass}`}
           >
             <motion.div
               animate={{ scale: [1, 1.1, 1] }}
@@ -40,11 +39,11 @@ export function HolidayCardPreview() {
             >
               {holiday.emoji}
             </motion.div>
-            <p className="text-[8px] font-bold text-stone-700 text-center">
+            <p className="text-[8px] font-bold text-navy-700 text-center">
               {holiday.label} שמח!
             </p>
-            <div className="w-8 h-px bg-stone-300" />
-            <p className="text-[5px] text-stone-500 text-center">חג בשמחה ובאהבה</p>
+            <div className="w-8 h-px bg-navy-300" />
+            <p className="text-[5px] text-navy-400 text-center">חג בשמחה ובאהבה</p>
           </motion.div>
         </AnimatePresence>
       </div>
