@@ -1,5 +1,5 @@
 import type { EditorConfig, EditorField } from "../types";
-import { HOLIDAY_INTERACTIVE_CONFIGS } from "@/components/templates/interactive-events/holidays";
+import { HOLIDAY_INTERACTIVE_CONFIGS } from "@/components/templates/interactive-events/holidays-shared";
 import type { HolidayInteractiveSlug } from "@/components/templates/interactive-events/types";
 
 const COMMON_FIELDS: EditorField[] = [

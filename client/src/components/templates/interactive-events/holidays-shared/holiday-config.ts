@@ -1,0 +1,83 @@
+import type { HolidayInteractiveConfig, HolidayInteractiveSlug } from "../types";
+
+export const HOLIDAY_INTERACTIVE_CONFIGS: Record<
+  HolidayInteractiveSlug,
+  HolidayInteractiveConfig
+> = {
+  "holiday-rosh-hashanah-interactive": {
+    slug: "holiday-rosh-hashanah-interactive",
+    componentKey: "HolidayRoshHashanahInteractive",
+    name: "ראש השנה אינטראקטיבי",
+    galleryTitle: "שנה טובה ומתוקה!",
+    galleryDescription: "מוזגים דבש בעדינות וחושפים ברכה לשנה חדשה.",
+    defaultTitle: "שנה טובה ומתוקה",
+    revealLine: "שנה טובה ומתוקה",
+    prompt: "לחצו על מקל הדבש כדי להמתיק את השנה",
+    accent: "#d4826f",
+    interaction: "honey",
+  },
+  "holiday-passover-interactive": {
+    slug: "holiday-passover-interactive",
+    componentKey: "HolidayPassoverInteractive",
+    name: "פסח אינטראקטיבי",
+    galleryTitle: "פסח נפתח",
+    galleryDescription: "מצה מאוירת נפתחת ומגלה ברכת חג אישית.",
+    defaultTitle: "חג פסח שמח",
+    revealLine: "חג פסח שמח",
+    prompt: "לחצו על המצות לפתיחת הברכה",
+    accent: "#b7791f",
+    interaction: "matzah",
+  },
+  "holiday-purim-interactive": {
+    slug: "holiday-purim-interactive",
+    componentKey: "HolidayPurimInteractive",
+    name: "פורים אינטראקטיבי",
+    galleryTitle: "מסכת פורים",
+    galleryDescription: "מסכה אלגנטית נעה ונפתחת לברכה מפתיעה.",
+    defaultTitle: "חג פורים שמח",
+    revealLine: "חג פורים שמח",
+    prompt: "לחצו על המסכה כדי לקבל את הברכה",
+    accent: "#8b5cf6",
+    interaction: "mask",
+  },
+  "holiday-shavuot-interactive": {
+    slug: "holiday-shavuot-interactive",
+    componentKey: "HolidayShavuotInteractive",
+    name: "שבועות אינטראקטיבי",
+    galleryTitle: "שבועות פורח",
+    galleryDescription: "זר פרחים וחיטים פורח סביב ברכה רכה.",
+    defaultTitle: "חג שבועות שמח",
+    revealLine: "חג שבועות שמח",
+    prompt: "לחצו על הזר כדי לקבל את הברכה",
+    accent: "#7ed957",
+    interaction: "bloom",
+  },
+  "holiday-sukkot-interactive": {
+    slug: "holiday-sukkot-interactive",
+    componentKey: "HolidaySukkotInteractive",
+    name: "סוכות אינטראקטיבי",
+    galleryTitle: "נכנסים לסוכה",
+    galleryDescription: "וילונות הסוכה נפתחים ומגלים ברכת חג חמה.",
+    defaultTitle: "חג סוכות שמח",
+    revealLine: "חג סוכות שמח",
+    prompt: "לחצו כדי להיכנס לסוכה ולקבל את הברכה",
+    accent: "#5f8f2f",
+    interaction: "sukkah",
+  },
+  "holiday-hanukkah-interactive": {
+    slug: "holiday-hanukkah-interactive",
+    componentKey: "HolidayHanukkahInteractive",
+    name: "חנוכה אינטראקטיבי",
+    galleryTitle: "אור חנוכה",
+    galleryDescription: "מדליקים חנוכייה אלגנטית וחושפים ברכת אור.",
+    defaultTitle: "חג חנוכה שמח",
+    revealLine: "חג חנוכה שמח",
+    prompt: "לחצו להדליק את האור",
+    accent: "#38b6ff",
+    interaction: "hanukkah",
+  },
+};
+
+export const HOLIDAY_INTERACTIVE_SLUGS = Object.keys(
+  HOLIDAY_INTERACTIVE_CONFIGS,
+) as HolidayInteractiveSlug[];
