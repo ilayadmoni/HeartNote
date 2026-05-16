@@ -41,7 +41,17 @@
       "PowerShell(Get-ChildItem *)",
       "Skill(superpowers:writing-plans)",
       "Skill(superpowers:executing-plans)",
-      "Skill(superpowers:subagent-driven-development)"
+      "Skill(superpowers:subagent-driven-development)",
+      "Skill(superpowers:brainstorming)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\" -Force | Select-Object Name, @{Name=\"Type\"; Expression={if\\($_.PSIsContainer\\){\"Folder\"}else{\"File\"}}} | Format-Table -AutoSize)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\ApologySearch\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\ApologySearch\", \"\"\\).TrimStart\\(\"\\\\\"\\) })",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\BirthdayCandles\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\BirthdayCandles\", \"\"\\).TrimStart\\(\"\\\\\"\\) })",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\HolidayCard\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\HolidayCard\", \"\"\\).TrimStart\\(\"\\\\\"\\) })",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\OpenWhen\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\OpenWhen\", \"\"\\).TrimStart\\(\"\\\\\"\\) })",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\Timeline\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\Timeline\", \"\"\\).TrimStart\\(\"\\\\\"\\) })",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\components\" -File | ForEach-Object { $_.Name })",
+      "Skill(modular-code-architect)",
+      "Skill(modular-code-architect:*)"
     ]
   }
 }
