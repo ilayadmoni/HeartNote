@@ -30,16 +30,14 @@ export { ExcuseGenerator } from "./ExcuseGenerator/ExcuseGenerator";
 export { WeddingGlass } from "./WeddingGlass/WeddingGlass";
 export { HolidayCard } from "./HolidayCard/HolidayCard";
 export { BarBatMitzvah } from "./BarBatMitzvah/BarBatMitzvah";
-export { BirthdayCandlesInteractive } from "./interactive-events/birthday";
-export { WeddingGlassInteractive } from "./interactive-events/wedding";
-export {
-  HolidayHanukkahInteractive,
-  HolidayPassoverInteractive,
-  HolidayPurimInteractive,
-  HolidayRoshHashanahInteractive,
-  HolidayShavuotInteractive,
-  HolidaySukkotInteractive,
-} from "./interactive-events/holidays";
+export { BirthdayCandlesInteractive } from "./interactive-events/BirthdayCandlesInteractive";
+export { WeddingGlassInteractive } from "./interactive-events/WeddingGlassInteractive";
+export { HolidayRoshHashanahInteractive } from "./interactive-events/HolidayRoshHashanahInteractive";
+export { HolidayPassoverInteractive } from "./interactive-events/HolidayPassoverInteractive";
+export { HolidayPurimInteractive } from "./interactive-events/HolidayPurimInteractive";
+export { HolidayShavuotInteractive } from "./interactive-events/HolidayShavuotInteractive";
+export { HolidaySukkotInteractive } from "./interactive-events/HolidaySukkotInteractive";
+export { HolidayHanukkahInteractive } from "./interactive-events/HolidayHanukkahInteractive";
 
 // Dynamic Renderer
 export { TemplateRenderer, type TemplateRendererProps } from "./TemplateRenderer";

@@ -24,16 +24,14 @@ import { ExcuseGenerator } from "./ExcuseGenerator/ExcuseGenerator";
 import { WeddingGlass } from "./WeddingGlass/WeddingGlass";
 import { HolidayCard } from "./HolidayCard/HolidayCard";
 import { BarBatMitzvah } from "./BarBatMitzvah/BarBatMitzvah";
-import { BirthdayCandlesInteractive } from "./interactive-events/birthday";
-import { WeddingGlassInteractive } from "./interactive-events/wedding";
-import {
-  HolidayHanukkahInteractive,
-  HolidayPassoverInteractive,
-  HolidayPurimInteractive,
-  HolidayRoshHashanahInteractive,
-  HolidayShavuotInteractive,
-  HolidaySukkotInteractive,
-} from "./interactive-events/holidays";
+import { BirthdayCandlesInteractive } from "./interactive-events/BirthdayCandlesInteractive";
+import { WeddingGlassInteractive } from "./interactive-events/WeddingGlassInteractive";
+import { HolidayRoshHashanahInteractive } from "./interactive-events/HolidayRoshHashanahInteractive";
+import { HolidayPassoverInteractive } from "./interactive-events/HolidayPassoverInteractive";
+import { HolidayPurimInteractive } from "./interactive-events/HolidayPurimInteractive";
+import { HolidayShavuotInteractive } from "./interactive-events/HolidayShavuotInteractive";
+import { HolidaySukkotInteractive } from "./interactive-events/HolidaySukkotInteractive";
+import { HolidayHanukkahInteractive } from "./interactive-events/HolidayHanukkahInteractive";
 
 export type AnyTemplateComponent = ComponentType<{
   data: unknown;

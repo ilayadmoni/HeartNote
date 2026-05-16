@@ -1,13 +1,11 @@
-export { BirthdayCandlesInteractive } from "./birthday";
-export { WeddingGlassInteractive } from "./wedding";
-export {
-  HolidayRoshHashanahInteractive,
-  HolidayPassoverInteractive,
-  HolidayPurimInteractive,
-  HolidayShavuotInteractive,
-  HolidaySukkotInteractive,
-  HolidayHanukkahInteractive,
-} from "./holidays";
+export { BirthdayCandlesInteractive } from "./BirthdayCandlesInteractive";
+export { WeddingGlassInteractive } from "./WeddingGlassInteractive";
+export { HolidayRoshHashanahInteractive } from "./HolidayRoshHashanahInteractive";
+export { HolidayPassoverInteractive } from "./HolidayPassoverInteractive";
+export { HolidayPurimInteractive } from "./HolidayPurimInteractive";
+export { HolidayShavuotInteractive } from "./HolidayShavuotInteractive";
+export { HolidaySukkotInteractive } from "./HolidaySukkotInteractive";
+export { HolidayHanukkahInteractive } from "./HolidayHanukkahInteractive";
 export type {
   InteractiveGreetingData,
   BirthdayInteractiveData,
