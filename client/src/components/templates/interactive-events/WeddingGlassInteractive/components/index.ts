@@ -1,0 +1,1 @@
+export { WeddingRevealOverlay } from "./WeddingRevealOverlay";
