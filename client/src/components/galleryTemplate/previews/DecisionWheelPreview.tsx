@@ -3,12 +3,12 @@
 import { motion } from "framer-motion";
 
 const SEGMENTS = [
-  "#f43f5e",
-  "#f59e0b",
-  "#8b5cf6",
-  "#06b6d4",
-  "#22c55e",
-  "#f97316",
+  "#ec4899",  // primary-500
+  "#e8917a",  // coral-400
+  "#8b5cf6",  // secondary-500
+  "#445a78",  // navy-500
+  "#d4826f",  // coral-500
+  "#f5b5a5",  // coral-300
 ];
 
 const conicGradient = SEGMENTS.map(
