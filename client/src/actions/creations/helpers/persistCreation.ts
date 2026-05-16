@@ -10,6 +10,8 @@ import { logAudit } from "@/lib/audit-logger";
 import { fetchProfileForQuota, checkPremiumAccess } from "./quotaCheck";
 import { calculateExpiry } from "./expiryCalc";
 import { CREATION_ACTION_ERRORS } from "@/lib/creation-flow/errors";
+import { validateMetadata } from "@/lib/validations/metadata";
+import { validateInteractiveEventMetadata } from "@/lib/validations/interactive-events";
 import type { ValidatedSubmitInput } from "./validateSubmit";
 
 export interface PersistResult {
@@ -52,9 +54,22 @@ export async function persistCreation(
   }
 
   const { data: template, error: tmplErr } = await supabase
-    .from("templates").select("id, is_premium, expiration_policy")
+    .from("templates").select("id, is_premium, expiration_policy, config_schema")
     .eq("slug", templateSlug).eq("is_active", true).single();
   if (tmplErr || !template) throw new ActionError("Template not found", 404);
+
+  const zodErrors = validateInteractiveEventMetadata(templateSlug, parsedMetadata);
+  if (zodErrors.length > 0) {
+    throw new ActionError(`Validation errors: ${zodErrors.join("; ")}`, 422);
+  }
+
+  const validationErrors = validateMetadata(
+    parsedMetadata,
+    (template.config_schema as Record<string, unknown>) ?? {},
+  );
+  if (validationErrors.length > 0) {
+    throw new ActionError(`Validation errors: ${validationErrors.join("; ")}`, 422);
+  }
 
   const profile = await fetchProfileForQuota(supabase, user.id);
   const userTier = profile.subscription_tier ?? "free";

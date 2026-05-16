@@ -111,7 +111,7 @@ export const HAPPY_AVATAR_OPTIONS: AvatarOption[] = [
   { id: "7",  url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Luna&backgroundColor=f9d1f9&mouth=smile,twinkle,tongue&eyebrows=default,defaultNatural,flatNatural,raisedExcited,raisedExcitedNatural",    label: "לונה" },
   { id: "8",  url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Max&backgroundColor=b8e0f7&mouth=smile,twinkle,tongue&eyebrows=default,defaultNatural,flatNatural,raisedExcited,raisedExcitedNatural",     label: "מקס" },
   { id: "9",  url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Riley&backgroundColor=ffc3a0&mouth=smile,twinkle,tongue&eyebrows=default,defaultNatural,flatNatural,raisedExcited,raisedExcitedNatural",   label: "ריילי" },
-  { id: "10", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Noa&backgroundColor=c4f1be&mouth=smile,twinkle,tongue&eyebrows=default,defaultNatural,flatNatural,raisedExcited,raisedExcitedNatural",     label: "נועה" },
+  { id: "10", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Noa&backgroundColor=c4f1be&mouth=smile,twinkle,tongue&eyebrows=default,defaultNatural,flatNatural,raisedExcited,raisedExcitedNatural",     label: "קוקי" },
   { id: "11", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Sasha&backgroundColor=e8d5b7&mouth=smile,twinkle,tongue&eyebrows=default,defaultNatural,flatNatural,raisedExcited,raisedExcitedNatural",   label: "סאשה" },
   { id: "12", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Jade&backgroundColor=b5d8eb&mouth=smile,twinkle,tongue&eyebrows=default,defaultNatural,flatNatural,raisedExcited,raisedExcitedNatural",    label: "ג׳ייד" },
 ];

@@ -14,6 +14,9 @@ export interface FieldDef {
   key: string;
   type: string;
   required?: boolean;
+  min?: number;
+  max?: number;
+  maxLength?: number;
 }
 
 /**
@@ -60,6 +63,28 @@ export function validateMetadata(
           `Field '${key}' value '${String(value)}' is not in the allowed color palette.`,
         );
       }
+    }
+
+    if (fieldType === "number") {
+      if (typeof value !== "number" || !Number.isFinite(value)) {
+        errors.push(`Field '${key}' must be a valid number.`);
+      } else {
+        if (fieldDef.min !== undefined && value < fieldDef.min) {
+          errors.push(`Field '${key}' must be at least ${fieldDef.min}.`);
+        }
+        if (fieldDef.max !== undefined && value > fieldDef.max) {
+          errors.push(`Field '${key}' must be at most ${fieldDef.max}.`);
+        }
+      }
+    }
+
+    if (
+      (fieldType === "text" || fieldType === "textarea") &&
+      fieldDef.maxLength !== undefined &&
+      typeof value === "string" &&
+      value.length > fieldDef.maxLength
+    ) {
+      errors.push(`Field '${key}' exceeds max length ${fieldDef.maxLength}.`);
     }
 
     // Image URL validation — reject base64 blobs

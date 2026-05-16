@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const SPARKLES = [
-  { top: "8%", right: "8%", delay: 0 },
+  { top: "20%", right: "10%", delay: 0 },
   { top: "15%", left: "10%", delay: 0.5 },
   { bottom: "20%", right: "12%", delay: 1 },
   { bottom: "15%", left: "8%", delay: 1.5 },

@@ -30,6 +30,16 @@ export { ExcuseGenerator } from "./ExcuseGenerator/ExcuseGenerator";
 export { WeddingGlass } from "./WeddingGlass/WeddingGlass";
 export { HolidayCard } from "./HolidayCard/HolidayCard";
 export { BarBatMitzvah } from "./BarBatMitzvah/BarBatMitzvah";
+export { BirthdayCandlesInteractive } from "./interactive-events/birthday/BirthdayCandlesInteractive";
+export { WeddingGlassInteractive } from "./interactive-events/wedding/WeddingGlassInteractive";
+export {
+  HolidayHanukkahInteractive,
+  HolidayPassoverInteractive,
+  HolidayPurimInteractive,
+  HolidayRoshHashanahInteractive,
+  HolidayShavuotInteractive,
+  HolidaySukkotInteractive,
+} from "./interactive-events/holidays/HolidayWrappers";
 
 // Dynamic Renderer
 export { TemplateRenderer, type TemplateRendererProps } from "./TemplateRenderer";

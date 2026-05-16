@@ -19,3 +19,13 @@ export { TimelinePreview } from "../previews/TimelinePreview";
 export { LoveCouponsPreview } from "../previews/LoveCouponsPreview";
 export { RelationshipQuizPreview } from "../previews/RelationshipQuizPreview";
 export { OpenWhenPreview } from "../previews/OpenWhenPreview";
+export {
+  BirthdayCandlesInteractivePreview,
+  WeddingGlassInteractivePreview,
+  HolidayHanukkahInteractivePreview,
+  HolidayPassoverInteractivePreview,
+  HolidayPurimInteractivePreview,
+  HolidayRoshHashanahInteractivePreview,
+  HolidayShavuotInteractivePreview,
+  HolidaySukkotInteractivePreview,
+} from "../previews/InteractiveEventPreviews";

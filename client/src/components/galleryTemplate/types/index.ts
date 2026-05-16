@@ -34,7 +34,15 @@ export type TemplateComponentKey =
   | "ExcuseGenerator"
   | "WeddingGlass"
   | "HolidayCard"
-  | "BarBatMitzvah";
+  | "BarBatMitzvah"
+  | "BirthdayCandlesInteractive"
+  | "WeddingGlassInteractive"
+  | "HolidayRoshHashanahInteractive"
+  | "HolidayPassoverInteractive"
+  | "HolidayPurimInteractive"
+  | "HolidayShavuotInteractive"
+  | "HolidaySukkotInteractive"
+  | "HolidayHanukkahInteractive";
 
 export type TemplateCategory =
   | "all"

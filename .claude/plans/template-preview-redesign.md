@@ -223,9 +223,9 @@ export function WeddingGlassPreview() {
 
           {/* Couple names */}
           <div className="flex items-center gap-1 text-[7px] text-rose-900 font-semibold">
-            <span>נועה</span>
+            <span>ניצן</span>
             <span className="text-amber-600">❤</span>
-            <span>יונתן</span>
+            <span>עילי</span>
           </div>
 
           {/* Thin gold divider */}

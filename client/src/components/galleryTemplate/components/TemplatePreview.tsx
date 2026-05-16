@@ -11,6 +11,14 @@ import {
   WeddingGlassPreview,
   HolidayCardPreview,
   BarBatMitzvahPreview,
+  BirthdayCandlesInteractivePreview,
+  WeddingGlassInteractivePreview,
+  HolidayHanukkahInteractivePreview,
+  HolidayPassoverInteractivePreview,
+  HolidayPurimInteractivePreview,
+  HolidayRoshHashanahInteractivePreview,
+  HolidayShavuotInteractivePreview,
+  HolidaySukkotInteractivePreview,
   DateInvitePreview,
   ScratchCardPreview,
   TimelinePreview,
@@ -59,6 +67,22 @@ export function TemplatePreview({ componentKey }: TemplatePreviewProps) {
       return <HolidayCardPreview />;
     case "BarBatMitzvah":
       return <BarBatMitzvahPreview />;
+    case "BirthdayCandlesInteractive":
+      return <BirthdayCandlesInteractivePreview />;
+    case "WeddingGlassInteractive":
+      return <WeddingGlassInteractivePreview />;
+    case "HolidayRoshHashanahInteractive":
+      return <HolidayRoshHashanahInteractivePreview />;
+    case "HolidayPassoverInteractive":
+      return <HolidayPassoverInteractivePreview />;
+    case "HolidayPurimInteractive":
+      return <HolidayPurimInteractivePreview />;
+    case "HolidayShavuotInteractive":
+      return <HolidayShavuotInteractivePreview />;
+    case "HolidaySukkotInteractive":
+      return <HolidaySukkotInteractivePreview />;
+    case "HolidayHanukkahInteractive":
+      return <HolidayHanukkahInteractivePreview />;
     default:
       return <LivePreview componentKey={componentKey} />;
   }

@@ -36,7 +36,7 @@ export const FILTER_TABS: FilterTab[] = [
 export const TEMPLATES: Template[] = [
   {
     id: "date-invite",
-    title: "הזמנה לדייט",
+    title: "בא לך דייט?",
     description:
       'כרטיס אינטראקטיבי שבו כפתור ה"לא" בורח מהאצבע. אי אפשר לסרב לזה! 💕',
     category: "romantic",
@@ -58,9 +58,9 @@ export const TEMPLATES: Template[] = [
   },
   {
     id: "timeline",
-    title: "ציר הזמן שלנו",
+    title: "איך הכול התחיל?",
     description:
-      "מסע נוסטלגי דרך הרגעים המיוחדים: הנשיקה הראשונה, הדייט הראשון והיום. 📅",
+      "מסע נוסטלגי דרך הרגעים המיוחדים שלכם ושל מי שאתם אוהבים📅",
     category: "memories",
     isFree: true,
     componentKey: "Timeline",
@@ -69,9 +69,9 @@ export const TEMPLATES: Template[] = [
   },
   {
     id: "decision-wheel",
-    title: "גלגל החלטות",
+    title: "אין לי כוח להחליט",
     description:
-      "לא יודעים מה לעשות? סובבו את הגלגל ותנו לגורל להחליט! 🎡",
+      "לא יודעים מה לעשות? סובבו את הגלגל ותנו לגורל לבחור בשבילכם! 🎡",
     category: "fun",
     isFree: true,
     componentKey: "DecisionWheel",
@@ -82,7 +82,7 @@ export const TEMPLATES: Template[] = [
     id: "love-coupons",
     title: "קופוני אהבה",
     description:
-      "פנקס קופונים דיגיטלי למימוש! עיסוי, ארוחת ערב, ועוד הפתעות מפנקות. 🎟️",
+      "פנקס קופונים דיגיטלי! המון הפתעות מפנקות שתוכלו להתאים בעצמכם🎟️",
     category: "gifts",
     componentKey: "LoveCoupons",
     link: "/create/love-coupons",
@@ -90,9 +90,9 @@ export const TEMPLATES: Template[] = [
   },
   {
     id: "relationship-quiz",
-    title: "חידון חברות",
+    title: "מבחן חברות",
     description:
-      "כמה את/ה באמת מכיר/ה אותי? חידון אינטראקטיבי עם ציון בסוף! 🧠",
+      "כמה אתם באמת מכירים אחד את השני? חידון גורלי עם ציון בסוף! 🧠",
     category: "fun",
     isPremium: true,
     componentKey: "RelationshipQuiz",
@@ -104,7 +104,7 @@ export const TEMPLATES: Template[] = [
     id: "open-when",
     title: "פתח כש...",
     description:
-      "מעטפות דיגיטליות עם מכתבים לרגעים מיוחדים. כשעצוב, כשמתגעגעים... 💌",
+      "מעטפות עם מכתבים לרגעים מיוחדים. כשעצוב, כשמתגעגעים... 💌",
     category: "romantic",
     isPremium: true,
     componentKey: "OpenWhen",
@@ -114,9 +114,9 @@ export const TEMPLATES: Template[] = [
   },
   {
     id: "surprise-gift",
-    title: "מתנה בהפתעה",
+    title: "הפתעה קטנה",
     description:
-      "קופסת מתנה אינטראקטיבית, נערו אותה עד שתיפתח ותגלו את ההפתעה! 🎁",
+      "קופסת מתנה, נערו אותה עד שתיפתח ותגלו את מה מסתתר בפנים! 🎁",
     category: "gifts",
     isPremium: true,
     componentKey: "SurpriseGift",
@@ -126,8 +126,8 @@ export const TEMPLATES: Template[] = [
   },
   {
     id: "slot-machine",
-    title: "מכונת ההבטחות",
-    description: "סובבו את הגלגלים וגלו הבטחה מתוקה מאחד שאוהב אתכם! 🎰",
+    title: "בלי נדר",
+    description: "סובבו את מכונת ההבטחות וגלו מה ההפתעה שמחכה לכם! 🎰",
     category: "fun",
     isFree: true,
     componentKey: "SlotMachine",
@@ -137,8 +137,8 @@ export const TEMPLATES: Template[] = [
   },
   {
     id: "punching-bag",
-    title: "שק האיגרוף",
-    description: "תנו מכות לשק ובסוף גלו מסר מיוחד שמחכה לכם! 🥊",
+    title: "יאללה, לפרוק",
+    description: "תוציאו את כל העצבים שק האגרוף וגלו מה המסר שמחכה לכם! 🥊",
     category: "fun",
     isFree: true,
     componentKey: "PunchingBag",
@@ -148,7 +148,7 @@ export const TEMPLATES: Template[] = [
   },
   {
     id: "apology-search",
-    title: "חיפוש סליחה",
+    title: "איפה הסליחה שלי?",
     description: "חיפוש שמקליד את הסליחה לבד ומגיע לתוצאה הכי מרגשת ברשת! 🔍",
     category: "romantic",
     isFree: true,
@@ -170,8 +170,8 @@ export const TEMPLATES: Template[] = [
   },
   {
     id: "excuse-generator",
-    title: "מכונת התירוצים",
-    description: "לחצו על הכפתור וקבלו תירוץ אוטומטי ומושלם לכל מצב! ⚙️",
+    title: "יש לי הסבר...",
+    description: "הפעילו את מכונת התירוצים וקבלו תירוץ זריז ומושלם לכל מצב! ⚙️",
     category: "fun",
     isFree: true,
     componentKey: "ExcuseGenerator",
@@ -215,6 +215,99 @@ export const TEMPLATES: Template[] = [
     linkText: "פרימיום",
   },
 ];
+
+export const INTERACTIVE_EVENT_TEMPLATES: Template[] = [
+  {
+    id: "birthday-candles-interactive",
+    title: "עוגת יום הולדת קסומה",
+    description: "כרטיס יום הולדת שבו מכבים נרות ומגלים ברכה אישית.",
+    category: "birthday",
+    isPremium: true,
+    componentKey: "BirthdayCandlesInteractive",
+    link: "/create/birthday-candles-interactive",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
+  {
+    id: "wedding-glass-interactive",
+    title: "חתונה תחת החופה",
+    description: "רגע חתונה רומנטי עם איורי החופה החדשים וברכה אישית לזוג.",
+    category: "wedding",
+    isPremium: true,
+    componentKey: "WeddingGlassInteractive",
+    link: "/create/wedding-glass-interactive",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
+  {
+    id: "holiday-rosh-hashanah-interactive",
+    title: "ראש השנה מתוק",
+    description: "דבש, תפוחים וברכה שנפתחת ברגע מתוק לשנה החדשה.",
+    category: "holidays",
+    isPremium: true,
+    componentKey: "HolidayRoshHashanahInteractive",
+    link: "/create/holiday-rosh-hashanah-interactive",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
+  {
+    id: "holiday-passover-interactive",
+    title: "פסח נפתח",
+    description: "מצה מאוירת נפתחת בעדינות ומגלה ברכת חג אישית.",
+    category: "holidays",
+    isPremium: true,
+    componentKey: "HolidayPassoverInteractive",
+    link: "/create/holiday-passover-interactive",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
+  {
+    id: "holiday-purim-interactive",
+    title: "מסכת פורים",
+    description: "מסכה חגיגית נוטה ונפתחת כדי לחשוף הפתעה שמחה.",
+    category: "holidays",
+    isPremium: true,
+    componentKey: "HolidayPurimInteractive",
+    link: "/create/holiday-purim-interactive",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
+  {
+    id: "holiday-shavuot-interactive",
+    title: "שבועות פורח",
+    description: "זר פרחים וחיטים פורח סביב ברכה רכה ובהירה.",
+    category: "holidays",
+    isPremium: true,
+    componentKey: "HolidayShavuotInteractive",
+    link: "/create/holiday-shavuot-interactive",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
+  {
+    id: "holiday-sukkot-interactive",
+    title: "נכנסים לסוכה",
+    description: "וילונות הסוכה נפתחים ומגלים ברכת חג חמה.",
+    category: "holidays",
+    isPremium: true,
+    componentKey: "HolidaySukkotInteractive",
+    link: "/create/holiday-sukkot-interactive",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
+  {
+    id: "holiday-hanukkah-interactive",
+    title: "אור חנוכה",
+    description: "מדליקים חנוכייה אלגנטית, נר אחר נר, ואז הברכה נחשפת.",
+    category: "holidays",
+    isPremium: true,
+    componentKey: "HolidayHanukkahInteractive",
+    link: "/create/holiday-hanukkah-interactive",
+    badge: { type: "premium", color: "#f59e0b" },
+    linkText: "פרימיום",
+  },
+];
+
+TEMPLATES.push(...INTERACTIVE_EVENT_TEMPLATES);
 
 // Sample data for live previews
 export const PREVIEW_DATA = {
@@ -356,11 +449,11 @@ export const TEMPLATE_INFO_TEXT: Record<string, string> = {
   "open-when":
     "מעטפות וירטואליות לרגעים ספציפיים. 'פתח כשאתה עצוב', 'פתח כשאתה מתגעגע'... הרבה יותר מרגש מלהשאיר פתק על המקרר שנופל אחרי יומיים.",
   "surprise-gift":
-    "קופסת מתנה וירטואלית שצריך ללחוץ עליה עד שהיא נפתחת כדי לגלות את ההפתעה. מתאים במיוחד לאנשים שאין להם סבלנות!",
+    "קופסת מתנה וירטואלית שצריך ללחוץ עליה עד שהיא נפתחת כדי לגלות את ההפתעה. מתאים במיוחד לאנשים חסרי סבלנות!",
   "slot-machine":
-    "מכונת גלגלים שמסתירה הבטחה! כל סיבוב מגלה קצת יותר, עד שבסיבוב האחרון נחשפת ההבטחה המלאה. כי ככה מבטיחים דברים עם סטייל.",
+    "לא צריך יותר להמר! כל סיבוב מגלה קצת יותר, עד שבסיבוב האחרון נחשפת ההבטחה המלאה. ככה מבטיחים דברים עם סטייל.",
   "punching-bag":
-    "לפעמים צריך לשחרר קצת לחץ. כאן אפשר לתת מכות לשק האיגרוף הדיגיטלי — ובסוף מגלים שמאחורי השק מסתתרת הפתעה מתוקה. טיפול זוגי ממש לא יצליח להתחרות בזה.",
+    "לפעמים צריך לשחרר קצת לחץ. כאן אפשר לתת מכות לשק האיגרוף הדיגיטלי ובסוף לגלות שמאחורי השק מסתתרת הפתעה מתוקה. טיפול זוגי ממש לא יצליח להתחרות בזה.",
   "apology-search":
     "מדמים חיפוש בגוגל — רק שהפעם מה שמחפשים זה סליחה. האנימציה מקלידה את השאלה לבד, ואחרי כמה שניות מתח מופיע הכרטיס עם ההודעה האישית. כי גם סליחה צריכה להופיע בתוצאות החיפוש.",
   "excuse-generator":

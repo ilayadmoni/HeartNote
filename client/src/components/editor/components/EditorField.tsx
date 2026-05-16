@@ -89,6 +89,8 @@ export function EditorField({ field, value, onChange, userId, onFileReady }: Edi
           value={(value as number) || 0}
           onChange={(e) => onChange(Number(e.target.value))}
           placeholder={field.placeholder}
+          min={field.min}
+          max={field.max}
           className={baseInputClass}
         />
       )}

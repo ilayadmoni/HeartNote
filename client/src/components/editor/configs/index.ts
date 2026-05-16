@@ -14,6 +14,7 @@ import { INTERACTIVE_CONFIGS } from "./interactive";
 import { INTERACTIONS_CONFIGS } from "./interactions";
 import { CELEBRATIONS_CONFIGS } from "./celebrations";
 import { SPECIAL_OCCASIONS_CONFIGS } from "./special-occasions";
+import { INTERACTIVE_EVENT_CONFIGS } from "./interactive-events";
 
 export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
   ...ROMANCE_CONFIGS,
@@ -22,4 +23,5 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
   ...INTERACTIONS_CONFIGS,
   ...CELEBRATIONS_CONFIGS,
   ...SPECIAL_OCCASIONS_CONFIGS,
+  ...INTERACTIVE_EVENT_CONFIGS,
 };

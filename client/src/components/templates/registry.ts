@@ -24,9 +24,19 @@ import { ExcuseGenerator } from "./ExcuseGenerator/ExcuseGenerator";
 import { WeddingGlass } from "./WeddingGlass/WeddingGlass";
 import { HolidayCard } from "./HolidayCard/HolidayCard";
 import { BarBatMitzvah } from "./BarBatMitzvah/BarBatMitzvah";
+import { BirthdayCandlesInteractive } from "./interactive-events/birthday/BirthdayCandlesInteractive";
+import { WeddingGlassInteractive } from "./interactive-events/wedding/WeddingGlassInteractive";
+import {
+  HolidayHanukkahInteractive,
+  HolidayPassoverInteractive,
+  HolidayPurimInteractive,
+  HolidayRoshHashanahInteractive,
+  HolidayShavuotInteractive,
+  HolidaySukkotInteractive,
+} from "./interactive-events/holidays/HolidayWrappers";
 
 export type AnyTemplateComponent = ComponentType<{
-  data: any;
+  data: unknown;
   creationId?: string;
   verificationCode?: string | null;
 }>;
@@ -54,6 +64,14 @@ export const TEMPLATE_REGISTRY: Record<string, AnyTemplateComponent> = {
   WeddingGlass: WeddingGlass as AnyTemplateComponent,
   HolidayCard: HolidayCard as AnyTemplateComponent,
   BarBatMitzvah: BarBatMitzvah as AnyTemplateComponent,
+  BirthdayCandlesInteractive: BirthdayCandlesInteractive as AnyTemplateComponent,
+  WeddingGlassInteractive: WeddingGlassInteractive as AnyTemplateComponent,
+  HolidayRoshHashanahInteractive: HolidayRoshHashanahInteractive as AnyTemplateComponent,
+  HolidayPassoverInteractive: HolidayPassoverInteractive as AnyTemplateComponent,
+  HolidayPurimInteractive: HolidayPurimInteractive as AnyTemplateComponent,
+  HolidayShavuotInteractive: HolidayShavuotInteractive as AnyTemplateComponent,
+  HolidaySukkotInteractive: HolidaySukkotInteractive as AnyTemplateComponent,
+  HolidayHanukkahInteractive: HolidayHanukkahInteractive as AnyTemplateComponent,
 };
 
 /**
