@@ -5,10 +5,7 @@ import { motion } from "framer-motion";
 export function DateInvitePreview() {
   return (
     <div className="h-full w-full flex items-center justify-center p-2">
-      <div
-        className="relative w-full max-w-[110px] rounded-xl shadow-lg overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%)" }}
-      >
+      <div className="relative w-full max-w-[110px] rounded-xl shadow-lg overflow-hidden bg-gradient-to-br from-primary-50 to-primary-100">
         <div className="p-3 flex flex-col items-center gap-2">
           {/* Floating hearts */}
           <div className="flex gap-1 text-[10px]">
@@ -38,7 +35,7 @@ export function DateInvitePreview() {
             <motion.div
               animate={{ x: [0, 6, -4, 3, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="flex-1 py-1 rounded-lg bg-stone-200 text-stone-500 text-[6px] font-bold text-center"
+              className="flex-1 py-1 rounded-lg bg-navy-100 text-navy-500 text-[6px] font-bold text-center"
             >
               לא
             </motion.div>
