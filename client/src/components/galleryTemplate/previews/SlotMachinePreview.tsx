@@ -17,7 +17,7 @@ function Reel({ delay }: { delay: number }) {
   }, [delay]);
 
   return (
-    <div className="w-7 h-8 bg-stone-800 rounded border border-amber-400/50 flex items-center justify-center overflow-hidden">
+    <div className="w-7 h-8 bg-navy-900 rounded border border-coral-400/50 flex items-center justify-center overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.span
           key={symbolIdx}
@@ -38,9 +38,9 @@ export function SlotMachinePreview() {
   return (
     <div className="h-full w-full flex items-center justify-center p-2">
       <div className="flex flex-col items-center gap-2">
-        <div className="bg-stone-700 rounded-lg p-2 shadow-lg border border-stone-600">
+        <div className="bg-navy-700 rounded-lg p-2 shadow-lg border border-navy-600">
           {/* Screen with reels */}
-          <div className="bg-stone-900 rounded p-1.5 mb-1.5 flex gap-1 justify-center border border-amber-400/30">
+          <div className="bg-navy-900 rounded p-1.5 mb-1.5 flex gap-1 justify-center border border-coral-400/30">
             {[0, 1, 2].map((i) => (
               <Reel key={i} delay={i} />
             ))}
@@ -50,7 +50,7 @@ export function SlotMachinePreview() {
             <motion.div
               animate={{ scale: [1, 0.95, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
-              className="px-3 py-0.5 bg-amber-400 rounded text-[6px] font-bold text-stone-900 shadow"
+              className="px-3 py-0.5 bg-coral-400 rounded text-[6px] font-bold text-navy-900 shadow"
             >
               🎰 סובבי!
             </motion.div>
