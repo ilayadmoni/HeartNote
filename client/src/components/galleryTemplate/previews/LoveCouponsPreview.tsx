@@ -29,7 +29,7 @@ export function LoveCouponsPreview() {
               {coupon.label}
             </span>
             {coupon.redeemed && (
-              <span className="text-[6px] text-green-600 font-bold">✓</span>
+              <span className="text-[6px] text-secondary-600 font-bold">✓</span>
             )}
           </motion.div>
         ))}
