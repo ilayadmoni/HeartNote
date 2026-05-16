@@ -4,54 +4,53 @@ import { motion } from "framer-motion";
 
 export function BarBatMitzvahPreview() {
   return (
-    <div className="h-full w-full flex items-center justify-center p-2">
-      <div className="relative w-full max-w-[110px] rounded-lg overflow-hidden shadow-lg bg-gradient-to-br from-navy-900 to-navy-700">
-        {/* Gold border frame */}
-        <div className="absolute inset-[3px] rounded-md border border-coral-400/60 pointer-events-none z-10" />
-
-        <div className="relative z-0 p-3 flex flex-col items-center gap-1.5">
-          {/* Star of David */}
-          <motion.div
-            animate={{ opacity: [0.7, 1, 0.7] }}
-            transition={{ duration: 3, repeat: Infinity }}
-            className="text-coral-400 text-[14px] leading-none"
-          >
-            ✡
-          </motion.div>
-
-          {/* Hebrew title */}
-          <p className="text-[7px] font-bold text-coral-300 tracking-widest uppercase">
-            בר מצווה
-          </p>
-
-          {/* Divider ornament */}
-          <div className="flex items-center gap-1 w-full">
-            <div className="flex-1 h-px bg-coral-400/40" />
-            <span className="text-coral-400/60 text-[6px]">✦</span>
-            <div className="flex-1 h-px bg-coral-400/40" />
-          </div>
-
-          {/* Name placeholder */}
-          <p className="text-[8px] text-coral-100 font-semibold text-center leading-tight">
-            נועם כהן
-          </p>
-
-          {/* Date & venue */}
-          <p className="text-[5px] text-coral-300/70 text-center leading-relaxed">
-            כ״ה אייר תשפ״ה
-            <br />
-            בית הכנסת המרכזי
-          </p>
-
-          {/* CTA pill */}
-          <motion.div
-            animate={{ scale: [1, 1.04, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="mt-0.5 px-2 py-0.5 rounded-full bg-coral-400 text-navy-900 text-[5px] font-bold shadow-sm"
-          >
-            לברכה המיוחדת
-          </motion.div>
+    <div className="h-full w-full flex items-center justify-center p-3">
+      <div className="flex flex-col items-center gap-2">
+        <div className="text-[8px] font-bold text-stone-600 dark:text-stone-300 mb-1">
+          בר / בת
         </div>
+
+        <motion.div
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="w-12 h-14 flex items-end justify-center relative"
+        >
+          <svg viewBox="0 0 100 120" className="w-full h-full">
+            <path
+              d="M 50,40 C 35,55 20,80 15,120 L 85,120 C 80,80 65,55 50,40 Z"
+              fill="#fffcfa"
+              stroke="#d4826f"
+              strokeWidth="1.5"
+            />
+            <circle cx="50" cy="30" r="10" fill="#f2e9e4" />
+            <path
+              d="M 40,25 C 35,20 30,25 35,35 C 40,28 60,28 65,35 C 70,25 65,20 60,25 Z"
+              fill="#1b263b"
+            />
+            <g>
+              <path d="M 38,20 L 42,12 L 50,18 L 58,12 L 62,20 Z" fill="#d4826f" />
+              <circle cx="42" cy="15" r="1.5" fill="#fffcfa" />
+              <circle cx="50" cy="20" r="2" fill="#fffcfa" />
+              <circle cx="58" cy="15" r="1.5" fill="#fffcfa" />
+            </g>
+          </svg>
+        </motion.div>
+
+        <motion.div
+          animate={{ y: [0, -2, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="px-2 py-1 rounded-full bg-[#d4826f] text-white text-[6px] font-bold shadow"
+        >
+          לחצו
+        </motion.div>
+
+        <motion.p
+          animate={{ opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 2.5, repeat: Infinity }}
+          className="text-[5px] text-[#d4826f] font-bold text-center px-2 leading-tight"
+        >
+          ברכה מרגשת מחכה 🎉
+        </motion.p>
       </div>
     </div>
   );

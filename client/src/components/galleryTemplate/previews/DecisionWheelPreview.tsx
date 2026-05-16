@@ -2,43 +2,36 @@
 
 import { motion } from "framer-motion";
 
-const SEGMENTS = [
-  "#ec4899",  // primary-500
-  "#e8917a",  // coral-400
-  "#8b5cf6",  // secondary-500
-  "#445a78",  // navy-500
-  "#d4826f",  // coral-500
-  "#f5b5a5",  // coral-300
+const WHEEL_SEGMENTS = [
+  { color: "#FECDD3", label: "🍽️" },
+  { color: "#C7CEEA", label: "🎬" },
+  { color: "#B5EAD7", label: "🌲" },
+  { color: "#FFDAC1", label: "🎮" },
+  { color: "#E2F0CB", label: "💆" },
+  { color: "#FCE4EC", label: "🍳" },
 ];
-
-const conicGradient = SEGMENTS.map(
-  (color, i) =>
-    `${color} ${(i / SEGMENTS.length) * 360}deg ${((i + 1) / SEGMENTS.length) * 360}deg`,
-).join(", ");
 
 export function DecisionWheelPreview() {
   return (
-    <div className="h-full w-full flex items-center justify-center p-2">
-      <div className="flex flex-col items-center gap-2">
-        {/* Pointer */}
-        <div className="w-0 h-0 border-l-[5px] border-r-[5px] border-b-[9px] border-l-transparent border-r-transparent border-b-navy-700 mb-[-2px]" />
-
-        {/* Spinning wheel */}
+    <div className="h-full w-full flex items-center justify-center p-3">
+      <div className="relative w-20 h-20">
+        <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-10 w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[8px] border-t-[#d4826f]" />
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-          className="relative w-16 h-16 rounded-full shadow-md border-2 border-navy-200"
-          style={{ background: `conic-gradient(${conicGradient})` }}
-        >
-          {/* Center hub */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-3 h-3 bg-white rounded-full border border-navy-300 shadow" />
+          animate={{ rotate: [0, 360] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+          className="w-full h-full rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-600"
+          style={{
+            background: `conic-gradient(${WHEEL_SEGMENTS.map(
+              (s, i) =>
+                `${s.color} ${(i / WHEEL_SEGMENTS.length) * 360}deg ${((i + 1) / WHEEL_SEGMENTS.length) * 360}deg`,
+            ).join(", ")})`,
+          }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-6 h-6 bg-[#d4826f] rounded-full flex items-center justify-center text-white text-[6px] font-bold shadow">
+            !סובבו
           </div>
-        </motion.div>
-
-        <p className="text-[6px] font-bold text-navy-700 dark:text-navy-200 text-center">
-          סובבו לגורל!
-        </p>
+        </div>
       </div>
     </div>
   );

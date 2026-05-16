@@ -4,42 +4,26 @@ import { motion } from "framer-motion";
 
 export function DateInvitePreview() {
   return (
-    <div className="h-full w-full flex items-center justify-center p-2">
-      <div className="relative w-full max-w-[110px] rounded-xl shadow-lg overflow-hidden bg-gradient-to-br from-primary-50 to-primary-100">
-        <div className="p-3 flex flex-col items-center gap-2">
-          {/* Floating hearts */}
-          <div className="flex gap-1 text-[10px]">
-            {(["💕", "✨", "💕"] as const).map((e, i) => (
-              <motion.span
-                key={i}
-                animate={{ y: [0, -3, 0] }}
-                transition={{ duration: 1.5 + i * 0.2, repeat: Infinity, delay: i * 0.3 }}
-              >
-                {e}
-              </motion.span>
-            ))}
-          </div>
-
-          <p className="text-[7px] font-bold text-primary-700 text-center">
-            תצא/י איתי לדייט?
-          </p>
-
-          <div className="flex gap-1.5 w-full">
-            <motion.div
-              animate={{ scale: [1, 1.08, 1] }}
-              transition={{ duration: 1.2, repeat: Infinity }}
-              className="flex-1 py-1 rounded-lg bg-primary-500 text-white text-[6px] font-bold text-center shadow"
-            >
-              כן! 💕
-            </motion.div>
-            <motion.div
-              animate={{ x: [0, 6, -4, 3, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="flex-1 py-1 rounded-lg bg-navy-100 text-navy-500 text-[6px] font-bold text-center"
-            >
-              לא
-            </motion.div>
-          </div>
+    <div className="h-full w-full flex items-center justify-center p-3">
+      <div className="bg-white dark:bg-gray-600 px-4 py-3 rounded-xl shadow-md text-center">
+        <p className="text-[10px] font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading">
+          ?תצא/י איתי
+        </p>
+        <div className="flex gap-2 justify-center">
+          <motion.div
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+            className="h-6 w-12 bg-[#d4826f] rounded-md flex items-center justify-center text-[9px] text-white font-bold"
+          >
+            כן!
+          </motion.div>
+          <motion.div
+            animate={{ x: [0, 5, -3, 0] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            className="h-6 w-12 bg-gray-200 dark:bg-gray-500 rounded-md flex items-center justify-center text-[9px] text-gray-500 dark:text-gray-300"
+          >
+            לא
+          </motion.div>
         </div>
       </div>
     </div>

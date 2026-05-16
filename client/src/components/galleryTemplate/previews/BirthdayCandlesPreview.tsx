@@ -2,53 +2,38 @@
 
 import { motion } from "framer-motion";
 
-const CANDLE_CLASSES = [
-  "bg-coral-400",
-  "bg-coral-500",
-  "bg-secondary-400",
-  "bg-primary-400",
-  "bg-navy-400",
-] as const;
-
 export function BirthdayCandlesPreview() {
   return (
-    <div className="h-full w-full flex items-center justify-center p-2">
-      <div className="flex flex-col items-center gap-2">
-        {/* Candle row */}
-        <div className="flex items-end gap-1.5">
-          {CANDLE_CLASSES.map((cls, i) => (
+    <div className="h-full w-full flex items-center justify-center p-3">
+      <div className="flex flex-col items-center gap-0">
+        <div className="flex gap-2.5 relative z-10" style={{ marginBottom: "-1px" }}>
+          {[0, 1, 2].map((i) => (
             <div key={i} className="flex flex-col items-center">
-              {/* Flame */}
               <motion.div
-                animate={{ scaleY: [1, 1.3, 0.9, 1.2, 1], scaleX: [1, 0.8, 1.1, 0.9, 1] }}
-                transition={{ duration: 1.2 + i * 0.15, repeat: Infinity, ease: "easeInOut" }}
-                className="w-1.5 h-2.5 rounded-full bg-gradient-to-t from-coral-700 via-coral-400 to-transparent"
-                style={{ transformOrigin: "bottom center" }}
-              />
-              {/* Wick */}
-              <div className="w-px h-1 bg-navy-300" />
-              {/* Candle body */}
-              <div
-                className={`w-2.5 rounded-sm opacity-85 ${cls}`}
-                style={{ height: `${14 + i * 2}px` }}
-              />
+                animate={{ scale: [1, 1.15, 0.9, 1.1, 1], opacity: [1, 0.85, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3, ease: "easeInOut" }}
+                style={{ color: "#ffde59" }}
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+                </svg>
+              </motion.div>
+              <div className="w-2 h-6 rounded-t-sm bg-[#f5f0e8] border border-gray-200" />
             </div>
           ))}
         </div>
 
-        {/* Mini cake */}
-        <div className="w-20">
-          <div className="h-2 bg-primary-100 rounded-t-full border border-primary-200" />
-          <div className="h-5 bg-coral-50 border border-coral-200 flex items-center justify-center">
-            <span className="text-[6px] text-coral-700 font-bold">יום הולדת שמח!</span>
-          </div>
-          <div className="h-1.5 bg-coral-200 rounded-b-sm border border-coral-200" />
+        <div
+          className="w-20 h-8 rounded-t-[12px] rounded-b-md shadow-md relative overflow-hidden"
+          style={{ backgroundColor: "#d4826f" }}
+        >
+          <div className="absolute top-0 w-full h-1.5 bg-white opacity-25" />
         </div>
 
         <motion.p
           animate={{ opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="text-[6px] text-coral-600 font-bold"
+          className="mt-1.5 text-[6px] text-[#415a77] font-medium"
         >
           🎂 לחצו לכיבוי
         </motion.p>
