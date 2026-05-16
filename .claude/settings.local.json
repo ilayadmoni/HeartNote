@@ -38,7 +38,10 @@
       "PowerShell(Test-Path *)",
       "PowerShell(Get-Command *)",
       "PowerShell(New-Item *)",
-      "PowerShell(Get-ChildItem *)"
+      "PowerShell(Get-ChildItem *)",
+      "Skill(superpowers:writing-plans)",
+      "Skill(superpowers:executing-plans)",
+      "Skill(superpowers:subagent-driven-development)"
     ]
   }
 }

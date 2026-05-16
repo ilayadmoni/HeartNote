@@ -1,5 +1,23 @@
 # HeartNote — Project Reference for Claude
 
+## Superpowers Workflow
+
+Always use the Superpowers plugin for all development work in this project.
+
+### Required workflow — no exceptions:
+- **Before any new feature** — brainstorm and ask clarifying questions before writing code
+- **Before any refactor** — write a detailed plan with verification steps
+- **Always write tests first** — failing tests before implementation (TDD)
+- **Debug systematically** — four-phase root cause analysis, no guess-and-check
+- **Before finishing** — code review and verify everything works
+
+### Slash commands:
+- `/superpowers:brainstorm` — start here for new features
+- `/superpowers:write-plan` — for migrations or multi-file changes
+- `/superpowers:execute-plan` — run the plan in small chunks
+
+Never dump code immediately. Always plan first, then implement.
+
 ## Project Description
 
 **HeartNote** (heartnote.co.il) is a SaaS digital greeting card creation platform built for the Israeli market. Users pick from interactive card templates (quizzes, timelines, love coupons, open-when envelopes, etc.), fill in personalised content, and share the resulting card via a unique link. The platform has a free tier and a premium subscription tier.
