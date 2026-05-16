@@ -1,62 +1,51 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+
+const SEARCH_TEXT = "סליחה שאני...";
+
+const RESULTS = ["💌 מכתב התנצלות", "🌹 עם פרחים", "🍫 + שוקולד"];
 
 export function ApologySearchPreview() {
+  const [chars, setChars] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(
+      () => setChars((p) => (p >= SEARCH_TEXT.length ? 0 : p + 1)),
+      150,
+    );
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="h-full w-full flex items-center justify-center p-3">
-      <div className="flex flex-col items-center gap-2 w-full max-w-[120px]">
-        <div className="w-full bg-white border border-gray-200 rounded-full px-2 py-1.5 flex items-center gap-1 shadow-sm">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="8"
-            height="8"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#415a77"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <motion.span
-            className="text-[6px] text-[#1b263b] font-medium"
-            initial={{ width: 0 }}
-            animate={{ width: "auto" }}
-            transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 2 }}
-            style={{ overflow: "hidden", whiteSpace: "nowrap", display: "inline-block" }}
-          >
-            איך לבקש סליחה?
-          </motion.span>
-          <motion.span
-            animate={{ opacity: [1, 0] }}
-            transition={{ duration: 0.5, repeat: Infinity }}
-            className="inline-block w-px h-2.5 bg-[#1b263b]"
-          />
-        </div>
-
-        <div className="flex gap-1">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className="w-1.5 h-1.5 rounded-full bg-[#d4826f]"
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 0.6, delay: i * 0.2, repeat: Infinity, ease: "easeInOut" }}
+    <div className="h-full w-full flex items-center justify-center p-2">
+      <div className="w-full max-w-[110px] flex flex-col gap-1.5">
+        {/* Search bar */}
+        <div className="flex items-center gap-1 bg-white dark:bg-stone-700 rounded-full border border-stone-200 dark:border-stone-600 px-2 py-1 shadow-sm">
+          <span className="text-[8px] text-stone-400">🔍</span>
+          <span className="text-[6px] text-stone-700 dark:text-stone-200 font-medium flex-1 truncate">
+            {SEARCH_TEXT.slice(0, chars)}
+            <motion.span
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 0.8, repeat: Infinity }}
+              className="inline-block w-px h-2 bg-coral-500 ml-0.5 align-middle"
             />
-          ))}
+          </span>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 1, repeat: Infinity, repeatDelay: 3 }}
-          className="w-full bg-[#fdf6f2] border border-[#e8ddd8] rounded-lg p-1.5 flex items-center gap-1 shadow-sm"
-        >
-          <span className="text-[8px]">❤️</span>
-          <span className="text-[5px] font-bold text-[#1b263b]">סליחה שהייתי עצבנית</span>
-        </motion.div>
+        {/* Results */}
+        {RESULTS.map((result, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: 4 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 + i * 0.2 }}
+            className="text-[5px] text-stone-600 dark:text-stone-300 px-1 py-0.5 rounded bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700"
+          >
+            {result}
+          </motion.div>
+        ))}
       </div>
     </div>
   );

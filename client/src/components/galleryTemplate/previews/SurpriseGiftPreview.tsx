@@ -2,35 +2,47 @@
 
 import { motion } from "framer-motion";
 
+const SPARKLE_OFFSETS = ["-8px", "8px", "0px"] as const;
+
 export function SurpriseGiftPreview() {
   return (
-    <div className="h-full w-full flex items-center justify-center p-3">
-      <div className="relative">
+    <div className="h-full w-full flex items-center justify-center p-2">
+      <div className="flex flex-col items-center gap-2">
+        {/* Floating sparkles */}
+        <div className="relative h-6 w-20 flex items-end justify-center">
+          {SPARKLE_OFFSETS.map((x, i) => (
+            <motion.span
+              key={i}
+              animate={{ y: [0, -6, 0], opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 1.5 + i * 0.3, repeat: Infinity, delay: i * 0.4 }}
+              className="absolute text-[10px]"
+              style={{ left: `calc(50% + ${x})` }}
+            >
+              ✨
+            </motion.span>
+          ))}
+        </div>
+
+        {/* Gift box */}
         <motion.div
-          animate={{ rotate: [0, -5, 5, -3, 3, 0] }}
-          transition={{ duration: 0.6, repeat: Infinity, repeatDelay: 2 }}
+          animate={{ y: [0, -4, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center"
         >
-          <svg width="60" height="66" viewBox="0 0 200 220" aria-hidden="true">
-            <rect x="20" y="100" width="160" height="110" rx="8" fill="#e74c5e" />
-            <rect x="88" y="100" width="24" height="110" fill="#ffd700" />
-            <rect x="10" y="80" width="180" height="30" rx="6" fill="#e74c5e" />
-            <rect x="88" y="80" width="24" height="30" fill="#ffd700" />
-            <ellipse cx="82" cy="78" rx="18" ry="14" fill="#ffd700" />
-            <ellipse cx="118" cy="78" rx="18" ry="14" fill="#ffd700" />
-            <circle cx="100" cy="80" r="8" fill="#ffd700" />
-          </svg>
+          {/* Lid */}
+          <div className="w-14 h-4 bg-coral-500 rounded-t-sm relative flex items-center justify-center">
+            <div className="absolute inset-x-0 top-0 bottom-0 w-1.5 bg-amber-300 mx-auto" />
+            <div className="absolute inset-y-0 left-0 right-0 h-1.5 bg-amber-300 my-auto" />
+          </div>
+          {/* Box body */}
+          <div className="w-12 h-10 bg-coral-400 rounded-b-sm relative overflow-hidden flex items-center justify-center">
+            <div className="absolute inset-y-0 w-1.5 bg-amber-300 left-1/2 -translate-x-1/2" />
+            <div className="absolute inset-x-0 h-1.5 bg-amber-300 top-1/3" />
+            <span className="relative z-10 text-[10px]">🎁</span>
+          </div>
         </motion.div>
-        {["✨", "🎁"].map((s, i) => (
-          <motion.span
-            key={i}
-            className="absolute text-xs"
-            style={{ top: i === 0 ? -4 : 2, [i === 0 ? "left" : "right"]: -8 }}
-            animate={{ opacity: [0, 1, 0], y: [0, -6, 0] }}
-            transition={{ duration: 1.5, delay: i * 0.5, repeat: Infinity }}
-          >
-            {s}
-          </motion.span>
-        ))}
+
+        <p className="text-[6px] font-bold text-coral-600 text-center">הפתעה מחכה!</p>
       </div>
     </div>
   );

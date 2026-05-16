@@ -1,50 +1,54 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+
+const EXCUSES = [
+  "הכלב אכל את שיעורי הבית",
+  "הייתי תקוע בפקק",
+  "הטלפון מת לי",
+  "שכחתי לגמרי",
+  "היה לי כאב ראש",
+];
 
 export function ExcuseGeneratorPreview() {
-  return (
-    <div className="h-full w-full flex items-center justify-center p-3">
-      <div className="flex flex-col items-center gap-2">
-        <motion.div
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
-          className="w-10 h-10 flex items-center justify-center rounded-full"
-          style={{ backgroundColor: "#d4826f22" }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#d4826f"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
-        </motion.div>
+  const [idx, setIdx] = useState(0);
 
-        <div className="w-24 bg-white border border-gray-200 rounded-lg p-1.5 shadow-inner flex items-center justify-center min-h-[28px]">
-          <motion.p
-            animate={{ opacity: [1, 0.3, 1] }}
-            transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 1.5 }}
-            className="text-[6px] font-bold text-[#2e3c52] text-center leading-tight"
-          >
-            &ldquo;הכלב שלי אכל את הזמן הפנוי&rdquo;
-          </motion.p>
+  useEffect(() => {
+    const interval = setInterval(() => setIdx((p) => (p + 1) % EXCUSES.length), 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="h-full w-full flex items-center justify-center p-2">
+      <div className="w-full max-w-[110px] flex flex-col items-center gap-2">
+        <p className="text-[6px] font-bold text-secondary-600 dark:text-secondary-300">
+          גנרטור תירוצים
+        </p>
+
+        {/* Output card */}
+        <div className="w-full bg-secondary-50 dark:bg-secondary-900/30 rounded-lg p-2 border border-secondary-200 dark:border-secondary-700 min-h-[32px] flex items-center justify-center overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={idx}
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -10, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="text-[5px] text-secondary-700 dark:text-secondary-200 text-center leading-tight"
+            >
+              {EXCUSES[idx]}
+            </motion.p>
+          </AnimatePresence>
         </div>
 
+        {/* Generate button */}
         <motion.div
           animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 1.2, repeat: Infinity }}
-          className="px-3 py-1 rounded-full text-white text-[7px] font-bold shadow flex items-center gap-1"
-          style={{ backgroundColor: "#d4826f" }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="px-3 py-0.5 rounded-full bg-secondary-500 text-white text-[5px] font-bold shadow"
         >
-          ⚙️ ג&apos;נרט תירוץ
+          🎲 הפק תירוץ
         </motion.div>
       </div>
     </div>

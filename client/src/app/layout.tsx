@@ -109,6 +109,22 @@ export default function RootLayout({
           `}
         </Script>
 
+        <Script id="prevent-animation-flash" strategy="beforeInteractive">
+          {`
+            (function() {
+              try {
+                var raw = window.localStorage.getItem('hn_a11y_settings');
+                if (raw) {
+                  var settings = JSON.parse(raw);
+                  if (settings && settings.stopAnimations) {
+                    document.documentElement.classList.add('a11y-stop-animations');
+                  }
+                }
+              } catch (e) {}
+            })();
+          `}
+        </Script>
+
         {/* Pre-hydration loading screen — visible before React mounts */}
         <InitialLoader />
 
