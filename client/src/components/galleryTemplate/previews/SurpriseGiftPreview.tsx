@@ -31,13 +31,13 @@ export function SurpriseGiftPreview() {
         >
           {/* Lid */}
           <div className="w-14 h-4 bg-coral-500 rounded-t-sm relative flex items-center justify-center">
-            <div className="absolute inset-x-0 top-0 bottom-0 w-1.5 bg-amber-300 mx-auto" />
-            <div className="absolute inset-y-0 left-0 right-0 h-1.5 bg-amber-300 my-auto" />
+            <div className="absolute inset-x-0 top-0 bottom-0 w-1.5 bg-coral-200 mx-auto" />
+            <div className="absolute inset-y-0 left-0 right-0 h-1.5 bg-coral-200 my-auto" />
           </div>
           {/* Box body */}
           <div className="w-12 h-10 bg-coral-400 rounded-b-sm relative overflow-hidden flex items-center justify-center">
-            <div className="absolute inset-y-0 w-1.5 bg-amber-300 left-1/2 -translate-x-1/2" />
-            <div className="absolute inset-x-0 h-1.5 bg-amber-300 top-1/3" />
+            <div className="absolute inset-y-0 w-1.5 bg-coral-200 left-1/2 -translate-x-1/2" />
+            <div className="absolute inset-x-0 h-1.5 bg-coral-200 top-1/3" />
             <span className="relative z-10 text-[10px]">🎁</span>
           </div>
         </motion.div>
