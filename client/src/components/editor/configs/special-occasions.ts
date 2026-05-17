@@ -1,35 +1,6 @@
 import type { EditorConfig } from "../types";
 
 export const SPECIAL_OCCASIONS_CONFIGS: Record<string, EditorConfig> = {
-  "holiday-card": {
-    templateId: "holiday-card",
-    title: "מפעל החגים",
-    description: "בחרו חג וכתבו ברכה אישית לאהובים עליכם!",
-    fields: [
-      {
-        key: "holidayKind",
-        label: "בחר חג",
-        type: "select",
-        options: [
-          { value: "rosh", label: "🍎 ראש השנה" },
-          { value: "hanukkah", label: "🕎 חנוכה" },
-          { value: "purim", label: "🎭 פורים" },
-          { value: "pesach", label: "🍷 פסח" },
-          { value: "sukkot", label: "🌿 סוכות" },
-          { value: "shavuot", label: "🌾 שבועות" },
-        ],
-      },
-      { key: "customTitle", label: "כותרת (אופציונלי)", type: "text", placeholder: "יתשמש כברירת המחדל של החג", maxLength: 60 },
-      { key: "customGreeting", label: "הברכה שלך", type: "textarea", placeholder: "הקלד ברכה אישית...", maxLength: 300 },
-      { key: "primaryColor", label: "צבע ראשי", type: "color" },
-    ],
-    defaultData: {
-      holidayKind: "rosh" as const,
-      customTitle: "",
-      customGreeting: "",
-      primaryColor: "#d4826f",
-    },
-  },
   "bar-bat-mitzvah": {
     templateId: "bar-bat-mitzvah",
     title: "בר/בת מצווה",
