@@ -1,1 +1,0 @@
-export { WeddingGlass } from "./WeddingGlass";
