@@ -53,7 +53,12 @@
       "Skill(modular-code-architect)",
       "Skill(modular-code-architect:*)",
       "PowerShell(Get-ChildItem -Recurse \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\BirthdayCandlesInteractive\" | Select-Object FullName, @{N='Lines';E={\\(Get-Content $_.FullName | Measure-Object -Line\\).Lines}} | Sort-Object FullName)",
-      "PowerShell(Copy-Item \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\interactive-events\\\\interactive-registry.test.ts\" \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\interactive-registry.test.ts\")"
+      "PowerShell(Copy-Item \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\interactive-events\\\\interactive-registry.test.ts\" \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\interactive-registry.test.ts\")",
+      "PowerShell(Get-ChildItem \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\" | ForEach-Object { \"$\\($_.Name\\) [$\\( if\\($_.PSIsContainer\\){'DIR'}else{'FILE'}\\)]\" } | Sort-Object)",
+      "Skill(superpowers:finishing-a-development-branch)",
+      "Skill(superpowers:finishing-a-development-branch:*)",
+      "Skill(superpowers:systematic-debugging)",
+      "Skill(superpowers:systematic-debugging:*)"
     ]
   }
 }
