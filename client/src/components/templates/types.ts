@@ -174,21 +174,7 @@ export interface ApologySearchData {
 }
 
 // =============================================================================
-// 13. BIRTHDAY CANDLES
-// =============================================================================
-export interface BirthdayCandlesData {
-  title?: string;              // "מערכת כיבוי נרות דיגיטלית"
-  subtitle?: string;           // "הקישי על הלהבות..."
-  candleCount: number;         // default 3, min 1, max 10
-  cakeColor?: string;          // palette color for the cake body
-  flameColor?: string;         // palette color for the flames
-  celebrationTitle: string;    // "מזל טוב!!! 🎂"
-  celebrationMessage: string;  // "שתמיד תהיי מוקפת באהבה..."
-  primaryColor?: string;
-}
-
-// =============================================================================
-// 14. EXCUSE GENERATOR
+// 13. EXCUSE GENERATOR
 // =============================================================================
 export interface ExcuseGeneratorData {
   title?: string;              // "מכונת התירוצים האוטומטית"
@@ -200,31 +186,7 @@ export interface ExcuseGeneratorData {
 }
 
 // =============================================================================
-// 15. WEDDING GLASS
-// =============================================================================
-export interface WeddingGlassData {
-  title?: string;              // "שבירת כוס דיגיטלית"
-  subtitle?: string;           // "לחצו על הכפתור..."
-  stompButtonLabel?: string;   // "שבור את הכוס!"
-  mazalTovTitle: string;       // "מזל טוב! 💍"
-  mazalTovMessage: string;     // "שתזכו לבנות יחד..."
-  primaryColor?: string;
-}
-
-// =============================================================================
-// 16. HOLIDAY CARD
-// =============================================================================
-export type HolidayKind = "rosh" | "hanukkah" | "purim" | "pesach" | "sukkot" | "shavuot";
-
-export interface HolidayCardData {
-  holidayKind: HolidayKind;    // select: one of 4
-  customTitle?: string;        // optional override of preset title
-  customGreeting?: string;     // the user's message
-  primaryColor?: string;       // palette; overrides auto-theme accent
-}
-
-// =============================================================================
-// 17. BAR/BAT MITZVAH
+// 15. BAR/BAT MITZVAH
 // =============================================================================
 export type MitzvahKind = "bar" | "bat";
 
