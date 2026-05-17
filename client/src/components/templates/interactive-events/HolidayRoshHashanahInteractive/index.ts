@@ -1,1 +1,0 @@
-export { HolidayRoshHashanahInteractive } from "./HolidayRoshHashanahInteractive";

@@ -1,1 +1,0 @@
-export { HolidayPurimInteractive } from "./HolidayPurimInteractive";

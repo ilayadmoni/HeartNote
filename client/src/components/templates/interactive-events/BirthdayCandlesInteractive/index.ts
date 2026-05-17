@@ -1,1 +1,0 @@
-export { BirthdayCandlesInteractive } from "./BirthdayCandlesInteractive";

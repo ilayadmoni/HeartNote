@@ -51,7 +51,9 @@
       "PowerShell(Get-ChildItem -Path \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\Timeline\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\Timeline\", \"\"\\).TrimStart\\(\"\\\\\"\\) })",
       "PowerShell(Get-ChildItem -Path \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\components\" -File | ForEach-Object { $_.Name })",
       "Skill(modular-code-architect)",
-      "Skill(modular-code-architect:*)"
+      "Skill(modular-code-architect:*)",
+      "PowerShell(Get-ChildItem -Recurse \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\BirthdayCandlesInteractive\" | Select-Object FullName, @{N='Lines';E={\\(Get-Content $_.FullName | Measure-Object -Line\\).Lines}} | Sort-Object FullName)",
+      "PowerShell(Copy-Item \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\interactive-events\\\\interactive-registry.test.ts\" \"D:\\\\HeartNote\\\\client\\\\src\\\\components\\\\templates\\\\interactive-registry.test.ts\")"
     ]
   }
 }

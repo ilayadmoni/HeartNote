@@ -1,1 +1,0 @@
-export { WeddingGlassInteractive } from "./WeddingGlassInteractive";
