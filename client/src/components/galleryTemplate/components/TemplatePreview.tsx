@@ -6,10 +6,7 @@ import {
   SlotMachinePreview,
   PunchingBagPreview,
   ApologySearchPreview,
-  BirthdayCandlesPreview,
   ExcuseGeneratorPreview,
-  WeddingGlassPreview,
-  HolidayCardPreview,
   BarBatMitzvahPreview,
   BirthdayCandlesInteractivePreview,
   WeddingGlassInteractivePreview,
@@ -57,14 +54,8 @@ export function TemplatePreview({ componentKey }: TemplatePreviewProps) {
       return <PunchingBagPreview />;
     case "ApologySearch":
       return <ApologySearchPreview />;
-    case "BirthdayCandles":
-      return <BirthdayCandlesPreview />;
     case "ExcuseGenerator":
       return <ExcuseGeneratorPreview />;
-    case "WeddingGlass":
-      return <WeddingGlassPreview />;
-    case "HolidayCard":
-      return <HolidayCardPreview />;
     case "BarBatMitzvah":
       return <BarBatMitzvahPreview />;
     case "BirthdayCandlesInteractive":
