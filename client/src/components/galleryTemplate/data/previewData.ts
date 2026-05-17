@@ -82,16 +82,6 @@ export const PREVIEW_DATA = {
     resultSubtitle: "אתה צודק. אוהבת אותך.",
     primaryColor: "#d4826f",
   },
-  BirthdayCandles: {
-    title: "מערכת כיבוי נרות",
-    subtitle: "הקישי על הלהבות",
-    candleCount: 3,
-    cakeColor: "#d4826f",
-    flameColor: "#ffde59",
-    celebrationTitle: "מזל טוב!!! 🎂",
-    celebrationMessage: "שתמיד תהיי מוקפת באהבה!",
-    primaryColor: "#d4826f",
-  },
   ExcuseGenerator: {
     title: "מכונת התירוצים האוטומטית",
     subtitle: "לא בא לך לצאת? יש לנו תירוץ בשבילך.",
@@ -102,20 +92,6 @@ export const PREVIEW_DATA = {
     ],
     buttonLabel: "ג'נרט תירוץ",
     disclaimer: "* החברה אינה אחראית לתוצאות השימוש בתירוצים אלו.",
-    primaryColor: "#d4826f",
-  },
-  WeddingGlass: {
-    title: "שבירת כוס דיגיטלית",
-    subtitle: "לחצו על הכפתור כדי שהחתן ישבור את הכוס",
-    stompButtonLabel: "שבור את הכוס!",
-    mazalTovTitle: "מזל טוב! 💍",
-    mazalTovMessage: "שתזכו לבנות יחד בית מלא באהבה, צחוק ושמחה.",
-    primaryColor: "#d4826f",
-  },
-  HolidayCard: {
-    holidayKind: "rosh" as const,
-    customTitle: "",
-    customGreeting: "שנה טובה ומתוקה!",
     primaryColor: "#d4826f",
   },
   BarBatMitzvah: {
