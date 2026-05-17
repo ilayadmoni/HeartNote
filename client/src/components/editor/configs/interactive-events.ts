@@ -1,6 +1,6 @@
 import type { EditorConfig, EditorField } from "../types";
-import { HOLIDAY_INTERACTIVE_CONFIGS } from "@/components/templates/interactive-events/holidays-shared";
-import type { HolidayInteractiveSlug } from "@/components/templates/interactive-events/types";
+import { HOLIDAY_INTERACTIVE_CONFIGS } from "@/components/templates/holidays-shared";
+import type { HolidayInteractiveSlug } from "@/components/templates/types";
 
 const COMMON_FIELDS: EditorField[] = [
   { key: "recipientName", label: "שם המקבל/ת", type: "text", placeholder: "ניצן", maxLength: 50 },

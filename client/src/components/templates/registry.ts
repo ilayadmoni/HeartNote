@@ -21,14 +21,14 @@ import { PunchingBag } from "./PunchingBag/PunchingBag";
 import { ApologySearch } from "./ApologySearch/ApologySearch";
 import { ExcuseGenerator } from "./ExcuseGenerator/ExcuseGenerator";
 import { BarBatMitzvah } from "./BarBatMitzvah/BarBatMitzvah";
-import { BirthdayCandlesInteractive } from "./interactive-events/BirthdayCandlesInteractive";
-import { WeddingGlassInteractive } from "./interactive-events/WeddingGlassInteractive";
-import { HolidayRoshHashanahInteractive } from "./interactive-events/HolidayRoshHashanahInteractive";
-import { HolidayPassoverInteractive } from "./interactive-events/HolidayPassoverInteractive";
-import { HolidayPurimInteractive } from "./interactive-events/HolidayPurimInteractive";
-import { HolidayShavuotInteractive } from "./interactive-events/HolidayShavuotInteractive";
-import { HolidaySukkotInteractive } from "./interactive-events/HolidaySukkotInteractive";
-import { HolidayHanukkahInteractive } from "./interactive-events/HolidayHanukkahInteractive";
+import { BirthdayCandlesInteractive } from "./BirthdayCandlesInteractive";
+import { WeddingGlassInteractive } from "./WeddingGlassInteractive";
+import { HolidayRoshHashanahInteractive } from "./HolidayRoshHashanahInteractive";
+import { HolidayPassoverInteractive } from "./HolidayPassoverInteractive";
+import { HolidayPurimInteractive } from "./HolidayPurimInteractive";
+import { HolidayShavuotInteractive } from "./HolidayShavuotInteractive";
+import { HolidaySukkotInteractive } from "./HolidaySukkotInteractive";
+import { HolidayHanukkahInteractive } from "./HolidayHanukkahInteractive";
 
 export type AnyTemplateComponent = ComponentType<{
   data: unknown;
