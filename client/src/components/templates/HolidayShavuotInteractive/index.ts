@@ -1,0 +1,1 @@
+﻿export { HolidayShavuotInteractive } from "./HolidayShavuotInteractive";
