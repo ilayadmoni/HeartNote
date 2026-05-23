@@ -2,56 +2,38 @@
 
 /**
  * GalleryTemplateMobile Component
- * Mobile view for the gallery template page (single/double column)
- * Now dynamically fetches template metadata (categories, premium status) from Supabase
+ * Mobile view for the gallery template page (single column).
+ * Receives pre-filtered templates and all filter state as props.
  */
 
-import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FilterTabs, TemplateCard } from "../components";
-import { TEMPLATES, CATEGORY_EMOJI_MAP } from "../data/templates";
-import { useActiveTemplates } from "@/hooks/useActiveTemplates";
-import type { GalleryTemplateProps } from "../types";
+import { GallerySearchBar } from "@/components/GallerySearchBar";
+import type { GalleryTemplateViewProps } from "../types";
 
 export function GalleryTemplateMobile({
   className = "",
   onTemplateClick,
-}: GalleryTemplateProps) {
-  const [activeTab, setActiveTab] = useState("all");
-
-  // Fetch active templates with metadata from Supabase
-  const { enrichedTemplates, loading, error } = useActiveTemplates(TEMPLATES);
-
-  // Derive tabs dynamically from the categories present in active templates
-  const tabs = useMemo(() => {
-    const seen = new Set<string>();
-    const dynamic = enrichedTemplates.flatMap((t) => t.categories ?? []).filter((cat) => {
-      if (seen.has(cat)) return false;
-      seen.add(cat);
-      return true;
-    }).map((cat) => ({ id: cat, label: cat, emoji: CATEGORY_EMOJI_MAP[cat] }));
-    return [{ id: "all", label: "הכל", emoji: "✨" }, ...dynamic];
-  }, [enrichedTemplates]);
-
-  // Filter templates by category
-  const filteredTemplates = enrichedTemplates.filter((template) => {
-    if (activeTab === "all") return true;
-    return template.categories?.includes(activeTab) ?? false;
-  });
-
+  templates,
+  loading,
+  error,
+  activeTab,
+  onTabChange,
+  tabs,
+  searchQuery,
+  onSearchChange,
+}: GalleryTemplateViewProps) {
   return (
     <section
       className={`min-h-screen bg-[#faf7f5] dark:bg-gray-900 transition-colors duration-300 ${className}`}
     >
       <div className="container mx-auto px-4 py-8">
-        {/* Mobile Header - Compact */}
+        {/* Mobile Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 text-center"
         >
-      
-
           <h1 className="text-2xl font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading">
             בחרו את החוויה הבאה
           </h1>
@@ -60,29 +42,36 @@ export function GalleryTemplateMobile({
           </p>
         </motion.div>
 
-        {/* Filter Tabs - Two rows on mobile */}
+        {/* Filter Tabs */}
         <div className="mb-6 -mx-4 px-4">
           <div className="flex flex-wrap gap-2">
             <FilterTabs
               tabs={tabs}
               activeTab={activeTab}
-              onTabChange={setActiveTab}
+              onTabChange={onTabChange}
               className="flex flex-wrap gap-2"
             />
           </div>
         </div>
 
+        {/* Smart Search Bar */}
+        <GallerySearchBar
+          value={searchQuery}
+          onChange={onSearchChange}
+          className="mb-6"
+        />
+
         {/* Templates Grid */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeTab}
+            key={`${activeTab}-${searchQuery}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             className="grid grid-cols-1 gap-4"
           >
-            {filteredTemplates.map((template, index) => (
+            {templates.map((template, index) => (
               <motion.div
                 key={template.id}
                 initial={{ opacity: 0, y: 15 }}
@@ -95,16 +84,16 @@ export function GalleryTemplateMobile({
           </motion.div>
         </AnimatePresence>
 
-        {/* Empty State - No templates for this category */}
-        {!loading && filteredTemplates.length === 0 && (
+        {/* Empty State */}
+        {!loading && templates.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center py-12"
           >
-            <span className="text-4xl mb-3 block">🔜</span>
+            <span className="text-4xl mb-3 block">🔍</span>
             <p className="text-gray-500 dark:text-gray-400 text-hebrew-body">
-              תבניות חדשות בקטגוריה זו יגיעו בקרוב!
+              לא נמצאו תבניות התואמות לחיפוש שלך
             </p>
           </motion.div>
         )}
