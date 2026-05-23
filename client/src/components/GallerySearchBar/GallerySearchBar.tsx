@@ -28,22 +28,55 @@ export function GallerySearchBar({
       )}
     >
       <div className="relative flex items-center">
-        {/* Search icon — right side (RTL start) */}
-        <Search
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-          size={20}
-          aria-hidden="true"
-        />
+        {/* Search icon — left side, hidden when value present */}
+        <AnimatePresence>
+          {!value && (
+            <motion.span
+              key="search-icon"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="absolute left-3 inset-y-0 flex items-center pointer-events-none"
+            >
+              <Search size={20} className="text-gray-400" aria-hidden="true" />
+            </motion.span>
+          )}
+        </AnimatePresence>
+
+        {/* Clear button — left side, replaces search icon when value present */}
+        <AnimatePresence>
+          {value && (
+            <motion.button
+              key="clear"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.15 }}
+              onClick={handleClear}
+              type="button"
+              aria-label="נקה חיפוש"
+              className={cn(
+                "absolute left-3 inset-y-0 flex items-center",
+                "p-0.5 rounded-full",
+                "text-[#D85A30] hover:text-[#b84e28]",
+                "transition-colors duration-150"
+              )}
+            >
+              <X size={18} aria-hidden="true" />
+            </motion.button>
+          )}
+        </AnimatePresence>
 
         <input
           ref={inputRef}
-          type="search"
+          type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           aria-label="חיפוש תבניות"
           placeholder="חפש תבניות..."
           className={cn(
-            "w-full min-h-[48px] pr-10 pl-10 py-3",
+            "w-full min-h-[48px] pl-10 pr-4 py-3",
             "rounded-xl border border-gray-200 bg-white",
             "text-right text-gray-800 placeholder:text-gray-400",
             "text-base transition-all duration-200",
@@ -60,30 +93,6 @@ export function GallerySearchBar({
             e.currentTarget.style.borderColor = "";
           }}
         />
-
-        {/* Clear button — left side (RTL end) */}
-        <AnimatePresence>
-          {value && (
-            <motion.button
-              key="clear"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.15 }}
-              onClick={handleClear}
-              type="button"
-              aria-label="נקה חיפוש"
-              className={cn(
-                "absolute left-3 top-1/2 -translate-y-1/2",
-                "p-0.5 rounded-full",
-                "text-[#D85A30] hover:text-[#b84e28]",
-                "transition-colors duration-150"
-              )}
-            >
-              <X size={18} aria-hidden="true" />
-            </motion.button>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );
