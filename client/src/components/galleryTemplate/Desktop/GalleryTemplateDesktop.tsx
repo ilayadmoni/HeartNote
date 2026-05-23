@@ -2,43 +2,27 @@
 
 /**
  * GalleryTemplateDesktop Component
- * Desktop view for the gallery template page (responsive grid)
- * Now dynamically fetches template metadata (categories, premium status) from Supabase
+ * Desktop view for the gallery template page (responsive grid).
+ * Receives pre-filtered templates and all filter state as props.
  */
 
-import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GalleryHeader, FilterTabs, TemplateCard } from "../components";
-import { TEMPLATES, CATEGORY_EMOJI_MAP } from "../data/templates";
-import { useActiveTemplates } from "@/hooks/useActiveTemplates";
-import type { GalleryTemplateProps } from "../types";
+import { GallerySearchBar } from "@/components/GallerySearchBar";
+import type { GalleryTemplateViewProps } from "../types";
 
 export function GalleryTemplateDesktop({
   className = "",
   onTemplateClick,
-}: GalleryTemplateProps) {
-  const [activeTab, setActiveTab] = useState("all");
-
-  // Fetch active templates with metadata from Supabase
-  const { enrichedTemplates, loading, error } = useActiveTemplates(TEMPLATES);
-
-  // Derive tabs dynamically from the categories present in active templates
-  const tabs = useMemo(() => {
-    const seen = new Set<string>();
-    const dynamic = enrichedTemplates.flatMap((t) => t.categories ?? []).filter((cat) => {
-      if (seen.has(cat)) return false;
-      seen.add(cat);
-      return true;
-    }).map((cat) => ({ id: cat, label: cat, emoji: CATEGORY_EMOJI_MAP[cat] }));
-    return [{ id: "all", label: "הכל", emoji: "✨" }, ...dynamic];
-  }, [enrichedTemplates]);
-
-  // Filter templates by category
-  const filteredTemplates = enrichedTemplates.filter((template) => {
-    if (activeTab === "all") return true;
-    return template.categories?.includes(activeTab) ?? false;
-  });
-
+  templates,
+  loading,
+  error,
+  activeTab,
+  onTabChange,
+  tabs,
+  searchQuery,
+  onSearchChange,
+}: GalleryTemplateViewProps) {
   return (
     <section
       className={`min-h-screen bg-[#faf7f5] dark:bg-gray-900 transition-colors duration-300 ${className}`}
@@ -55,21 +39,28 @@ export function GalleryTemplateDesktop({
         <FilterTabs
           tabs={tabs}
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={onTabChange}
           className="mb-10"
         />
 
-        {/* Templates Grid - Responsive */}
+        {/* Smart Search Bar */}
+        <GallerySearchBar
+          value={searchQuery}
+          onChange={onSearchChange}
+          className="mb-8"
+        />
+
+        {/* Templates Grid */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeTab}
+            key={`${activeTab}-${searchQuery}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6"
           >
-            {filteredTemplates.map((template, index) => (
+            {templates.map((template, index) => (
               <motion.div
                 key={template.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -82,16 +73,16 @@ export function GalleryTemplateDesktop({
           </motion.div>
         </AnimatePresence>
 
-        {/* Empty State - No templates for this category */}
-        {!loading && filteredTemplates.length === 0 && (
+        {/* Empty State */}
+        {!loading && templates.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center py-16"
           >
-            <span className="text-5xl mb-4 block">🔜</span>
+            <span className="text-5xl mb-4 block">🔍</span>
             <p className="text-gray-500 dark:text-gray-400 text-lg text-hebrew-body">
-              תבניות חדשות בקטגוריה זו יגיעו בקרוב!
+              לא נמצאו תבניות התואמות לחיפוש שלך
             </p>
           </motion.div>
         )}
