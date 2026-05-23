@@ -88,3 +88,16 @@ export interface GalleryHeaderProps {
   subtitle: string;
   className?: string;
 }
+
+export interface GalleryTemplateViewProps {
+  className?: string;
+  onTemplateClick?: (template: Template) => void;
+  templates: Template[];
+  loading: boolean;
+  error: string | null;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  tabs: FilterTab[];
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+}
