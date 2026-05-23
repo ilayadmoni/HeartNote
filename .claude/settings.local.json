@@ -58,7 +58,9 @@
       "Skill(superpowers:finishing-a-development-branch)",
       "Skill(superpowers:finishing-a-development-branch:*)",
       "Skill(superpowers:systematic-debugging)",
-      "Skill(superpowers:systematic-debugging:*)"
+      "Skill(superpowers:systematic-debugging:*)",
+      "Bash(mkdir -p \"D:\\\\HeartNote\\\\docs\\\\superpowers\\\\plans\" && mkdir -p \"D:\\\\HeartNote\\\\.claude\\\\plans\")",
+      "Bash(cp \"D:\\\\HeartNote\\\\docs\\\\superpowers\\\\plans\\\\2026-05-23-gallery-smart-search-bar.md\" \"D:\\\\HeartNote\\\\.claude\\\\plans\\\\gallery-smart-search-bar.md\")"
     ]
   }
 }
