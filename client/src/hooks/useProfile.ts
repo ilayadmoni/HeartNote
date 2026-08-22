@@ -1,10 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
 import { useProfileQuery } from "./useProfileQuery";
-
-const supabase = createClient();
 
 interface Subscription {
   tier: "free" | "lite" | "premium";
@@ -31,21 +27,6 @@ interface UseProfileReturn {
 
 export function useProfile(): UseProfileReturn {
   const { data: profileData, isLoading, error: queryError } = useProfileQuery();
-  const tier = (profileData?.subscription_tier ?? "free") as "free" | "lite" | "premium";
-
-  const { data: policyData } = useQuery({
-    queryKey: ["subscription_policies", tier],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("subscription_policies")
-        .select("creation_limit")
-        .eq("tier_code", tier)
-        .single();
-      return data ?? null;
-    },
-    enabled: !!profileData,
-    staleTime: 1000 * 60 * 10,
-  });
 
   const profile: ProfileData | null = profileData
     ? {
@@ -53,12 +34,12 @@ export function useProfile(): UseProfileReturn {
         lastName: profileData.last_name ?? "",
         avatarUrl: profileData.avatar_url ?? null,
         subscription: {
-          tier,
+          tier: (profileData.subscription_tier ?? "free") as "free" | "lite" | "premium",
           creations_count_free: profileData.creations_count_free ?? 0,
           creations_count_pro: profileData.creations_count_pro ?? 0,
           additional_creation_free: profileData.additional_creation_free ?? 0,
           additional_creation_pro: profileData.additional_creation_pro ?? 0,
-          creation_limit: (policyData?.creation_limit as number | null) ?? 3,
+          creation_limit: profileData.creation_limit ?? 3,
           premium_expiry: profileData.premium_expiry ?? null,
         },
       }

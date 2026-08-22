@@ -4,13 +4,15 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
+import { signIn as nextAuthSignIn, getSession } from "next-auth/react";
 import { pushToDataLayer } from "@/utils/gtm";
 import { useAuth } from "@/contexts/AuthContext";
 import { USER_QUERY_KEY } from "@/hooks/useUser";
 import { PROFILE_QUERY_KEY } from "@/hooks/useProfileQuery";
 import { SPLASH_STORAGE_KEY } from "@/components/welcomeSplash";
 import { setOAuthDraftCookie } from "@/actions/oauthDraft";
+import { getMyProfile } from "@/actions/profile/get";
+import { updateMyProfile } from "@/actions/profile/update";
 import {
   AUTH_VALIDATION,
   LOGIN_ERROR_MESSAGE,
@@ -81,7 +83,6 @@ export function useAuthModalState({ isOpen, onClose, redirectTo, initialView }: 
   const handleGoogleSignIn = useCallback(async () => {
     setIsGoogleLoading(true);
     try {
-      const supabase = createClient();
       const siteUrl = window.location.origin || process.env.NEXT_PUBLIC_SITE_URL || "";
       const targetPath = redirectTo || window.location.pathname + window.location.search;
       const targetUrl = new URL(targetPath, siteUrl);
@@ -94,15 +95,7 @@ export function useAuthModalState({ isOpen, onClose, redirectTo, initialView }: 
         catch (e) { console.error("[OAuth] Failed to set draft cookie:", e); }
       }
 
-      const cleanNextPath = targetUrl.pathname;
-      const callbackUrl = new URL("/auth/callback", siteUrl);
-      if (cleanNextPath && cleanNextPath !== "/") callbackUrl.searchParams.set("next", cleanNextPath);
-
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: callbackUrl.toString(), queryParams: { prompt: "select_account" } },
-      });
-      if (oauthError) { console.error("[OAuth] error:", oauthError); setIsGoogleLoading(false); }
+      await nextAuthSignIn("google", { callbackUrl: targetUrl.pathname || "/" });
     } catch (err) {
       console.error("[OAuth] Unexpected error:", err);
       setIsGoogleLoading(false);
@@ -148,24 +141,18 @@ export function useAuthModalState({ isOpen, onClose, redirectTo, initialView }: 
       setIsProfileLoading(true);
       setProfileError(null);
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("first_name, last_name, date_of_birth")
-          .eq("id", user.id)
-          .maybeSingle();
-        if (error) { setProfileError("לא הצלחנו לטעון את הפרופיל. נסו שוב."); return; }
-        if (Boolean(data?.date_of_birth)) { clearModalQuery(); closeThen(); return; }
+        const result = await getMyProfile();
+        if (!result.success) {
+          setProfileError("לא הצלחנו לטעון את הפרופיל. נסו שוב.");
+          return;
+        }
+        const { first_name, last_name, date_of_birth } = result.data;
+        if (date_of_birth) { clearModalQuery(); closeThen(); return; }
 
-        const meta = user.user_metadata ?? {};
-        const fullName = typeof meta.full_name === "string" ? meta.full_name : "";
-        const parts = fullName.trim().split(/\s+/).filter(Boolean);
-        const guessedFirst = parts[0] ?? "";
-        const guessedLast = parts.slice(1).join(" ");
         setProfileForm({
-          firstName: (data?.first_name as string | null) ?? guessedFirst,
-          lastName: (data?.last_name as string | null) ?? guessedLast,
-          dateOfBirth: (data?.date_of_birth as string | null) ?? "",
+          firstName: first_name ?? "",
+          lastName: last_name ?? "",
+          dateOfBirth: date_of_birth ?? "",
         });
       } finally { setIsProfileLoading(false); }
     };
@@ -174,23 +161,12 @@ export function useAuthModalState({ isOpen, onClose, redirectTo, initialView }: 
 
   const completeProfileMutation = useMutation({
     mutationFn: async (values: CompleteProfileFormData) => {
-      const supabase = createClient();
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (!currentUser) throw new Error("פג תוקף ההתחברות. התחברו שוב.");
-      const { error: upsertErr } = await supabase.from("profiles").upsert(
-        { id: currentUser.id, first_name: values.firstName.trim(), last_name: values.lastName.trim(), date_of_birth: values.dateOfBirth },
-        { onConflict: "id" },
-      );
-      if (upsertErr) throw new Error("שמירת הפרופיל נכשלה. נסו שוב.");
-      const { error: updateErr } = await supabase.auth.updateUser({
-        data: {
-          first_name: values.firstName.trim(),
-          last_name: values.lastName.trim(),
-          full_name: `${values.firstName.trim()} ${values.lastName.trim()}`.trim(),
-          date_of_birth: values.dateOfBirth,
-        },
+      const result = await updateMyProfile({
+        first_name: values.firstName.trim(),
+        last_name: values.lastName.trim(),
+        date_of_birth: values.dateOfBirth,
       });
-      if (updateErr) throw new Error("שמירת פרטי המשתמש נכשלה. נסו שוב.");
+      if (!result.success) throw new Error("שמירת הפרופיל נכשלה. נסו שוב.");
       return values;
     },
     onSuccess: () => {
@@ -236,8 +212,7 @@ export function useAuthModalState({ isOpen, onClose, redirectTo, initialView }: 
     setIsSubmitting(true);
     try {
       await signIn(formData.email, formData.password);
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (session?.user) {
         pushToDataLayer({ event: "user_login", user_id: session.user.id, user_status: "active" });
       }
@@ -255,9 +230,9 @@ export function useAuthModalState({ isOpen, onClose, redirectTo, initialView }: 
   ) => {
     setIsRegisterSubmitting(true);
     try {
-      return await signUp(email, password, firstName, lastName, dateOfBirth, redirectTo ?? undefined);
+      return await signUp(email, password, firstName, lastName, dateOfBirth);
     } finally { setIsRegisterSubmitting(false); }
-  }, [signUp, redirectTo]);
+  }, [signUp]);
 
   const handleBackFromForgot = useCallback(() => {
     setShowForgotPassword(false);

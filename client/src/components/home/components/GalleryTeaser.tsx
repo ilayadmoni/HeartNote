@@ -2,7 +2,7 @@
 
 /**
  * GalleryTeaser Component
- * Preview of template gallery with up to 4 popular templates fetched from Supabase.
+ * Preview of template gallery with up to 4 popular templates.
  * Reuses the shared TemplateCard component with Coming Soon logic for premium templates.
  */
 

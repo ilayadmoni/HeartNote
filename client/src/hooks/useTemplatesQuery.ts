@@ -7,7 +7,7 @@
  * Fetches the full active-templates list once via the `getTemplates`
  * server action and caches it under a shared key, so per-slug consumers
  * (editor, expiration policy, gallery) read synchronously from cache
- * instead of issuing duplicate Supabase round-trips on every mount.
+ * instead of issuing duplicate server round-trips on every mount.
  */
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";

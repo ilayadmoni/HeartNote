@@ -17,15 +17,18 @@
  */
 
 import { headers } from "next/headers";
+import bcrypt from "bcryptjs";
 import { Resend } from "resend";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/utils/logger";
 import { validateOrigin } from "@/lib/utils/csrf";
 import { registrationLimiter } from "@/lib/utils/rate-limiter";
 import { HAPPY_AVATAR_OPTIONS } from "@/components/profile/types";
 import { logAudit } from "@/lib/audit-logger";
 import { RegisterFormSchema } from "@/lib/validations/auth";
+import { createProfileForUser } from "@/lib/auth/onboarding";
+import { createVerificationToken } from "@/lib/auth/tokens";
+import { sendVerificationEmail } from "@/lib/email/authEmails";
 
 interface RegistrationResult {
   success?: string;
@@ -120,7 +123,6 @@ export async function registerUser(
   email: string,
   password: string,
   dateOfBirth?: string,
-  emailRedirectTo?: string,
 ): Promise<RegistrationResult> {
   try {
     /* ── SEC-HIGH-2: CSRF validation ─────────────────────────────── */
@@ -148,7 +150,6 @@ export async function registerUser(
       email,
       password,
       dateOfBirth,
-      emailRedirectTo,
     });
 
     if (!formParsed.success) {
@@ -166,98 +167,57 @@ export async function registerUser(
       email: trimmedEmail,
       password: validPassword,
       dateOfBirth: dob,
-      emailRedirectTo: redirectTo,
     } = formParsed.data;
 
-    /* ── Admin client ────────────────────────────────────────────── */
-    let admin;
-    try {
-      admin = createAdminClient();
-    } catch (err) {
-      logger.error("[registerUser] Failed to create admin client", { error: err });
-      return { error: ERR_INTERNAL };
-    }
-
     /* ── Step 1: Banned check → explicit error ───────────────────── */
-    const { data: banned } = await admin
-      .from("banned_users")
-      .select("id")
-      .eq("email", trimmedEmail)
-      .maybeSingle();
-
+    const banned = await prisma.bannedUser.findUnique({ where: { email: trimmedEmail } });
     if (banned) {
       logger.info("[registerUser] Banned email rejected", { email: trimmedEmail });
       return { error: "מייל לא חוקי" };
     }
 
     /* ── Step 2: Existing user → generic success + notify email ──── */
-    const { data: existingProfile } = await admin
-      .from("profiles")
-      .select("id, email")
-      .eq("email", trimmedEmail)
-      .maybeSingle();
-
-    if (existingProfile) {
+    const existingUser = await prisma.user.findUnique({ where: { email: trimmedEmail } });
+    if (existingUser) {
       logger.info("[registerUser] Existing user — sending notification", {
         email: trimmedEmail,
       });
-
-      // Send "you already have an account" email (non-blocking)
       await sendAlreadyRegisteredEmail(trimmedEmail);
-
       return { success: GENERIC_SUCCESS };
     }
 
     /* ── Step 3: New user → create account ───────────────────────── */
-    const fullName = `${fn} ${ln}`.trim();
     const defaultAvatar =
-      HAPPY_AVATAR_OPTIONS[
-        Math.floor(Math.random() * HAPPY_AVATAR_OPTIONS.length)
-      ].url;
-    const userMeta: Record<string, string> = {
-      first_name: fn,
-      last_name: ln,
-      full_name: fullName,
-      avatar_url: defaultAvatar,
-    };
-    if (dob) {
-      userMeta.date_of_birth = dob;
-    }
+      HAPPY_AVATAR_OPTIONS[Math.floor(Math.random() * HAPPY_AVATAR_OPTIONS.length)].url;
+    const passwordHash = await bcrypt.hash(validPassword, 12);
 
-    let supabase;
+    let newUserId: string;
     try {
-      supabase = await createClient();
+      const user = await prisma.user.create({
+        data: { email: trimmedEmail, name: `${fn} ${ln}`.trim(), passwordHash },
+      });
+      newUserId = user.id;
+      await createProfileForUser({
+        userId: user.id,
+        email: trimmedEmail,
+        firstName: fn,
+        lastName: ln,
+        avatarUrl: defaultAvatar,
+        dateOfBirth: dob ? new Date(dob) : null,
+      });
     } catch (err) {
-      logger.error("[registerUser] Failed to create server client", { error: err });
+      logger.error("[registerUser] User creation failed", { error: err });
       return { error: ERR_INTERNAL };
     }
 
-    const signUpOptions: { data: Record<string, string>; emailRedirectTo?: string } = {
-      data: userMeta,
-    };
-    if (redirectTo) {
-      signUpOptions.emailRedirectTo = redirectTo;
-    }
-
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email: trimmedEmail,
-      password: validPassword,
-      options: signUpOptions,
-    });
-
-    if (signUpError) {
-      logger.error("[registerUser] signUp error", { error: signUpError });
-      return { error: ERR_INTERNAL };
-    }
+    const verifyToken = await createVerificationToken(trimmedEmail, "email_verification");
+    const verifyUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/verify?token=${verifyToken}`;
+    await sendVerificationEmail(trimmedEmail, verifyUrl);
 
     await logAudit({
       eventType: "user.registered",
-      userId: signUpData?.user?.id ?? null,
-      metadata: {
-        email: trimmedEmail,
-        first_name: fn,
-        last_name: ln,
-      },
+      userId: newUserId,
+      metadata: { email: trimmedEmail, first_name: fn, last_name: ln },
     });
 
     return { success: GENERIC_SUCCESS };

@@ -3,14 +3,12 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { toast } from "sonner";
-import type { User } from "@supabase/supabase-js";
-import { saveGuestDraft } from "@/lib/draftServices";
-import { createClient } from "@/lib/supabase/client";
-import { claimGuestDraft } from "@/actions/draftActions";
+import type { AuthUser } from "@/contexts/AuthContext";
+import { saveGuestDraft, claimGuestDraft } from "@/actions/draftActions";
 
 interface UseDraftStateArgs {
   templateId: string;
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
   setChoices: (v: Record<string, unknown>) => void;
   onDraftRestored: () => void;
@@ -30,7 +28,6 @@ export function useDraftState({
 
   const [isRestoringDraft, setIsRestoringDraft] = useState(!!draftId);
   const hasClaimed = useRef(false);
-  const supabase = createClient();
 
   useEffect(() => {
     if (loading || !user || !draftId || hasClaimed.current) {
@@ -43,7 +40,6 @@ export function useDraftState({
       hasClaimed.current = true;
       setIsRestoringDraft(true);
       try {
-        await supabase.auth.getSession();
         const res = await claimGuestDraft(draftId);
         if (res.success && res.metadata) {
           setChoices(res.metadata as Record<string, unknown>);
@@ -67,19 +63,7 @@ export function useDraftState({
 
   const prepareGuestDraft = useCallback(
     async (submissionData: Record<string, unknown>) => {
-      let file: File | undefined;
-      const blobUrl = Object.values(submissionData).find(
-        (v) => typeof v === "string" && v.startsWith("blob:"),
-      ) as string | undefined;
-      if (blobUrl) {
-        const response = await fetch(blobUrl);
-        const blob = await response.blob();
-        const ext = blob.type.split("/")[1] || "jpeg";
-        file = new File([blob], `upload.${ext}`, {
-          type: blob.type || "image/jpeg",
-        });
-      }
-      return saveGuestDraft(templateId, submissionData, file);
+      return saveGuestDraft(templateId, submissionData);
     },
     [templateId],
   );

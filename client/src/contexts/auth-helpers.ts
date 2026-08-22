@@ -1,11 +1,11 @@
 /**
  * Auth Error Helpers
  *
- * Converts Supabase error messages to user-facing Hebrew strings.
+ * Converts auth error messages to user-facing Hebrew strings.
  * Extracted from AuthContext.tsx to keep files under 150 lines.
  */
 
-/** Convert Supabase errors to Hebrew messages */
+/** Convert auth errors to Hebrew messages */
 export function getErrorMessage(errorMessage: string): string {
   const lowerMessage = errorMessage.toLowerCase();
 

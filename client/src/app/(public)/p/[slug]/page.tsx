@@ -1,7 +1,6 @@
 /**
  * Public Creation View
  * Displays user-created cards by ID — NO main site header/nav.
- * Fetches directly from Supabase using the server client.
  *
  * Routing: unknown ID → notFound().
  * Expired: custom branded UI.
@@ -10,7 +9,8 @@
 
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/utils/logger";
 import { UserPageClient } from "./client";
 
 interface PageProps {
@@ -27,38 +27,26 @@ interface CreationData {
   created_at: string;
 }
 
-// Fetch creation data directly from Supabase (server-side)
 async function getCreation(id: string): Promise<CreationData | null> {
   try {
-    const supabase = await createClient();
+    const creation = await prisma.creation.findFirst({
+      where: { id, isDeleted: false },
+      include: { template: { select: { slug: true, name: true } } },
+    });
 
-    const { data, error } = await supabase
-      .from("creations")
-      .select(
-        "id, metadata, is_paid, expires_at, is_deleted, created_at, templates!inner(slug, name)"
-      )
-      .eq("id", id)
-      .eq("is_deleted", false)
-      .single();
-
-    if (error || !data) {
-      console.error("Failed to fetch creation:", error?.message);
-      return null;
-    }
-
-    const tmpl = (data.templates as unknown as { slug: string; name: string }) ?? {};
+    if (!creation) return null;
 
     return {
-      id: data.id as string,
-      template_slug: tmpl.slug ?? "",
-      template_name: tmpl.name ?? "כרטיס",
-      metadata: (data.metadata as Record<string, unknown>) ?? {},
-      is_paid: (data.is_paid as boolean) ?? null,
-      expires_at: (data.expires_at as string) ?? null,
-      created_at: data.created_at as string,
+      id: creation.id,
+      template_slug: creation.template.slug,
+      template_name: creation.template.name ?? "כרטיס",
+      metadata: (creation.metadata as Record<string, unknown>) ?? {},
+      is_paid: creation.isPaid,
+      expires_at: creation.expiresAt ? creation.expiresAt.toISOString() : null,
+      created_at: creation.createdAt.toISOString(),
     };
   } catch (error) {
-    console.error("Error fetching creation:", error);
+    logger.error("[getCreation] Error fetching creation", { error });
     return null;
   }
 }

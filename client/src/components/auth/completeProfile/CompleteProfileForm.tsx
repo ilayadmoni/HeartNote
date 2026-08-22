@@ -16,7 +16,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
+import { updateMyProfile } from "@/actions/profile/update";
 import { BrandCalendar } from "@/components/ui/BrandCalendar";
 import { AUTH_VALIDATION } from "@/components/auth/constants";
 import { useAuth } from "@/contexts/AuthContext";
@@ -29,16 +29,6 @@ interface FormState {
   lastName: string;
   birthDate: string;
   agreedToTerms: boolean;
-}
-
-function splitGoogleName(
-  fullName: string | undefined,
-): Pick<FormState, "firstName" | "lastName"> {
-  if (!fullName) return { firstName: "", lastName: "" };
-  const parts = fullName.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return { firstName: "", lastName: "" };
-  if (parts.length === 1) return { firstName: parts[0], lastName: "" };
-  return { firstName: parts[0], lastName: parts.slice(1).join(" ") };
 }
 
 export function CompleteProfileForm() {
@@ -65,16 +55,13 @@ export function CompleteProfileForm() {
   const returnTo = nextParam || returnToParam || "/";
   const reason = searchParams.get("reason");
 
-  // Hydrate form with Google name / existing profile data.
+  // Hydrate form with existing profile data (first/last name are already
+  // populated from the Google profile at account-creation time).
   useEffect(() => {
     if (!user || isHydrated) return;
-    const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
-    const parsed = splitGoogleName(
-      typeof metadata.full_name === "string" ? metadata.full_name : undefined,
-    );
     setForm({
-      firstName: profile?.first_name ?? parsed.firstName,
-      lastName: profile?.last_name ?? parsed.lastName,
+      firstName: profile?.first_name ?? "",
+      lastName: profile?.last_name ?? "",
       birthDate: profile?.date_of_birth ?? "",
       agreedToTerms: false,
     });
@@ -91,29 +78,12 @@ export function CompleteProfileForm() {
   const saveMutation = useMutation({
     mutationFn: async (values: FormState) => {
       if (!user) throw new Error("המשתמש לא מחובר.");
-      const supabase = createClient();
-      const { error: profileError } = await supabase.from("profiles").upsert(
-        {
-          id: user.id,
-          first_name: values.firstName.trim(),
-          last_name: values.lastName.trim(),
-          date_of_birth: values.birthDate,
-        },
-        { onConflict: "id" },
-      );
-      if (profileError) throw new Error("שמירת פרופיל נכשלה.");
-
-      const { error: metadataError } = await supabase.auth.updateUser({
-        data: {
-          first_name: values.firstName.trim(),
-          last_name: values.lastName.trim(),
-          birth_date: values.birthDate,
-          date_of_birth: values.birthDate,
-          full_name:
-            `${values.firstName.trim()} ${values.lastName.trim()}`.trim(),
-        },
+      const result = await updateMyProfile({
+        first_name: values.firstName.trim(),
+        last_name: values.lastName.trim(),
+        date_of_birth: values.birthDate,
       });
-      if (metadataError) throw new Error("שמירת פרטי משתמש נכשלה.");
+      if (!result.success) throw new Error("שמירת פרופיל נכשלה.");
     },
     onSuccess: async () => {
       pushToDataLayer({ event: "sign_up", method: "google" });
@@ -135,16 +105,11 @@ export function CompleteProfileForm() {
   const handleLogout = async () => {
     didCompleteRef.current = true;
 
-    // 1. Centralized client-side signOut (auth state + query cache wipe).
+    // Centralized signOut (clears the session cookie server-side + query cache).
     await signOut();
-
-    // Extra safety for this flow before hard reload.
     queryClient.clear();
 
-    // 2. Server-side signOut ensures httpOnly SSR cookies are cleared.
-    await fetch("/api/auth/logout", { method: "POST" });
-
-    // Hard reload to fully destroy the in-memory Supabase client state.
+    // Hard reload to fully destroy any in-memory client auth state.
     window.location.href = "/";
   };
 

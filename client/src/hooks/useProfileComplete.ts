@@ -28,12 +28,7 @@ export function useProfileComplete(): {
     return { isProfileComplete: false, loading };
   }
 
-  const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
-
   const complete =
-    isNonEmpty(metadata.first_name) &&
-    isNonEmpty(metadata.last_name) &&
-    (isNonEmpty(metadata.birth_date) || isNonEmpty(metadata.date_of_birth)) &&
     isNonEmpty(profile?.first_name) &&
     isNonEmpty(profile?.last_name) &&
     isNonEmpty(profile?.date_of_birth);

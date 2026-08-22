@@ -16,8 +16,6 @@ export function EditorSidebar({
   config,
   data,
   onChange,
-  userId,
-  onFileReady,
 }: EditorSidebarProps) {
   // Deduplicate fields by key — prevents duplicate form inputs when the
   // config_schema accidentally contains repeated keys.
@@ -51,8 +49,6 @@ export function EditorSidebar({
               field={field}
               value={data[field.key]}
               onChange={(value) => onChange(field.key, value)}
-              userId={userId}
-              onFileReady={onFileReady}
             />
           </motion.div>
         ))}

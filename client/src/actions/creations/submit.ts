@@ -15,8 +15,8 @@ import { type CreationActionResult } from "@/lib/creation-flow/errors";
 export async function submitGenericCreation(
   formData: FormData,
 ): Promise<CreationActionResult> {
-  return protectedAction(async (user, supabase) => {
+  return protectedAction(async (user) => {
     const input = await validateSubmitInput(formData);
-    return persistCreation(user, supabase, input);
+    return persistCreation(user.id, input);
   });
 }

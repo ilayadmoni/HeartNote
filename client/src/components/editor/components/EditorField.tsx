@@ -13,7 +13,6 @@ import { EnvelopesEditor } from "./EnvelopesEditor";
 import { QuestionsEditor } from "./QuestionsEditor";
 import { CouponsEditor } from "./CouponsEditor";
 import { OptionsEditor } from "./OptionsEditor";
-import { ImageUploader } from "./ImageUploader";
 import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
 import type {
   TimelineEvent,
@@ -26,13 +25,9 @@ interface EditorFieldProps {
   field: EditorFieldType;
   value: unknown;
   onChange: (value: unknown) => void;
-  /** Required for image_url fields */
-  userId?: string;
-  /** Called when an image file is prepared for deferred upload */
-  onFileReady?: (uploadFn: (() => Promise<string | null>) | null) => void;
 }
 
-export function EditorField({ field, value, onChange, userId, onFileReady }: EditorFieldProps) {
+export function EditorField({ field, value, onChange }: EditorFieldProps) {
   const baseInputClass = `
     w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
     bg-white dark:bg-gray-700 text-[#2e3c52] dark:text-white
@@ -158,15 +153,6 @@ export function EditorField({ field, value, onChange, userId, onFileReady }: Edi
         />
       )}
 
-      {(field.type === "image_url" || field.type === "image") && userId && (
-        <ImageUploader
-          value={(value as string) || ""}
-          onChange={(url) => onChange(url)}
-          userId={userId}
-          onFileReady={onFileReady}
-          cropAspect={field.cropAspect}
-        />
-      )}
     </div>
   );
 }

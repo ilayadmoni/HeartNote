@@ -4,7 +4,7 @@
  * AvatarSelector Component
  * Netflix-style avatar selection with DiceBear Avataaars.
  * Renders a 4×3 grid of selectable circular avatars.
- * Auto-saves to Supabase on click via the `onSelect` prop.
+ * Auto-saves via the `onSelect` prop (updateMyProfile server action).
  */
 
 import { useState } from "react";

@@ -6,9 +6,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-
-const supabase = createClient();
+import { getSubscriptionPolicies } from "@/actions/subscription/getPolicies";
 
 export interface PolicyData {
   /** Max creations allowed (null = unlimited) */
@@ -30,33 +28,22 @@ export function usePolicies(subscriptionTier: string): UsePoliciesResult {
     let cancelled = false;
 
     async function fetchPolicies() {
-      const { data: fp } = await supabase
-        .from("subscription_policies")
-        .select("creation_limit, default_expiry")
-        .eq("tier_code", "free")
-        .single();
+      const policies = await getSubscriptionPolicies();
+      if (cancelled) return;
 
-      if (!cancelled) {
-        setFreePolicy({
-          limit: Number.isFinite(Number(fp?.creation_limit)) ? Number(fp!.creation_limit) : 3,
-          expirySeconds: Number.isFinite(Number(fp?.default_expiry)) ? Number(fp!.default_expiry) : null,
-        });
-      }
+      const fp = policies.find((p) => p.tier_code === "free");
+      setFreePolicy({
+        limit: Number.isFinite(Number(fp?.creation_limit)) ? Number(fp!.creation_limit) : 3,
+        expirySeconds: Number.isFinite(Number(fp?.default_expiry)) ? Number(fp!.default_expiry) : null,
+      });
 
       if (subscriptionTier !== "free") {
-        const { data: pp } = await supabase
-          .from("subscription_policies")
-          .select("creation_limit, default_expiry")
-          .eq("tier_code", subscriptionTier)
-          .single();
-
-        if (!cancelled) {
-          const rawLimit = pp?.creation_limit;
-          setPaidPolicy({
-            limit: rawLimit == null ? null : Number.isFinite(Number(rawLimit)) ? Number(rawLimit) : null,
-            expirySeconds: Number.isFinite(Number(pp?.default_expiry)) ? Number(pp!.default_expiry) : null,
-          });
-        }
+        const pp = policies.find((p) => p.tier_code === subscriptionTier);
+        const rawLimit = pp?.creation_limit;
+        setPaidPolicy({
+          limit: rawLimit == null ? null : Number.isFinite(Number(rawLimit)) ? Number(rawLimit) : null,
+          expirySeconds: Number.isFinite(Number(pp?.default_expiry)) ? Number(pp!.default_expiry) : null,
+        });
       }
     }
 

@@ -51,7 +51,7 @@ export interface SubscriptionUsage {
 }
 
 export interface ProfileClientProps {
-  /** Server-fetched profile (snake_case from Supabase, already shaped as ProfileResponse). */
+  /** Server-fetched profile (snake_case, already shaped as ProfileResponse). */
   initialProfile: ProfileResponse;
   /** Server-fetched dashboard stats + creations. Null if the query failed. */
   initialDashboard: DashboardData | null;

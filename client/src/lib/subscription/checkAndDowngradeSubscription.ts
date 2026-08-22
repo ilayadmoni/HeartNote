@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createAdminClient } from "@/lib/supabase/admin";
+import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/utils/logger";
 
 interface SubscriptionProfileShape {
@@ -49,23 +49,15 @@ export async function checkAndDowngradeSubscription<T extends SubscriptionProfil
   } as T;
 
   try {
-    const admin = createAdminClient();
-    const { error } = await admin
-      .from("profiles")
-      .update({
-        subscription_tier: "free",
-        premium_start: null,
-        premium_expiry: null,
-        creations_count_pro: 0,
-      })
-      .eq("id", profile.id);
-
-    if (error) {
-      logger.error("[checkAndDowngradeSubscription] Failed to downgrade expired subscription", {
-        userId: profile.id,
-        error,
-      });
-    }
+    await prisma.profile.update({
+      where: { id: profile.id },
+      data: {
+        subscriptionTier: "free",
+        premiumStart: null,
+        premiumExpiry: null,
+        creationsCountPro: 0,
+      },
+    });
   } catch (error) {
     logger.error("[checkAndDowngradeSubscription] Unexpected downgrade failure", {
       userId: profile.id,

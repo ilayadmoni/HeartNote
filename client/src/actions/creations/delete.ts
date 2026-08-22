@@ -5,36 +5,25 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { prisma } from "@/lib/prisma";
 import { protectedAction } from "@/lib/protectedAction";
 import { ActionError, type ActionResult } from "@/lib/action-response";
 
 /**
  * Soft-deletes a creation (sets is_deleted = true).
- * RLS enforces that only the owner can modify.
+ * Only the owner can modify — enforced by the userId filter below.
  */
 export async function deleteCreation(
   creationId: string,
 ): Promise<ActionResult<null>> {
-  return protectedAction(async (user, supabase) => {
-    // Verify ownership
-    const { data, error: findErr } = await supabase
-      .from("creations")
-      .select("id")
-      .eq("id", creationId)
-      .eq("user_id", user.id);
+  return protectedAction(async (user) => {
+    const result = await prisma.creation.updateMany({
+      where: { id: creationId, userId: user.id },
+      data: { isDeleted: true },
+    });
 
-    if (findErr || !data?.length) {
+    if (result.count === 0) {
       throw new ActionError("Creation not found", 404);
-    }
-
-    const { error: updateErr } = await supabase
-      .from("creations")
-      .update({ is_deleted: true })
-      .eq("id", creationId)
-      .eq("user_id", user.id);
-
-    if (updateErr) {
-      throw new ActionError(`Failed to delete: ${updateErr.message}`, 500);
     }
 
     // Invalidate cached data so subsequent reads reflect the deletion

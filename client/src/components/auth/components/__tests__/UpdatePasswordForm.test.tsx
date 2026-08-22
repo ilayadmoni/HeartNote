@@ -3,21 +3,16 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { UpdatePasswordForm } from "../UpdatePasswordForm";
 
-const mockGetSession = vi.fn();
-const mockUpdateUser = vi.fn();
+const mockUpdatePassword = vi.fn();
 
-vi.mock("@/lib/supabase/client", () => ({
-  createClient: () => ({
-    auth: {
-      getSession: (...args: unknown[]) => mockGetSession(...args),
-      updateUser: (...args: unknown[]) => mockUpdateUser(...args),
-    },
-  }),
+vi.mock("@/actions/password", () => ({
+  updatePassword: (...args: unknown[]) => mockUpdatePassword(...args),
 }));
 
 // ── Mock next/navigation ────────────────────────────────────────────
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
+  useSearchParams: () => new URLSearchParams({ token: "valid-token" }),
 }));
 
 // ── Mock sonner toast ───────────────────────────────────────────────
@@ -30,9 +25,6 @@ describe("UpdatePasswordForm", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetSession.mockResolvedValue({
-      data: { session: { user: { id: "user-1" } } },
-    });
   });
 
   async function fillAndSubmit(password: string) {
@@ -53,9 +45,7 @@ describe("UpdatePasswordForm", () => {
   it("displays the Hebrew 'same password' error when backend returns that specific error", async () => {
     const SAME_PASSWORD_ERROR = "סיסמא ישנה, אנא הכנס סיסמא חדשה";
 
-    mockUpdateUser.mockResolvedValueOnce({
-      error: { message: SAME_PASSWORD_ERROR },
-    });
+    mockUpdatePassword.mockResolvedValueOnce({ error: SAME_PASSWORD_ERROR });
 
     render(<UpdatePasswordForm onComplete={onComplete} />);
     await fillAndSubmit("MyOldPassword123");
@@ -73,9 +63,7 @@ describe("UpdatePasswordForm", () => {
     const GENERIC_ERROR =
       "שגיאה בתהליך איפוס הסיסמה. ייתכן שהקישור פג תוקף.";
 
-    mockUpdateUser.mockResolvedValueOnce({
-      error: { message: GENERIC_ERROR },
-    });
+    mockUpdatePassword.mockResolvedValueOnce({ error: GENERIC_ERROR });
 
     render(<UpdatePasswordForm onComplete={onComplete} />);
     await fillAndSubmit("SomeNewPassword123");
@@ -86,9 +74,7 @@ describe("UpdatePasswordForm", () => {
   });
 
   it("shows success state when password update succeeds", async () => {
-    mockUpdateUser.mockResolvedValueOnce({
-      error: null,
-    });
+    mockUpdatePassword.mockResolvedValueOnce({ success: "הסיסמה עודכנה בהצלחה!" });
 
     render(<UpdatePasswordForm onComplete={onComplete} />);
     await fillAndSubmit("BrandNewPassword123");

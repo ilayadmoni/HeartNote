@@ -1,5 +1,6 @@
 import "server-only";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { logger } from "@/lib/utils/logger";
 import { getRequestMeta } from "@/lib/utils/request-meta";
 
@@ -33,22 +34,15 @@ export async function logAudit(input: AuditInput): Promise<void> {
       ? await getRequestMeta()
       : { ip: "unknown", userAgent: null };
 
-    const admin = createAdminClient();
-    const { error } = await admin.from("audit_logs").insert({
-      user_id: userId,
-      event_type: eventType,
-      metadata,
-      ip_address: meta.ip,
-      user_agent: meta.userAgent,
-    });
-
-    if (error) {
-      logger.error("[audit] insert failed", {
+    await prisma.auditLog.create({
+      data: {
+        userId,
         eventType,
-        code: error.code,
-        message: error.message,
-      });
-    }
+        metadata: metadata as Prisma.InputJsonValue,
+        ipAddress: meta.ip,
+        userAgent: meta.userAgent,
+      },
+    });
   } catch (e) {
     logger.error("[audit] unexpected failure", {
       error: e instanceof Error ? e.message : String(e),

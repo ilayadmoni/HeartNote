@@ -9,7 +9,7 @@
  *   • 3-strike auto-ban via password_reset_attempts table
  *   • Anti-enumeration: always returns the same generic success string
  *
- * updatePassword – saves the new password after clicking the recovery link
+ * updatePassword – verifies the emailed token and saves the new password.
  *
  * SEC-2 COMPLIANT: All detailed errors are logged server-side only.
  *   Client responses use generic Hebrew strings — no internal details leak.
@@ -18,12 +18,14 @@
  */
 
 import { headers } from "next/headers";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/utils/logger";
 import { validateOrigin } from "@/lib/utils/csrf";
 import { passwordResetLimiter } from "@/lib/utils/rate-limiter";
 import { logAudit } from "@/lib/audit-logger";
+import { createVerificationToken, consumeVerificationToken } from "@/lib/auth/tokens";
+import { sendPasswordResetEmail } from "@/lib/email/authEmails";
 
 interface ActionResult {
   success?: string;
@@ -37,37 +39,9 @@ const RATE_WINDOW_HOURS = 24;
 const GENERIC_SUCCESS =
   "אם הכתובת רשומה ופעילה במערכת, נשלח אליך קישור לאיפוס הסיסמה. אם אינך רואה אותו בתיבת הדואר הנכנס, בדוק גם בתיקיית הספאם.";
 
-/** Generic internal error */
-const ERR_INTERNAL =
-  "אירעה שגיאה פנימית במערכת. אנא נסה שוב מאוחר יותר.";
-const ERR_RESET_PROCESS =
-  "שגיאה בתהליך איפוס הסיסמה. ייתכן שהקישור פג תוקף.";
-const ERR_RATE_LIMITED =
-  "יותר מדי ניסיונות. אנא נסה שוב בעוד 15 דקות.";
-
-/**
- * Build the recovery redirect URL from request headers.
- * Priority: Origin header → x-forwarded-proto+host → NEXT_PUBLIC_SITE_URL
- * Using request headers keeps the redirect protocol-agnostic for LAN/HTTP dev.
- */
-async function getRedirectUrl(): Promise<string> {
-  const headerStore = await headers();
-
-  // Origin header is the most reliable — already includes scheme+host.
-  const origin = headerStore.get("origin");
-  if (origin) return new URL("/auth/confirm", origin).toString();
-
-  // x-forwarded-host is host-only (no scheme); pair with x-forwarded-proto.
-  const forwardedHost = headerStore.get("x-forwarded-host");
-  if (forwardedHost) {
-    const proto = headerStore.get("x-forwarded-proto") || "http";
-    return new URL("/auth/confirm", `${proto}://${forwardedHost}`).toString();
-  }
-
-  // Fall back to the configured site URL.
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  return new URL("/auth/confirm", base).toString();
-}
+const ERR_INTERNAL = "אירעה שגיאה פנימית במערכת. אנא נסה שוב מאוחר יותר.";
+const ERR_RESET_PROCESS = "שגיאה בתהליך איפוס הסיסמה. ייתכן שהקישור פג תוקף.";
+const ERR_RATE_LIMITED = "יותר מדי ניסיונות. אנא נסה שוב בעוד 15 דקות.";
 
 /** Extract client IP from request headers */
 async function getClientIp(): Promise<string> {
@@ -87,7 +61,6 @@ export async function requestPasswordReset(
   formData: FormData,
 ): Promise<ActionResult> {
   try {
-    // ── SEC-HIGH-2: CSRF validation ───────────────────────────────────
     if (!await validateOrigin()) {
       logger.warn("[requestPasswordReset] CSRF validation failed");
       return { error: "בקשה לא חוקית. נא לרענן את הדף ולנסות שוב." };
@@ -98,107 +71,55 @@ export async function requestPasswordReset(
       return { error: "נא להזין כתובת אימייל תקינה." };
     }
 
-    // ── SEC-CRIT-2: Redis-based IP rate limiting ────────────────────────
     const clientIp = await getClientIp();
     const rateLimitResult = await passwordResetLimiter.check(clientIp);
-    
+
     if (!rateLimitResult.success) {
-      logger.warn("[requestPasswordReset] Rate limited", { 
-        ip: clientIp, 
+      logger.warn("[requestPasswordReset] Rate limited", {
+        ip: clientIp,
         remaining: rateLimitResult.remaining,
-        resetAt: new Date(rateLimitResult.reset).toISOString()
       });
       return { error: ERR_RATE_LIMITED };
     }
 
-    let admin;
-    try {
-      admin = createAdminClient();
-    } catch (err) {
-      logger.error("[requestPasswordReset] Failed to create admin client", { error: err });
-      return { error: ERR_INTERNAL };
-    }
-
     // ── Check if email is banned → silent abort ───────────────────────
-    const { data: banned } = await admin
-      .from("banned_users")
-      .select("id")
-      .eq("email", email)
-      .maybeSingle();
-
+    const banned = await prisma.bannedUser.findUnique({ where: { email } });
     if (banned) {
       logger.info("[requestPasswordReset] Banned email silently aborted", { email });
       return { success: GENERIC_SUCCESS };
     }
 
     // ── Count attempts in the last 24 hours (DB-level backup) ───────────
-    const windowStart = new Date(
-      Date.now() - RATE_WINDOW_HOURS * 60 * 60 * 1000,
-    ).toISOString();
-
-    const { count, error: countError } = await admin
-      .from("password_reset_attempts")
-      .select("id", { count: "exact", head: true })
-      .eq("email", email)
-      .gte("created_at", windowStart);
-
-    if (countError) {
-      logger.error("[requestPasswordReset] Count query error", { error: countError });
-      return { error: ERR_INTERNAL };
-    }
-
-    const attempts = count ?? 0;
+    const windowStart = new Date(Date.now() - RATE_WINDOW_HOURS * 60 * 60 * 1000);
+    const attempts = await prisma.passwordResetAttempt.count({
+      where: { email, createdAt: { gte: windowStart } },
+    });
 
     // ── 3-strike auto-ban ─────────────────────────────────────────────
     if (attempts >= MAX_RESET_ATTEMPTS) {
-      logger.warn("[requestPasswordReset] Auto-banning after max attempts", { 
-        email, 
-        attempts 
+      logger.warn("[requestPasswordReset] Auto-banning after max attempts", { email, attempts });
+      await prisma.bannedUser.upsert({
+        where: { email },
+        create: { email, reason: "password_reset_abuse" },
+        update: { reason: "password_reset_abuse" },
       });
-
-      await admin
-        .from("banned_users")
-        .upsert(
-          { email, reason: "password_reset_abuse" },
-          { onConflict: "email" },
-        );
-
       return { success: GENERIC_SUCCESS };
     }
 
     // ── Record this attempt ───────────────────────────────────────────
-    const { error: insertError } = await admin
-      .from("password_reset_attempts")
-      .insert({ email, ip_address: clientIp });
-
-    if (insertError) {
-      logger.error("[requestPasswordReset] Attempt insert error", { error: insertError });
-      // Non-fatal — continue sending the email
-    }
+    await prisma.passwordResetAttempt.create({ data: { email, ipAddress: clientIp } });
 
     // ── Check if user actually exists (silent if not) ─────────────────
-    const { data: profile } = await admin
-      .from("profiles")
-      .select("id")
-      .eq("email", email)
-      .maybeSingle();
-
-    if (!profile) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user || !user.passwordHash) {
+      // Also silent for OAuth-only accounts — nothing to reset.
       return { success: GENERIC_SUCCESS };
     }
 
     // ── Send recovery email ───────────────────────────────────────────
-    const supabase = await createClient();
-    const redirectTo = await getRedirectUrl();
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-      email,
-      { redirectTo },
-    );
-
-    if (resetError) {
-      logger.error("[requestPasswordReset] resetPasswordForEmail error", { error: resetError });
-      return { success: GENERIC_SUCCESS };
-    }
+    const token = await createVerificationToken(email, "password_reset");
+    const resetUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/?modal=reset-password&token=${token}`;
+    await sendPasswordResetEmail(email, resetUrl);
 
     await logAudit({
       eventType: "user.password_reset_requested",
@@ -208,7 +129,6 @@ export async function requestPasswordReset(
 
     return { success: GENERIC_SUCCESS };
   } catch (err) {
-    // SEC: Log error details server-side, return generic message to client
     logger.error("[requestPasswordReset] Unexpected error", { error: err });
     return { error: ERR_INTERNAL };
   }
@@ -218,10 +138,10 @@ export async function requestPasswordReset(
  * 2. Update Password (after clicking the recovery link)
  * ================================================================ */
 export async function updatePassword(
+  token: string,
   formData: FormData,
 ): Promise<ActionResult> {
   try {
-    // ── SEC-HIGH-3: CSRF validation ───────────────────────────────────
     if (!(await validateOrigin())) {
       logger.warn("[updatePassword] CSRF validation failed");
       return { error: "בקשה לא חוקית. נא לרענן את הדף ולנסות שוב." };
@@ -232,46 +152,24 @@ export async function updatePassword(
       return { error: "הסיסמה חייבת להכיל לפחות 8 תווים." };
     }
 
-    const supabase = await createClient();
-
-    const { error: updateError } = await supabase.auth.updateUser({
-      password: newPassword,
-    });
-
-    if (updateError) {
-      logger.error("[updatePassword] updateUser error", { error: updateError });
-
-      if ("code" in updateError && updateError.code === "same_password") {
-        return { error: "סיסמא ישנה, אנא הכנס סיסמא חדשה" };
-      }
-
+    const email = await consumeVerificationToken(token, "password_reset");
+    if (!email) {
       return { error: ERR_RESET_PROCESS };
     }
 
-    // Reset the attempt counter on profiles (non-fatal if it fails)
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const passwordHash = await bcrypt.hash(newPassword, 12);
 
-    if (user) {
-      try {
-        const admin = createAdminClient();
-        await admin
-          .from("profiles")
-          .update({ reset_attempts: 0 })
-          .eq("id", user.id);
-        
-        // Also reset the rate limiter for this user's IP
-        const clientIp = await getClientIp();
-        await passwordResetLimiter.reset(clientIp);
-      } catch (err) {
-        logger.error("[updatePassword] Counter reset error", { error: err });
-      }
+    try {
+      const user = await prisma.user.update({ where: { email }, data: { passwordHash } });
+      await prisma.profile.update({ where: { id: user.id }, data: { resetAttempts: 0 } });
+      await passwordResetLimiter.reset(await getClientIp());
+    } catch (err) {
+      logger.error("[updatePassword] Update failed", { error: err });
+      return { error: ERR_RESET_PROCESS };
     }
 
     return { success: "הסיסמה עודכנה בהצלחה!" };
   } catch (err) {
-    // SEC: Log error details server-side, return generic message to client
     logger.error("[updatePassword] Unexpected error", { error: err });
     return { error: ERR_RESET_PROCESS };
   }

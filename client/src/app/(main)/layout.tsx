@@ -6,16 +6,13 @@ import { SkipLinks } from "@/components/accessibility";
 import { ScrollToTop } from "@/components/ui";
 import { WelcomeSplash } from "@/components/welcomeSplash";
 import ClientFontLoader from "@/components/ClientFontLoader";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
 import { getTemplates } from "@/actions/templates";
+import { getMyProfile } from "@/actions/profile/get";
 import { templateKeys } from "@/lib/queryKeys/templateKeys";
 import { PROFILE_QUERY_KEY } from "@/lib/queryKeys/profileKeys";
+import { mapProfileResponseToQueryData } from "@/lib/profileQueryData";
 import type { TemplateResponse } from "@/lib/validations";
-
-const PROFILE_SELECT =
-  "id, first_name, last_name, date_of_birth, avatar_url, email, " +
-  "subscription_tier, creations_count_free, creations_count_pro, " +
-  "additional_creation_free, additional_creation_pro, premium_expiry";
 
 async function prefetchTemplates(): Promise<TemplateResponse[]> {
   const res = await getTemplates();
@@ -29,7 +26,7 @@ export default async function MainLayout({
   children: React.ReactNode;
 }) {
   const queryClient = new QueryClient();
-  const supabase = await createClient();
+  const session = await auth();
 
   await queryClient.prefetchQuery({
     queryKey: templateKeys.list(),
@@ -37,20 +34,13 @@ export default async function MainLayout({
     staleTime: 1000 * 60 * 15,
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (user) {
+  if (session?.user?.id) {
+    const userId = session.user.id;
     await queryClient.prefetchQuery({
-      queryKey: [...PROFILE_QUERY_KEY, user.id],
+      queryKey: [...PROFILE_QUERY_KEY, userId],
       queryFn: async () => {
-        const { data } = await supabase
-          .from("profiles")
-          .select(PROFILE_SELECT)
-          .eq("id", user.id)
-          .single();
-        return data ?? null;
+        const result = await getMyProfile();
+        return result.success ? mapProfileResponseToQueryData(result.data) : null;
       },
       staleTime: 1000 * 60 * 5,
     });

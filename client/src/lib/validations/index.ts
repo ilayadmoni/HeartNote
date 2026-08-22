@@ -4,8 +4,8 @@ export type { LoginFormInput, RegisterFormInput } from "./auth";
 export { ContactFormSchema } from "./contact";
 export type { ContactFormInput } from "./contact";
 
-export { ProfileUpdateSchema, ProfileResponseSchema, SubscriptionInfoSchema, AVATAR_OPTIONS } from "./profile";
-export type { ProfileUpdateInput, ProfileResponse, SubscriptionInfo } from "./profile";
+export { ProfileUpdateSchema, ProfileResponseSchema, SubscriptionInfoSchema, SubscriptionTierEnum, AVATAR_OPTIONS } from "./profile";
+export type { ProfileUpdateInput, ProfileResponse, SubscriptionInfo, SubscriptionTier } from "./profile";
 
 export { CreateCreationRequestSchema, CreateCreationResponseSchema, CreationListItemSchema, CreationDetailSchema } from "./creation";
 export type { CreateCreationInput, CreateCreationResponse, CreationListItem, CreationDetail } from "./creation";

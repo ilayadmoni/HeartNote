@@ -1,9 +1,14 @@
 /**
  * persistCreation — DB persistence for submitGenericCreation.
- * Quota decrement is handled by trigger `trg_handle_new_creation_quota`.
+ *
+ * Quota decrement + template-use tracking used to be DB triggers
+ * (trg_handle_new_creation_quota, trigger_increment_template_uses). Both are
+ * reimplemented here inside one transaction — see actions/creations/create.ts
+ * for the twin implementation (this is the FormData-based submission path).
  */
 
-import type { User, SupabaseClient } from "@supabase/supabase-js";
+import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { ActionError } from "@/lib/action-response";
 import { logger } from "@/lib/utils/logger";
 import { logAudit } from "@/lib/audit-logger";
@@ -19,44 +24,16 @@ export interface PersistResult {
   verification_code: string;
 }
 
-function buildInsertErrorMessage(error: unknown): string {
-  const e = (error ?? {}) as Record<string, unknown>;
-  const t = (v: unknown): string => (typeof v === "string" ? v : "");
-  const message = t(e.message), details = t(e.details), code = t(e.code);
-  logger.error("[persistCreation] Insert failed", { message, details, code });
-  if (process.env.NODE_ENV === "production") {
-    return "Failed to create card. Please try again.";
-  }
-  const parts = [code && `code=${code}`, message && `message=${message}`, details && `details=${details}`]
-    .filter(Boolean).join(" | ");
-  return `Failed to create card: ${parts || "Unknown error"}`;
-}
-
 export async function persistCreation(
-  user: User,
-  supabase: SupabaseClient,
+  userId: string,
   input: ValidatedSubmitInput,
 ): Promise<PersistResult> {
-  const { templateSlug, parsedMetadata, quotaPreference, file, bucketName } = input;
+  const { templateSlug, parsedMetadata, quotaPreference } = input;
 
-  if (file && file.size > 0 && bucketName) {
-    const fileExt = file.type.split("/")[1] || "jpeg";
-    const storagePath = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
-    const { error: uploadError } = await supabase.storage
-      .from(bucketName)
-      .upload(storagePath, file, { contentType: file.type, upsert: false });
-    if (uploadError) {
-      logger.error("[submitGenericCreation] Upload error", { bucketName, storagePath, error: uploadError });
-      throw new ActionError(`Image upload failed: ${uploadError.message}`, 500);
-    }
-    const { data: { publicUrl } } = supabase.storage.from(bucketName).getPublicUrl(storagePath);
-    parsedMetadata.background_image = publicUrl;
-  }
-
-  const { data: template, error: tmplErr } = await supabase
-    .from("templates").select("id, is_premium, expiration_policy, config_schema")
-    .eq("slug", templateSlug).eq("is_active", true).single();
-  if (tmplErr || !template) throw new ActionError("Template not found", 404);
+  const template = await prisma.template.findFirst({
+    where: { slug: templateSlug, isActive: true },
+  });
+  if (!template) throw new ActionError("Template not found", 404);
 
   const zodErrors = validateInteractiveEventMetadata(templateSlug, parsedMetadata);
   if (zodErrors.length > 0) {
@@ -65,35 +42,34 @@ export async function persistCreation(
 
   const validationErrors = validateMetadata(
     parsedMetadata,
-    (template.config_schema as Record<string, unknown>) ?? {},
+    (template.configSchema as Record<string, unknown>) ?? {},
   );
   if (validationErrors.length > 0) {
     throw new ActionError(`Validation errors: ${validationErrors.join("; ")}`, 422);
   }
 
-  const profile = await fetchProfileForQuota(supabase, user.id);
+  const profile = await fetchProfileForQuota(userId);
   const userTier = profile.subscription_tier ?? "free";
 
-  if (profile.subscription_expired && (template.is_premium || quotaPreference === "pro")) {
+  if (profile.subscription_expired && (template.isPremium || quotaPreference === "pro")) {
     throw new ActionError(CREATION_ACTION_ERRORS.SUBSCRIPTION_EXPIRED, 403);
   }
-  checkPremiumAccess(template.is_premium, userTier);
+  checkPremiumAccess(template.isPremium, userTier);
 
-  const appliedQuota: "free" | "pro" = template.is_premium
+  const appliedQuota: "free" | "pro" = template.isPremium
     ? "pro"
     : userTier === "free" ? "free" : quotaPreference;
   const isPremiumBehavior = userTier !== "free" && appliedQuota === "pro";
 
   const tierCodes = userTier !== "free" ? ["free", userTier] : ["free"];
-  const { data: policies } = await supabase
-    .from("subscription_policies")
-    .select("tier_code, creation_limit, default_expiry")
-    .in("tier_code", tierCodes);
+  const policies = await prisma.subscriptionPolicy.findMany({
+    where: { tierCode: { in: tierCodes } },
+  });
 
-  const freePolicy = policies?.find((p) => p.tier_code === "free");
-  const tierPolicy = policies?.find((p) => p.tier_code === userTier);
+  const freePolicy = policies.find((p) => p.tierCode === "free");
+  const tierPolicy = policies.find((p) => p.tierCode === userTier);
 
-  const freeLimit = Number(freePolicy?.creation_limit ?? 3);
+  const freeLimit = Number(freePolicy?.creationLimit ?? 3);
   const freeTotalAllowed = freeLimit + (profile.additional_creation_free ?? 0);
   if (appliedQuota === "free" && profile.creations_count_free >= freeTotalAllowed) {
     throw new ActionError(CREATION_ACTION_ERRORS.QUOTA_EXCEEDED, 403);
@@ -101,13 +77,13 @@ export async function persistCreation(
 
   let paidDefaultExpirySeconds: number | null = null;
   if (isPremiumBehavior) {
-    const proLimit = tierPolicy?.creation_limit as number | null | undefined;
+    const proLimit = tierPolicy?.creationLimit ?? null;
     const proTotalAllowed = proLimit == null
       ? null : Number(proLimit) + (profile.additional_creation_pro ?? 0);
     if (proTotalAllowed != null && profile.creations_count_pro >= proTotalAllowed) {
       throw new ActionError(CREATION_ACTION_ERRORS.QUOTA_EXCEEDED, 403);
     }
-    paidDefaultExpirySeconds = Number(tierPolicy?.default_expiry ?? 0);
+    paidDefaultExpirySeconds = Number(tierPolicy?.defaultExpiry ?? 0);
     if (!Number.isFinite(paidDefaultExpirySeconds) || paidDefaultExpirySeconds <= 0) {
       throw new ActionError("Invalid subscription policy expiry", 500);
     }
@@ -118,7 +94,7 @@ export async function persistCreation(
   parsedMetadata.is_paid = isPremiumBehavior;
 
   const expiresAt = calculateExpiry(
-    template.expiration_policy as Record<string, unknown>,
+    template.expirationPolicy as Record<string, unknown>,
     { isPremiumBehavior, paidDefaultExpirySeconds },
   );
 
@@ -126,20 +102,58 @@ export async function persistCreation(
   // SEC-CRIT-2: 4-digit verification code for coupon redemption.
   const verificationCode = String(Math.floor(Math.random() * REDEMPTION_CODE_MAX)).padStart(4, "0");
 
-  const { data: creation, error: insertErr } = await supabase
-    .from("creations")
-    .insert({
-      user_id: user.id, template_id: template.id, metadata: parsedMetadata,
-      is_paid: isPremiumBehavior, expires_at: expiresAt, verification_code: verificationCode,
-    })
-    .select("id, verification_code").single();
+  let creation;
+  try {
+    creation = await prisma.$transaction(async (tx) => {
+      if (appliedQuota === "free") {
+        const updated = await tx.profile.updateMany({
+          where: { id: userId, creationsCountFree: { lt: freeTotalAllowed } },
+          data: { creationsCountFree: { increment: 1 } },
+        });
+        if (updated.count === 0) {
+          throw new ActionError(CREATION_ACTION_ERRORS.QUOTA_EXCEEDED, 403);
+        }
+      } else if (isPremiumBehavior) {
+        await tx.profile.update({
+          where: { id: userId },
+          data: { creationsCountPro: { increment: 1 } },
+        });
+      }
 
-  if (insertErr || !creation) {
-    throw new ActionError(buildInsertErrorMessage(insertErr), 500);
+      const created = await tx.creation.create({
+        data: {
+          userId,
+          templateId: template.id,
+          metadata: parsedMetadata as Prisma.InputJsonValue,
+          isPaid: isPremiumBehavior,
+          expiresAt,
+          verificationCode,
+        },
+      });
+
+      await tx.template.update({
+        where: { id: template.id },
+        data: { uses: { increment: 1 } },
+      });
+
+      return created;
+    });
+  } catch (err) {
+    if (err instanceof ActionError) throw err;
+    logger.error("[persistCreation] Insert failed", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+    if (process.env.NODE_ENV === "production") {
+      throw new ActionError("Failed to create card. Please try again.", 500);
+    }
+    throw new ActionError(
+      `Failed to create card: ${err instanceof Error ? err.message : "Unknown error"}`,
+      500,
+    );
   }
 
   await logAudit({
-    eventType: "creation.created", userId: user.id,
+    eventType: "creation.created", userId,
     metadata: {
       creation_id: creation.id, template_id: template.id, template_slug: templateSlug,
       is_paid: isPremiumBehavior, applied_quota: appliedQuota,
@@ -147,7 +161,7 @@ export async function persistCreation(
   });
 
   return {
-    creationId: creation.id as string,
-    verification_code: (creation.verification_code as string) ?? verificationCode,
+    creationId: creation.id,
+    verification_code: creation.verificationCode,
   };
 }

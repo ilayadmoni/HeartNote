@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfileComplete } from "@/hooks/useProfileComplete";
@@ -39,11 +39,6 @@ export function useEditorState(templateId: string) {
 
   const modals = useEditorModals(templateId);
   const [isPublishing, setIsPublishing] = useState(false);
-  const pendingUploadRef = useRef<(() => Promise<string | null>) | null>(null);
-  const handleFileReady = useCallback(
-    (uploadFn: (() => Promise<string | null>) | null) => { pendingUploadRef.current = uploadFn; },
-    [],
-  );
 
   const isEffectivelyFreeUser = useMemo(
     () => isSubscriptionEffectivelyFree(profile?.subscription.tier, profile?.subscription.premium_expiry),
@@ -128,7 +123,7 @@ export function useEditorState(templateId: string) {
   };
 
   return {
-    config, data, handleChange, handleFileReady,
+    config, data, handleChange,
     user, profile, isPremiumTemplate, templateFreeDays,
     isEffectivelyFreeUser, isPaidQuotaFull, isSubscriptionLoading,
     isPublishing, isRestoringDraft,

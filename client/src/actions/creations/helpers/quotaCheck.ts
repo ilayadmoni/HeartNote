@@ -10,7 +10,7 @@
  *   premium → unlimited (creations_count_pro tracked for analytics only)
  */
 
-import { SupabaseClient } from "@supabase/supabase-js";
+import { prisma } from "@/lib/prisma";
 import { ActionError } from "@/lib/action-response";
 import { checkAndDowngradeSubscription } from "@/lib/subscription/checkAndDowngradeSubscription";
 import { CREATION_ACTION_ERRORS } from "@/lib/creation-flow/errors";
@@ -28,41 +28,35 @@ export interface ProfileQuotaData {
   subscription_expired: boolean;
 }
 
-interface RawProfileQuotaData extends Omit<ProfileQuotaData, "subscription_expired"> {
-  premium_start?: string | null;
-}
-
 // ── Fetch Profile ────────────────────────────────────────────────────────
 
 /**
  * Fetches the user's profile quota fields.
  * Throws ActionError(404) if the profile is missing.
  */
-export async function fetchProfileForQuota(
-  supabase: SupabaseClient,
-  userId: string,
-): Promise<ProfileQuotaData> {
-  const { data: profile, error: profErr } = await supabase
-    .from("profiles")
-    .select(
-      "id, subscription_tier, premium_expiry, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro, premium_start",
-    )
-    .eq("id", userId)
-    .single();
+export async function fetchProfileForQuota(userId: string): Promise<ProfileQuotaData> {
+  const profile = await prisma.profile.findUnique({ where: { id: userId } });
 
-  if (profErr || !profile) {
-    throw new ActionError(
-      "Profile not found. Please complete registration.",
-      404,
-    );
+  if (!profile) {
+    throw new ActionError("Profile not found. Please complete registration.", 404);
   }
 
-  const rawProfile = profile as RawProfileQuotaData;
-  const { profile: normalizedProfile, wasExpired } =
-    await checkAndDowngradeSubscription(rawProfile);
+  const { profile: normalizedProfile, wasExpired } = await checkAndDowngradeSubscription({
+    id: profile.id,
+    subscription_tier: profile.subscriptionTier,
+    premium_start: profile.premiumStart?.toISOString() ?? null,
+    premium_expiry: profile.premiumExpiry?.toISOString() ?? null,
+    creations_count_pro: profile.creationsCountPro,
+  });
 
   return {
-    ...normalizedProfile,
+    id: normalizedProfile.id,
+    subscription_tier: normalizedProfile.subscription_tier,
+    premium_expiry: normalizedProfile.premium_expiry ?? null,
+    creations_count_free: profile.creationsCountFree,
+    creations_count_pro: normalizedProfile.creations_count_pro ?? 0,
+    additional_creation_free: profile.additionalCreationFree,
+    additional_creation_pro: profile.additionalCreationPro,
     subscription_expired: wasExpired,
   };
 }
@@ -73,24 +67,17 @@ export async function fetchProfileForQuota(
  * Fetches the creation_limit from subscription_policies for a given tier.
  * Throws ActionError(500) if the policy row is missing — this is a DB misconfiguration.
  */
-export async function fetchPolicyLimit(
-  supabase: SupabaseClient,
-  tierCode: string,
-): Promise<number | null> {
-  const { data, error } = await supabase
-    .from("subscription_policies")
-    .select("creation_limit")
-    .eq("tier_code", tierCode)
-    .single();
+export async function fetchPolicyLimit(tierCode: string): Promise<number | null> {
+  const policy = await prisma.subscriptionPolicy.findUnique({ where: { tierCode } });
 
-  if (error || !data) {
+  if (!policy) {
     throw new ActionError(
       `Subscription policy for tier "${tierCode}" is not configured. Please contact support.`,
       500,
     );
   }
 
-  return data.creation_limit as number | null;
+  return policy.creationLimit;
 }
 
 // ── Premium Guard ────────────────────────────────────────────────────────
@@ -137,6 +124,7 @@ export function checkQuotaLimit(
 }
 
 // ── Note ─────────────────────────────────────────────────────────────────
-// Quota decrement is handled exclusively by the database trigger
-// `trg_handle_new_creation_quota` (see 018_update_profiles_creation_counters.sql).
-// No application-level decrement logic should exist here.
+// Quota decrement is no longer a DB trigger (Supabase's trg_handle_new_
+// creation_quota) — it's an atomic guarded increment inside the same
+// transaction as the creation insert. See actions/creations/create.ts and
+// actions/creations/helpers/persistCreation.ts.

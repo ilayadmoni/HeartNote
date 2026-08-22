@@ -1,19 +1,12 @@
 /**
  * Dashboard Server Actions
  *
- * Port of:
- *   server/app/api/v1/endpoints/dashboard.py
- *
  * Returns quota stats (from profiles) and creation history (from creations + templates).
- *
- * DB columns used:
- *   profiles  → subscription_tier, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro
- *   creations → id, is_paid, expires_at, created_at, is_deleted, user_id
- *   templates → slug, name  (joined via creations.template_id)
  */
 
 "use server";
 
+import { prisma } from "@/lib/prisma";
 import { protectedAction } from "@/lib/protectedAction";
 import type {
   DashboardResponse,
@@ -29,67 +22,45 @@ import type { ActionResult } from "@/lib/action-response";
  * Auth check handled by protectedAction wrapper.
  */
 export async function getDashboard(): Promise<ActionResult<DashboardResponse>> {
-  return protectedAction(async (user, supabase) => {
-    const now = new Date();
+  return protectedAction(async (user) => {
+    const now = Date.now();
 
-    // ── Fetch profile for quota stats ──────────────────────────────
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select(
-        "subscription_tier, creations_count_free, creations_count_pro, additional_creation_free, additional_creation_pro",
-      )
-      .eq("id", user.id)
-      .single();
-
-    const profileData = (profile ?? {}) as Record<string, unknown>;
+    const profile = await prisma.profile.findUnique({
+      where: { id: user.id },
+      select: {
+        subscriptionTier: true,
+        creationsCountFree: true,
+        creationsCountPro: true,
+        additionalCreationFree: true,
+        additionalCreationPro: true,
+      },
+    });
 
     const stats: DashboardStats = {
-      creations_count_free: (profileData.creations_count_free as number) ?? 0,
-      creations_count_pro: (profileData.creations_count_pro as number) ?? 0,
-      additional_creation_free: (profileData.additional_creation_free as number) ?? 0,
-      additional_creation_pro: (profileData.additional_creation_pro as number) ?? 0,
-      subscription_tier:
-        (profileData.subscription_tier as string) ?? "free",
+      creations_count_free: profile?.creationsCountFree ?? 0,
+      creations_count_pro: profile?.creationsCountPro ?? 0,
+      additional_creation_free: profile?.additionalCreationFree ?? 0,
+      additional_creation_pro: profile?.additionalCreationPro ?? 0,
+      subscription_tier: profile?.subscriptionTier ?? "free",
     };
 
-    // ── Fetch all creations for this user (including soft-deleted) ───
-    const { data: rawCreations } = await supabase
-      .from("creations")
-      .select(
-        "id, is_paid, expires_at, created_at, is_deleted, verification_code, templates!inner(slug, name)",
-      )
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-
-    const creations: DashboardCreation[] = (rawCreations ?? []).map((c) => {
-      const expiresAtStr = c.expires_at as string | null;
-      let isExpired = false;
-
-      if (expiresAtStr) {
-        try {
-          const expStr = expiresAtStr.includes("Z")
-            ? expiresAtStr
-            : expiresAtStr.replace("+00:00", "Z");
-          isExpired = new Date(expStr) < now;
-        } catch {
-          isExpired = false;
-        }
-      }
-
-      const tmpl = (c.templates as unknown as Record<string, string>) ?? {};
-
-      return {
-        id: c.id as string,
-        template_slug: tmpl.slug ?? "",
-        template_name: tmpl.name ?? "כרטיס",
-        created_at: c.created_at as string,
-        expires_at: expiresAtStr ?? null,
-        is_expired: isExpired,
-        is_paid: (c.is_paid as boolean) ?? null,
-        is_deleted: (c.is_deleted as boolean) ?? false,
-        verification_code: (c.verification_code as string) ?? null,
-      };
+    const rawCreations = await prisma.creation.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      include: { template: { select: { slug: true, name: true } } },
     });
+
+    const creations: DashboardCreation[] = rawCreations.map((c) => ({
+      id: c.id,
+      template_slug: c.template.slug,
+      template_name: c.template.name ?? "כרטיס",
+      created_at: c.createdAt.toISOString(),
+      expires_at: c.expiresAt ? c.expiresAt.toISOString() : null,
+      is_expired: c.expiresAt ? c.expiresAt.getTime() < now : false,
+      is_paid: c.isPaid,
+      is_deleted: c.isDeleted,
+      verification_code: c.verificationCode ?? null,
+    }));
 
     return { stats, creations };
   });

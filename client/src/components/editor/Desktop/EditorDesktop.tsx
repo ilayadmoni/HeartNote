@@ -13,8 +13,8 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
   const router = useRouter();
   const editor = useEditorState(templateId);
   const {
-    config, data, handleChange, handleFileReady,
-    user, isPublishing, isSubscriptionLoading, isRestoringDraft,
+    config, data, handleChange,
+    isPublishing, isSubscriptionLoading, isRestoringDraft,
     handlePublish,
   } = editor;
 
@@ -94,8 +94,6 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
             config={config}
             data={data}
             onChange={handleChange}
-            userId={user?.id}
-            onFileReady={handleFileReady}
           />
         </aside>
       </div>

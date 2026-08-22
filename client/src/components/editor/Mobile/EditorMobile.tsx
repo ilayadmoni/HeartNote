@@ -13,8 +13,8 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
   const router = useRouter();
   const editor = useEditorState(templateId);
   const {
-    config, data, handleChange, handleFileReady,
-    user, isPublishing, isSubscriptionLoading, isRestoringDraft,
+    config, data, handleChange,
+    isPublishing, isSubscriptionLoading, isRestoringDraft,
     handlePublish,
   } = editor;
 
@@ -100,8 +100,6 @@ export function EditorMobile({ templateId }: TemplateEditorProps) {
             config={config}
             data={data}
             onChange={handleChange}
-            userId={user?.id}
-            onFileReady={handleFileReady}
           />
         </div>
         <div className={activeTab === "preview" ? "block" : "hidden"}>

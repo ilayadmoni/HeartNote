@@ -1,20 +1,25 @@
 /**
  * Redis-Based Rate Limiter (Vercel/Serverless Ready)
  * ───────────────────────────────────────────────────
- * Strictly uses Upstash Redis for serverless-compatible rate limiting.
- * NO in-memory fallback - Redis is REQUIRED for all environments.
+ * Uses Upstash Redis for serverless-compatible rate limiting in production.
+ * SEC-CRIT-2: In-memory rate limiting is unsafe in serverless/multi-instance
+ * production (each instance has its own counter — trivially bypassed), so
+ * production still requires real Upstash credentials and throws without them.
  *
- * Setup:
+ * In local development (NODE_ENV !== "production") without Upstash env vars,
+ * falls back to a single-process in-memory limiter so `npm run dev` works
+ * without any cloud dependency.
+ *
+ * Setup for production:
  *   1. npm install @upstash/redis @upstash/ratelimit
  *   2. Add to .env:
  *      UPSTASH_REDIS_REST_URL=your-upstash-url
  *      UPSTASH_REDIS_REST_TOKEN=your-upstash-token
- *
- * SEC-CRIT-2: Eliminates in-memory bypass vulnerability in serverless.
  */
 
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { logger } from "@/lib/utils/logger";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types & Configuration
@@ -50,21 +55,63 @@ const DEFAULT_OPTIONS: RateLimiterOptions = {
 
 let redisClient: Redis | null = null;
 
-function getRedisClient(): Redis {
+function getRedisClient(): Redis | null {
   if (redisClient) return redisClient;
 
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
   if (!url || !token) {
-    throw new Error(
-      "[rate-limiter] FATAL: Upstash Redis is required. " +
-        "Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables."
-    );
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "[rate-limiter] FATAL: Upstash Redis is required in production. " +
+          "Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables."
+      );
+    }
+    return null;
   }
 
   redisClient = new Redis({ url, token });
   return redisClient;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// In-Memory Fallback (local dev only — see getRedisClient above)
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface MemoryEntry {
+  count: number;
+  resetAt: number;
+}
+
+const memoryStore = new Map<string, MemoryEntry>();
+
+function createInMemoryLimiter(maxRequests: number, windowMs: number, prefix: string) {
+  return {
+    async check(key: string): Promise<RateLimitResult> {
+      const storeKey = `${prefix}:${key}`;
+      const now = Date.now();
+      const entry = memoryStore.get(storeKey);
+
+      if (!entry || entry.resetAt <= now) {
+        memoryStore.set(storeKey, { count: 1, resetAt: now + windowMs });
+        return { success: true, remaining: maxRequests - 1, reset: now + windowMs };
+      }
+      if (entry.count >= maxRequests) {
+        return { success: false, remaining: 0, reset: entry.resetAt };
+      }
+      entry.count += 1;
+      return { success: true, remaining: maxRequests - entry.count, reset: entry.resetAt };
+    },
+    async getRemaining(key: string): Promise<number> {
+      const entry = memoryStore.get(`${prefix}:${key}`);
+      if (!entry || entry.resetAt <= Date.now()) return maxRequests;
+      return Math.max(0, maxRequests - entry.count);
+    },
+    async reset(key: string): Promise<void> {
+      memoryStore.delete(`${prefix}:${key}`);
+    },
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -92,6 +139,11 @@ export function createRateLimiter(opts: Partial<RateLimiterOptions> = {}) {
   const windowSeconds = Math.ceil(windowMs / 1000);
 
   const redis = getRedisClient();
+
+  if (!redis) {
+    logger.warn(`[rate-limiter] No Upstash credentials — using in-memory limiter for "${prefix}" (dev only)`);
+    return createInMemoryLimiter(maxRequests, windowMs, prefix ?? "ratelimit");
+  }
 
   const limiter = new Ratelimit({
     redis,

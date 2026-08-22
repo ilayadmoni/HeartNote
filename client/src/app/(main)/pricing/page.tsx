@@ -5,7 +5,8 @@
 
 import { Metadata } from "next";
 import { Pricing } from "@/components/pricing";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "תוכניות ומחירים | HeartNote",
@@ -14,28 +15,22 @@ export const metadata: Metadata = {
 };
 
 export default async function PricingPage() {
-  const supabase = await createClient();
   const upgradesEnabled =
     (process.env.NEXT_PUBLIC_ENABLE_UPGRADES ?? "").toLowerCase() === "true";
 
   let hasActivePaidSubscription = false;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await auth();
 
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("subscription_tier, premium_expiry")
-      .eq("id", user.id)
-      .single();
+  if (session?.user?.id) {
+    const profile = await prisma.profile.findUnique({
+      where: { id: session.user.id },
+      select: { subscriptionTier: true, premiumExpiry: true },
+    });
 
-    const tier = String(profile?.subscription_tier ?? "free");
-    const expiryRaw = profile?.premium_expiry as string | null | undefined;
-    const expiryDate = expiryRaw ? new Date(expiryRaw) : null;
+    const tier = profile?.subscriptionTier ?? "free";
     const isActivePaidByExpiry = Boolean(
-      expiryDate && !Number.isNaN(expiryDate.getTime()) && expiryDate > new Date(),
+      profile?.premiumExpiry && profile.premiumExpiry > new Date(),
     );
 
     hasActivePaidSubscription = tier !== "free" && isActivePaidByExpiry;

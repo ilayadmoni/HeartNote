@@ -3,44 +3,47 @@
  *
  * Usage:
  *   export async function myAction(input: Input) {
- *     return protectedAction<Output>(async (user, supabase) => {
+ *     return protectedAction<Output>(async (user) => {
  *       // user is already verified — go straight to business logic
- *       const { data, error } = await supabase.from("table").select("*");
- *       if (error) throw new ActionError(error.message, 500);
- *       return data;
+ *       const rows = await prisma.table.findMany();
+ *       return rows;
  *     });
  *   }
  *
  * The wrapper:
- *   1. Creates a Supabase server client
- *   2. Verifies the session via getUser()
- *   3. If invalid → returns { success: false, error: "UNAUTHORIZED", code: 401 }
- *   4. Otherwise runs `fn(user, supabase)` inside a try/catch
- *   5. Returns { success: true, data } or { success: false, error, code }
+ *   1. Reads the NextAuth session via auth()
+ *   2. If invalid → returns { success: false, error: "UNAUTHORIZED", code: 401 }
+ *   3. Otherwise runs `fn(user)` inside a try/catch
+ *   4. Returns { success: true, data } or { success: false, error, code }
  */
 
-import type { User } from "@supabase/supabase-js";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
 import { ActionError, type ActionResult } from "@/lib/action-response";
 import { logger } from "@/lib/utils/logger";
 
+export interface ProtectedActionUser {
+  id: string;
+  email: string;
+  name: string | null;
+}
+
 export async function protectedAction<T>(
-  fn: (user: User, supabase: SupabaseClient) => Promise<T>,
+  fn: (user: ProtectedActionUser) => Promise<T>,
 ): Promise<ActionResult<T>> {
   try {
-    const supabase = await createClient();
+    const session = await auth();
 
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    if (!session?.user?.id || !session.user.email) {
       return { success: false, error: "UNAUTHORIZED", code: 401 };
     }
 
-    const data = await fn(user, supabase);
+    const user: ProtectedActionUser = {
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name ?? null,
+    };
+
+    const data = await fn(user);
     return { success: true, data };
   } catch (e) {
     if (e instanceof ActionError) {

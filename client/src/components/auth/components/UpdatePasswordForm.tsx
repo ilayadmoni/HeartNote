@@ -7,12 +7,12 @@
  * Uses the updatePassword server action which also resets reset_attempts to 0.
  */
 
-import { useState, useRef, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { KeyRound, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { AuthInput } from "./AuthInput";
-import { createClient } from "@/lib/supabase/client";
+import { updatePassword } from "@/actions/password";
 import {
   UPDATE_PASSWORD_TITLE,
   UPDATE_PASSWORD_SUBTITLE,
@@ -31,9 +31,10 @@ interface UpdatePasswordFormProps {
 export function UpdatePasswordForm({ onComplete }: UpdatePasswordFormProps) {
   const CLOSE_THEN_NAVIGATE_DELAY_MS = 150;
   const EXPIRED_SESSION_MESSAGE =
-    "Session expired, please request a new reset link.";
+    "הקישור פג תוקף, אנא בקשו קישור חדש לאיפוס סיסמה.";
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
   const completedRef = useRef(false);
 
   const [password, setPassword] = useState("");
@@ -43,33 +44,7 @@ export function UpdatePasswordForm({ onComplete }: UpdatePasswordFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [sessionState, setSessionState] = useState<"checking" | "ready" | "expired">(
-    "checking",
-  );
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const verifySession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!isMounted) return;
-      if (session) {
-        setSessionState("ready");
-      } else {
-        setSessionState("expired");
-        setServerError(EXPIRED_SESSION_MESSAGE);
-      }
-    };
-
-    void verifySession();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [supabase]);
+  const sessionState: "ready" | "expired" = token ? "ready" : "expired";
 
   const validate = (): boolean => {
     let valid = true;
@@ -126,7 +101,7 @@ export function UpdatePasswordForm({ onComplete }: UpdatePasswordFormProps) {
     e.preventDefault();
     setServerError(null);
 
-    if (sessionState !== "ready") {
+    if (sessionState !== "ready" || !token) {
       setServerError(EXPIRED_SESSION_MESSAGE);
       return;
     }
@@ -136,12 +111,12 @@ export function UpdatePasswordForm({ onComplete }: UpdatePasswordFormProps) {
     setIsSubmitting(true);
 
     try {
-      const { error: updateError } = await supabase.auth.updateUser({
-        password,
-      });
+      const formData = new FormData();
+      formData.set("password", password);
+      const result = await updatePassword(token, formData);
 
-      if (updateError) {
-        setServerError(updateError.message);
+      if (result.error) {
+        setServerError(result.error);
         setIsSubmitting(false);
         return;
       }
@@ -152,43 +127,17 @@ export function UpdatePasswordForm({ onComplete }: UpdatePasswordFormProps) {
       setTimeout(() => finishAndRedirect(), 2000);
     } catch {
       setIsSubmitting(false);
-      setServerError("Session expired, please request a new reset link.");
+      setServerError(EXPIRED_SESSION_MESSAGE);
     }
   };
-
-  if (sessionState === "checking") {
-    return (
-      <div className="py-8 flex items-center justify-center">
-        <svg
-          className="animate-spin h-6 w-6 text-[#2e3c52]"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-          />
-        </svg>
-      </div>
-    );
-  }
 
   if (sessionState === "expired") {
     return (
       <div className="text-center py-4">
         <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading">
-          Session expired
+          הקישור פג תוקף
         </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-english-body">
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-hebrew-body">
           {EXPIRED_SESSION_MESSAGE}
         </p>
       </div>
