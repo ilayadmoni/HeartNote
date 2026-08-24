@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 // SEC-HIGH-5: Content Security Policy
-// Allows: self, Supabase (REST/Storage/Realtime), Google Tag Manager/Analytics,
-// Dicebear avatars, Google profile images.
+// Allows: self, Google Tag Manager/Analytics, Dicebear avatars, Google profile images.
 const cspDirectives = [
   "default-src 'self'",
   "worker-src 'self' blob:;",
@@ -13,15 +12,14 @@ const cspDirectives = [
   "font-src 'self' data: https://fonts.gstatic.com",
   [
     "img-src 'self' data: blob:",
-    "https://*.supabase.co",
     "https://api.dicebear.com",
     "https://lh3.googleusercontent.com",
     "https://www.google-analytics.com",
     "https://www.googletagmanager.com",
   ].join(" "),
   process.env.NODE_ENV === "production"
-    ? "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://www.googletagmanager.com https://region1.google-analytics.com"
-    : `connect-src 'self' http://localhost:3000 ${process.env.LAN_IP ? `http://${process.env.LAN_IP}:3000` : ""} https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://www.googletagmanager.com https://region1.google-analytics.com`,
+    ? "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://region1.google-analytics.com"
+    : `connect-src 'self' http://localhost:3000 ${process.env.LAN_IP ? `http://${process.env.LAN_IP}:3000` : ""} https://www.google-analytics.com https://www.googletagmanager.com https://region1.google-analytics.com`,
   "frame-src 'self' https://www.googletagmanager.com",
   "frame-ancestors 'self'",
   "form-action 'self'",
@@ -51,19 +49,13 @@ const securityHeaders = [
 
 const nextConfig = {
   reactStrictMode: true,
+  output: "standalone",
   env: {
-    NEXT_PUBLIC_SUPABASE_URL:
-      process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:8000",
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || "HeartNote",
     LAN_IP: process.env.LAN_IP || "",
   },
   images: {
     remotePatterns: [
-      // Supabase Storage
-      {
-        protocol: "https",
-        hostname: "*.supabase.co",
-      },
       // HeartNote production domain
       {
         protocol: "https",

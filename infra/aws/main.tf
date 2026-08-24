@@ -138,6 +138,11 @@ resource "aws_instance" "app" {
   vpc_security_group_ids = [aws_security_group.app.id]
   subnet_id              = data.aws_subnets.default.ids[0]
 
+  # Auto-installs Docker, the Docker Compose plugin, and Git on first boot.
+  # See user_data.sh for what it does and (importantly) what it deliberately
+  # does NOT do — no secrets or repo credentials belong in user_data.
+  user_data = file("${path.module}/user_data.sh")
+
   root_block_device {
     volume_size = 20 # Free Tier includes up to 30GB EBS — stay well under
     volume_type = "gp3"

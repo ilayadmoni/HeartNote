@@ -1,0 +1,36 @@
+# Production deployment on the EC2 instance. Not used for local dev — see
+# docker-compose.yml (Postgres only) and client/README/CLAUDE.md for that.
+#
+# Usage on the EC2 instance (after Docker is installed via user_data.sh):
+#   git clone <repo-url>
+#   cd HeartNote
+#   cp client/.env.example client/.env   # fill in real production values
+#   docker compose -f docker-compose.prod.yml up -d --build
+
+services:
+  app:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./client/.env
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  caddy_data:
+  caddy_config:

@@ -5,7 +5,8 @@ against AWS. No resources exist yet.
 
 ## What this provisions
 
-- 1× EC2 `t3.micro` (Amazon Linux 2023) — the app server
+- 1× EC2 `t3.micro` (Amazon Linux 2023) — the app server, with Docker +
+  Docker Compose + Git auto-installed on first boot (`user_data.sh`)
 - 1× RDS PostgreSQL `db.t3.micro`, Single-AZ, 20GB gp3 — the database
 - Security groups: SSH restricted to your IP, HTTP/HTTPS open, Postgres
   reachable only from the app server's security group (never public)
@@ -77,9 +78,36 @@ alone covers this setup for 7–8+ months.
 
 ## After apply
 
-- `terraform output rds_endpoint` gives you the DB host for `DATABASE_URL` on the EC2 instance.
-- `db/schema.sql` (repo root) still needs to be loaded into the new RDS database the same way it was loaded locally.
-- The EC2 instance is bare — it still needs Node.js, the app checked out, `.env` configured, and a process manager (pm2 or a systemd unit) plus a reverse proxy (nginx) for ports 80/443. That setup isn't in this Terraform yet.
+The EC2 instance auto-installs Docker, the Docker Compose plugin, and Git on
+first boot (`user_data.sh`) — nothing to install by hand. What's left is
+deliberately manual, because it involves secrets that must never be baked
+into Terraform or EC2 metadata:
+
+1. SSH in: `ssh -i heartnote.pem ec2-user@$(terraform output -raw ec2_public_ip)`
+   (give it ~1-2 minutes after `apply` for user_data to finish installing Docker)
+2. Clone the repo and configure it:
+   ```bash
+   git clone <your-repo-url>
+   cd HeartNote
+   cp client/.env.example client/.env
+   nano client/.env   # fill in DATABASE_URL (use terraform output rds_endpoint),
+                       # AUTH_SECRET, AUTH_GOOGLE_ID/SECRET, RESEND_KEY, etc.
+   ```
+3. Load the schema into RDS (same file used for local dev):
+   ```bash
+   psql "$(grep DATABASE_URL client/.env | cut -d= -f2-)" -f db/schema.sql
+   ```
+4. Point your domain's DNS A record at `terraform output ec2_public_ip`, and
+   edit `infra/Caddyfile` to use your real domain instead of `your-domain.com`
+   (or use the plain-HTTP `:80` block shown in that file if you don't have a
+   domain yet).
+5. Build and start everything:
+   ```bash
+   docker compose -f docker-compose.prod.yml up -d --build
+   ```
+
+Caddy handles HTTPS automatically once your domain points at the instance —
+no certbot, no manual certificate renewal.
 
 ## Tearing everything down before your credit/plan expires
 

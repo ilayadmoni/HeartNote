@@ -1,0 +1,12 @@
+# Replace with your real domain once DNS points at the EC2 instance's IP.
+# Caddy then gets and renews an HTTPS certificate automatically — no
+# certbot, no manual renewal.
+#
+# No domain yet? Use the EC2 public IP with plain HTTP for now:
+#   :80 {
+#       reverse_proxy app:3000
+#   }
+
+your-domain.com {
+    reverse_proxy app:3000
+}
