@@ -80,3 +80,37 @@ alone covers this setup for 7–8+ months.
 - `terraform output rds_endpoint` gives you the DB host for `DATABASE_URL` on the EC2 instance.
 - `db/schema.sql` (repo root) still needs to be loaded into the new RDS database the same way it was loaded locally.
 - The EC2 instance is bare — it still needs Node.js, the app checked out, `.env` configured, and a process manager (pm2 or a systemd unit) plus a reverse proxy (nginx) for ports 80/443. That setup isn't in this Terraform yet.
+
+## Tearing everything down before your credit/plan expires
+
+`destroy.sh` runs `terraform destroy` (with a confirmation prompt) to delete
+the EC2 instance and RDS database. Run it manually whenever you're done, or
+schedule it — but a locally-scheduled script only fires if **your computer
+is on and connected** at that moment, which is a real risk for a date over a
+year out. Two ways to schedule it, plus a recommended backup that doesn't
+depend on your machine at all:
+
+### Option A — Windows Task Scheduler (since destroy.sh needs your machine on)
+
+```powershell
+schtasks /create /tn "HeartNote AWS Teardown" /tr "C:\Path\To\Git\bin\bash.exe -c 'cd /path/to/HeartNote/infra/aws && terraform destroy -auto-approve'" /sc once /sd 02/21/2027 /st 09:00
+```
+
+Adjust the path to `bash.exe` (Git Bash) and to your repo. This uses
+`-auto-approve` directly since Task Scheduler can't answer the confirmation
+prompt in `destroy.sh`.
+
+### Option B — cron (Linux/macOS/WSL)
+
+```bash
+# crontab -e, run once at 09:00 on Feb 21, 2027
+0 9 21 2 * cd /path/to/HeartNote/infra/aws && terraform destroy -auto-approve
+```
+
+### Recommended backup: an AWS Budget alert (doesn't depend on your PC)
+
+Set a Budget in the AWS Console (Billing → Budgets) for e.g. $180, with an
+email alert at 90%. This fires from AWS's side regardless of whether your
+computer is on, and gives you a warning to destroy things manually even if
+the scheduled task never runs. I can set this up for you once AWS access is
+reauthorized — it costs nothing to create.
