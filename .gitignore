@@ -85,3 +85,14 @@ yarn-error.log*
 # -----------------
 *.pid
 client/build_log_*.txt
+
+# -----------------
+# Terraform
+# -----------------
+infra/**/.terraform/
+infra/**/*.tfstate
+infra/**/*.tfstate.*
+infra/**/*.tfvars
+infra/**/*.tfvars.json
+infra/**/.terraform.lock.hcl
+infra/**/*.pem
