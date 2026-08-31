@@ -26,7 +26,7 @@ export function ExpirationBanner({ slug }: ExpirationBannerProps) {
       transition={{ duration: 0.35, ease: "easeOut" }}
       className="
         relative overflow-hidden rounded-xl
-        bg-gradient-to-l from-[#d4826f]/10 via-[#e8917a]/8 to-[#C7CEEA]/10
+        bg-gradient-to-l from-[#d4826f]/10 via-[#e8917a]/10 to-[#C7CEEA]/10
         dark:from-[#d4826f]/15 dark:via-[#e8917a]/10 dark:to-[#C7CEEA]/15
         border border-[#d4826f]/20 dark:border-[#d4826f]/30
         px-4 py-3

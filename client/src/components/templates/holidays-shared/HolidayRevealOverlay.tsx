@@ -21,13 +21,13 @@ export function HolidayRevealOverlay({
 
   return (
     <motion.div
-      className="absolute inset-0 z-20 flex items-center justify-center rounded-[1.45rem] bg-[#faf7f5]/88 p-4 backdrop-blur-[2px] dark:bg-slate-950/88"
+      className="absolute inset-0 z-20 flex items-center justify-center rounded-[1.45rem] bg-[#faf7f5]/90 p-4 backdrop-blur-[2px] dark:bg-slate-950/90"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.42 }}
     >
       <motion.section
-        className="w-full max-w-[22rem] overflow-hidden rounded-3xl border border-white/90 bg-[#fffaf4]/98 p-5 text-center shadow-2xl shadow-coral-900/15 backdrop-blur-md dark:border-white/10 dark:bg-slate-900/98"
+        className="w-full max-w-[22rem] overflow-hidden rounded-3xl border border-white/90 bg-[#fffaf4]/95 p-5 text-center shadow-2xl shadow-coral-900/20 backdrop-blur-md dark:border-white/10 dark:bg-slate-900/95"
         initial={{ opacity: 0, y: 18, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.45, delay: 0.08 }}
