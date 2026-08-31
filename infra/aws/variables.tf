@@ -87,3 +87,9 @@ variable "site_domain" {
   description = "Domain pointed (A record) at the EC2 Elastic IP, e.g. heartnote.co.il."
   type        = string
 }
+
+variable "github_repo" {
+  description = "owner/repo allowed to assume the CI deploy role via OIDC."
+  type        = string
+  default     = "ilayadmoni/HeartNote"
+}

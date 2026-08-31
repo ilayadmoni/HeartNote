@@ -1,0 +1,131 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# A newer push to the same branch makes an in-flight run obsolete. Deploys
+# are exempt from cancellation (see the deploy job) so a half-applied
+# release can't be left behind.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: client
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Prisma Client is generated code — without it every model import is
+      # an unresolved type and the type-check fails.
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npx vitest run
+
+      # Catches build-time breakage (bad RSC boundaries, invalid routes)
+      # before the box ever tries to build it.
+      - name: Production build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://heartnote.co.il
+
+  deploy:
+    name: Deploy
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    # Never cancel a deploy midway; queue instead.
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+
+    permissions:
+      id-token: write # required to mint the OIDC token
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'il-central-1' }}
+
+      # SSM runs the command on the instance through the agent's outbound
+      # connection, so the box needs no inbound SSH port open to CI.
+      - name: Trigger deploy on EC2
+        id: send
+        working-directory: .
+        run: |
+          command_id=$(aws ssm send-command \
+            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy ${GITHUB_SHA::7}" \
+            --parameters 'commands=["bash /opt/heartnote/infra/aws/deploy.sh"]' \
+            --timeout-seconds 900 \
+            --query "Command.CommandId" --output text)
+          echo "command_id=$command_id" >> "$GITHUB_OUTPUT"
+          echo "Dispatched SSM command $command_id"
+
+      - name: Wait for deploy to finish
+        working-directory: .
+        run: |
+          command_id="${{ steps.send.outputs.command_id }}"
+          instance="${{ secrets.EC2_INSTANCE_ID }}"
+
+          # The build runs on a t3.micro and takes a few minutes; poll
+          # rather than assuming a fixed duration.
+          for _ in $(seq 1 100); do
+            sleep 10
+            status=$(aws ssm get-command-invocation \
+              --command-id "$command_id" --instance-id "$instance" \
+              --query "Status" --output text 2>/dev/null || echo "Pending")
+            echo "status: $status"
+            case "$status" in
+              Success) break ;;
+              Failed|Cancelled|TimedOut) break ;;
+            esac
+          done
+
+          echo "--- deploy output ---"
+          aws ssm get-command-invocation \
+            --command-id "$command_id" --instance-id "$instance" \
+            --query "StandardOutputContent" --output text
+
+          if [ "$status" != "Success" ]; then
+            echo "--- stderr ---"
+            aws ssm get-command-invocation \
+              --command-id "$command_id" --instance-id "$instance" \
+              --query "StandardErrorContent" --output text
+            echo "Deploy finished with status: $status"
+            exit 1
+          fi
+
+      - name: Verify site is live
+        working-directory: .
+        run: curl -fsS -o /dev/null -w "HTTP %{http_code}\n" https://heartnote.co.il/
