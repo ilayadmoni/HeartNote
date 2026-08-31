@@ -1,5 +1,5 @@
 output "ec2_public_ip" {
-  description = "SSH here, and point DNS at this for the app server."
+  description = "SSH here, and point DNS at this for the app server. Not static — changes if the instance stops/restarts."
   value       = aws_instance.app.public_ip
 }
 

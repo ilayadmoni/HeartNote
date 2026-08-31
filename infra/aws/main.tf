@@ -156,6 +156,7 @@ resource "aws_instance" "app" {
     auth_google_secret  = var.auth_google_secret
     resend_key          = var.resend_key
     mail_heart_note     = var.mail_heart_note
+    site_domain         = var.site_domain
   })
 
   tags = { Name = "heartnote-app" }
