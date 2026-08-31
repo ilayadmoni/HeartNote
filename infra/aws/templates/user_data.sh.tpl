@@ -18,7 +18,9 @@ AUTH_GOOGLE_SECRET=${auth_google_secret}
 RESEND_KEY=${resend_key}
 MAIL_HEART_NOTE=${mail_heart_note}
 NEXT_PUBLIC_SITE_URL=https://${site_domain}
+AUTH_URL=https://${site_domain}
 AUTH_TRUST_HOST=true
+ALLOWED_ORIGINS=https://www.${site_domain}
 EOF
 chmod 600 .env
 
