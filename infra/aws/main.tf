@@ -144,15 +144,22 @@ resource "aws_instance" "app" {
     volume_type = "gp3"
   }
 
-  # user_data only ever runs on first boot; every deploy after that goes
-  # through CI (see .github/workflows/ci.yml). Replacing the instance
-  # on a template edit would drop the on-box .env, the Let's Encrypt certs,
-  # and — since there is no Elastic IP — hand out a new public IP that DNS
-  # no longer points at. So edits to the template are deliberately ignored
-  # on existing instances; they apply to the next instance built from
-  # scratch.
+  # Replacing this instance would drop the on-box .env, the Let's Encrypt
+  # certificates, and — since there is no Elastic IP — hand out a new public
+  # IP that DNS no longer points at. Two attributes would otherwise force
+  # exactly that on a routine apply:
+  #
+  #   user_data — only ever runs on first boot; every deploy after that goes
+  #     through CI (see .github/workflows/ci.yml), so template edits should
+  #     land on the next instance built from scratch, not this one.
+  #   ami — the data source resolves `most_recent`, so each newly published
+  #     Amazon Linux image would trigger a rebuild. OS upgrades belong in a
+  #     deliberate, scheduled replacement, not an unrelated apply.
+  #
+  # To pick either up, taint the instance on purpose and expect to
+  # re-point DNS and restore .env.
   lifecycle {
-    ignore_changes = [user_data]
+    ignore_changes = [user_data, ami]
   }
 
   user_data = templatefile("${path.module}/templates/user_data.sh.tpl", {
