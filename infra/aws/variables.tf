@@ -41,3 +41,44 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "github_repo_url" {
+  description = "Public GitHub repo URL to clone onto the EC2 instance."
+  type        = string
+  default     = "https://github.com/ilayadmoni/HeartNote.git"
+}
+
+variable "app_branch" {
+  description = "Branch to deploy."
+  type        = string
+  default     = "main"
+}
+
+variable "auth_secret" {
+  description = "NextAuth AUTH_SECRET. Pass via TF_VAR_auth_secret env var."
+  type        = string
+  sensitive   = true
+}
+
+variable "auth_google_id" {
+  description = "Google OAuth client ID."
+  type        = string
+  sensitive   = true
+}
+
+variable "auth_google_secret" {
+  description = "Google OAuth client secret. Pass via TF_VAR_auth_google_secret env var."
+  type        = string
+  sensitive   = true
+}
+
+variable "resend_key" {
+  description = "Resend API key. Pass via TF_VAR_resend_key env var."
+  type        = string
+  sensitive   = true
+}
+
+variable "mail_heart_note" {
+  description = "Sender email address for Resend."
+  type        = string
+}

@@ -96,3 +96,4 @@ infra/**/*.tfvars
 infra/**/*.tfvars.json
 infra/**/.terraform.lock.hcl
 infra/**/*.pem
+*.pem

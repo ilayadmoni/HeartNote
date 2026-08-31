@@ -45,7 +45,7 @@ resource "aws_security_group" "app" {
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
-    description = "SSH — restrict to your own IP, never 0.0.0.0/0"
+    description = "SSH - restrict to your own IP, never 0.0.0.0/0"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -80,7 +80,7 @@ resource "aws_security_group" "app" {
 
 resource "aws_security_group" "db" {
   name        = "heartnote-db-sg"
-  description = "HeartNote RDS Postgres — reachable only from the app server, never the internet"
+  description = "HeartNote RDS Postgres - reachable only from the app server, never the internet"
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
@@ -139,9 +139,24 @@ resource "aws_instance" "app" {
   subnet_id              = data.aws_subnets.default.ids[0]
 
   root_block_device {
-    volume_size = 20 # Free Tier includes up to 30GB EBS — stay well under
+    volume_size = 30 # AMI snapshot requires >=30GB; Free Tier covers up to 30GB EBS
     volume_type = "gp3"
   }
+
+  user_data_replace_on_change = true
+  user_data = templatefile("${path.module}/templates/user_data.sh.tpl", {
+    github_repo_url    = var.github_repo_url
+    app_branch          = var.app_branch
+    db_endpoint         = aws_db_instance.postgres.address
+    db_name             = var.db_name
+    db_username         = var.db_username
+    db_password         = var.db_password
+    auth_secret         = var.auth_secret
+    auth_google_id      = var.auth_google_id
+    auth_google_secret  = var.auth_google_secret
+    resend_key          = var.resend_key
+    mail_heart_note     = var.mail_heart_note
+  })
 
   tags = { Name = "heartnote-app" }
 }

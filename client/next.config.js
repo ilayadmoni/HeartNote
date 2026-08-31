@@ -50,6 +50,7 @@ const securityHeaders = [
 ];
 
 const nextConfig = {
+  output: "standalone",
   reactStrictMode: true,
   env: {
     NEXT_PUBLIC_SUPABASE_URL:
