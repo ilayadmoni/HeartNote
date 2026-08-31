@@ -20,6 +20,7 @@ import { computeProfileComplete } from "./profileComplete";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: {
     // The app drives auth through modals on "/", not dedicated pages —
