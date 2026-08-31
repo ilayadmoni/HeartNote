@@ -10,6 +10,15 @@ set -euo pipefail
 APP_DIR=/opt/heartnote
 CLIENT_DIR="$APP_DIR/client"
 
+# Bash reads a script incrementally as it executes, and the git reset below
+# rewrites this very file. If the new version differs in length, the running
+# shell resumes at a now-meaningless byte offset and executes garbage. Run
+# from a private copy so the checkout can safely replace the original.
+if [ "${DEPLOY_REEXEC:-}" != "1" ]; then
+  cp -f "$0" /tmp/heartnote-deploy-running.sh
+  DEPLOY_REEXEC=1 exec bash /tmp/heartnote-deploy-running.sh "$@"
+fi
+
 # Serialize deploys. GitHub's `concurrency` only orders runs within Actions,
 # so a manual SSH deploy overlapping a CI one would leave both fighting over
 # the same container name mid-restart. Wait for the in-flight deploy rather
