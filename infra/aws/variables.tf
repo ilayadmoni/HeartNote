@@ -82,3 +82,8 @@ variable "mail_heart_note" {
   description = "Sender email address for Resend."
   type        = string
 }
+
+variable "site_domain" {
+  description = "Domain pointed (A record) at the EC2 Elastic IP, e.g. heartnote.co.il."
+  type        = string
+}
