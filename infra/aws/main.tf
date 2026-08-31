@@ -137,26 +137,37 @@ resource "aws_instance" "app" {
   key_name               = var.ssh_key_name
   vpc_security_group_ids = [aws_security_group.app.id]
   subnet_id              = data.aws_subnets.default.ids[0]
+  iam_instance_profile   = aws_iam_instance_profile.ec2_ssm.name
 
   root_block_device {
     volume_size = 30 # AMI snapshot requires >=30GB; Free Tier covers up to 30GB EBS
     volume_type = "gp3"
   }
 
-  user_data_replace_on_change = true
+  # user_data only ever runs on first boot; every deploy after that goes
+  # through CI (see .github/workflows/ci.yml). Replacing the instance
+  # on a template edit would drop the on-box .env, the Let's Encrypt certs,
+  # and — since there is no Elastic IP — hand out a new public IP that DNS
+  # no longer points at. So edits to the template are deliberately ignored
+  # on existing instances; they apply to the next instance built from
+  # scratch.
+  lifecycle {
+    ignore_changes = [user_data]
+  }
+
   user_data = templatefile("${path.module}/templates/user_data.sh.tpl", {
     github_repo_url    = var.github_repo_url
-    app_branch          = var.app_branch
-    db_endpoint         = aws_db_instance.postgres.address
-    db_name             = var.db_name
-    db_username         = var.db_username
-    db_password         = var.db_password
-    auth_secret         = var.auth_secret
-    auth_google_id      = var.auth_google_id
-    auth_google_secret  = var.auth_google_secret
-    resend_key          = var.resend_key
-    mail_heart_note     = var.mail_heart_note
-    site_domain         = var.site_domain
+    app_branch         = var.app_branch
+    db_endpoint        = aws_db_instance.postgres.address
+    db_name            = var.db_name
+    db_username        = var.db_username
+    db_password        = var.db_password
+    auth_secret        = var.auth_secret
+    auth_google_id     = var.auth_google_id
+    auth_google_secret = var.auth_google_secret
+    resend_key         = var.resend_key
+    mail_heart_note    = var.mail_heart_note
+    site_domain        = var.site_domain
   })
 
   tags = { Name = "heartnote-app" }

@@ -11,3 +11,13 @@ output "rds_endpoint" {
 output "rds_port" {
   value = aws_db_instance.postgres.port
 }
+
+output "ec2_instance_id" {
+  description = "Set as the EC2_INSTANCE_ID GitHub Actions secret."
+  value       = aws_instance.app.id
+}
+
+output "github_deploy_role_arn" {
+  description = "Set as the AWS_DEPLOY_ROLE_ARN GitHub Actions secret."
+  value       = aws_iam_role.github_deploy.arn
+}
