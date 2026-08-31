@@ -10,6 +10,16 @@ set -euo pipefail
 APP_DIR=/opt/heartnote
 CLIENT_DIR="$APP_DIR/client"
 
+# Serialize deploys. GitHub's `concurrency` only orders runs within Actions,
+# so a manual SSH deploy overlapping a CI one would leave both fighting over
+# the same container name mid-restart. Wait for the in-flight deploy rather
+# than failing, so a queued release still lands.
+exec 9>/var/lock/heartnote-deploy.lock
+if ! flock -w 900 9; then
+  echo "FATAL: another deploy held the lock for over 15 minutes"
+  exit 1
+fi
+
 echo "==> Fetching latest main"
 cd "$APP_DIR"
 git fetch --depth 1 origin main
