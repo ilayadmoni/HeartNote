@@ -50,7 +50,10 @@ export async function generateGreetingText(
           { role: "system", content: `${SYSTEM_PROMPT} אורך מקסימלי: ${maxChars} תווים.` },
           { role: "user", content: userPrompt },
         ],
-        max_tokens: 200,
+        // Hebrew averages ~2 chars/token; leave headroom over the char cap
+        // rather than hardcoding, so a future field with a larger maxChars
+        // doesn't silently truncate mid-sentence.
+        max_tokens: Math.ceil(maxChars / 2) + 20,
         temperature: 0.8,
       }),
     });

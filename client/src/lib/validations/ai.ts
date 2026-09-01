@@ -4,15 +4,15 @@ import { z } from "zod";
  * fieldKey is restricted to a fixed allowlist (not a free string) so the
  * server action can't be used to smuggle an arbitrary system-prompt
  * override via templateId/fieldKey — see actions/ai/generateText.ts.
+ *
+ * maxLength here caps the AI's own output — intentionally 100 for all three
+ * (a short greeting), independent of each field's own larger UI limit in
+ * editor/configs/*.ts (120/500) which still bounds manual typing.
  */
 export const AI_ASSISTABLE_FIELDS = [
-  // maxLength mirrors each field's own limit in editor/configs/*.ts —
-  // surprise-gift.greeting and scratch-card.prizeContent fall back to the
-  // shared textarea default (LimitedInput's CHAR_LIMITS.BODY = 120);
-  // birthday-candles-interactive.message sets an explicit 500.
-  { templateId: "surprise-gift", fieldKey: "greeting", maxLength: 120 },
-  { templateId: "birthday-candles-interactive", fieldKey: "message", maxLength: 500 },
-  { templateId: "scratch-card", fieldKey: "prizeContent", maxLength: 120 },
+  { templateId: "surprise-gift", fieldKey: "greeting", maxLength: 100 },
+  { templateId: "birthday-candles-interactive", fieldKey: "message", maxLength: 100 },
+  { templateId: "scratch-card", fieldKey: "prizeContent", maxLength: 100 },
 ] as const;
 
 export const GenerateAiTextSchema = z.object({
