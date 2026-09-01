@@ -11,7 +11,7 @@ export const INTERACTIONS_CONFIGS: Record<string, EditorConfig> = {
     description: "קופסת מתנה אינטראקטיבית — נערו אותה עד שתיפתח!",
     fields: [
       { key: "title", label: "כותרת", type: "text", placeholder: "יש לך הפתעה! 🎁" },
-      { key: "greeting", label: "ברכה / הודעה", type: "textarea", placeholder: "הטקסט שייחשף אחרי הפתיחה" },
+      { key: "greeting", label: "ברכה / הודעה", type: "textarea", placeholder: "הטקסט שייחשף אחרי הפתיחה", aiAssist: true },
       { key: "boxColor", label: "צבע קופסה", type: "color" },
       { key: "ribbonColor", label: "צבע סרט", type: "color" },
       { key: "primaryColor", label: "צבע ראשי", type: "color" },

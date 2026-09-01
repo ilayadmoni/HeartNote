@@ -13,7 +13,7 @@ import { EnvelopesEditor } from "./EnvelopesEditor";
 import { QuestionsEditor } from "./QuestionsEditor";
 import { CouponsEditor } from "./CouponsEditor";
 import { OptionsEditor } from "./OptionsEditor";
-import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
+import { TextEditorFields } from "./TextEditorFields";
 import type {
   TimelineEvent,
   OpenWhenEnvelope,
@@ -25,15 +25,16 @@ interface EditorFieldProps {
   field: EditorFieldType;
   value: unknown;
   onChange: (value: unknown) => void;
+  /** Required when field.aiAssist is set — identifies the template for the allowlist check */
+  templateId?: string;
 }
 
-export function EditorField({ field, value, onChange }: EditorFieldProps) {
+export function EditorField({ field, value, onChange, templateId }: EditorFieldProps) {
   const baseInputClass = `
     w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
     bg-white dark:bg-gray-700 text-[#2e3c52] dark:text-white
     text-hebrew-body placeholder:text-gray-400
-    focus:ring-2 focus:ring-[#d4826f] focus:border-transparent
-    transition-all duration-200
+    focus:ring-2 focus:ring-[#d4826f] focus:border-transparent transition-all duration-200
   `;
 
   return (
@@ -42,25 +43,13 @@ export function EditorField({ field, value, onChange }: EditorFieldProps) {
         {field.label}
       </label>
 
-      {field.type === "text" && (
-        <LimitedInput
-          value={(value as string) || ""}
-          onChange={(v) => onChange(v)}
-          maxLength={field.maxLength || CHAR_LIMITS.TITLE}
-          placeholder={field.placeholder}
+      {(field.type === "text" || field.type === "textarea") && (
+        <TextEditorFields
+          field={field}
+          value={value}
+          onChange={onChange}
+          templateId={templateId}
           className={baseInputClass}
-        />
-      )}
-
-      {field.type === "textarea" && (
-        <LimitedInput
-          value={(value as string) || ""}
-          onChange={(v) => onChange(v)}
-          maxLength={field.maxLength || CHAR_LIMITS.BODY}
-          placeholder={field.placeholder}
-          className={`${baseInputClass} resize-none`}
-          multiline
-          rows={3}
         />
       )}
 

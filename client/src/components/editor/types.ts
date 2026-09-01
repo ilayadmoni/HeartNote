@@ -33,6 +33,8 @@ export interface EditorField {
   max?: number;
   /** For image fields: enforce a crop modal with this aspect ratio (e.g. 3/4) */
   cropAspect?: number;
+  /** Textarea only: show an "AI generate" button (see AI_ASSISTABLE_FIELDS) */
+  aiAssist?: boolean;
 }
 
 export interface EditorConfig {

@@ -241,3 +241,14 @@ export const contactLimiter = createRateLimiter({
   windowMs: 60 * 1000, // 1 minute
   prefix: "contact",
 });
+
+/**
+ * AI text-assist rate limiter: 10 generations per hour per user.
+ * Keyed by user id (not IP) — the action requires auth. Bounds LLM spend
+ * per account regardless of subscription tier.
+ */
+export const aiTextLimiter = createRateLimiter({
+  maxRequests: 10,
+  windowMs: 60 * 60 * 1000, // 1 hour
+  prefix: "ai_text",
+});

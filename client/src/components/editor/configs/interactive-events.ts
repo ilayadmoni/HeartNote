@@ -36,7 +36,7 @@ const BIRTHDAY_FIELDS: EditorField[] = [
   { key: "recipientName", label: "שם המקבל/ת", type: "text", placeholder: "יואב", maxLength: 50 },
   { key: "senderName", label: "שם השולח/ת", type: "text", placeholder: "מאמא ואבא", maxLength: 50 },
   { key: "greetingTitle", label: "כותרת הברכה", type: "text", placeholder: "ברכה מכל הלב", maxLength: 70 },
-  { key: "message", label: "הברכה", type: "textarea", placeholder: "כתבו כאן ברכה אישית...", maxLength: 500 },
+  { key: "message", label: "הברכה", type: "textarea", placeholder: "כתבו כאן ברכה אישית...", maxLength: 500, aiAssist: true },
   { key: "recipientAge", label: "גיל", type: "number", placeholder: "30", min: 1, max: 120 },
 ];
 

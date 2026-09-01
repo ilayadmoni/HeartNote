@@ -26,7 +26,7 @@ export const ROMANCE_CONFIGS: Record<string, EditorConfig> = {
     description: "גרדו וגלו את ההפתעה המוסתרת!",
     fields: [
       { key: "title", label: "כותרת", type: "text", placeholder: "גרד וגלה את ההפתעה" },
-      { key: "prizeContent", label: "תוכן הפרס", type: "textarea", placeholder: "🎁 זכית בהפתעה מיוחדת!" },
+      { key: "prizeContent", label: "תוכן הפרס", type: "textarea", placeholder: "🎁 זכית בהפתעה מיוחדת!", aiAssist: true },
       { key: "primaryColor", label: "צבע ראשי", type: "color" },
     ],
     defaultData: {

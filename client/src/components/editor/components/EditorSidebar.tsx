@@ -49,6 +49,7 @@ export function EditorSidebar({
               field={field}
               value={data[field.key]}
               onChange={(value) => onChange(field.key, value)}
+              templateId={config.templateId}
             />
           </motion.div>
         ))}
