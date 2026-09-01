@@ -14,7 +14,7 @@
 import { headers } from "next/headers";
 import { Resend } from "resend";
 import { escapeHtml } from "@/lib/utils/sanitize";
-import { contactLimiter } from "@/lib/utils/rate-limiter";
+import { contactLimiter } from "@/lib/utils/rate-limiters";
 import { logger } from "@/lib/utils/logger";
 import { validateOrigin } from "@/lib/utils/csrf";
 import { ContactFormSchema } from "@/lib/validations/contact";

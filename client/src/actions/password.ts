@@ -22,7 +22,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/utils/logger";
 import { validateOrigin } from "@/lib/utils/csrf";
-import { passwordResetLimiter } from "@/lib/utils/rate-limiter";
+import { passwordResetLimiter } from "@/lib/utils/rate-limiters";
 import { logAudit } from "@/lib/audit-logger";
 import { createVerificationToken, consumeVerificationToken } from "@/lib/auth/tokens";
 import { sendPasswordResetEmail } from "@/lib/email/authEmails";

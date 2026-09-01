@@ -22,7 +22,7 @@ import { Resend } from "resend";
 import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/utils/logger";
 import { validateOrigin } from "@/lib/utils/csrf";
-import { registrationLimiter } from "@/lib/utils/rate-limiter";
+import { registrationLimiter } from "@/lib/utils/rate-limiters";
 import { HAPPY_AVATAR_OPTIONS } from "@/components/profile/types";
 import { logAudit } from "@/lib/audit-logger";
 import { RegisterFormSchema } from "@/lib/validations/auth";

@@ -12,7 +12,7 @@
 import { protectedAction } from "@/lib/protectedAction";
 import { ActionError, type ActionResult } from "@/lib/action-response";
 import { validateOrigin } from "@/lib/utils/csrf";
-import { aiTextLimiter } from "@/lib/utils/rate-limiter";
+import { aiTextLimiter } from "@/lib/utils/rate-limiters";
 import { generateGreetingText, AiGenerationError } from "@/lib/ai/client";
 import { GenerateAiTextSchema, AI_ASSISTABLE_FIELDS } from "@/lib/validations/ai";
 import { logger } from "@/lib/utils/logger";
@@ -20,6 +20,8 @@ import { logger } from "@/lib/utils/logger";
 export interface GenerateAiTextOutput {
   text: string;
 }
+
+const AI_UNAVAILABLE_MESSAGE = "שרת ה-AI אינו זמין כרגע. נסו שוב בעוד כמה רגעים.";
 
 export async function generateAiText(
   input: unknown,
@@ -42,7 +44,16 @@ export async function generateAiText(
       throw new ActionError("שדה לא נתמך", 400);
     }
 
-    const rateLimitResult = await aiTextLimiter.check(user.id);
+    // Covers both an actual over-quota response and the rate limiter itself
+    // being unavailable (e.g. Upstash not configured) — either way the user
+    // sees the same "AI server unavailable" message, not raw plumbing.
+    let rateLimitResult;
+    try {
+      rateLimitResult = await aiTextLimiter.check(user.id);
+    } catch (err) {
+      logger.error("[generateAiText] Rate limiter unavailable", { error: err });
+      throw new ActionError(AI_UNAVAILABLE_MESSAGE, 503);
+    }
     if (!rateLimitResult.success) {
       throw new ActionError("הגעת למגבלת יצירת הטקסטים לשעה זו. נסה שוב מאוחר יותר.", 429);
     }
@@ -56,7 +67,7 @@ export async function generateAiText(
       } else {
         logger.error("[generateAiText] Unexpected error", { error: err });
       }
-      throw new ActionError("יצירת הטקסט נכשלה. נסה שוב.", 502);
+      throw new ActionError(AI_UNAVAILABLE_MESSAGE, 502);
     }
   });
 }
