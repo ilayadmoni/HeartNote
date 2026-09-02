@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,14 +17,15 @@ import { useActiveTemplates } from "@/hooks/useActiveTemplates";
 import { useGallerySearch } from "@/components/GallerySearchBar";
 import { GalleryTemplateDesktop } from "./Desktop/GalleryTemplateDesktop";
 import { GalleryTemplateMobile } from "./Mobile/GalleryTemplateMobile";
-import { TEMPLATES, CATEGORY_EMOJI_MAP } from "./data/templates";
+import { TEMPLATES, CATEGORY_KEY, CATEGORY_ICON_MAP, ALL_FILTER_TAB } from "./data/templates";
 import type { GalleryTemplateProps, Template, FilterTab } from "./types";
 
-export function GalleryTemplate(props: GalleryTemplateProps) {
+export function GalleryTemplate(props: GalleryTemplateProps): JSX.Element {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
+  const t = useTranslations("gallery");
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [pendingLink, setPendingLink] = useState<string | null>(null);
@@ -35,20 +37,28 @@ export function GalleryTemplate(props: GalleryTemplateProps) {
   const tabs = useMemo<FilterTab[]>(() => {
     const seen = new Set<string>();
     const dynamic = enrichedTemplates
-      .flatMap((t) => t.categories ?? [])
+      .flatMap((tpl) => tpl.categories ?? [])
       .filter((cat) => {
         if (seen.has(cat)) return false;
         seen.add(cat);
         return true;
       })
-      .map((cat) => ({ id: cat, label: cat, emoji: CATEGORY_EMOJI_MAP[cat] }));
-    return [{ id: "all", label: "הכל", emoji: "✨" }, ...dynamic];
+      .map((cat): FilterTab => {
+        const canonicalId = CATEGORY_KEY[cat];
+        return {
+          id: cat,
+          labelKey: canonicalId ? `categories.${canonicalId}` : "filters.all",
+          icon: CATEGORY_ICON_MAP[canonicalId] ?? CATEGORY_ICON_MAP.all,
+        };
+      });
+    return [ALL_FILTER_TAB, ...dynamic];
   }, [enrichedTemplates]);
 
   const { filteredTemplates } = useGallerySearch(
     enrichedTemplates,
     activeTab,
-    searchQuery
+    searchQuery,
+    t
   );
 
   // Auto-open login modal when redirected from middleware (?login=true)

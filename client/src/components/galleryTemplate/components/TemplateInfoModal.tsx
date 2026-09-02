@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
+import { useMotionOk } from "@/lib/motion";
 
 interface TemplateInfoModalProps {
   isOpen: boolean;
@@ -18,7 +20,9 @@ export function TemplateInfoModal({
   title,
   description,
   infoText,
-}: TemplateInfoModalProps) {
+}: TemplateInfoModalProps): JSX.Element {
+  const t = useTranslations("gallery");
+  const motionOk = useMotionOk();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
 
@@ -47,7 +51,9 @@ export function TemplateInfoModal({
 
   useEffect(() => {
     if (!isOpen) document.body.style.pointerEvents = "auto";
-    return () => { document.body.style.pointerEvents = "auto"; };
+    return () => {
+      document.body.style.pointerEvents = "auto";
+    };
   }, [isOpen]);
 
   return (
@@ -55,7 +61,7 @@ export function TemplateInfoModal({
       {isOpen && (
         <motion.div
           key="template-info-modal-root"
-          initial={{ opacity: 0, pointerEvents: "none" }}
+          initial={motionOk ? { opacity: 0, pointerEvents: "none" } : false}
           animate={{ opacity: 1, pointerEvents: "auto" }}
           exit={{ opacity: 0, pointerEvents: "none" }}
           transition={{ duration: 0.2 }}
@@ -63,91 +69,50 @@ export function TemplateInfoModal({
           onClick={onClose}
           role="dialog"
           aria-modal="true"
-          aria-label={`מידע על ${title}`}
+          aria-label={t("card.infoAria", { title })}
         >
-          {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm touch-none"
+            className="absolute inset-0 bg-ink/40 backdrop-blur-sm touch-none"
             onTouchMove={(e) => e.preventDefault()}
           />
 
-          {/* Modal Content */}
           <motion.div
-            initial={{ opacity: 0, y: 60 }}
+            initial={motionOk ? { opacity: 0, y: 60 } : false}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
             transition={{ type: "spring", damping: 28, stiffness: 350 }}
             onClick={(e) => e.stopPropagation()}
-            className="
-              relative z-10 w-full sm:max-w-md
-              bg-white dark:bg-gray-800
-              rounded-2xl border border-gray-100 dark:border-gray-700
-              shadow-2xl overflow-hidden touch-pan-y
-              max-h-[85vh] flex flex-col
-            "
+            className="relative z-10 w-full sm:max-w-md bg-surface-raised rounded-card border border-line shadow-lift overflow-hidden touch-pan-y max-h-[85vh] flex flex-col"
           >
-            {/* Header — centered title on white/dark surface, close btn floats left */}
             <div className="relative flex items-center justify-center px-6 py-5">
-              <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading text-center whitespace-nowrap tracking-tight">
-                {title}
-              </h3>
+              <h3 className="text-title-md text-ink text-center whitespace-nowrap tracking-tight">{title}</h3>
               <button
                 ref={closeButtonRef}
                 onClick={onClose}
-                className="
-                  absolute left-4 top-1/2 -translate-y-1/2
-                  w-8 h-8 flex items-center justify-center rounded-full
-                  bg-gray-100 hover:bg-gray-200
-                  dark:bg-gray-700 dark:hover:bg-gray-600
-                  text-[#2e3c52] dark:text-gray-200
-                  transition-colors duration-150
-                "
-                aria-label="סגור"
+                className="absolute start-4 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-pill bg-surface-sunken hover:bg-line text-ink transition-colors duration-base"
+                aria-label={t("infoModal.close")}
               >
-                <X size={16} strokeWidth={2.5} />
+                <X size={16} strokeWidth={2.5} aria-hidden="true" />
               </button>
             </div>
 
-            {/* Hairline divider */}
-            <div className="h-px bg-gray-100 dark:bg-gray-700 mx-6" />
+            <div className="h-px bg-line mx-6" />
 
-            {/* Body */}
-            <div className="px-6 pt-5 pb-2 overflow-y-auto flex-1" dir="rtl">
-              {/* Description */}
-              <p className="text-[15px] text-[#2e3c52] dark:text-gray-100 font-medium leading-relaxed text-hebrew-body">
-                {description}
-              </p>
+            <div className="px-6 pt-5 pb-2 overflow-y-auto flex-1" dir="auto">
+              <p className="text-body-md text-ink font-medium leading-relaxed">{description}</p>
 
-              {/* "How it works" callout card — replaces the divider + emoji */}
-              <div
-                className="
-                  mt-5 px-[18px] py-4 rounded-2xl
-                  bg-[#f7f4f1] border border-[#eee6df]
-                  dark:bg-gray-700/50 dark:border-gray-600
-                "
-              >
-                <div className="text-xs font-bold text-[#d4826f] tracking-[0.08em] uppercase mb-2 text-hebrew-heading">
-                  איך זה עובד
-                </div>
-                <p className="text-sm text-gray-500 dark:text-gray-300 leading-[1.8] text-hebrew-body">
-                  {infoText}
-                </p>
+              <div className="mt-5 px-[18px] py-4 rounded-card bg-surface-sunken border border-line">
+                <div className="text-overline text-accent mb-2">{t("infoModal.howItWorks")}</div>
+                <p className="text-body-sm text-ink-muted leading-[1.8]">{infoText}</p>
               </div>
             </div>
 
-            {/* Footer CTA */}
             <div className="px-6 pb-5 pt-4">
               <button
                 onClick={onClose}
-                className="
-                  w-full py-3 rounded-xl font-bold text-[15px]
-                  bg-[#d4826f] hover:bg-[#c4735f]
-                  text-white transition-all duration-200
-                  text-hebrew-heading
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f] focus-visible:ring-offset-2
-                "
+                className="w-full py-3 rounded-pill font-bold text-body-md bg-accent hover:bg-accent-hover text-accent-ink transition-colors duration-base focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
               >
-                הבנתי
+                {t("infoModal.gotIt")}
               </button>
             </div>
           </motion.div>

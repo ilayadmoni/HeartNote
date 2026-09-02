@@ -1,21 +1,31 @@
+import {
+  Sparkles,
+  Heart,
+  Gamepad2,
+  Camera,
+  Gift,
+  PartyPopper,
+  HeartHandshake,
+  Star,
+  BookOpen,
+} from "lucide-react";
 import type { FilterTab } from "../types";
 
-export const CATEGORY_EMOJI_MAP: Record<string, string> = {
-  "רומנטי": "💕",
-  "משחקים": "🎮",
-  "זיכרונות": "📸",
-  "מתנות": "🎁",
-  "אירועים מיוחדים": "🎉",
-  "חתונה": "💍",
-  "חגים": "🕎",
-  "בר/בת מצווה": "🎊",
+/** Canonical category id -> lucide icon shown on the filter pill. */
+export const CATEGORY_ICON_MAP: Record<string, FilterTab["icon"]> = {
+  all: Sparkles,
+  romantic: Heart,
+  fun: Gamepad2,
+  memories: Camera,
+  gifts: Gift,
+  birthday: PartyPopper,
+  wedding: HeartHandshake,
+  holidays: Star,
+  mitzvah: BookOpen,
 };
 
-export const FILTER_TABS: FilterTab[] = [
-  { id: "all", label: "הכל", emoji: "✨" },
-  { id: "romantic", label: "רומנטי", emoji: "💕" },
-  { id: "fun", label: "משחקים", emoji: "🎮" },
-  { id: "memories", label: "זיכרונות", emoji: "📸" },
-  { id: "gifts", label: "מתנות", emoji: "🎁" },
-  { id: "birthday", label: "אירועים מיוחדים", emoji: "🎉" },
-];
+export const ALL_FILTER_TAB: FilterTab = {
+  id: "all",
+  labelKey: "filters.all",
+  icon: Sparkles,
+};

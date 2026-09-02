@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Lock } from "lucide-react";
 
-export function OpenWhenPreview() {
+export function OpenWhenPreview(): JSX.Element {
   return (
     <div className="h-full w-full flex items-center justify-center p-3">
       <div className="grid grid-cols-2 gap-1.5">
@@ -18,12 +19,10 @@ export function OpenWhenPreview() {
             animate={{ scale: 1 }}
             transition={{ delay: i * 0.1 }}
             className={`w-8 h-6 rounded flex items-center justify-center text-xs ${
-              env.locked
-                ? "bg-gray-200 dark:bg-gray-600"
-                : "bg-[#f5e6d3] dark:bg-gray-500"
+              env.locked ? "bg-surface-sunken" : "bg-cream-300"
             }`}
           >
-            {env.locked ? "🔒" : env.emoji}
+            {env.locked ? <Lock size={11} className="text-ink-subtle" aria-hidden="true" /> : env.emoji}
           </motion.div>
         ))}
       </div>

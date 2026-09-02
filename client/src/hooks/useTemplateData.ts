@@ -75,7 +75,7 @@ export function useTemplateData(
   );
 
   /** Pretty-print to console for dev inspection (no-op in production) */
-  const logData = useCallback((label = "שליחה") => {
+  const logData = useCallback((label = "Submit") => {
     if (process.env.NODE_ENV !== "development") return;
     const current = stateRef.current;
     console.group(`[HeartNote] ${label}`);

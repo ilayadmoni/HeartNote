@@ -1,22 +1,36 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
-const SLOT_LABELS = [
-  ["לחצי", "אני", "מחר"],
-  ["כדי", "להזמין", "לפנק"],
-  ["לגלות", "פיצה", "מסאז׳"],
-];
+export function SlotMachinePreview(): JSX.Element {
+  const t = useTranslations("gallery");
+  const columns = [
+    [
+      t("previews.slotMachine.reel1Word1"),
+      t("previews.slotMachine.reel1Word2"),
+      t("previews.slotMachine.reel1Word3"),
+    ],
+    [
+      t("previews.slotMachine.reel2Word1"),
+      t("previews.slotMachine.reel2Word2"),
+      t("previews.slotMachine.reel2Word3"),
+    ],
+    [
+      t("previews.slotMachine.reel3Word1"),
+      t("previews.slotMachine.reel3Word2"),
+      t("previews.slotMachine.reel3Word3"),
+    ],
+  ];
 
-export function SlotMachinePreview() {
   return (
     <div className="h-full w-full flex items-center justify-center p-3">
       <div className="flex flex-col items-center gap-1.5">
         <div className="flex gap-1">
-          {SLOT_LABELS.map((labels, col) => (
+          {columns.map((labels, col) => (
             <div
               key={col}
-              className="w-7 h-10 rounded-md bg-[#f2e9e4] dark:bg-gray-600 border border-gray-300 dark:border-gray-500 shadow-inner overflow-hidden relative"
+              className="w-7 h-10 rounded-md bg-cream-200 border border-line shadow-soft overflow-hidden relative"
             >
               <motion.div
                 animate={{ y: [0, -40, -80, -40, 0] }}
@@ -31,10 +45,7 @@ export function SlotMachinePreview() {
                 className="flex flex-col"
               >
                 {labels.map((label, i) => (
-                  <div
-                    key={i}
-                    className="h-10 flex items-center justify-center text-[8px] font-bold text-[#2e3c52] dark:text-white"
-                  >
+                  <div key={i} className="h-10 flex items-center justify-center text-[8px] font-bold text-ink">
                     {label}
                   </div>
                 ))}
@@ -45,9 +56,9 @@ export function SlotMachinePreview() {
         <motion.div
           animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: 1.2, repeat: Infinity }}
-          className="px-3 py-1 rounded-full bg-[#d4826f] text-white text-[8px] font-bold shadow"
+          className="px-3 py-1 rounded-pill bg-accent text-accent-ink text-[8px] font-bold shadow-soft"
         >
-          🎰 סובבי
+          {t("previews.slotMachine.cta")}
         </motion.div>
       </div>
     </div>

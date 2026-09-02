@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
-export function BirthdayCandlesInteractivePreview() {
+export function BirthdayCandlesInteractivePreview(): JSX.Element {
+  const t = useTranslations("gallery");
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[#faf7f5]">
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-surface-sunken">
       <div className="relative h-28 w-32">
-        <div className="absolute left-1/2 top-[13px] z-[1] flex -translate-x-1/2 gap-1">
+        <div className="absolute start-1/2 top-[13px] z-[1] flex -translate-x-1/2 gap-1">
           {[0, 1, 2, 3].map((i) => (
             <span key={i} className="flex h-10 w-4 flex-col items-center justify-end">
               <motion.span
@@ -19,13 +21,13 @@ export function BirthdayCandlesInteractivePreview() {
                   <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
                 </svg>
               </motion.span>
-              <span className="h-7 w-1.5 rounded-t-sm border border-gray-200 bg-[#f5f0e8]" />
+              <span className="h-7 w-1.5 rounded-t-sm border border-line bg-cream-100" />
             </span>
           ))}
         </div>
         <Image
           src="/assets/images/birthday-interactive/birthday-cake.svg"
-          alt="עוגת יום הולדת עם נרות"
+          alt={t("previews.birthdayCandles.alt")}
           fill
           sizes="128px"
           className="object-contain drop-shadow-lg"
@@ -35,14 +37,15 @@ export function BirthdayCandlesInteractivePreview() {
   );
 }
 
-export function WeddingGlassInteractivePreview() {
+export function WeddingGlassInteractivePreview(): JSX.Element {
+  const t = useTranslations("gallery");
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[#faf7f5]">
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-surface-sunken">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,130,111,0.12),transparent_66%)]" />
       <div className="relative h-full w-40 max-w-[88%]">
         <Image
           src="/assets/images/wedding-interactive/wedding-1.svg"
-          alt="חתונה תחת החופה"
+          alt={t("previews.weddingGlass.alt")}
           fill
           sizes="160px"
           className="object-contain drop-shadow-md"
@@ -52,79 +55,74 @@ export function WeddingGlassInteractivePreview() {
   );
 }
 
-export function HolidayRoshHashanahInteractivePreview() {
+export function HolidayRoshHashanahInteractivePreview(): JSX.Element {
+  const t = useTranslations("gallery");
   return (
     <HolidayArtPreview
-      label="ראש השנה"
+      label={t("previews.holidayRoshHashanah.label")}
       src="/assets/images/holiday-interactive/frames/rosh-hashanah/rh- 4.svg"
     />
   );
 }
 
-export function HolidayPassoverInteractivePreview() {
+export function HolidayPassoverInteractivePreview(): JSX.Element {
+  const t = useTranslations("gallery");
   return (
     <HolidayArtPreview
-      label="פסח"
+      label={t("previews.holidayPassover.label")}
       src="/assets/images/holiday-interactive/reference/passover.svg"
     />
   );
 }
 
-export function HolidayPurimInteractivePreview() {
+export function HolidayPurimInteractivePreview(): JSX.Element {
+  const t = useTranslations("gallery");
   return (
     <HolidayArtPreview
-      label="פורים"
+      label={t("previews.holidayPurim.label")}
       src="/assets/images/holiday-interactive/frames/purim/purim3.svg"
     />
   );
 }
 
-export function HolidayShavuotInteractivePreview() {
+export function HolidayShavuotInteractivePreview(): JSX.Element {
+  const t = useTranslations("gallery");
   return (
     <HolidayArtPreview
-      label="שבועות"
+      label={t("previews.holidayShavuot.label")}
       src="/assets/images/holiday-interactive/frames/shavuot/shavuot3.svg"
     />
   );
 }
 
-export function HolidaySukkotInteractivePreview() {
+export function HolidaySukkotInteractivePreview(): JSX.Element {
+  const t = useTranslations("gallery");
   return (
     <HolidayArtPreview
-      label="סוכות"
+      label={t("previews.holidaySukkot.label")}
       src="/assets/images/holiday-interactive/frames/sukkot/sukkot3.svg"
     />
   );
 }
 
-export function HolidayHanukkahInteractivePreview() {
+export function HolidayHanukkahInteractivePreview(): JSX.Element {
+  const t = useTranslations("gallery");
   return (
     <HolidayArtPreview
-      label="חנוכה"
+      label={t("previews.holidayHanukkah.label")}
       src="/assets/images/holiday-interactive/frames/hanukkah/hanukkah4.svg"
     />
   );
 }
 
-function HolidayArtPreview({ label, src }: {
-  label: string;
-  src: string;
-}) {
+function HolidayArtPreview({ label, src }: { label: string; src: string }): JSX.Element {
   return (
     <div className="flex h-full w-full items-center justify-center p-2">
-      <div className="relative h-24 w-32 overflow-hidden rounded-2xl border border-white/80 bg-[#fff8ef] p-1.5 shadow-md">
-        <div className="relative h-full w-full overflow-hidden rounded-xl bg-[#faf2e8]">
-          <Image
-            src={src}
-            alt=""
-            fill
-            sizes="128px"
-            className="object-contain"
-          />
+      <div className="relative h-24 w-32 overflow-hidden rounded-card border border-line bg-cream-50 p-1.5 shadow-soft">
+        <div className="relative h-full w-full overflow-hidden rounded-xl bg-cream-100">
+          <Image src={src} alt="" fill sizes="128px" className="object-contain" />
         </div>
-        <p className="absolute inset-x-0 bottom-1 text-center text-[8px] font-bold text-navy-700">
-          {label}
-        </p>
+        <p className="absolute inset-x-0 bottom-1 text-center text-[8px] font-bold text-navy-700">{label}</p>
       </div>
     </div>
   );

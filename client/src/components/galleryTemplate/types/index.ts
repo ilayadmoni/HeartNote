@@ -3,16 +3,20 @@
  * Type definitions for the gallery template feature
  */
 
+import type { LucideIcon } from "lucide-react";
+
 export interface Template {
   id: string;
-  title: string;
-  description: string;
+  /** Message key resolved via t(nameKey) under the "gallery" namespace. */
+  nameKey: string;
+  /** Message key resolved via t(descriptionKey) under the "gallery" namespace. */
+  descriptionKey: string;
+  /** Raw name from the DB row, used only if nameKey has no catalog translation. */
+  dbName?: string;
   imageSrc?: string;
   category?: TemplateCategory; // Deprecated: use categories array instead
   categories?: string[]; // New: array of categories from DB
-  badge?: TemplateBadge;
   link: string;
-  linkText?: string;
   isFree?: boolean;
   isPremium?: boolean;
   componentKey: TemplateComponentKey;
@@ -52,15 +56,11 @@ export type TemplateCategory =
   | "holidays"
   | "mitzvah";
 
-export interface TemplateBadge {
-  type: "heart" | "star" | "new" | "free" | "premium";
-  color?: string;
-}
-
 export interface FilterTab {
   id: string;
-  label: string;
-  emoji?: string;
+  /** Message key resolved via t(labelKey) under the "gallery" namespace. */
+  labelKey: string;
+  icon: LucideIcon;
 }
 
 export interface GalleryTemplateProps {

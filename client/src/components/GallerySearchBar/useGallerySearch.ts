@@ -10,7 +10,9 @@ interface UseGallerySearchResult {
 export function useGallerySearch(
   templates: Template[],
   activeTab: string,
-  searchQuery: string
+  searchQuery: string,
+  /** Translator bound to the "gallery" namespace, used to search localized copy. */
+  t: (key: string) => string
 ): UseGallerySearchResult {
   const [debouncedQuery, setDebouncedQuery] = useState<string>(searchQuery);
 
@@ -24,22 +26,25 @@ export function useGallerySearch(
 
     if (activeTab !== "all") {
       result = result.filter(
-        (t) => t.categories?.includes(activeTab) ?? false
+        (tpl) => tpl.categories?.includes(activeTab) ?? false
       );
     }
 
     const q = debouncedQuery.trim().toLowerCase();
     if (q) {
-      result = result.filter(
-        (t) =>
-          t.title.toLowerCase().includes(q) ||
-          t.description.toLowerCase().includes(q) ||
-          (t.categories ?? []).join(" ").toLowerCase().includes(q)
-      );
+      result = result.filter((tpl) => {
+        const name = t(tpl.nameKey).toLowerCase();
+        const description = t(tpl.descriptionKey).toLowerCase();
+        return (
+          name.includes(q) ||
+          description.includes(q) ||
+          (tpl.categories ?? []).join(" ").toLowerCase().includes(q)
+        );
+      });
     }
 
     return result;
-  }, [templates, activeTab, debouncedQuery]);
+  }, [templates, activeTab, debouncedQuery, t]);
 
   return { filteredTemplates };
 }

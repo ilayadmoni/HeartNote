@@ -6,30 +6,27 @@
  */
 
 import { motion } from "framer-motion";
+import { fadeUp, transitions, useMotionOk } from "@/lib/motion";
 import type { GalleryHeaderProps } from "../types";
 
-export function GalleryHeader({
-  title,
-  subtitle,
-  className = "",
-}: GalleryHeaderProps) {
+export function GalleryHeader({ title, subtitle, className = "" }: GalleryHeaderProps): JSX.Element {
+  const motionOk = useMotionOk();
+
   return (
     <div className={`text-center ${className}`}>
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        initial={motionOk ? "hidden" : false}
+        animate="visible"
+        variants={fadeUp}
       >
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2e3c52] dark:text-white mb-4 transition-colors duration-300 text-hebrew-heading">
-          {title}
-        </h1>
+        <h1 className="text-display-md text-ink mb-4">{title}</h1>
       </motion.div>
 
       <motion.p
-        initial={{ opacity: 0 }}
+        initial={motionOk ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-        className="text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto transition-colors duration-300 text-hebrew-body"
+        transition={{ ...transitions.enter, delay: 0.15 }}
+        className="text-body-lg text-ink-muted max-w-prose mx-auto"
       >
         {subtitle}
       </motion.p>

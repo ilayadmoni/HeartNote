@@ -2,62 +2,56 @@
 
 /**
  * TemplateCard Component
- * Individual template card with animated preview, title, description,
- * info button, and badge.
+ * Individual template card with animated preview, name, description,
+ * info button, and a premium/free badge.
  */
 
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
-import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Info, Lock } from "lucide-react";
 import { TemplatePreview } from "./TemplatePreview";
 import { TemplateInfoModal } from "./TemplateInfoModal";
-import { TEMPLATE_INFO_TEXT } from "../data/templates";
+import { infoKeyFor } from "../data/templates";
+import { pressable, transitions, useMotionOk } from "@/lib/motion";
 import type { TemplateCardProps } from "../types";
 
-export function TemplateCard({
-  template,
-  className = "",
-  onClick,
-}: TemplateCardProps) {
+export function TemplateCard({ template, className = "", onClick }: TemplateCardProps): JSX.Element {
+  const t = useTranslations("gallery");
+  const motionOk = useMotionOk();
   const [showInfo, setShowInfo] = useState(false);
 
-  const infoText = TEMPLATE_INFO_TEXT[template.id];
+  const infoKey = infoKeyFor(template.id);
+  const name = t.has(template.nameKey) ? t(template.nameKey) : template.dbName ?? template.id;
+  const description = t.has(template.descriptionKey) ? t(template.descriptionKey) : "";
 
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={motionOk ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ y: -4 }}
-        transition={{ duration: 0.3 }}
-        className={`
-          relative group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden
-          shadow-sm transition-all duration-300
-          border border-gray-100 dark:border-gray-700
-          hover:shadow-xl
-          ${className}
-        `}
+        transition={transitions.enter}
+        className={`relative group bg-surface-raised rounded-card overflow-hidden shadow-card transition-shadow duration-base ease-out-quint border border-line hover:shadow-lift ${className}`}
       >
         <div>
           {/* Preview Container */}
-          <div className="relative aspect-[7/3] bg-gradient-to-br from-[#faf7f5] to-[#f5f0eb] dark:from-gray-700 dark:to-gray-800 overflow-hidden">
+          <div className="relative aspect-[7/3] bg-gradient-to-br from-cream-50 to-cream-200 overflow-hidden">
             {/* Badges */}
-            <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
-              {/* Premium/Free Badge */}
+            <div className="absolute top-3 start-3 end-3 flex justify-between items-start z-10">
               {template.isPremium ? (
-                <span className="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-full shadow-md text-hebrew-body flex items-center gap-1">
-                  ⭐ פרימיום
-                </span>
-              ) : template.isFree ? (
-                <span className="px-2.5 py-1 bg-green-500 text-white text-xs font-bold rounded-full shadow-md text-hebrew-body">
-                  חינם
+                <span className="px-2.5 py-1 bg-accent text-accent-ink text-caption font-bold rounded-pill shadow-soft flex items-center gap-1">
+                  <Lock size={11} aria-hidden="true" />
+                  {t("badges.premium")}
                 </span>
               ) : (
-                <span />
+                <span className="px-2.5 py-1 bg-cream-200 text-ink-muted text-caption font-bold rounded-pill">
+                  {t("badges.free")}
+                </span>
               )}
 
-              {infoText && (
+              {infoKey && (
                 <button
                   type="button"
                   onClick={(e) => {
@@ -65,30 +59,11 @@ export function TemplateCard({
                     e.stopPropagation();
                     setShowInfo(true);
                   }}
-                  className="
-                    shrink-0 w-8 h-8 min-w-[44px] min-h-[44px]
-                    flex items-center justify-center
-                    rounded-full
-                    text-gray-400 dark:text-gray-500
-                    hover:text-[#d4826f] dark:hover:text-[#e8917a]
-                    hover:bg-[#d4826f]/10 dark:hover:bg-[#e8917a]/10
-                    transition-all duration-200
-                    -mt-1 -mr-1
-                  "
-                  aria-label={`מידע על ${template.title}`}
+                  className="shrink-0 w-8 h-8 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-pill text-ink-subtle hover:text-accent hover:bg-accent-soft transition-colors duration-base -mt-1 -me-1"
+                  aria-label={t("card.infoAria", { title: name })}
                 >
-                  <Info size={18} strokeWidth={2.2} />
+                  <Info size={18} strokeWidth={2.2} aria-hidden="true" />
                 </button>
-              )}
-
-              {/* Category Badge */}
-              {template.badge && template.badge.type === "heart" && (
-                <span
-                  className="w-8 h-8 rounded-full flex items-center justify-center shadow-md"
-                  style={{ backgroundColor: template.badge.color }}
-                >
-                  💕
-                </span>
               )}
             </div>
 
@@ -98,41 +73,34 @@ export function TemplateCard({
             </div>
 
             {/* Hover Overlay */}
-            <div className="absolute inset-0 bg-[#2e3c52]/0 group-hover:bg-[#2e3c52]/10 transition-colors duration-300" />
+            <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/10 transition-colors duration-base" />
           </div>
 
           {/* Content */}
           <div className="p-4 md:p-5">
-            {/* Title Row with Info Button */}
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <h3 className="text-lg md:text-xl font-bold text-[#2e3c52] dark:text-white text-hebrew-heading group-hover:text-[#d4826f] transition-colors duration-300">
-                {template.title}
-              </h3>
-            </div>
+            <h3 className="text-title-sm text-ink mb-2 group-hover:text-accent transition-colors duration-base">
+              {name}
+            </h3>
 
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-hebrew-body leading-relaxed">
-              {template.description}
-            </p>
+            <p className="text-body-sm text-ink-muted mb-4 line-clamp-2 leading-relaxed">{description}</p>
 
             {/* CTA Button */}
             <div className="w-full">
               {onClick ? (
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  {...pressable}
                   onClick={() => onClick(template)}
-                  className="w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-hebrew-heading bg-[#d4826f] text-white hover:bg-[#c4735f]"
+                  className="w-full py-2.5 rounded-pill font-bold text-body-sm bg-accent text-accent-ink hover:bg-accent-hover transition-colors duration-base"
                 >
-                  התחילו ליצור
+                  {t("card.cta")}
                 </motion.button>
               ) : (
                 <Link href={template.link} className="block w-full">
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-hebrew-heading bg-[#d4826f] text-white hover:bg-[#c4735f]"
+                    {...pressable}
+                    className="w-full py-2.5 rounded-pill font-bold text-body-sm bg-accent text-accent-ink hover:bg-accent-hover transition-colors duration-base"
                   >
-                    התחילו ליצור
+                    {t("card.cta")}
                   </motion.button>
                 </Link>
               )}
@@ -142,13 +110,13 @@ export function TemplateCard({
       </motion.div>
 
       {/* Info Modal — rendered outside the card to avoid z-index issues */}
-      {infoText && (
+      {infoKey && (
         <TemplateInfoModal
           isOpen={showInfo}
           onClose={() => setShowInfo(false)}
-          title={template.title}
-          description={template.description}
-          infoText={infoText}
+          title={name}
+          description={description}
+          infoText={t(infoKey)}
         />
       )}
     </>

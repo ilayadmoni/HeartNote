@@ -7,7 +7,8 @@
  */
 
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   DateInvite,
   ScratchCard,
@@ -32,59 +33,54 @@ const TEMPLATE_COMPONENTS: Record<
   "open-when": OpenWhen as React.ComponentType<{ data: unknown }>,
 };
 
-// Default data for each template
-const DEFAULT_DATA: Record<string, Record<string, unknown>> = {
-  "date-invite": {
-    question: "?האם תצא/י איתי לדייט",
-    yesText: "כן!",
-    noText: "לא",
-    successMessage: "!יש! איזה כיף",
-  },
-  "scratch-card": {
-    title: "גרד וגלה את ההפתעה",
-    prizeContent: "🎁 זכית!",
-  },
-  timeline: {
-    title: "הסיפור שלנו",
-    events: [],
-  },
-  "love-coupons": {
-    title: "קופונים מיוחדים",
-    coupons: [],
-  },
-  "relationship-quiz": {
-    title: "?כמה את/ה מכיר/ה אותי",
-    questions: [],
-    scoreMessages: [],
-  },
-  "open-when": {
-    title: "מכתבים מיוחדים",
-    envelopes: [],
-  },
-};
-
-export default function PreviewFramePage() {
+export default function PreviewFramePage(): JSX.Element {
+  const t = useTranslations("gallery");
   const params = useParams();
   const templateId = params.templateId as string;
-  const [data, setData] = useState<Record<string, unknown>>(
-    DEFAULT_DATA[templateId] || {},
+
+  const defaultData = useMemo<Record<string, Record<string, unknown>>>(
+    () => ({
+      "date-invite": {
+        question: t("previewFrame.dateInvite.question"),
+        yesText: t("previewFrame.dateInvite.yes"),
+        noText: t("previewFrame.dateInvite.no"),
+        successMessage: t("previewFrame.dateInvite.success"),
+      },
+      "scratch-card": {
+        title: t("previewFrame.scratchCard.title"),
+        prizeContent: `🎁 ${t("previewFrame.scratchCard.prizeContent")}`,
+      },
+      timeline: { title: t("previewFrame.timeline.title"), events: [] },
+      "love-coupons": { title: t("previewFrame.loveCoupons.title"), coupons: [] },
+      "relationship-quiz": {
+        title: t("previewFrame.relationshipQuiz.title"),
+        questions: [],
+        scoreMessages: [],
+      },
+      "open-when": { title: t("previewFrame.openWhen.title"), envelopes: [] },
+    }),
+    [t],
   );
 
-  // Load data from sessionStorage
+  const [data, setData] = useState<Record<string, unknown>>({});
+
+  // Load data from sessionStorage, falling back to translated defaults
   useEffect(() => {
     const stored = sessionStorage.getItem(`preview_${templateId}`);
     if (stored) {
       try {
         setData(JSON.parse(stored));
+        return;
       } catch {
-        // Use default data
+        // Fall through to default data
       }
     }
-  }, [templateId]);
+    setData(defaultData[templateId] ?? {});
+  }, [templateId, defaultData]);
 
   // Listen for data updates from parent window
   useEffect(() => {
-    function handleMessage(event: MessageEvent) {
+    function handleMessage(event: MessageEvent): void {
       if (event.data?.type === "UPDATE_DATA") {
         setData(event.data.data);
       }
@@ -118,14 +114,14 @@ export default function PreviewFramePage() {
 
   if (!Component) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#faf7f5]">
-        <p className="text-gray-400 text-sm">תבנית לא נמצאה</p>
+      <div className="h-[100dvh] flex items-center justify-center bg-surface">
+        <p className="text-body-sm text-ink-subtle">{t("states.previewNotFound")}</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#faf7f5] min-h-screen">
+    <div className="bg-surface min-h-[100dvh]">
       <Component data={data} />
     </div>
   );

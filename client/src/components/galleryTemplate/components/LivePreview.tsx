@@ -7,35 +7,35 @@
  */
 
 import { Suspense, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import {
   getTemplateComponent,
   type AnyTemplateComponent,
 } from "@/components/templates/registry";
-import { PREVIEW_DATA } from "../data/templates";
+import { buildPreviewData } from "../data/previewData";
 import type { TemplateComponentKey } from "../types";
 
 interface LivePreviewProps {
   componentKey: TemplateComponentKey;
 }
 
-export function LivePreview({ componentKey }: LivePreviewProps) {
+export function LivePreview({ componentKey }: LivePreviewProps): JSX.Element {
+  const t = useTranslations("gallery");
+
   const Component: AnyTemplateComponent | undefined = useMemo(
     () => getTemplateComponent(componentKey),
     [componentKey],
   );
 
   const data = useMemo(
-    () =>
-      (PREVIEW_DATA as Record<string, unknown>)[componentKey] ?? {},
-    [componentKey],
+    () => (buildPreviewData(t) as Record<string, unknown>)[componentKey] ?? {},
+    [componentKey, t],
   );
 
   if (!Component) {
     return (
       <div className="h-full w-full flex items-center justify-center p-4">
-        <span className="text-gray-400 dark:text-gray-500 text-sm text-hebrew-body">
-          תצוגה מקדימה
-        </span>
+        <span className="text-body-sm text-ink-subtle">{t("states.previewUnavailable")}</span>
       </div>
     );
   }
@@ -54,7 +54,7 @@ export function LivePreview({ componentKey }: LivePreviewProps) {
         <Suspense
           fallback={
             <div className="h-full w-full flex items-center justify-center">
-              <div className="w-6 h-6 border-2 border-[#d4826f] border-t-transparent rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
             </div>
           }
         >

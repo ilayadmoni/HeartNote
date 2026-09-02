@@ -4,9 +4,10 @@
  * Consumers import from this file; sub-modules are an implementation detail.
  */
 
-export { CATEGORY_EMOJI_MAP, FILTER_TABS } from "./categoryConfig";
-export { PREVIEW_DATA } from "./previewData";
-export { TEMPLATE_INFO_TEXT } from "./templateInfoText";
+export { CATEGORY_ICON_MAP, ALL_FILTER_TAB } from "./categoryConfig";
+export { TEMPLATE_KEY, CATEGORY_KEY } from "./templateKeys";
+export { buildPreviewData } from "./previewData";
+export { infoKeyFor } from "./templateInfoText";
 
 import { BASE_TEMPLATES } from "./baseTemplates";
 import { INTERACTIVE_EVENT_TEMPLATES } from "./interactiveEventTemplates";

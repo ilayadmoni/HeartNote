@@ -9,6 +9,7 @@
  */
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import Loading from "@/app/[locale]/(main)/loading";
 import { GalleryTemplate } from "./index";
 import { useHasMounted } from "@/hooks/useHasMounted";
@@ -16,9 +17,11 @@ import { useActiveTemplates } from "@/hooks/useActiveTemplates";
 import { useSafeModeTimeout } from "@/hooks/useSafeModeTimeout";
 import { MobileErrorBoundary } from "@/components/ErrorBoundary/MobileErrorBoundary";
 import { SafeModeFallback } from "@/components/ErrorBoundary/SafeModeFallback";
+import { logger } from "@/lib/utils/logger";
 import { TEMPLATES } from "./data/templates";
 
-export function GalleryLoadingWrapper() {
+export function GalleryLoadingWrapper(): JSX.Element {
+  const t = useTranslations("gallery");
   const hasMounted = useHasMounted();
   const { loading, error } = useActiveTemplates(TEMPLATES);
 
@@ -26,17 +29,13 @@ export function GalleryLoadingWrapper() {
   const safeMode = useSafeModeTimeout(!isReady, 5000);
 
   if (error) {
-    console.error(`[MOBILE-DEBUG] Gallery template fetch failed: ${error}`);
+    logger.error("[GalleryLoadingWrapper] Gallery template fetch failed", { error });
   }
 
   if (safeMode) {
     return (
       <SafeModeFallback
-        message={
-          error
-            ? `לא הצלחנו לטעון את התבניות: ${error}`
-            : "הטעינה נמשכת זמן רב מהרגיל. ניתן לרענן את העמוד."
-        }
+        message={error ? t("states.loadFailed", { error }) : t("states.safeModeTimeout")}
       />
     );
   }

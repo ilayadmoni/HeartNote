@@ -3,15 +3,27 @@
  * Browse and select from available HeartNote templates
  */
 
-import { GalleryLoadingWrapper } from "@/components/galleryTemplate/GalleryLoadingWrapper";
+import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import { GalleryLoadingWrapper } from "@/components/galleryTemplate/GalleryLoadingWrapper";
+import { isLocale, DEFAULT_LOCALE } from "@/i18n/locale";
 
-export const metadata: Metadata = {
-  title: "HeartNote | גלריית ברכות דיגיטליות",
-  description:
-    "בחרו תבנית מקורית מתוך מגוון התבניות שלנו, עצבו והתאימו אותה,ותשלחו ברכה דיגיטלית מרגשת למי שאתם אוהבים. גלגל החלטות | כרטיס גירוד | הזמנה לדייט | ציר זמן | קופוני אהבה | חידון חברות | ועוד",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return buildPageMetadata({ locale: isLocale(locale) ? locale : DEFAULT_LOCALE, path: "/gallery", key: "gallery" });
+}
 
-export default function GalleryPage() {
+export default async function GalleryPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<JSX.Element> {
+  const { locale } = await params;
+  setRequestLocale(isLocale(locale) ? locale : DEFAULT_LOCALE);
   return <GalleryLoadingWrapper />;
 }

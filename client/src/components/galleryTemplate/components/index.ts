@@ -7,6 +7,7 @@ export { FilterTabs } from "./FilterTabs";
 export { TemplateCard } from "./TemplateCard";
 export { TemplatePreview } from "./TemplatePreview";
 export { LivePreview } from "./LivePreview";
+export { GalleryEmptyState, GalleryErrorState, GallerySkeletonGrid } from "./GalleryStateViews";
 export {
   DecisionWheelPreview,
   SurpriseGiftPreview,

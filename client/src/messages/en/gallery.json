@@ -1,1 +1,292 @@
-{}
+{
+  "header": {
+    "title": "Pick your next experience",
+    "subtitle": "A gallery of interactive templates, made with love. Personalize one, and send it."
+  },
+  "search": {
+    "label": "Search templates",
+    "placeholder": "Search templates...",
+    "clear": "Clear search"
+  },
+  "filters": {
+    "all": "All"
+  },
+  "categories": {
+    "romantic": "Romantic",
+    "fun": "Games",
+    "memories": "Memories",
+    "gifts": "Gifts",
+    "birthday": "Special occasions",
+    "wedding": "Weddings",
+    "holidays": "Holidays",
+    "mitzvah": "Bar/Bat Mitzvah"
+  },
+  "badges": {
+    "premium": "Premium",
+    "free": "Free",
+    "new": "New"
+  },
+  "card": {
+    "cta": "Start creating",
+    "infoAria": "About {title}"
+  },
+  "infoModal": {
+    "howItWorks": "How it works",
+    "gotIt": "Got it",
+    "close": "Close"
+  },
+  "states": {
+    "empty": "No templates match your search",
+    "emptyHint": "Try a different word, or browse another category",
+    "error": "We couldn't load the templates. Please try again later",
+    "toastLoadFailed": "We couldn't load the template list. Please try again",
+    "loading": "Loading templates...",
+    "loadFailed": "We couldn't load the templates: {error}",
+    "safeModeTimeout": "This is taking longer than usual. You can refresh the page",
+    "previewNotFound": "Template not found",
+    "previewUnavailable": "Preview"
+  },
+  "templates": {
+    "dateInvite": {
+      "name": "Want to go on a date?",
+      "description": "An interactive card where the 'No' button runs from your cursor. Impossible to say no to.",
+      "info": "How it works: you send the invite, and the other side simply can't refuse (because the 'No' button keeps dodging their tap). A foolproof way to lock in a date, or at least get a laugh before they say yes."
+    },
+    "scratchCard": {
+      "name": "Scratch Card",
+      "description": "Scratch it off and reveal the surprise! A hidden prize waits under the silver layer.",
+      "info": "Feeling lucky? It's just like a real scratch ticket, except instead of winning a few coins and shrugging, there's a surprise underneath that you chose yourself (and no mess on the couch)."
+    },
+    "timeline": {
+      "name": "How did it all start?",
+      "description": "A nostalgic journey through the special moments you shared with someone you love.",
+      "info": "Your story, beautifully organized. Think of it as a résumé, but for your relationship. When did you meet? When did you first say 'I love you'? It's all here."
+    },
+    "decisionWheel": {
+      "name": "Can't decide?",
+      "description": "Not sure what to do? Spin the wheel and let fate choose for you.",
+      "info": "The end of the eternal 'what do you feel like eating' debate. Add your options, spin the wheel, and let fate decide (or keep spinning until it lands on pizza)."
+    },
+    "loveCoupons": {
+      "name": "Love Coupons",
+      "description": "A digital coupon book! A bunch of pampering surprises you get to design yourself.",
+      "info": "A coupon book you prepare in advance. Massage? A free pass on the dishes? Just be careful, they might cash them all in on the same day."
+    },
+    "relationshipQuiz": {
+      "name": "Relationship Quiz",
+      "description": "How well do you really know each other? A fateful quiz with a score at the end.",
+      "info": "The ultimate test. Are they really listening when you talk? Write some tough questions and see who gets top marks (and who's sleeping on the couch)."
+    },
+    "openWhen": {
+      "name": "Open When...",
+      "description": "Envelopes with letters for specific moments. Open when you're sad, when you miss me...",
+      "info": "Virtual envelopes for specific moments. 'Open when you're sad', 'Open when you miss me'... a lot more touching than a sticky note on the fridge that falls off after two days."
+    },
+    "surpriseGift": {
+      "name": "A Little Surprise",
+      "description": "A gift box, shake it until it opens and find out what's hiding inside.",
+      "info": "A virtual gift box you have to tap until it opens to reveal the surprise. Perfect for the impatient type."
+    },
+    "slotMachine": {
+      "name": "No Take-Backs",
+      "description": "Spin the promise machine and find out what surprise is waiting for you.",
+      "info": "No more guessing games. Every spin reveals a little more, until the final spin uncovers the full promise. That's how you make promises with style."
+    },
+    "punchingBag": {
+      "name": "Let It Out",
+      "description": "Take out all your frustration on the punching bag and find out what message is waiting.",
+      "info": "Sometimes you just need to blow off some steam. Land a few hits on the digital punching bag, and in the end discover a sweet surprise hiding behind it. Couples therapy has nothing on this."
+    },
+    "apologySearch": {
+      "name": "Where's My Apology?",
+      "description": "A search bar that types out an apology on its own and lands on the sweetest result online.",
+      "info": "It looks like a Google search, except this time what's being searched for is an apology. The animation types the query on its own, and after a few suspenseful seconds the card appears with your personal message. Because even an apology deserves to rank first."
+    },
+    "excuseGenerator": {
+      "name": "I Have an Explanation...",
+      "description": "Fire up the excuse machine and get a quick, perfect excuse for any situation.",
+      "info": "What are we doing here? A machine that generates excuses automatically! Tap the button, the gears spin, and out comes the perfect excuse from the bank you prepared. No need to be creative, the gadget does the work."
+    },
+    "barBatMitzvah": {
+      "name": "Bar/Bat Mitzvah",
+      "description": "An interactive card to celebrate a Bar or Bat Mitzvah. Pick the type, tap the crown or the book, and reveal a heartfelt blessing.",
+      "info": "An interactive card for a Bar or Bat Mitzvah celebration. Choose whether it's for a boy or a girl, tailor the blessing, and when they tap the crown or the book, your moving message appears before their eyes. Because coming of age deserves a digital celebration."
+    },
+    "birthdayCandles": {
+      "name": "Magical Birthday Cake",
+      "description": "A birthday card where you blow out the candles and reveal a personal blessing.",
+      "info": "A birthday cake you get to blow out yourself. Tap each candle one by one, make a wish (quietly, quietly), and then your personal blessing is revealed. Guaranteed to be more fun than blowing out 40 candles and spitting on the cake."
+    },
+    "weddingGlass": {
+      "name": "Wedding Under the Chuppah",
+      "description": "A romantic wedding moment with fresh chuppah illustrations and a personal blessing for the couple.",
+      "info": "A digital wedding card with original illustrations. Send it to the happy couple, they tap, and the chuppah animation opens to reveal the personal blessing you wrote. A lot less chaos than a real wedding, but not much less touching."
+    },
+    "holidayRoshHashanah": {
+      "name": "A Sweet New Year",
+      "description": "Honey, apples, and a blessing that unfolds in a sweet moment for the new year.",
+      "info": "A happy new year card, but digital and moving. They tap, apples and honey bounce across the screen, and then your personal blessing arrives. Just like the phone call with grandma, minus repeating 'how are you' seven times."
+    },
+    "holidayPassover": {
+      "name": "Passover Unfolds",
+      "description": "An illustrated matzah gently unfolds to reveal a personal holiday blessing.",
+      "info": "An interactive matzah. They tap the card, the matzah slowly unfolds, and underneath it your warm blessing is waiting. Can't find the afikoman? That's fine, the blessing beats it either way."
+    },
+    "holidayPurim": {
+      "name": "Purim Mask",
+      "description": "A festive mask tilts and opens to reveal a joyful surprise.",
+      "info": "A Purim mask hiding a surprise. They tap the mask, it slides aside in a joyful motion, and your holiday blessing appears. Turns 'increase in joy' into 'increase in taps'."
+    },
+    "holidayShavuot": {
+      "name": "Shavuot in Bloom",
+      "description": "A bouquet of flowers and wheat blooms around a soft, bright blessing.",
+      "info": "Flowers and wheat spread across the screen, with your blessing waiting at the center. Like getting a real bouquet, except this one won't wilt in three days or leave pollen stains on your clothes."
+    },
+    "holidaySukkot": {
+      "name": "Welcome to the Sukkah",
+      "description": "The sukkah curtains open to reveal a warm holiday blessing.",
+      "info": "The sukkah curtains slowly part to reveal the blessing you prepared. Sending it from the couch is allowed, even if you didn't get around to building a sukkah this year. The digital sukkah is always ready."
+    },
+    "holidayHanukkah": {
+      "name": "Hanukkah Lights",
+      "description": "Light an elegant menorah, candle by candle, and watch the blessing appear.",
+      "info": "Light the menorah candle by candle, and after the last one, your blessing lights up the screen. Great for sending fresh every night of Hanukkah, if you're the committed type. And if not, one send is plenty too."
+    }
+  },
+  "previews": {
+    "dateInvite": {
+      "question": "Go out with me?",
+      "yes": "Yes!",
+      "no": "No"
+    },
+    "decisionWheel": {
+      "cta": "Spin!"
+    },
+    "apologySearch": {
+      "searchText": "Sorry that I...",
+      "result1": "an apology letter",
+      "result2": "with flowers",
+      "result3": "and chocolate"
+    },
+    "excuseGenerator": {
+      "sampleExcuse": "My dog ate my free time",
+      "cta": "Generate excuse"
+    },
+    "barBatMitzvah": {
+      "label": "Bar / Bat",
+      "cta": "Tap",
+      "caption": "A moving blessing awaits"
+    },
+    "punchingBag": {
+      "caption": "Let it out!"
+    },
+    "relationshipQuiz": {
+      "question": "Where was our first date?",
+      "optionA": "A",
+      "optionB": "B",
+      "optionC": "C",
+      "optionD": "D"
+    },
+    "slotMachine": {
+      "cta": "Spin",
+      "reel1Word1": "Tap",
+      "reel1Word2": "to",
+      "reel1Word3": "reveal",
+      "reel2Word1": "the",
+      "reel2Word2": "promise",
+      "reel2Word3": "tonight",
+      "reel3Word1": "pizza",
+      "reel3Word2": "treats",
+      "reel3Word3": "surprises"
+    },
+    "birthdayCandles": {
+      "alt": "Birthday cake with candles"
+    },
+    "weddingGlass": {
+      "alt": "Wedding under the chuppah"
+    },
+    "holidayRoshHashanah": { "label": "Rosh Hashanah" },
+    "holidayPassover": { "label": "Passover" },
+    "holidayPurim": { "label": "Purim" },
+    "holidayShavuot": { "label": "Shavuot" },
+    "holidaySukkot": { "label": "Sukkot" },
+    "holidayHanukkah": { "label": "Hanukkah" }
+  },
+  "sampleData": {
+    "dateInvite": {
+      "question": "Go out with me?",
+      "yes": "Yes!",
+      "no": "No",
+      "success": "Yes!"
+    },
+    "loveCoupons": {
+      "coupon1": "Massage",
+      "coupon2": "Dinner"
+    },
+    "relationshipQuiz": {
+      "scoreMessage": "Amazing!"
+    },
+    "decisionWheel": {
+      "title": "Decision Wheel",
+      "option1": "Dinner",
+      "option2": "Movie",
+      "option3": "Trip",
+      "option4": "Massage"
+    },
+    "slotMachine": {
+      "title": "The Promise Machine",
+      "reel1Word1": "I promise",
+      "reel1Word2": "tomorrow morning",
+      "reel2Word1": "to order us",
+      "reel2Word2": "to spoil you",
+      "reel3Word1": "a giant pizza.",
+      "reel3Word2": "a massage."
+    },
+    "surpriseGift": {
+      "title": "You've got a surprise!",
+      "greeting": "Love you with all my heart"
+    },
+    "punchingBag": {
+      "introTitle": "Stress Relief System",
+      "introSubtitle": "Give it a few good hits",
+      "resultMessage": "Sorry I was a jerk"
+    },
+    "apologySearch": {
+      "searchQuery": "How do I apologize to my partner?",
+      "resultTitle": "Sorry I was cranky",
+      "resultSubtitle": "You're right. Love you."
+    },
+    "excuseGenerator": {
+      "title": "The Automatic Excuse Machine",
+      "subtitle": "Don't feel like going out? We've got an excuse for you.",
+      "excuse1": "My dog ate my free time.",
+      "excuse2": "The rain made me reconsider.",
+      "excuse3": "My plant got sick and I need to take care of it.",
+      "buttonLabel": "Generate excuse",
+      "disclaimer": "* The company is not responsible for the consequences of using these excuses."
+    },
+    "barBatMitzvah": {
+      "introTitle": "The Coming-of-Age Machine",
+      "introSubtitle": "Tap the crown or the book to reveal the blessing",
+      "blessingTitle": "Time to celebrate!",
+      "blessingMessage": "Welcome to adulthood. May you be surrounded by friends, love, and family pride.",
+      "tapHintLabel": "Tap the crown"
+    }
+  },
+  "previewFrame": {
+    "dateInvite": {
+      "question": "Will you go on a date with me?",
+      "yes": "Yes!",
+      "no": "No",
+      "success": "Yes! So happy"
+    },
+    "scratchCard": {
+      "title": "Scratch to reveal the surprise",
+      "prizeContent": "You won!"
+    },
+    "timeline": { "title": "Our story" },
+    "loveCoupons": { "title": "Special coupons" },
+    "relationshipQuiz": { "title": "How well do you know me?" },
+    "openWhen": { "title": "Special letters" }
+  }
+}

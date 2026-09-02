@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-export function SurpriseGiftPreview() {
+export function SurpriseGiftPreview(): JSX.Element {
   return (
     <div className="h-full w-full flex items-center justify-center p-3">
       <div className="relative">
@@ -24,7 +24,7 @@ export function SurpriseGiftPreview() {
           <motion.span
             key={i}
             className="absolute text-xs"
-            style={{ top: i === 0 ? -4 : 2, [i === 0 ? "left" : "right"]: -8 }}
+            style={{ top: i === 0 ? -4 : 2, [i === 0 ? "insetInlineStart" : "insetInlineEnd"]: -8 }}
             animate={{ opacity: [0, 1, 0], y: [0, -6, 0] }}
             transition={{ duration: 1.5, delay: i * 0.5, repeat: Infinity }}
           >

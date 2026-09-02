@@ -1,14 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
-export function BarBatMitzvahPreview() {
+export function BarBatMitzvahPreview(): JSX.Element {
+  const t = useTranslations("gallery");
+
   return (
     <div className="h-full w-full flex items-center justify-center p-3">
       <div className="flex flex-col items-center gap-2">
-        <div className="text-[8px] font-bold text-stone-600 dark:text-stone-300 mb-1">
-          בר / בת
-        </div>
+        <div className="text-[8px] font-bold text-ink-muted mb-1">{t("previews.barBatMitzvah.label")}</div>
 
         <motion.div
           animate={{ scale: [1, 1.1, 1] }}
@@ -39,17 +40,17 @@ export function BarBatMitzvahPreview() {
         <motion.div
           animate={{ y: [0, -2, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          className="px-2 py-1 rounded-full bg-[#d4826f] text-white text-[6px] font-bold shadow"
+          className="px-2 py-1 rounded-pill bg-accent text-accent-ink text-[6px] font-bold shadow-soft"
         >
-          לחצו
+          {t("previews.barBatMitzvah.cta")}
         </motion.div>
 
         <motion.p
           animate={{ opacity: [0.6, 1, 0.6] }}
           transition={{ duration: 2.5, repeat: Infinity }}
-          className="text-[5px] text-[#d4826f] font-bold text-center px-2 leading-tight"
+          className="text-[5px] text-accent font-bold text-center px-2 leading-tight"
         >
-          ברכה מרגשת מחכה 🎉
+          {t("previews.barBatMitzvah.caption")} 🎉
         </motion.p>
       </div>
     </div>

@@ -5,23 +5,34 @@ import type { Template } from "@/components/galleryTemplate/types";
 
 const makeTemplate = (
   id: string,
-  title: string,
-  description: string,
+  nameKey: string,
+  descriptionKey: string,
   categories: string[]
 ): Template => ({
   id,
-  title,
-  description,
+  nameKey,
+  descriptionKey,
   categories,
   link: `/create/${id}`,
   componentKey: "DateInvite",
 });
 
 const TEMPLATES: Template[] = [
-  makeTemplate("t1", "קופוני אהבה", "כרטיסים רומנטיים", ["romantic"]),
-  makeTemplate("t2", "חידון חברות", "בחן ידע על זוגיות", ["romantic", "fun"]),
-  makeTemplate("t3", "עוגת יום הולדת", "חגיגה מיוחדת", ["birthday"]),
+  makeTemplate("t1", "t1.name", "t1.description", ["romantic"]),
+  makeTemplate("t2", "t2.name", "t2.description", ["romantic", "fun"]),
+  makeTemplate("t3", "t3.name", "t3.description", ["birthday"]),
 ];
+
+/** Test-only translator standing in for next-intl's `t`. */
+const messages: Record<string, string> = {
+  "t1.name": "קופוני אהבה",
+  "t1.description": "כרטיסים רומנטיים",
+  "t2.name": "חידון חברות",
+  "t2.description": "בחן ידע על זוגיות",
+  "t3.name": "עוגת יום הולדת",
+  "t3.description": "חגיגה מיוחדת",
+};
+const t = (key: string): string => messages[key] ?? key;
 
 describe("useGallerySearch", () => {
   beforeEach(() => vi.useFakeTimers());
@@ -29,14 +40,14 @@ describe("useGallerySearch", () => {
 
   it("returns all templates when tab=all and query empty", () => {
     const { result } = renderHook(() =>
-      useGallerySearch(TEMPLATES, "all", "")
+      useGallerySearch(TEMPLATES, "all", "", t)
     );
     expect(result.current.filteredTemplates).toHaveLength(3);
   });
 
   it("filters by activeTab", () => {
     const { result } = renderHook(() =>
-      useGallerySearch(TEMPLATES, "birthday", "")
+      useGallerySearch(TEMPLATES, "birthday", "", t)
     );
     expect(result.current.filteredTemplates).toHaveLength(1);
     expect(result.current.filteredTemplates[0].id).toBe("t3");
@@ -44,7 +55,7 @@ describe("useGallerySearch", () => {
 
   it("filters by debounced search query after 200ms", async () => {
     const { result, rerender } = renderHook(
-      ({ q }) => useGallerySearch(TEMPLATES, "all", q),
+      ({ q }) => useGallerySearch(TEMPLATES, "all", q, t),
       { initialProps: { q: "" } }
     );
     expect(result.current.filteredTemplates).toHaveLength(3);
@@ -57,7 +68,7 @@ describe("useGallerySearch", () => {
 
   it("applies tab filter AND search query combined", () => {
     const { result } = renderHook(() =>
-      useGallerySearch(TEMPLATES, "romantic", "חידון")
+      useGallerySearch(TEMPLATES, "romantic", "חידון", t)
     );
     act(() => { vi.advanceTimersByTime(200); });
     expect(result.current.filteredTemplates).toHaveLength(1);
@@ -66,7 +77,7 @@ describe("useGallerySearch", () => {
 
   it("returns empty array when nothing matches", () => {
     const { result } = renderHook(() =>
-      useGallerySearch(TEMPLATES, "all", "xyz_no_match")
+      useGallerySearch(TEMPLATES, "all", "xyz_no_match", t)
     );
     act(() => { vi.advanceTimersByTime(200); });
     expect(result.current.filteredTemplates).toHaveLength(0);
@@ -74,7 +85,7 @@ describe("useGallerySearch", () => {
 
   it("matches against description field", () => {
     const { result } = renderHook(() =>
-      useGallerySearch(TEMPLATES, "all", "חגיגה")
+      useGallerySearch(TEMPLATES, "all", "חגיגה", t)
     );
     act(() => { vi.advanceTimersByTime(200); });
     expect(result.current.filteredTemplates).toHaveLength(1);
@@ -83,7 +94,7 @@ describe("useGallerySearch", () => {
 
   it("matches against categories field", () => {
     const { result } = renderHook(() =>
-      useGallerySearch(TEMPLATES, "all", "birthday")
+      useGallerySearch(TEMPLATES, "all", "birthday", t)
     );
     act(() => { vi.advanceTimersByTime(200); });
     expect(result.current.filteredTemplates).toHaveLength(1);
