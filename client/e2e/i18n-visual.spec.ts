@@ -3,6 +3,39 @@ import { ROUTES, HEBREW, EM_DASH, shotPath, withLocale, type Locale } from "./he
 
 const LOCALES: Locale[] = ["he", "en"];
 
+const CONSENT = JSON.stringify({
+  consent: { ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" },
+  timestamp: "2026-01-01T00:00:00.000Z",
+});
+
+/** Pre-seed a declined cookie consent and light theme so chrome is stable. */
+async function seedStorage(page: Page): Promise<void> {
+  await page.addInitScript((consent: string) => {
+    try {
+      window.localStorage.setItem("heartnote_cookie_consent", consent);
+      window.localStorage.setItem("heartnote-theme", "light");
+    } catch {
+      /* storage unavailable */
+    }
+  }, CONSENT);
+}
+
+/** Scroll through the page so whileInView entrances fire before a full-page shot. */
+async function sweep(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const step = Math.max(200, Math.floor(window.innerHeight * 0.4));
+    for (let pass = 0; pass < 2; pass += 1) {
+      const total = document.documentElement.scrollHeight;
+      for (let y = 0; y <= total; y += step) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 260));
+      }
+    }
+    window.scrollTo(0, 0);
+  });
+  await page.waitForTimeout(900);
+}
+
 async function settle(page: Page): Promise<void> {
   await page.waitForLoadState("networkidle").catch(() => undefined);
   // Pre-hydration loader fades after fonts + load; give animations a beat.
@@ -10,12 +43,14 @@ async function settle(page: Page): Promise<void> {
   await page.waitForSelector("[data-testid=route-loading]", { state: "detached", timeout: 60_000 }).catch(() => undefined);
   await page.waitForFunction(() => (document.body.innerText ?? "").trim().length > 40, undefined, { timeout: 30_000 }).catch(() => undefined);
   await page.waitForTimeout(1200);
+  await sweep(page);
 }
 
 for (const locale of LOCALES) {
   test.describe(`locale ${locale}`, () => {
     for (const route of ROUTES) {
       test(`${route.name} renders correctly`, async ({ page }, info) => {
+        await seedStorage(page);
         await page.goto(withLocale(locale, route.path));
         await settle(page);
 
