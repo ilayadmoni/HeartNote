@@ -114,14 +114,14 @@ Each agent brief (identical contract):
 3. Extract every user-facing Hebrew string to `src/messages/he/<ns>.json`; write natural English in `src/messages/en/<ns>.json` (native romantic-greetings tone, not literal). Use `useTranslations("<ns>")` in client components, `getTranslations` in server components, `getActionT` in actions. Config/constant objects → store message keys, resolve at render.
 4. Keep every file ≤150 lines (split when approaching 130). Zero `any`. Explicit return types on exported fns.
 5. Run `npm run type-check` from `client/` before reporting. Report: files touched, keys added, assumptions.
-- [ ] A  - [ ] B  - [ ] C  - [ ] D  - [ ] E  - [ ] F  - [ ] G  - [ ] H
-- [ ] Merge check: `type-check`, `lint`, grep for leftover Hebrew in `.tsx` outside `messages/` (allowed: template *default sample content* fed to previews, `constants/colors.ts` handled via `nameKey`)
-- [ ] Commit per area (`feat(design+i18n): <area>`)
+- [x] A  - [x] B  - [x] C  - [x] D (+D2 follow-up: sample defaults, holiday config, calendar)  - [x] E  - [x] F  - [x] G  - [x] H
+- [x] Merge check: `type-check`, `lint`, grep for leftover Hebrew in `.tsx` outside `messages/` (allowed: template *default sample content* fed to previews, `constants/colors.ts` handled via `nameKey`)
+- [x] Commit per area (`feat(design+i18n): <area>`)
 
 ### Task 3 - Playwright verification
-- [ ] 3.1 Start Postgres (docker compose) + `next dev`; seed check (`templates` rows exist)
-- [ ] 3.2 Run spec matrix; review every screenshot for RTL/LTR breaks, clipped English, spacing, motion glitches
-- [ ] 3.3 Fix → rerun until clean
+- [x] 3.1 Start Postgres (docker compose) + `next dev`; seed check (`templates` rows exist)
+- [x] 3.2 Run spec matrix; review every screenshot for RTL/LTR breaks, clipped English, spacing, motion glitches
+- [x] 3.3 Fix → rerun until clean
 - [ ] 3.4 `type-check`, `lint`, `build`; write log with checklist
 
 ---
@@ -144,6 +144,10 @@ Each agent brief (identical contract):
 14. **Em dash** appears in existing Hebrew copy occasionally; catalog rewrites use `-` or punctuation per tasteskill §9.G.
 
 ## Learned during execution
+- Three area agents died mid-run on the monthly spend cap; resumed via SendMessage with context intact, no rework needed.
+- `whileInView` sections need a scroll sweep before a full-page screenshot, otherwise they capture at opacity 0.
+- `start-1/2 -translate-x-1/2` centers wrong in RTL; use `ltr:-translate-x-1/2 rtl:translate-x-1/2` (fixed in 6 files).
+- Default theme switched to light: cream paper is the brand surface, dark stays a toggle.
 - Locale switch must be a hard navigation (`window.location.assign`): a soft transition re-renders `<html>` and collides with the self-removing pre-hydration loader (`removeChild` NotFoundError).
 - `redirect()` from `@/i18n/navigation` needs `{ href, locale }` in server code and does not narrow types; `return redirect(...)`.
 - `.next/types` goes stale after moving routes; `rm -rf .next` before `tsc`.

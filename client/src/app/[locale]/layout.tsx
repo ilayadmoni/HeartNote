@@ -6,7 +6,7 @@ import { GoogleTagManager } from "@next/third-parties/google";
 import { Toaster } from "sonner";
 import "@/app/globals.css";
 import { routing } from "@/i18n/routing";
-import { dirFor, type Locale } from "@/i18n/locale";
+import { dirFor } from "@/i18n/locale";
 import { glacialIndifference, openSans } from "@/lib/fonts";
 import { buildRootMetadata } from "@/lib/seo/metadata";
 import { ThemeProvider } from "@/components/theme";
@@ -27,9 +27,11 @@ interface LocaleLayoutProps {
   params: Promise<{ locale: string }>;
 }
 
-export function generateStaticParams(): Array<{ locale: Locale }> {
-  return routing.locales.map((locale) => ({ locale }));
-}
+/**
+ * Every route reads the session (layout prefetch, pricing, profile), so the
+ * tree renders per request. Locales are still validated against routing.
+ */
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: LocaleLayoutProps): Promise<Metadata> {
   const { locale } = await params;
