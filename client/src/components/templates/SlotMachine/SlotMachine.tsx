@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { SlotMachineDesktop } from "./Desktop/SlotMachineDesktop";
@@ -13,11 +13,10 @@ const SPIN_INTERVAL_MS = 100;
 
 export function SlotMachine({ data }: TemplateComponentProps<SlotMachineData>) {
   const t = useTranslations("templates");
-  const initialTexts: [string, string, string] = [
-    t("slotMachine.reelDefault1"),
-    t("slotMachine.reelDefault2"),
-    t("slotMachine.reelDefault3"),
-  ];
+  const initialTexts = useMemo<[string, string, string]>(
+    () => [t("slotMachine.reelDefault1"), t("slotMachine.reelDefault2"), t("slotMachine.reelDefault3")],
+    [t],
+  );
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [mounted, setMounted] = useState(false);
   const [spinCount, setSpinCount] = useState(0);
