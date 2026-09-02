@@ -21,15 +21,17 @@ function holidayConfig(slug: HolidayInteractiveSlug): EditorConfig {
   const holiday = HOLIDAY_INTERACTIVE_CONFIGS[slug];
   return {
     templateId: slug,
-    // Sourced from the templates chrome catalog (owned outside `editor`),
-    // so it stays a raw fallback string rather than a titleKey.
-    title: holiday.name,
-    description: holiday.galleryDescription,
+    // The shared holiday catalog now stores message keys under the
+    // `templates` namespace, not raw text, so the editor's own
+    // `templates.<slug>.title/description` mirror is used here (resolved
+    // via the existing `editor` namespace titleKey/descriptionKey path).
+    titleKey: `templates.${slug}.title`,
+    descriptionKey: `templates.${slug}.description`,
     fields: COMMON_FIELDS,
     defaultData: {
       ...COMMON_DEFAULTS,
-      greetingTitle: holiday.defaultTitle,
-      message: holiday.revealLine,
+      greetingTitle: `templates:${holiday.defaultTitle}`,
+      message: `templates:${holiday.revealLine}`,
     },
   };
 }
@@ -58,8 +60,8 @@ export const INTERACTIVE_EVENT_CONFIGS: Record<string, EditorConfig> = {
     fields: BIRTHDAY_FIELDS,
     defaultData: {
       ...BIRTHDAY_DEFAULTS,
-      greetingTitle: "יום הולדת שמח",
-      message: "שתהיה שנה מלאה באור, אהבה והפתעות מתוקות.",
+      greetingTitle: "defaults.birthday-candles-interactive.greetingTitle",
+      message: "defaults.birthday-candles-interactive.message",
     },
   },
   "wedding-glass-interactive": {
@@ -73,10 +75,10 @@ export const INTERACTIVE_EVENT_CONFIGS: Record<string, EditorConfig> = {
       { key: "message", labelKey: "fields.wedding-glass-interactive.message.label", type: "textarea", placeholderKey: "fields.wedding-glass-interactive.message.placeholder", maxLength: 260 },
     ],
     defaultData: {
-      coupleNames: "ניצן ועילי",
+      coupleNames: "defaults.wedding-glass-interactive.coupleNames",
       senderName: "",
-      greetingTitle: "מזל טוב לזוג האהוב",
-      message: "שתבנו יחד בית מלא באהבה, צחוק וחברות טובה.",
+      greetingTitle: "defaults.wedding-glass-interactive.greetingTitle",
+      message: "defaults.wedding-glass-interactive.message",
     },
   },
   "holiday-rosh-hashanah-interactive": holidayConfig("holiday-rosh-hashanah-interactive"),

@@ -51,7 +51,55 @@
     "shavuotAlt": "אנימציית שבועות פורחת",
     "sukkotAlt": "אנימציית סוכות עם סוכה",
     "passoverAlt": "ברכת פסח עם מצה ופרחים",
-    "matzahOpenAlt": "מצה נפתחת"
+    "matzahOpenAlt": "מצה נפתחת",
+    "holiday-rosh-hashanah-interactive": {
+      "name": "ראש השנה אינטראקטיבי",
+      "galleryTitle": "שנה טובה ומתוקה!",
+      "galleryDescription": "מוזגים דבש בעדינות וחושפים ברכה לשנה חדשה.",
+      "defaultTitle": "שנה טובה ומתוקה",
+      "revealLine": "שנה טובה ומתוקה",
+      "prompt": "לחצו על מקל הדבש כדי להמתיק את השנה"
+    },
+    "holiday-passover-interactive": {
+      "name": "פסח אינטראקטיבי",
+      "galleryTitle": "פסח נפתח",
+      "galleryDescription": "מצה מאוירת נפתחת ומגלה ברכת חג אישית.",
+      "defaultTitle": "חג פסח שמח",
+      "revealLine": "חג פסח שמח",
+      "prompt": "לחצו על המצות לפתיחת הברכה"
+    },
+    "holiday-purim-interactive": {
+      "name": "פורים אינטראקטיבי",
+      "galleryTitle": "מסכת פורים",
+      "galleryDescription": "מסכה אלגנטית נעה ונפתחת לברכה מפתיעה.",
+      "defaultTitle": "חג פורים שמח",
+      "revealLine": "חג פורים שמח",
+      "prompt": "לחצו על המסכה כדי לקבל את הברכה"
+    },
+    "holiday-shavuot-interactive": {
+      "name": "שבועות אינטראקטיבי",
+      "galleryTitle": "שבועות פורח",
+      "galleryDescription": "זר פרחים וחיטים פורח סביב ברכה רכה.",
+      "defaultTitle": "חג שבועות שמח",
+      "revealLine": "חג שבועות שמח",
+      "prompt": "לחצו על הזר כדי לקבל את הברכה"
+    },
+    "holiday-sukkot-interactive": {
+      "name": "סוכות אינטראקטיבי",
+      "galleryTitle": "נכנסים לסוכה",
+      "galleryDescription": "וילונות הסוכה נפתחים ומגלים ברכת חג חמה.",
+      "defaultTitle": "חג סוכות שמח",
+      "revealLine": "חג סוכות שמח",
+      "prompt": "לחצו כדי להיכנס לסוכה ולקבל את הברכה"
+    },
+    "holiday-hanukkah-interactive": {
+      "name": "חנוכה אינטראקטיבי",
+      "galleryTitle": "אור חנוכה",
+      "galleryDescription": "מדליקים חנוכייה אלגנטית וחושפים ברכת אור.",
+      "defaultTitle": "חג חנוכה שמח",
+      "revealLine": "חג חנוכה שמח",
+      "prompt": "לחצו להדליק את האור"
+    }
   },
   "dateInvite": {
     "titleDefault": "הזמנה לדייט",

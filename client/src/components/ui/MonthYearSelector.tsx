@@ -33,26 +33,27 @@ export function MonthYearSelector({
   const t = useTranslations("editor");
   return (
     <div className="bg-gradient-to-l from-[#B5EAD7] to-[#C7CEEA] px-4 py-4 space-y-3 rounded-t-card relative z-10">
-      {/* Navigation row */}
+      {/* Navigation row — "previous" always sits at the reading start,
+          "next" at the reading end, with a chevron mirrored per direction. */}
       <div className="flex items-center justify-between">
         <button
           type="button"
-          onClick={nextMonth}
+          onClick={prevMonth}
           className="p-2 rounded-full hover:bg-white/30 transition-colors flex-shrink-0"
           aria-label={t("calendar.prevMonth")}
         >
-          <ChevronRight size={20} className="text-navy-700" />
+          <ChevronRight size={20} className="text-navy-700 ltr:-scale-x-100" />
         </button>
 
         <span className="text-caption font-semibold text-navy-700">{t("calendar.pickDate")}</span>
 
         <button
           type="button"
-          onClick={prevMonth}
+          onClick={nextMonth}
           className="p-2 rounded-full hover:bg-white/30 transition-colors flex-shrink-0"
           aria-label={t("calendar.nextMonth")}
         >
-          <ChevronLeft size={20} className="text-navy-700" />
+          <ChevronLeft size={20} className="text-navy-700 ltr:-scale-x-100" />
         </button>
       </div>
 

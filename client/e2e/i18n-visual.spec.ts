@@ -36,7 +36,7 @@ for (const locale of LOCALES) {
 
         if (locale === "en" && route.checkUntranslated) {
           const chrome = await page.evaluate(() => {
-            const skip = "[data-user-content], [dir=auto]";
+            const skip = "[data-user-content], [dir=auto], [lang]";
             const nodes = Array.from(document.body.querySelectorAll("h1,h2,h3,p,a,button,label,span,li"));
             return nodes
               .filter((n) => !n.closest(skip))

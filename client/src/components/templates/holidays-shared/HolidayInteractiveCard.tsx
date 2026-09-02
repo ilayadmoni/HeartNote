@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, useReducedMotion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { InteractiveShell } from "../shared/InteractiveShell";
 import { HolidayCardFrame } from "./HolidayCardFrame";
 import { HolidayRevealOverlay } from "./HolidayRevealOverlay";
@@ -23,11 +24,15 @@ const FRAME_COUNTS: Partial<Record<string, number>> = {
 };
 
 export function HolidayInteractiveCard({ data, slug }: HolidayInteractiveCardProps) {
+  const t = useTranslations("templates");
   const reduceMotion = Boolean(useReducedMotion());
   const [status, setStatus] = useState<HolidaySceneStatus>("idle");
   const [progress, setProgress] = useState(0);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const config = HOLIDAY_INTERACTIVE_CONFIGS[slug];
+  const defaultTitle = t(config.defaultTitle);
+  const prompt = t(config.prompt);
+  const revealLine = t(config.revealLine);
 
   useEffect(() => {
     if (status !== "playing") return;
@@ -70,7 +75,7 @@ export function HolidayInteractiveCard({ data, slug }: HolidayInteractiveCardPro
   const isFrameSequence = Boolean(FRAME_COUNTS[config.interaction]);
 
   return (
-    <InteractiveShell title={data.greetingTitle || config.defaultTitle} instruction={config.prompt}>
+    <InteractiveShell title={data.greetingTitle || defaultTitle} instruction={prompt}>
       <HolidayCardFrame shape={isFrameSequence ? "square" : "rectangle"}>
         <div className="absolute inset-0">
           {status === "idle" && (
@@ -78,7 +83,7 @@ export function HolidayInteractiveCard({ data, slug }: HolidayInteractiveCardPro
               type="button"
               onClick={start}
               className="absolute inset-0 z-10 rounded-card focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              aria-label={config.prompt}
+              aria-label={prompt}
             />
           )}
           <HolidayScene
@@ -91,7 +96,7 @@ export function HolidayInteractiveCard({ data, slug }: HolidayInteractiveCardPro
             {status === "revealed" && (
               <HolidayRevealOverlay
                 data={data}
-                titleFallback={config.revealLine}
+                titleFallback={revealLine}
                 accentColor={config.accent}
                 onReplay={replay}
               />

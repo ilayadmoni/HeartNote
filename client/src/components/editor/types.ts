@@ -59,6 +59,16 @@ export interface EditorConfig {
   title?: string;
   description?: string;
   fields: EditorField[];
+  /**
+   * Initial sample values shown when a user opens the editor. Translatable
+   * string values are message keys, not literal text: `"defaults.<slug>.<field>"`
+   * resolves against the `editor` namespace, `"templates:<key>"` resolves
+   * against the `templates` namespace (holiday configs). Colors, numbers,
+   * booleans, and enum values are stored as literals and left untranslated.
+   * Resolved at editor-init time via `resolveDefaultData` (see
+   * `hooks/resolveDefaultData.ts`) so a locale's visitor sees locale-matched
+   * sample copy.
+   */
   defaultData: Record<string, unknown>;
 }
 

@@ -11,6 +11,7 @@ import type { EditorConfig } from "../types";
 import { ROMANCE_CONFIGS } from "./romance";
 import { RELATIONSHIPS_CONFIGS } from "./relationships";
 import { INTERACTIVE_CONFIGS } from "./interactive";
+import { INTERACTIVE_GAME_CONFIGS } from "./interactive-games";
 import { INTERACTIONS_CONFIGS } from "./interactions";
 import { CELEBRATIONS_CONFIGS } from "./celebrations";
 import { SPECIAL_OCCASIONS_CONFIGS } from "./special-occasions";
@@ -20,6 +21,7 @@ export const EDITOR_CONFIGS: Record<string, EditorConfig> = {
   ...ROMANCE_CONFIGS,
   ...RELATIONSHIPS_CONFIGS,
   ...INTERACTIVE_CONFIGS,
+  ...INTERACTIVE_GAME_CONFIGS,
   ...INTERACTIONS_CONFIGS,
   ...CELEBRATIONS_CONFIGS,
   ...SPECIAL_OCCASIONS_CONFIGS,

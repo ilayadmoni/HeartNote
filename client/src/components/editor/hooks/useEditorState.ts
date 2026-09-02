@@ -17,16 +17,22 @@ import { useEditorModals } from "./useEditorModals";
 import { useDraftState } from "./useDraftState";
 import { useEditorValidation } from "./useEditorValidation";
 import { runCreationSubmission } from "./helpers/submitCreation";
+import { resolveDefaultData } from "./resolveDefaultData";
 
 export function useEditorState(templateId: string) {
   const t = useTranslations("editor");
+  const tTemplates = useTranslations("templates");
   const { user, loading } = useAuth();
   const { isProfileComplete } = useProfileComplete();
   const { profile, loading: profileLoading } = useProfile();
 
   const config = EDITOR_CONFIGS[templateId];
+  const resolvedDefaultData = useMemo(
+    () => (config ? resolveDefaultData(config.defaultData, { editor: t, templates: tTemplates }) : {}),
+    [config, t, tTemplates],
+  );
   const { userChoices: data, updateChoice: handleChange, setChoices, logData } =
-    useTemplateData(templateId, config?.defaultData || {});
+    useTemplateData(templateId, resolvedDefaultData);
 
   const { template: cachedTemplate } = useTemplateBySlug(templateId);
   const isPremiumTemplate = Boolean(cachedTemplate?.is_premium);

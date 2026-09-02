@@ -51,7 +51,55 @@
     "shavuotAlt": "Blooming Shavuot animation",
     "sukkotAlt": "Sukkot animation with a sukkah",
     "passoverAlt": "Passover greeting with matzah and flowers",
-    "matzahOpenAlt": "Matzah opening"
+    "matzahOpenAlt": "Matzah opening",
+    "holiday-rosh-hashanah-interactive": {
+      "name": "Interactive Rosh Hashanah",
+      "galleryTitle": "A Sweet New Year!",
+      "galleryDescription": "Gently pour honey to reveal a sweet new year wish.",
+      "defaultTitle": "A Sweet New Year",
+      "revealLine": "A Sweet New Year",
+      "prompt": "Tap the honey stick to sweeten the year"
+    },
+    "holiday-passover-interactive": {
+      "name": "Interactive Passover",
+      "galleryTitle": "Passover Unfolds",
+      "galleryDescription": "An illustrated matzah opens to reveal a personal holiday wish.",
+      "defaultTitle": "Happy Passover",
+      "revealLine": "Happy Passover",
+      "prompt": "Tap the matzah to open the wish"
+    },
+    "holiday-purim-interactive": {
+      "name": "Interactive Purim",
+      "galleryTitle": "Purim Mask",
+      "galleryDescription": "An elegant mask moves aside to reveal a surprise wish.",
+      "defaultTitle": "Happy Purim",
+      "revealLine": "Happy Purim",
+      "prompt": "Tap the mask to unmask the wish"
+    },
+    "holiday-shavuot-interactive": {
+      "name": "Interactive Shavuot",
+      "galleryTitle": "Shavuot in Bloom",
+      "galleryDescription": "A wreath of flowers and wheat blooms around a gentle wish.",
+      "defaultTitle": "Happy Shavuot",
+      "revealLine": "Happy Shavuot",
+      "prompt": "Tap the wreath to reveal the wish"
+    },
+    "holiday-sukkot-interactive": {
+      "name": "Interactive Sukkot",
+      "galleryTitle": "Step Into the Sukkah",
+      "galleryDescription": "The sukkah curtains part to reveal a warm holiday wish.",
+      "defaultTitle": "Happy Sukkot",
+      "revealLine": "Happy Sukkot",
+      "prompt": "Tap to step into the sukkah and reveal the wish"
+    },
+    "holiday-hanukkah-interactive": {
+      "name": "Interactive Hanukkah",
+      "galleryTitle": "Hanukkah Light",
+      "galleryDescription": "Light an elegant menorah to reveal a wish full of light.",
+      "defaultTitle": "Happy Hanukkah",
+      "revealLine": "Happy Hanukkah",
+      "prompt": "Tap to light the flame"
+    }
   },
   "dateInvite": {
     "titleDefault": "Date invite",

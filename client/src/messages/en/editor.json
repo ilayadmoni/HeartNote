@@ -591,5 +591,166 @@
     "alreadyRedeemed": "This coupon has already been redeemed",
     "wrongCode": "Incorrect verification code",
     "genericError": "Something went wrong redeeming the coupon"
+  },
+  "defaults": {
+    "surprise-gift": {
+      "title": "You've got a surprise! 🎁",
+      "greeting": "Love you with my whole heart ❤️"
+    },
+    "punching-bag": {
+      "introTitle": "Stress Relief System",
+      "introSubtitle": "Give it a few good punches. It's all good.",
+      "hitInstructions": "Tap the bag to let loose",
+      "resultTitle": "Ouch... feel better?",
+      "resultMessage": "Hope you took it out on the bag instead of me. Sorry for being a jerk ❤️"
+    },
+    "relationship-quiz": {
+      "title": "How well do you know me?",
+      "questions": {
+        "1": {
+          "question": "What's my favorite food?",
+          "options": {
+            "1": "Pizza",
+            "2": "Sushi",
+            "3": "Burger",
+            "4": "Chocolate"
+          }
+        },
+        "2": {
+          "question": "What's my biggest dream?",
+          "options": {
+            "1": "Travel the world",
+            "2": "Start a business",
+            "3": "Live abroad",
+            "4": "Become a chef"
+          }
+        },
+        "3": {
+          "question": "What's my favorite color?",
+          "options": {
+            "1": "Blue",
+            "2": "Red",
+            "3": "Green",
+            "4": "Black"
+          }
+        }
+      },
+      "scoreMessages": {
+        "1": "You know me perfectly!",
+        "2": "Almost perfect...",
+        "3": "Nice try, though!"
+      }
+    },
+    "decision-wheel": {
+      "title": "The Decision Wheel",
+      "subtitle": "Tap the button and find out!",
+      "options": {
+        "1": "Romantic dinner",
+        "2": "Movie night",
+        "3": "Nature hike",
+        "4": "Game night",
+        "5": "Pampering massage",
+        "6": "Cooking together"
+      }
+    },
+    "slot-machine": {
+      "title": "The Promise Machine",
+      "subtitle": "Spin three times to find out what's waiting for you tonight...",
+      "reel1Options": {
+        "1": "I promise",
+        "2": "Tomorrow morning",
+        "3": "Listen closely,",
+        "4": "No way I'll"
+      },
+      "reel2Options": {
+        "1": "wash the",
+        "2": "order us",
+        "3": "spoil you with",
+        "4": "do today"
+      },
+      "reel3Options": {
+        "1": "dishes.",
+        "2": "a giant pizza.",
+        "3": "a foot massage.",
+        "4": "a movie marathon."
+      }
+    },
+    "excuse-generator": {
+      "title": "The Automatic Excuse Machine",
+      "subtitle": "Don't feel like going out? We've got an excuse for you.",
+      "excuses": {
+        "1": "My dog ate my free time.",
+        "2": "The rain made me reconsider.",
+        "3": "My plant got sick and I need to take care of it.",
+        "4": "My neighbor was playing guitar and I couldn't focus.",
+        "5": "My mom invited me for dinner, I can't say no."
+      },
+      "buttonLabel": "Generate excuse",
+      "disclaimer": "* The company is not responsible for the consequences of using these excuses."
+    },
+    "timeline": {
+      "title": "Our Story"
+    },
+    "love-coupons": {
+      "title": "Coupon Book",
+      "coupons": {
+        "description": "Redeemable coupon",
+        "1": {
+          "title": "20-Minute Massage"
+        },
+        "2": {
+          "title": "Dish Duty Pass"
+        },
+        "3": {
+          "title": "Movie Night Pick"
+        }
+      }
+    },
+    "open-when": {
+      "title": "Open when...",
+      "envelopes": {
+        "1": {
+          "title": "you miss me",
+          "content": "You're always in my heart, even when we're apart..."
+        },
+        "2": {
+          "title": "you're feeling down",
+          "content": "Remember I'm here for you, always."
+        }
+      }
+    },
+    "date-invite": {
+      "title": "Date Invitation",
+      "question": "Would you like to go on a date with me?",
+      "yesText": "Yes",
+      "noText": "No",
+      "successMessage": "Yay, so exciting!"
+    },
+    "scratch-card": {
+      "title": "Scratch to reveal the surprise",
+      "prizeContent": "🎁 You won a special surprise!"
+    },
+    "apology-search": {
+      "searchQuery": "How to apologize to my partner",
+      "resultTitle": "Sorry I was cranky",
+      "resultSubtitle": "You're right. Love you.",
+      "startButtonLabel": "Start search"
+    },
+    "bar-bat-mitzvah": {
+      "introTitle": "The Growing-Up Machine",
+      "introSubtitle": "Tap the crown or the book to reveal the blessing",
+      "blessingTitle": "Time to celebrate! 🎉",
+      "blessingMessage": "Welcome to adulthood. May you be surrounded by friends, love, and family pride.",
+      "tapHintLabel": "Tap the crown"
+    },
+    "birthday-candles-interactive": {
+      "greetingTitle": "Happy Birthday",
+      "message": "May this year be full of light, love, and sweet surprises."
+    },
+    "wedding-glass-interactive": {
+      "coupleNames": "Alex & Jordan",
+      "greetingTitle": "Congratulations to the happy couple",
+      "message": "May you build a home filled with love, laughter, and friendship."
+    }
   }
 }

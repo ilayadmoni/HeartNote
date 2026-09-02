@@ -11,7 +11,7 @@ export const RELATIONSHIPS_CONFIGS: Record<string, EditorConfig> = {
       { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {
-      title: "הסיפור שלנו",
+      title: "defaults.timeline.title",
       events: [],
       primaryColor: "#d4826f",
     },
@@ -26,11 +26,11 @@ export const RELATIONSHIPS_CONFIGS: Record<string, EditorConfig> = {
       { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {
-      title: "פנקס קופונים",
+      title: "defaults.love-coupons.title",
       coupons: [
-        { id: "coupon-1", title: "20 דקות מסאז'", description: "קופון למימוש", icon: "💆", color: "emerald", isRedeemed: false },
-        { id: "coupon-2", title: "פטור משטיפת כלים", description: "קופון למימוש", icon: "🧽", color: "sky", isRedeemed: false },
-        { id: "coupon-3", title: "בחירת סרט הערב", description: "קופון למימוש", icon: "🎬", color: "amber", isRedeemed: false },
+        { id: "coupon-1", title: "defaults.love-coupons.coupons.1.title", description: "defaults.love-coupons.coupons.description", icon: "💆", color: "emerald", isRedeemed: false },
+        { id: "coupon-2", title: "defaults.love-coupons.coupons.2.title", description: "defaults.love-coupons.coupons.description", icon: "🧽", color: "sky", isRedeemed: false },
+        { id: "coupon-3", title: "defaults.love-coupons.coupons.3.title", description: "defaults.love-coupons.coupons.description", icon: "🎬", color: "amber", isRedeemed: false },
       ],
       primaryColor: "#d4826f",
     },
@@ -45,19 +45,19 @@ export const RELATIONSHIPS_CONFIGS: Record<string, EditorConfig> = {
       { key: "envelopes", labelKey: "fields.open-when.envelopes.label", type: "envelopes", min: 1, max: 6 },
     ],
     defaultData: {
-      title: "תפתחי כש...",
+      title: "defaults.open-when.title",
       envelopes: [
         {
           id: "env-1",
-          title: "כשאת מתגעגעת",
+          title: "defaults.open-when.envelopes.1.title",
           dateOpen: new Date().toISOString().split("T")[0],
-          content: "את תמיד בלב שלי, גם כשאנחנו רחוקים...",
+          content: "defaults.open-when.envelopes.1.content",
         },
         {
           id: "env-2",
-          title: "כשאת עצובה",
+          title: "defaults.open-when.envelopes.2.title",
           dateOpen: new Date().toISOString().split("T")[0],
-          content: "תזכרי שאני כאן בשבילך, תמיד.",
+          content: "defaults.open-when.envelopes.2.content",
         },
       ],
       primaryColor: "#d4826f",

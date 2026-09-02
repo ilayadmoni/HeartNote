@@ -16,14 +16,16 @@ describe("interactive holiday config", () => {
     ]);
   });
 
-  it("locks the requested interactions and reveal lines", () => {
+  it("locks the requested interactions and reveal-line message keys", () => {
     expect(HOLIDAY_INTERACTIVE_CONFIGS["holiday-passover-interactive"].interaction)
       .toBe("matzah");
     expect(HOLIDAY_INTERACTIVE_CONFIGS["holiday-purim-interactive"].interaction)
       .toBe("mask");
+    // `prompt`/`revealLine` hold message keys (resolved against the
+    // `templates` namespace at render time), not literal Hebrew text.
     expect(HOLIDAY_INTERACTIVE_CONFIGS["holiday-hanukkah-interactive"].prompt)
-      .toBe("לחצו להדליק את האור");
+      .toBe("holidays.holiday-hanukkah-interactive.prompt");
     expect(HOLIDAY_INTERACTIVE_CONFIGS["holiday-hanukkah-interactive"].revealLine)
-      .toBe("חג חנוכה שמח");
+      .toBe("holidays.holiday-hanukkah-interactive.revealLine");
   });
 });
