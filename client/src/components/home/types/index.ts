@@ -22,9 +22,9 @@ export interface HowItWorksProps {
   className?: string;
 }
 
+export type StepIconKey = "click" | "settings" | "send";
+
 export interface StepItem {
-  id: number;
-  icon: string;
-  title: string;
-  description: string;
+  id: 1 | 2 | 3;
+  icon: StepIconKey;
 }

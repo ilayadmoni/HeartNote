@@ -1,1 +1,49 @@
-{}
+{
+  "hero": {
+    "badge": "Your digital greeting workshop",
+    "titleLine1": "Digital greetings",
+    "titleLine2": "without the headache",
+    "description": "Pick a template, add a few words, and let us make it look amazing.",
+    "cta": "Let's start designing",
+    "ctaSecondary": "Show me an example",
+    "visualAlt": "Preview of a digital greeting on a phone screen"
+  },
+  "phone": {
+    "screenTitle": "Date invite",
+    "screenBadge": "Create",
+    "question": "Want to go on a date with me?",
+    "hint": "Choose your answer wisely",
+    "no": "No",
+    "yes": "Yes",
+    "createdBy": "Made with",
+    "editHint": "Edit details"
+  },
+  "gallery": {
+    "title": "A taste of the gallery",
+    "subtitle": "Here are a few of our most popular designs. There's plenty more in the full template gallery.",
+    "cta": "Browse all templates",
+    "viewTemplate": "View template"
+  },
+  "pricing": {
+    "badge": "Level up your greetings",
+    "title": "Find the",
+    "titleHighlight": "perfect plan",
+    "titleEnd": "for you",
+    "description": "Start free, then upgrade to a plan that gives you everything.",
+    "cta": "See all plans and pricing",
+    "free": { "name": "Free", "detail": "5 creations, no time limit" },
+    "lite": { "name": "Lite", "detail": "2 premium creations, 30-day link", "badge": "Upgrade" },
+    "premium": { "name": "Premium", "detail": "6 premium creations, 45-day link", "badge": "Best value" }
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "subtitle": "Three simple steps to the perfect gift",
+    "step1": { "title": "Pick a template", "description": "Choose a template from our gallery. There's a huge range of fun designs to pick from" },
+    "step2": { "title": "Make it yours", "description": "Add your text, pick your colors, and personalize the whole design" },
+    "step3": { "title": "Send it to someone you love", "description": "Hit create and get a shareable link instantly" }
+  },
+  "factory": {
+    "processing": "Processing...",
+    "result": "Perfect result!"
+  }
+}

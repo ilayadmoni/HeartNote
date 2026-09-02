@@ -2,72 +2,30 @@
 
 /**
  * GalleryTeaser Component
- * Preview of template gallery with up to 4 popular templates.
- * Reuses the shared TemplateCard component with Coming Soon logic for premium templates.
+ * Bento-style preview of up to 4 popular templates, first card featured.
  */
 
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
-import { GALLERY_TITLE, GALLERY_SUBTITLE, GALLERY_CTA } from "../constants";
-import { getPopularTemplates } from "@/actions";
-import { TEMPLATES } from "@/components/galleryTemplate/data/templates";
-import { TemplateCard } from "@/components/galleryTemplate/components";
+import { useTranslations } from "next-intl";
+import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoginModal } from "@/components/auth";
-import type { Template } from "@/components/galleryTemplate/types";
+import { stagger, viewportOnce, useMotionOk } from "@/lib/motion";
+import { usePopularTemplates, type PopularTemplate } from "../hooks/usePopularTemplates";
+import { GalleryTeaserCard } from "./GalleryTeaserCard";
 import type { GalleryTeaserProps } from "../types";
 
-export function GalleryTeaser({ className = "" }: GalleryTeaserProps) {
+export function GalleryTeaser({ className = "" }: GalleryTeaserProps): JSX.Element {
+  const t = useTranslations("home.gallery");
   const router = useRouter();
   const { user } = useAuth();
-  const [popularTemplates, setPopularTemplates] = useState<Template[]>([]);
-  const [loading, setLoading] = useState(true);
+  const motionOk = useMotionOk();
+  const { templates, loading } = usePopularTemplates();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [pendingLink, setPendingLink] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchPopular() {
-      try {
-        const result = await getPopularTemplates();
-        if ("data" in result) {
-          // Map DB rows to UI Template objects using the local registry
-          const mapped = result.data
-            .map((dbTemplate) => {
-              const uiTemplate = TEMPLATES.find(
-                (t) => t.id === dbTemplate.slug
-              );
-              if (!uiTemplate) return null;
-
-              const isPremium = dbTemplate.is_premium;
-              const badge = isPremium
-                ? { type: "premium" as const, color: "#f59e0b" }
-                : { type: "free" as const, color: "#22c55e" };
-
-              return {
-                ...uiTemplate,
-                isPremium,
-                isFree: !isPremium,
-                badge,
-                link: `/create/${dbTemplate.slug}`,
-              } as Template;
-            })
-            .filter((t): t is Template => t !== null);
-
-          setPopularTemplates(mapped);
-        }
-      } catch (err) {
-        console.error("Failed to fetch popular templates:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchPopular();
-  }, []);
-
-  // Redirect after login
   useEffect(() => {
     if (user && pendingLink) {
       setIsLoginModalOpen(false);
@@ -76,7 +34,7 @@ export function GalleryTeaser({ className = "" }: GalleryTeaserProps) {
     }
   }, [user, pendingLink, router]);
 
-  const handleTemplateClick = (template: Template) => {
+  const handleTemplateClick = (template: PopularTemplate): void => {
     if (template.isPremium) {
       setIsLoginModalOpen(true);
       setPendingLink(template.link);
@@ -85,88 +43,66 @@ export function GalleryTeaser({ className = "" }: GalleryTeaserProps) {
     router.push(template.link);
   };
 
-
-
-  const handleLoginClose = () => {
-    setIsLoginModalOpen(false);
-    setPendingLink(null);
-  };
-
   return (
     <>
-      <section
-        className={`py-20 px-4 bg-white dark:bg-gray-900 ${className}`}
-      >
-        <div className="container mx-auto max-w-7xl">
-          {/* Header */}
+      <section className={`py-section-sm px-gutter bg-surface ${className}`}>
+        <div className="mx-auto max-w-shell">
           <div className="text-center mb-12">
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              initial={motionOk ? { opacity: 0, y: 20 } : false}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-3xl lg:text-4xl font-black text-[#2e3c52] dark:text-white mb-4 text-hebrew-heading"
+              viewport={viewportOnce}
+              className="text-display-md text-ink mb-4"
             >
-              {GALLERY_TITLE}
+              {t("title")}
             </motion.h2>
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={motionOk ? { opacity: 0, y: 20 } : false}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={viewportOnce}
               transition={{ delay: 0.1 }}
-              className="text-[#2e3c52] dark:text-gray-300 font-medium max-w-2xl mx-auto text-hebrew-body"
+              className="text-body-md text-ink-muted max-w-prose mx-auto"
             >
-              {GALLERY_SUBTITLE}
+              {t("subtitle")}
             </motion.p>
           </div>
 
-          {/* Template Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <motion.div
+            initial={motionOk ? "hidden" : "visible"}
+            whileInView="visible"
+            viewport={viewportOnce}
+            variants={stagger(0.08)}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+          >
             {loading
               ? Array.from({ length: 4 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-gray-100 dark:bg-gray-800 rounded-2xl h-72 animate-pulse"
-                  />
+                  <div key={i} className="bg-surface-sunken rounded-card h-72 animate-pulse" />
                 ))
-              : popularTemplates.map((template, index) => (
-                  <motion.div
-                    key={template.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <TemplateCard
-                      template={template}
-                      onClick={handleTemplateClick}
-                    />
-                  </motion.div>
+              : templates.map((template, index) => (
+                  <div key={template.id} className={index === 0 ? "lg:col-span-2" : ""}>
+                    <GalleryTeaserCard template={template} featured={index === 0} onClick={() => handleTemplateClick(template)} />
+                  </div>
                 ))}
-          </div>
+          </motion.div>
 
-          {/* CTA Button */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={motionOk ? { opacity: 0, y: 20 } : false}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={viewportOnce}
             className="flex justify-center"
           >
             <Link
               href="/gallery"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-bold text-white bg-[#2e3c52] hover:bg-[#415A77] shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-hebrew-heading"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-pill text-body-lg font-bold text-accent-ink bg-accent shadow-glow-sm hover:bg-accent-hover hover:shadow-glow transition-colors duration-base ease-out-quint"
             >
-              {GALLERY_CTA}
-              <ArrowLeft size={20} />
+              {t("cta")}
+              <ArrowRight size={20} className="rtl:-scale-x-100" />
             </Link>
           </motion.div>
         </div>
       </section>
 
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={handleLoginClose}
-        onSwitchToRegister={() => {}}
-      />
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => { setIsLoginModalOpen(false); setPendingLink(null); }} onSwitchToRegister={() => {}} />
     </>
   );
 }

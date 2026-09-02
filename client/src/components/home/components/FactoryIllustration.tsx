@@ -2,63 +2,56 @@
 
 /**
  * FactoryIllustration Component
- * Animated conveyor belt illustration for the hero section
+ * Animated conveyor belt illustration for the hero section.
+ * Currently unused by any Home layout; kept on tokens for future reuse.
  */
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { Gift, Layers, Heart } from "lucide-react";
 
-export function FactoryIllustration() {
+export function FactoryIllustration(): JSX.Element {
+  const t = useTranslations("home.factory");
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, delay: 0.2 }}
-      className="bg-white dark:bg-gray-800 rounded-3xl p-6 lg:p-8 shadow-2xl border border-gray-100 dark:border-gray-700 relative overflow-hidden"
+      className="bg-surface-raised rounded-card p-6 lg:p-8 shadow-lift border border-line relative overflow-hidden"
     >
-      {/* Machine Dots Header */}
       <div className="flex justify-center gap-2 mb-6 opacity-30">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="w-12 h-2 rounded-full bg-[#2e3c52]" />
+          <div key={i} className="w-12 h-2 rounded-pill bg-ink" />
         ))}
       </div>
 
       <div className="h-56 flex flex-col items-center justify-center relative">
-        {/* Floating Items on Belt */}
         <div className="flex justify-between w-full px-4 absolute top-4 z-10">
-          <div className="animate-float bg-[#F2E9E4] dark:bg-gray-700 p-3 rounded-2xl shadow-md border border-gray-200 dark:border-gray-600">
-            <Gift className="text-[#2e3c52] dark:text-white h-8 w-8" />
+          <div className="animate-float bg-surface-sunken p-3 rounded-card shadow-soft border border-line">
+            <Gift className="text-ink h-8 w-8" />
           </div>
-          <div
-            className="animate-float bg-[#F2E9E4] dark:bg-gray-700 p-3 rounded-2xl shadow-md border border-gray-200 dark:border-gray-600"
-            style={{ animationDelay: "0.5s" }}
-          >
-            <Layers className="text-[#2e3c52] dark:text-gray-300 h-8 w-8" />
+          <div className="animate-float bg-surface-sunken p-3 rounded-card shadow-soft border border-line" style={{ animationDelay: "0.5s" }}>
+            <Layers className="text-ink-muted h-8 w-8" />
           </div>
-          <div
-            className="animate-float bg-[#F2E9E4] dark:bg-gray-700 p-3 rounded-2xl shadow-md border border-gray-200 dark:border-gray-600"
-            style={{ animationDelay: "1s" }}
-          >
-            <Heart className="text-[#d4826f] h-8 w-8" />
+          <div className="animate-float bg-surface-sunken p-3 rounded-card shadow-soft border border-line" style={{ animationDelay: "1s" }}>
+            <Heart className="text-accent h-8 w-8" />
           </div>
         </div>
 
-        {/* Processing Area */}
-        <div className="w-full h-24 bg-[#F2E9E4] dark:bg-gray-700 rounded-2xl border-2 border-dashed border-[#2e3c52]/30 mt-16 flex items-center justify-center relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 dark:via-gray-600/50 to-transparent animate-pulse" />
-          <span className="text-[#2e3c52] dark:text-gray-300 font-bold z-20 bg-white dark:bg-gray-800 px-4 py-1 rounded shadow-sm text-hebrew-heading">
-            ...Processing
+        <div className="w-full h-24 bg-surface-sunken rounded-card border-2 border-dashed border-ink/30 mt-16 flex items-center justify-center relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-surface/50 to-transparent animate-pulse" />
+          <span className="text-ink-muted font-bold z-20 bg-surface-raised px-4 py-1 rounded-control shadow-soft">
+            {t("processing")}
           </span>
         </div>
 
-        {/* Conveyor Belt */}
-        <div className="w-full h-3 bg-gray-300 dark:bg-gray-600 mt-6 rounded-full relative overflow-hidden border border-gray-400 dark:border-gray-500">
+        <div className="w-full h-3 bg-line-strong mt-6 rounded-pill relative overflow-hidden border border-line">
           <div className="absolute inset-0 conveyor-belt opacity-50" />
         </div>
 
-        {/* Finished Product Label */}
-        <div className="absolute -bottom-4 left-4 bg-[#2e3c52] text-white px-4 py-2 rounded-t-xl text-sm font-bold shadow-lg transform rotate-3 text-hebrew-heading">
-          תוצאה מושלמת!
+        <div className="absolute -bottom-4 start-4 bg-ink text-white px-4 py-2 rounded-t-xl text-body-sm font-bold shadow-lift">
+          {t("result")}
         </div>
       </div>
     </motion.div>

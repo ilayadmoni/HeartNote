@@ -1,1 +1,101 @@
-{}
+{
+  "nav": {
+    "previous": "הקודם",
+    "next": "הבא",
+    "close": "סגירה"
+  },
+  "steps": {
+    "step1": { "title": "1. בוחרים תבנית", "description": "מתוך גלריית תבניות אינטראקטיביות" },
+    "step2": { "title": "2. עורכים אישית", "description": "משנים טקסט וצבעים בקלות" },
+    "step3": { "title": "3. יוצרים את התבנית", "description": "רואים בדיוק איך זה ייראה" },
+    "step4": { "title": "4. מפיצים למי שאוהבים", "description": "שולחים בקליק בוואטסאפ או בקישור" }
+  },
+  "step1": {
+    "heading": "בחרו את החוויה הבאה",
+    "subheading": "תבניות אינטראקטיביות שנוצרו באהבה",
+    "filters": {
+      "all": "הכל",
+      "romantic": "רומנטי",
+      "games": "משחקים",
+      "memories": "זכרונות",
+      "gifts": "מתנות"
+    },
+    "cards": {
+      "dateInvite": {
+        "badge": "חינם",
+        "title": "הזמנה לדייט",
+        "description": "כרטיס אינטראקטיבי שבו כפתור ה\"לא\" בורח מהאצבע. אי אפשר לסרב לזה!",
+        "cta": "התחילו ליצור",
+        "ariaCta": "התחילו ליצור הזמנה לדייט"
+      },
+      "scratchCard": {
+        "badge": "חדש",
+        "title": "כרטיס גירוד",
+        "description": "גרדו כדי לגלות את ההפתעה. הפתרונות המקוריים ביותר מתחבאים מתחת לשכבה",
+        "cta": "התחילו ליצור",
+        "ariaCta": "התחילו ליצור כרטיס גירוד"
+      },
+      "timeline": {
+        "badge": "חינם",
+        "title": "ציר הזמן",
+        "description": "מסע נוסטלגי דרך הרגעים המיוחדים שלכם: התחלה, נשיקה ראשונה והיום",
+        "cta": "התחילו ליצור",
+        "ariaCta": "התחילו ליצור ציר זמן"
+      },
+      "wheel": {
+        "badge": "חינם",
+        "title": "גלגל החלטות",
+        "description": "לא יודעים מה לעשות? סובבו את הגלגל ותנו לגורל להחליט לאן יוצאים",
+        "cta": "התחילו ליצור",
+        "ariaCta": "התחילו ליצור גלגל החלטות"
+      }
+    }
+  },
+  "step2": {
+    "questionTyped": "האם תרצי לצאת איתי לדייט אורלי?",
+    "successTyped": "יש ניפגש ב9 בגן הפקאן",
+    "hint": "כדאי לך לבחור את התשובה הנכונה...",
+    "no": "לא",
+    "yes": "כן",
+    "editTrigger": "עריכת מאפיינים",
+    "accessibility": "נגישות",
+    "closeEdit": "סגירת עריכה",
+    "validUntil": "תוקף היצירה: {date}",
+    "questionLabel": "שאלה",
+    "successLabel": "הודעת הצלחה",
+    "colorLabel": "צבע ראשי",
+    "colorName": "סלמון"
+  },
+  "step3": {
+    "question": "האם תרצי לצאת איתי לדייט אורלי?",
+    "hint": "כדאי לך לבחור את התשובה הנכונה...",
+    "no": "לא",
+    "yes": "כן",
+    "acceptedTitle": "ידעתי שתגיד כן!",
+    "acceptedSubtitle": "יש ניפגש ב9 בגן הפקאן"
+  },
+  "step4": {
+    "createCta": "יצירה",
+    "question": "האם תרצי לצאת איתי לדייט אורלי?",
+    "hint": "כדאי לך לבחור את התשובה הנכונה...",
+    "no": "לא",
+    "yes": "כן",
+    "modalTitle": "הכרטיס נוצר בהצלחה!",
+    "shareLinkLabel": "קישור לשיתוף",
+    "linkPreview": "https://heartnote.co.il/p/064...",
+    "whatsapp": "WhatsApp",
+    "wa": {
+      "contactInitial": "נ",
+      "contactName": "אורלי",
+      "receivedMessage": "מה קורה שמעון??",
+      "receivedTime": "0:53",
+      "linkTitle": "גרד וגלה",
+      "linkDesc": "פתחו וגלו את ההפתעה!",
+      "linkDomain": "heartnote.co.il",
+      "caption": "הכנתי לך משהו ב-HeartNote!",
+      "sentTime": "0:57",
+      "closing": "באהבה ממני אלייך",
+      "composerPlaceholder": "היי"
+    }
+  }
+}

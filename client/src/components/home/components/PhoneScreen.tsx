@@ -2,98 +2,74 @@
 
 /**
  * PhoneScreen Component
- * Date invitation card UI with dodging "לא" button
+ * Sample date-invitation UI shown inside the hero phone frame.
  */
 
 import { Heart } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { dirFor, isLocale, DEFAULT_LOCALE } from "@/i18n/locale";
 
 interface PhoneScreenProps {
   isDodging?: boolean;
-  shouldAnimate?: boolean;
+  motionOk?: boolean;
 }
 
-export function PhoneScreen({
-  isDodging = false,
-  shouldAnimate = true,
-}: PhoneScreenProps) {
+export function PhoneScreen({ isDodging = false, motionOk = true }: PhoneScreenProps): JSX.Element {
+  const t = useTranslations("home.phone");
+  const rawLocale = useLocale();
+  const dir = dirFor(isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE);
+
   return (
-    <div className="w-full h-full flex flex-col bg-[#f8f6f3]" dir="rtl">
-      {/* App bar */}
-      <div className="bg-[#f2e9e4] px-3 py-4 flex items-center justify-between">
+    <div className="w-full h-full flex flex-col bg-surface" dir={dir}>
+      <div className="bg-surface-sunken px-3 py-4 flex items-center justify-between">
         <div className="flex items-center gap-1">
-          <Heart size={16} className="text-[#d4826f]" fill="#d4826f" />
-          <span className="text-[#1b263b] text-[11px] font-bold text-english-heading">
-            HeartNote
-          </span>
-          <span className="text-[11px]"></span>
+          <Heart size={16} className="text-accent" fill="currentColor" />
+          <span className="text-ink text-[11px] font-bold">HeartNote</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-gray-400/60" />
-          <span className="text-grey text-[20px]">☰</span>
+          <div className="w-5 h-5 rounded-full bg-line-strong" />
         </div>
       </div>
 
-      {/* Sub-bar */}
-      <div className="bg-white px-3 py-1.5 flex items-center justify-between border-b border-gray-100">
-        <span className="text-[10px] font-bold text-[#2e3c52] text-hebrew-heading">
-          הזמנה לדייט
-        </span>
-        <div className="bg-[#d4826f] text-white text-[7px] px-2 py-0.5 rounded-full">
-          יצירה
-        </div>
+      <div className="bg-surface px-3 py-1.5 flex items-center justify-between border-b border-line">
+        <span className="text-[10px] font-bold text-ink">{t("screenTitle")}</span>
+        <div className="bg-accent text-accent-ink text-[7px] px-2 py-0.5 rounded-pill">{t("screenBadge")}</div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-3 gap-2">
-        <div className="bg-pink-50 p-1.5 rounded-lg">
-          <Heart size={16} className="text-[#d4826f]" fill="#d4826f" />
+        <div className="bg-accent-soft p-1.5 rounded-control">
+          <Heart size={16} className="text-accent" fill="currentColor" />
         </div>
 
-        {/* Invitation card */}
-        <div className="bg-white rounded-xl shadow-sm p-4 w-full text-center">
-          <p className="text-[12px] font-bold text-[#2e3c52] mb-1 text-hebrew-heading">
-            בא לך לצאת איתי לדייט?
-          </p>
-          <p className="text-[8px] text-gray-400 mb-3 text-hebrew-body">
-            כדאי לך לבחור את התשובה הנכונה
-          </p>
+        <div className="bg-surface rounded-card shadow-soft p-4 w-full text-center">
+          <p className="text-[12px] font-bold text-ink mb-1">{t("question")}</p>
+          <p className="text-[8px] text-ink-subtle mb-3">{t("hint")}</p>
 
           <div className="flex gap-3 justify-center items-center">
             <button
-              className="text-[10px] text-gray-500 px-4 py-1.5 rounded-full border border-gray-200 bg-white"
+              className="text-[10px] text-ink-muted px-4 py-1.5 rounded-pill border border-line bg-surface"
               style={{
-                transform: `translateX(${isDodging && shouldAnimate ? -22 : 0}px)`,
-                opacity: isDodging && shouldAnimate ? 0.4 : 1,
-                transition: shouldAnimate
-                  ? "transform 0.4s cubic-bezier(.4,0,.2,1), opacity 0.4s ease"
-                  : "none",
+                transform: `translateX(${isDodging && motionOk ? -22 : 0}px)`,
+                opacity: isDodging && motionOk ? 0.4 : 1,
+                transition: motionOk ? "transform 0.4s cubic-bezier(.4,0,.2,1), opacity 0.4s ease" : "none",
               }}
             >
-              לא
+              {t("no")}
             </button>
-            <button className="text-[10px] text-white bg-[#d4826f] px-4 py-1.5 rounded-full flex items-center gap-1">
-              כן <Heart size={10} fill="white" />
+            <button className="text-[10px] text-accent-ink bg-accent px-4 py-1.5 rounded-pill flex items-center gap-1">
+              {t("yes")} <Heart size={10} fill="currentColor" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="bg-white border-t border-gray-100 px-3 py-1.5 flex items-center justify-center gap-1">
-        <span className="text-[8px] font-bold text-[#2e3c52] text-english-heading">
-          HeartNote
-        </span>
-        <span className="text-[7px] text-gray-400 text-english-body">
-          Created using
-        </span>
-        <span className="text-[9px]"></span>
+      <div className="bg-surface border-t border-line px-3 py-1.5 flex items-center justify-center gap-1">
+        <span className="text-[8px] font-bold text-ink">HeartNote</span>
+        <span className="text-[7px] text-ink-subtle">{t("createdBy")}</span>
       </div>
 
-      {/* Bottom bar */}
-      <div className="bg-[#2e3c52] px-3 py-1.5 flex items-center justify-center">
-        <span className="text-[8px] text-white text-hebrew-body">
-          ערוך מאפיינים ⌃
-        </span>
+      <div className="bg-navy-800 px-3 py-1.5 flex items-center justify-center">
+        <span className="text-[8px] text-white">{t("editHint")}</span>
       </div>
     </div>
   );

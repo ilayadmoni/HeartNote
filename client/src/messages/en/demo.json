@@ -1,1 +1,101 @@
-{}
+{
+  "nav": {
+    "previous": "Previous",
+    "next": "Next",
+    "close": "Close"
+  },
+  "steps": {
+    "step1": { "title": "1. Pick a template", "description": "From our gallery of interactive templates" },
+    "step2": { "title": "2. Make it yours", "description": "Change the text and colors in a couple of taps" },
+    "step3": { "title": "3. Build your greeting", "description": "See exactly how it will look" },
+    "step4": { "title": "4. Send it to someone you love", "description": "Share it on WhatsApp or with a link, in one click" }
+  },
+  "step1": {
+    "heading": "Pick your next experience",
+    "subheading": "Interactive templates made with love",
+    "filters": {
+      "all": "All",
+      "romantic": "Romantic",
+      "games": "Games",
+      "memories": "Memories",
+      "gifts": "Gifts"
+    },
+    "cards": {
+      "dateInvite": {
+        "badge": "Free",
+        "title": "Date invite",
+        "description": "An interactive card where the \"no\" button runs from your finger. Impossible to say no to.",
+        "cta": "Start creating",
+        "ariaCta": "Start creating a date invite"
+      },
+      "scratchCard": {
+        "badge": "New",
+        "title": "Scratch card",
+        "description": "Scratch to reveal the surprise. The best answers are hiding under the surface.",
+        "cta": "Start creating",
+        "ariaCta": "Start creating a scratch card"
+      },
+      "timeline": {
+        "badge": "Free",
+        "title": "Timeline",
+        "description": "A nostalgic trip through your special moments: the beginning, the first kiss, and today.",
+        "cta": "Start creating",
+        "ariaCta": "Start creating a timeline"
+      },
+      "wheel": {
+        "badge": "Free",
+        "title": "Decision wheel",
+        "description": "Can't decide? Spin the wheel and let fate choose where you're headed.",
+        "cta": "Start creating",
+        "ariaCta": "Start creating a decision wheel"
+      }
+    }
+  },
+  "step2": {
+    "questionTyped": "Want to go on a date with me, Emma?",
+    "successTyped": "See you at 9 at Pecan Park",
+    "hint": "Choose your answer wisely...",
+    "no": "No",
+    "yes": "Yes",
+    "editTrigger": "Edit details",
+    "accessibility": "Accessibility",
+    "closeEdit": "Close editing",
+    "validUntil": "Valid until: {date}",
+    "questionLabel": "Question",
+    "successLabel": "Success message",
+    "colorLabel": "Main color",
+    "colorName": "Salmon"
+  },
+  "step3": {
+    "question": "Want to go on a date with me, Emma?",
+    "hint": "Choose your answer wisely...",
+    "no": "No",
+    "yes": "Yes",
+    "acceptedTitle": "Knew you'd say yes!",
+    "acceptedSubtitle": "See you at 9 at Pecan Park"
+  },
+  "step4": {
+    "createCta": "Create",
+    "question": "Want to go on a date with me, Emma?",
+    "hint": "Choose your answer wisely...",
+    "no": "No",
+    "yes": "Yes",
+    "modalTitle": "Your card is ready!",
+    "shareLinkLabel": "Share link",
+    "linkPreview": "https://heartnote.co.il/p/064...",
+    "whatsapp": "WhatsApp",
+    "wa": {
+      "contactInitial": "E",
+      "contactName": "Emma",
+      "receivedMessage": "What's up Sam??",
+      "receivedTime": "0:53",
+      "linkTitle": "Scratch and reveal",
+      "linkDesc": "Open it and see what's inside!",
+      "linkDomain": "heartnote.co.il",
+      "caption": "Made you something on HeartNote!",
+      "sentTime": "0:57",
+      "closing": "With love, from me to you",
+      "composerPlaceholder": "Hey"
+    }
+  }
+}

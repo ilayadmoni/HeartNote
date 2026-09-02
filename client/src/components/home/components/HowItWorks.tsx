@@ -2,147 +2,73 @@
 
 /**
  * HowItWorks Component
- * 3-step process section with icons
+ * Numbered timeline: horizontal on desktop, vertical on mobile.
  */
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { MousePointer2, Settings, Send } from "lucide-react";
-import { HOW_IT_WORKS_TITLE, HOW_IT_WORKS_SUBTITLE, STEPS } from "../constants";
-import type { HowItWorksProps } from "../types";
+import { fadeUp, stagger, viewportOnce, useMotionOk } from "@/lib/motion";
+import { STEPS } from "../constants";
+import type { HowItWorksProps, StepIconKey } from "../types";
 
-export function HowItWorks({ className = "" }: HowItWorksProps) {
+const ICONS: Record<StepIconKey, typeof MousePointer2> = {
+  click: MousePointer2,
+  settings: Settings,
+  send: Send,
+};
+
+export function HowItWorks({ className = "" }: HowItWorksProps): JSX.Element {
+  const t = useTranslations("home.howItWorks");
+  const motionOk = useMotionOk();
+
   return (
-    <section
-      id="how-it-works"
-      className={`py-24 px-4 bg-white dark:bg-gray-900 relative overflow-hidden ${className}`}
-    >
-      {/* Decorative Gears */}
-      <div className="absolute top-10 right-0 opacity-15 pointer-events-none">
-        <Settings size={200} className="animate-spin-slow text-[#2e3c52]" />
-      </div>
-      <div className="absolute bottom-10 left-0 opacity-15 pointer-events-none">
-        <Settings
-          size={180}
-          className="animate-spin-slow-reverse text-[#2e3c52]"
-        />
-      </div>
-
-      <div className="container mx-auto max-w-7xl text-center relative z-10">
-        {/* Header */}
+    <section id="how-it-works" className={`py-section-sm px-gutter bg-surface relative overflow-hidden ${className}`}>
+      <div className="mx-auto max-w-shell text-center relative z-10">
         <motion.h2
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionOk ? { opacity: 0, y: 20 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-3xl lg:text-4xl font-black text-[#2e3c52] dark:text-white mb-4 text-hebrew-heading"
+          viewport={viewportOnce}
+          className="text-display-md text-ink mb-4"
         >
-          {HOW_IT_WORKS_TITLE}
+          {t("title")}
         </motion.h2>
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionOk ? { opacity: 0, y: 20 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={viewportOnce}
           transition={{ delay: 0.1 }}
-          className="text-[#2e3c52] dark:text-gray-300 mb-16 text-lg text-hebrew-body"
+          className="text-body-lg text-ink-muted mb-16 max-w-prose mx-auto"
         >
-          {HOW_IT_WORKS_SUBTITLE}
+          {t("subtitle")}
         </motion.p>
 
-        {/* Steps Grid */}
-        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 px-4">
-          {/* Connecting Line (Desktop) */}
-          <div className="hidden md:block absolute top-12 right-[16%] left-[16%] h-1 border-t-4 border-dashed border-[#d4826f]/30 z-0" />
+        <motion.div
+          initial={motionOk ? "hidden" : "visible"}
+          whileInView="visible"
+          viewport={viewportOnce}
+          variants={stagger(0.12)}
+          className="relative flex flex-col md:flex-row md:items-start gap-10 md:gap-6"
+        >
+          <div className="hidden md:block absolute top-8 start-[16%] end-[16%] h-px border-t-2 border-dashed border-line-strong z-0" />
 
-          {STEPS.map((step, index) => (
-            <StepCard key={step.id} step={step} index={index} />
-          ))}
-        </div>
+          {STEPS.map((step) => {
+            const Icon = ICONS[step.icon];
+            return (
+              <motion.div key={step.id} variants={fadeUp} className="relative z-10 flex-1 flex flex-col items-center text-center">
+                <div className="flex items-center gap-3 md:flex-col md:gap-2 mb-4">
+                  <span className="text-display-md text-accent font-display leading-none">{step.id}</span>
+                  <div className="w-14 h-14 rounded-pill bg-accent-soft flex items-center justify-center">
+                    <Icon className="text-accent w-6 h-6" />
+                  </div>
+                </div>
+                <h3 className="text-title-sm text-ink mb-2">{t(`step${step.id}.title`)}</h3>
+                <p className="text-body-sm text-ink-muted max-w-xs">{t(`step${step.id}.description`)}</p>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </div>
     </section>
-  );
-}
-
-/**
- * StepCard Sub-component
- */
-interface StepCardProps {
-  step: (typeof STEPS)[0];
-  index: number;
-}
-
-function StepCard({ step, index }: StepCardProps) {
-  const getIcon = () => {
-    switch (step.icon) {
-      case "click":
-        return <MousePointer2 className="text-[#d4826f] w-10 h-10" />;
-      case "settings":
-        return (
-          <Settings className="text-[#2e3c52] dark:text-white w-10 h-10" />
-        );
-      case "send":
-        return <Send className="text-gray-500 dark:text-gray-300 w-10 h-10" />;
-      default:
-        return null;
-    }
-  };
-
-  const getBgColor = () => {
-    switch (index) {
-      case 0:
-        return "bg-[#d4826f]/15";
-      case 1:
-        return "bg-[#2e3c52]/10";
-      case 2:
-        return "bg-[#2e3c52]/5 dark:bg-white/10";
-      default:
-        return "bg-gray-100";
-    }
-  };
-
-  const getBadgeColor = () => {
-    switch (index) {
-      case 0:
-        return "bg-[#d4826f]";
-      case 1:
-        return "bg-[#2e3c52]";
-      case 2:
-        return "bg-gray-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.15 }}
-      className="relative flex flex-col items-center group"
-    >
-      {/* Icon Container */}
-      <div className="relative z-10">
-        <div
-          className={`w-24 h-24 rounded-full ${getBgColor()} flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-300`}
-        >
-          {getIcon()}
-        </div>
-        {/* Step Number Badge */}
-        <div
-          className={`absolute top-0 right-0 w-8 h-8 rounded-full ${getBadgeColor()} text-white flex items-center justify-center font-bold shadow-md border-4 border-white dark:border-gray-900`}
-        >
-          {step.id}
-        </div>
-      </div>
-
-      {/* Title */}
-      <h3 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-3 text-hebrew-heading">
-        {step.title}
-      </h3>
-
-      {/* Description */}
-      <p className="text-[#2e3c52] dark:text-gray-300 text-sm leading-relaxed max-w-xs mx-auto text-hebrew-body">
-        {step.description}
-      </p>
-    </motion.div>
   );
 }

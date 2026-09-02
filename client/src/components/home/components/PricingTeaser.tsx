@@ -2,90 +2,100 @@
 
 /**
  * PricingTeaser Component
- * Upgrade call-to-action section
+ * Free baseline vs Lite/Premium upgrade cards.
  */
 
 import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
-import { Crown, ArrowLeft } from "lucide-react";
-import {
-  PRICING_BADGE,
-  PRICING_TITLE,
-  PRICING_TITLE_HIGHLIGHT,
-  PRICING_TITLE_END,
-  PRICING_DESCRIPTION,
-  PRICING_CTA,
-} from "../constants";
+import { useTranslations } from "next-intl";
+import { Crown, ArrowRight, Sparkles } from "lucide-react";
+import { fadeUp, stagger, viewportOnce, useMotionOk } from "@/lib/motion";
 import type { PricingTeaserProps } from "../types";
 
-export function PricingTeaser({ className = "" }: PricingTeaserProps) {
-  return (
-    <section
-      className={`py-20 px-4 bg-[#F2E9E4] dark:bg-gray-800 text-center relative overflow-hidden ${className}`}
-    >
-      {/* Background Pattern */}
-      <div
-        className="absolute inset-0 opacity-5 pointer-events-none"
-        style={{
-          backgroundImage: "radial-gradient(#1B263B 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+const TIERS = ["free", "lite", "premium"] as const;
 
-      <div className="container mx-auto max-w-4xl relative z-10">
-        {/* Badge */}
+export function PricingTeaser({ className = "" }: PricingTeaserProps): JSX.Element {
+  const t = useTranslations("home.pricing");
+  const motionOk = useMotionOk();
+
+  return (
+    <section className={`py-section-sm px-gutter bg-surface-sunken text-center relative overflow-hidden ${className}`}>
+      <div className="mx-auto max-w-shell relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionOk ? { opacity: 0, y: 20 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="inline-flex items-center gap-2 bg-white dark:bg-gray-700 px-4 py-2 rounded-full shadow-sm mb-6 border border-gray-100 dark:border-gray-600"
+          viewport={viewportOnce}
+          className="inline-flex items-center gap-2 bg-surface px-4 py-2 rounded-pill shadow-soft mb-6 border border-line"
         >
-          <Crown size={16} className="text-[#d4826f] dark:text-[#e8917a]" />
-          <span className="text-sm font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
-            {PRICING_BADGE}
-          </span>
+          <Crown size={16} className="text-accent" />
+          <span className="text-body-sm font-bold text-ink">{t("badge")}</span>
         </motion.div>
 
-        {/* Title */}
         <motion.h2
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionOk ? { opacity: 0, y: 20 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={viewportOnce}
           transition={{ delay: 0.1 }}
-          className="text-3xl lg:text-5xl font-black text-[#2e3c52] dark:text-white mb-6 text-hebrew-heading"
+          className="text-display-md text-ink mb-4"
         >
-          {PRICING_TITLE}{" "}
-          <span className="text-[#2e3c52] dark:text-white">
-            {PRICING_TITLE_HIGHLIGHT}
-          </span>{" "}
-          {PRICING_TITLE_END}
+          {t("title")} <span className="text-accent">{t("titleHighlight")}</span> {t("titleEnd")}
         </motion.h2>
 
-        {/* Description */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionOk ? { opacity: 0, y: 20 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-          className="text-lg text-[#2e3c52] dark:text-gray-300 mb-10 max-w-2xl mx-auto text-hebrew-body"
+          viewport={viewportOnce}
+          transition={{ delay: 0.15 }}
+          className="text-body-lg text-ink-muted mb-10 max-w-prose mx-auto"
         >
-          {PRICING_DESCRIPTION}
+          {t("description")}
         </motion.p>
 
-        {/* CTA Button */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={motionOk ? "hidden" : "visible"}
+          whileInView="visible"
+          viewport={viewportOnce}
+          variants={stagger(0.08)}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 max-w-2xl mx-auto"
+        >
+          {TIERS.map((tier) => {
+            const isUpgrade = tier !== "free";
+            return (
+              <motion.div
+                key={tier}
+                variants={fadeUp}
+                className={
+                  isUpgrade
+                    ? "relative rounded-card p-5 bg-accent-soft border border-accent/30 shadow-card"
+                    : "relative rounded-card p-5 bg-surface border border-line"
+                }
+              >
+                {isUpgrade && (
+                  <span className="absolute -top-3 start-1/2 -translate-x-1/2 inline-flex items-center gap-1 bg-accent text-accent-ink text-caption font-bold px-3 py-1 rounded-pill shadow-soft">
+                    <Sparkles size={12} />
+                    {t(`${tier}.badge`)}
+                  </span>
+                )}
+                <p className="text-title-sm text-ink mb-1">{t(`${tier}.name`)}</p>
+                <p className="text-caption text-ink-muted">{t(`${tier}.detail`)}</p>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        <motion.div
+          initial={motionOk ? { opacity: 0, y: 20 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
+          viewport={viewportOnce}
+          transition={{ delay: 0.2 }}
           className="flex justify-center"
         >
           <Link
             href="/pricing"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-lg font-bold text-white bg-[#2e3c52] hover:bg-[#415A77] shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-hebrew-heading"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-pill text-body-lg font-bold text-accent-ink bg-accent shadow-glow-sm hover:bg-accent-hover hover:shadow-glow transition-colors duration-base ease-out-quint"
           >
-            {PRICING_CTA}
-            <ArrowLeft size={20} />
+            {t("cta")}
+            <ArrowRight size={20} className="rtl:-scale-x-100" />
           </Link>
         </motion.div>
       </div>
