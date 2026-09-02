@@ -6,25 +6,26 @@
  * Hidden visually but accessible to assistive technologies
  */
 
+import { useTranslations } from "next-intl";
 import { SKIP_LINKS } from "../constants";
 
-export function SkipLinks() {
+export function SkipLinks(): JSX.Element {
+  const t = useTranslations("common.a11y");
   return (
-    <nav aria-label="קישורי דילוג" className="sr-only focus-within:not-sr-only">
-      <ul className="flex gap-2 p-2 bg-[#2e3c52] fixed top-0 right-0 left-0 z-[100]">
+    <nav aria-label={t("skipLinksNav")} className="sr-only focus-within:not-sr-only">
+      <ul className="flex gap-2 p-2 bg-navy-900 fixed top-0 start-0 end-0 z-[100]">
         {SKIP_LINKS.map((link) => (
           <li key={link.id}>
             <a
               href={`#${link.id}`}
               className="
-                px-4 py-2 
-                bg-[#d4826f] text-white 
-                rounded-md font-bold
-                focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#2e3c52]
-                text-hebrew-heading
+                px-4 py-2
+                bg-accent text-accent-ink
+                rounded-control font-bold
+                focus:outline-none focus:ring-2 focus:ring-cream-100 focus:ring-offset-2 focus:ring-offset-navy-900
               "
             >
-              {link.label}
+              {t(link.labelKey)}
             </a>
           </li>
         ))}

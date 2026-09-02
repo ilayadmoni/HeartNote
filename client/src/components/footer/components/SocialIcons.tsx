@@ -11,7 +11,7 @@ interface SocialIconsProps {
   className?: string;
 }
 
-export function SocialIcons({ links, className = "" }: SocialIconsProps) {
+export function SocialIcons({ links, className = "" }: SocialIconsProps): JSX.Element {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       {links.map((social) => (
@@ -20,12 +20,12 @@ export function SocialIcons({ links, className = "" }: SocialIconsProps) {
           href={social.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors duration-200"
+          className="w-10 h-10 rounded-pill bg-cream-100/10 hover:bg-cream-100/20 flex items-center justify-center transition-colors duration-200"
           aria-label={social.label}
         >
           {social.icon === "tiktok" && (
             <svg
-              className="w-5 h-5 text-white"
+              className="w-5 h-5 text-cream-100"
               fill="currentColor"
               viewBox="0 0 24 24"
             >
@@ -34,7 +34,7 @@ export function SocialIcons({ links, className = "" }: SocialIconsProps) {
           )}
           {social.icon === "instagram" && (
             <svg
-              className="w-5 h-5 text-white"
+              className="w-5 h-5 text-cream-100"
               fill="currentColor"
               viewBox="0 0 24 24"
             >

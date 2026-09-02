@@ -1,1 +1,21 @@
-{}
+{
+  "description": "Your digital moment-maker. Love, smiles and memories, one click away.",
+  "groups": {
+    "brand": {
+      "title": "HeartNote",
+      "howItWorks": "How it works",
+      "faq": "FAQ",
+      "contact": "Contact us"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy policy",
+      "terms": "Terms of use",
+      "accessibility": "Accessibility"
+    }
+  },
+  "copyright": "© {year} HeartNote. All rights reserved.",
+  "social": {
+    "follow": "Follow us"
+  }
+}

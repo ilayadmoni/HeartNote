@@ -2,41 +2,41 @@
 
 /**
  * Error boundary for the public pages route group (shared links like /p/[slug]).
- * MED-4: Granular error boundaries for better UX.
  */
+
+import { Frown } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function PublicError({
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
-}) {
+}): JSX.Element {
+  const t = useTranslations("common");
+
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
-      <span className="text-5xl mb-4" aria-hidden="true">
-        😵‍💫
-      </span>
+    <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center bg-surface">
+      <Frown aria-hidden="true" size={48} className="text-accent mb-4" />
 
-      <h2 className="text-2xl font-black text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading">
-        משהו השתבש
-      </h2>
+      <h2 className="text-title-md text-ink mb-2">{t("errors.title")}</h2>
 
-      <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-sm text-sm leading-relaxed text-hebrew-body">
-        לא הצלחנו לטעון את הדף. נסו שוב.
+      <p className="text-body-sm text-ink-muted mb-6 max-w-prose leading-relaxed">
+        {t("errors.loadFailed")}
       </p>
 
       <div className="flex gap-3">
         <button
           onClick={reset}
-          className="px-5 py-2.5 bg-[#d4826f] hover:bg-[#c4735f] text-white font-bold text-sm rounded-xl shadow-md transition-all duration-200"
+          className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-accent-ink font-bold text-body-sm rounded-pill shadow-soft transition-all duration-base"
         >
-          נסו שוב
+          {t("actions.retry")}
         </button>
         <a
           href="/"
-          className="px-5 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-[#2e3c52] dark:text-white font-bold text-sm rounded-xl transition-all duration-200"
+          className="px-5 py-2.5 bg-surface-sunken hover:bg-surface-raised text-ink font-bold text-body-sm rounded-pill transition-all duration-base"
         >
-          עמוד הבית
+          {t("actions.home")}
         </a>
       </div>
     </div>

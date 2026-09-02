@@ -1,1 +1,36 @@
-{}
+{
+  "widget": {
+    "openLabel": "Open accessibility menu"
+  },
+  "modal": {
+    "title": "Accessibility",
+    "subtitle": "Adjust the interface",
+    "closeLabel": "Close accessibility menu",
+    "textSize": "Text size",
+    "decreaseLabel": "Decrease text size",
+    "increaseLabel": "Increase text size",
+    "reset": "Reset settings"
+  },
+  "toggles": {
+    "highContrast": {
+      "label": "High contrast",
+      "description": "Dark color scheme with high contrast"
+    },
+    "grayscale": {
+      "label": "Grayscale",
+      "description": "Remove color from the page"
+    },
+    "highlightLinks": {
+      "label": "Highlight links",
+      "description": "Add an underline and color to links"
+    },
+    "readableFont": {
+      "label": "Readable font",
+      "description": "Use a standard font"
+    },
+    "stopAnimations": {
+      "label": "Stop animations",
+      "description": "Stop all animations on the site"
+    }
+  }
+}

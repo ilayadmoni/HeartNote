@@ -2,31 +2,32 @@
 
 /**
  * AuthButtons Component
- * Login button for the header, or UserMenu when logged in
+ * Login CTA for the header, or UserMenu when signed in.
  */
 
+import { useTranslations } from "next-intl";
 import type { AuthButtonsProps } from "../types";
 import { UserMenu } from "./UserMenu";
 import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
 
 export function AuthButtons({
   className = "",
   variant = "desktop",
   onLoginClick,
-}: AuthButtonsProps) {
+}: AuthButtonsProps): JSX.Element {
+  const t = useTranslations("nav");
   const { user, loading } = useAuth();
   const isDesktop = variant === "desktop";
 
-  // Show nothing while loading
   if (loading) {
     return (
       <div className={`flex items-center gap-3 ${className}`}>
-        <div className="w-20 h-9 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+        <div className="w-20 h-9 rounded-pill bg-surface-sunken animate-pulse" />
       </div>
     );
   }
 
-  // Show UserMenu if logged in
   if (user) {
     return (
       <div className={`flex items-center gap-3 ${className}`}>
@@ -35,28 +36,18 @@ export function AuthButtons({
     );
   }
 
-  // Show login button when not logged in
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      {/* Login Button */}
       <button
         type="button"
         onClick={onLoginClick}
-        className={`
-          transition-all duration-200 text-hebrew-heading
-          bg-white dark:bg-transparent
-          text-[#2e3c52] dark:text-[#c7d0dc]
-          border border-[#c7d0dc] dark:border-white
-          hover:border-[#d4826f] dark:hover:border-[#d4826f]
-          shadow-sm hover:shadow-md
-          ${
-            isDesktop
-              ? "px-5 py-2 text-sm rounded-full"
-              : "w-full py-3 text-center rounded-lg"
-          }
-        `}
+        className={cn(
+          "font-bold rounded-pill transition-all duration-base",
+          "bg-accent text-accent-ink shadow-glow-sm hover:bg-accent-hover hover:shadow-glow",
+          isDesktop ? "px-5 py-2 text-body-sm" : "w-full py-3 text-center text-body-md",
+        )}
       >
-        התחברות
+        {t("login")}
       </button>
     </div>
   );

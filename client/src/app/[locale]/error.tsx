@@ -1,30 +1,30 @@
 "use client";
 
+import { RotateCw, Frown } from "lucide-react";
+import { useTranslations } from "next-intl";
+
 export default function Error({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
-}) {
+}): JSX.Element {
+  const t = useTranslations("common");
+
   return (
-    <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center">
-      {/* Decorative icon */}
-      <span className="text-6xl mb-6" aria-hidden="true">
-        😵‍💫
-      </span>
+    <div className="min-h-[100dvh] bg-surface flex flex-col items-center justify-center p-6 text-center">
+      <Frown aria-hidden="true" size={56} className="text-accent mb-6" />
 
-      <h1 className="text-3xl font-black text-[#2e3c52] dark:text-white mb-3">
-        משהו השתבש
-      </h1>
+      <h1 className="text-title-lg text-ink mb-3">{t("errors.title")}</h1>
 
-      <p className="text-gray-500 dark:text-gray-400 mb-2 max-w-sm text-sm leading-relaxed">
-        אירעה שגיאה בלתי צפויה. נסו שוב או חזרו לעמוד הבית.
+      <p className="text-body-sm text-ink-muted mb-2 max-w-prose leading-relaxed">
+        {t("errors.generic")}
       </p>
 
       {error?.digest && (
-        <p className="text-xs text-gray-400 dark:text-gray-500 mb-8 max-w-sm truncate">
-          קוד שגיאה: {error.digest}
+        <p className="text-caption text-ink-subtle mb-8 max-w-sm truncate">
+          {t("errors.code", { digest: error.digest })}
         </p>
       )}
 
@@ -32,43 +32,25 @@ export default function Error({
         <button
           onClick={reset}
           className="
-            inline-flex items-center gap-2 px-6 py-3 rounded-xl
-            bg-[#d4826f] hover:bg-[#c4735f]
-            text-white font-bold text-sm
-            transition-all duration-200
-            shadow-md hover:shadow-lg
+            inline-flex items-center gap-2 px-6 py-3 rounded-pill
+            bg-accent hover:bg-accent-hover text-accent-ink font-bold text-body-sm
+            transition-all duration-base shadow-glow-sm hover:shadow-glow
           "
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-            <path d="M3 3v5h5" />
-            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-            <path d="M16 21h5v-5" />
-          </svg>
-          נסו שוב
+          <RotateCw aria-hidden="true" size={18} />
+          {t("actions.retry")}
         </button>
 
         <a
           href="/"
           className="
-            inline-flex items-center gap-2 px-6 py-3 rounded-xl
-            bg-gray-100 dark:bg-gray-800
-            hover:bg-gray-200 dark:hover:bg-gray-700
-            text-[#2e3c52] dark:text-white font-bold text-sm
-            transition-all duration-200
+            inline-flex items-center gap-2 px-6 py-3 rounded-pill
+            bg-surface-sunken hover:bg-surface-raised
+            text-ink font-bold text-body-sm
+            transition-all duration-base
           "
         >
-          עמוד הבית
+          {t("actions.home")}
         </a>
       </div>
     </div>

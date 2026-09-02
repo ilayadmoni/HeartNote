@@ -1,1 +1,21 @@
-{}
+{
+  "description": "מפעל הרגעים הדיגיטלי שלכם. יוצרים אהבה, חיוכים וזיכרונות בלחיצת כפתור.",
+  "groups": {
+    "brand": {
+      "title": "HeartNote",
+      "howItWorks": "איך זה עובד?",
+      "faq": "שאלות נפוצות",
+      "contact": "יצירת קשר"
+    },
+    "legal": {
+      "title": "משפטי",
+      "privacy": "מדיניות פרטיות",
+      "terms": "תנאי שימוש",
+      "accessibility": "נגישות"
+    }
+  },
+  "copyright": "© {year} HeartNote. כל הזכויות שמורות.",
+  "social": {
+    "follow": "עקבו אחרינו"
+  }
+}

@@ -9,10 +9,6 @@ export const PROGRESS_FILL_DURATION = 2;
 /** sessionStorage key used to trigger the splash after login */
 export const SPLASH_STORAGE_KEY = "heartnote_show_splash";
 
-/** Hebrew greeting text */
-export const GREETING_HELLO = "שלום";
-export const GREETING_WELCOME = "ברוכים הבאים ל-HeartNote";
-
 /** Framer Motion animation delays (seconds) */
 export const LOGO_ENTRANCE_DELAY = 0;
 export const TEXT_ENTRANCE_DELAY = 0.3;

@@ -36,11 +36,10 @@ const fillVariants = {
   },
 };
 
-export function SplashProgressBar({ onComplete }: SplashProgressBarProps) {
+export function SplashProgressBar({ onComplete }: SplashProgressBarProps): JSX.Element {
   return (
     <motion.div
-      className="w-48 md:w-64 h-1 rounded-full overflow-hidden
-        bg-[#ebe7e0]/60 dark:bg-[#2e3c52]/80"
+      className="w-48 md:w-64 h-1 rounded-pill overflow-hidden bg-line-strong/60"
       variants={trackVariants}
       initial="hidden"
       animate="visible"
@@ -48,8 +47,7 @@ export function SplashProgressBar({ onComplete }: SplashProgressBarProps) {
       aria-hidden="true"
     >
       <motion.div
-        className="h-full rounded-full bg-[#d4826f] dark:bg-[#e8917a]
-          shadow-[0_0_8px_rgba(212,130,111,0.5)] dark:shadow-[0_0_8px_rgba(232,145,122,0.4)]"
+        className="h-full rounded-pill bg-accent shadow-glow-sm"
         variants={fillVariants}
         initial="hidden"
         animate="visible"

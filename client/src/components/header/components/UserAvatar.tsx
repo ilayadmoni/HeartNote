@@ -11,7 +11,7 @@ interface UserAvatarProps {
   size?: number;
 }
 
-export function UserAvatar({ avatarUrl, displayName, size = 32 }: UserAvatarProps) {
+export function UserAvatar({ avatarUrl, displayName, size = 32 }: UserAvatarProps): JSX.Element {
   if (avatarUrl) {
     return (
       <Image
@@ -26,8 +26,8 @@ export function UserAvatar({ avatarUrl, displayName, size = 32 }: UserAvatarProp
   }
 
   return (
-    <div className="w-8 h-8 rounded-full bg-[#d4826f]/20 flex items-center justify-center">
-      <User size={16} className="text-[#d4826f]" />
+    <div className="w-8 h-8 rounded-full bg-accent-soft flex items-center justify-center">
+      <User size={16} className="text-accent" />
     </div>
   );
 }

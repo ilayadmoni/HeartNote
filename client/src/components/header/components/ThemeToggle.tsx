@@ -5,10 +5,12 @@
  * Toggle button for switching between light and dark mode
  */
 
+import { useTranslations } from "next-intl";
 import { useThemeContext } from "@/components/theme";
 import type { ThemeToggleProps } from "../types";
 
-export function ThemeToggle({ className = "" }: ThemeToggleProps) {
+export function ThemeToggle({ className = "" }: ThemeToggleProps): JSX.Element {
+  const t = useTranslations("common");
   const { isDark, toggleTheme } = useThemeContext();
 
   return (
@@ -16,20 +18,20 @@ export function ThemeToggle({ className = "" }: ThemeToggleProps) {
       onClick={toggleTheme}
       className={`
         p-2 rounded-full inline-flex items-center justify-center
-        text-navy-600 dark:text-gray-300
-        hover:bg-gray-100 dark:hover:bg-navy-700
+        text-ink-muted
+        hover:bg-surface-sunken hover:text-ink
         transition-colors duration-200
         ${className}
       `}
-      aria-label={isDark ? "עבור למצב בהיר" : "עבור למצב כהה"}
-      title={isDark ? "מצב בהיר" : "מצב כהה"}
+      aria-label={isDark ? t("theme.toLight") : t("theme.toDark")}
+      title={isDark ? t("theme.light") : t("theme.dark")}
     >
       {isDark ? <SunIcon /> : <MoonIcon />}
     </button>
   );
 }
 
-function MoonIcon() {
+function MoonIcon(): JSX.Element {
   return (
     <svg
       width="20"
@@ -47,7 +49,7 @@ function MoonIcon() {
   );
 }
 
-function SunIcon() {
+function SunIcon(): JSX.Element {
   return (
     <svg
       width="20"

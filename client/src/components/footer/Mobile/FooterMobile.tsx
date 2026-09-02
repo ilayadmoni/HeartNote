@@ -2,65 +2,49 @@
 
 /**
  * FooterMobile Component
- * Mobile view for the footer - two-column layout for links
+ * Mobile layout: centered brand block, then a two-column link grid.
  */
 
-import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { FooterLinkColumn, SocialIcons, FooterLogo } from "../components";
-import {
-  FOOTER_LINKS,
-  SOCIAL_LINKS,
-  FOOTER_DESCRIPTION,
-  COPYRIGHT_TEXT,
-  SECURITY_TEXT,
-} from "../constants";
+import { FOOTER_LINKS, SOCIAL_LINKS } from "../constants";
 import type { FooterProps } from "../types";
 
-export function FooterMobile({ className = "" }: FooterProps) {
+export function FooterMobile({ className = "" }: FooterProps): JSX.Element {
+  const t = useTranslations("footer");
+  const tCommon = useTranslations("common");
+  const year = new Date().getFullYear();
+
   return (
     <footer
       id="footer"
       role="contentinfo"
-      aria-label="תחתית האתר"
-      className={`bg-[#252d3b] text-white pt-10 pb-6 ${className}`}
-      dir="rtl"
+      aria-label={tCommon("a11y.footer")}
+      className={`bg-navy-900 text-cream-100 pt-10 pb-6 ${className}`}
     >
-      <div className="w-full px-4">
-        {/* Top Section: Logo, Description & Social */}
+      <div className="px-gutter">
         <div className="text-center mb-8">
-          {/* Logo - Always dark mode, centered */}
           <div className="flex justify-center mb-4">
             <FooterLogo />
           </div>
 
-          <p className="text-gray-300 text-sm leading-relaxed text-hebrew-body max-w-xs mx-auto">
-            {FOOTER_DESCRIPTION}
+          <p className="text-cream-300 text-body-sm leading-relaxed max-w-xs mx-auto">
+            {t("description")}
           </p>
 
-          {/* Social Icons */}
           <SocialIcons links={SOCIAL_LINKS} className="justify-center mt-6" />
         </div>
 
-        {/* Link Columns - Two Column Grid */}
         <div className="grid grid-cols-2 gap-8 mb-8">
           {FOOTER_LINKS.map((group) => (
-            <FooterLinkColumn
-              key={group.title}
-              group={group}
-              className="text-center"
-            />
+            <FooterLinkColumn key={group.groupKey} group={group} className="text-center" />
           ))}
         </div>
 
-        {/* Divider */}
-        <div className="h-px bg-white/10 mb-6" />
+        <div className="h-px bg-cream-100/10 mb-6" />
 
-        {/* Bottom: Copyright - centered */}
-        <div className="text-center text-xs text-gray-400">
-          <p className="text-hebrew-body">{COPYRIGHT_TEXT}</p>
-          {SECURITY_TEXT && (
-            <p className="text-hebrew-body mt-1">{SECURITY_TEXT}</p>
-          )}
+        <div className="text-center text-caption text-cream-400">
+          <p>{t("copyright", { year })}</p>
         </div>
       </div>
     </footer>

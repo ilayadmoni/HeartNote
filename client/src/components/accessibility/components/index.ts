@@ -6,3 +6,4 @@ export { SkipLinks } from "./SkipLinks";
 export { VisuallyHidden } from "./VisuallyHidden";
 export { FocusTrap } from "./FocusTrap";
 export { MotionGuard } from "./MotionGuard";
+export { TextSizeControl } from "./TextSizeControl";

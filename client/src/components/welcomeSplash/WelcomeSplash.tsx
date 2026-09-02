@@ -8,6 +8,7 @@
  */
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { SplashLogo, GreetingText, SplashProgressBar } from "./components";
 import { useWelcomeSplash } from "@/hooks/useWelcomeSplash";
 import type { WelcomeSplashProps } from "./types";
@@ -24,7 +25,8 @@ const overlayVariants = {
   },
 };
 
-export function WelcomeSplash({ className = "" }: WelcomeSplashProps) {
+export function WelcomeSplash({ className = "" }: WelcomeSplashProps): JSX.Element {
+  const t = useTranslations("common.welcome");
   const { isVisible, firstName, lastName, dismiss } = useWelcomeSplash();
 
   return (
@@ -34,14 +36,14 @@ export function WelcomeSplash({ className = "" }: WelcomeSplashProps) {
           key="welcome-splash"
           className={`fixed inset-0 z-[200] flex flex-col items-center justify-start
             pt-28 md:pt-40
-            bg-[#faf7f5]/85 dark:bg-[#252d3b]/90
+            bg-surface/85
             backdrop-blur-2xl ${className}`}
           variants={overlayVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
           role="dialog"
-          aria-label="מסך ברוכים הבאים"
+          aria-label={t("dialogLabel")}
           aria-modal="true"
         >
           {/* Decorative radial glow */}
@@ -49,7 +51,7 @@ export function WelcomeSplash({ className = "" }: WelcomeSplashProps) {
             className="absolute inset-0 pointer-events-none"
             aria-hidden="true"
           >
-            <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[420px] h-[420px] rounded-full bg-[#d4826f]/10 dark:bg-[#e8917a]/10 blur-3xl" />
+            <div className="absolute top-[15%] start-1/2 -translate-x-1/2 w-[420px] h-[420px] rounded-full bg-accent/10 blur-3xl" />
           </div>
 
           {/* Splash Content */}

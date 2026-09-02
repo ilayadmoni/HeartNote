@@ -1,1 +1,36 @@
-{}
+{
+  "widget": {
+    "openLabel": "פתיחת תפריט נגישות"
+  },
+  "modal": {
+    "title": "נגישות",
+    "subtitle": "התאמת הממשק",
+    "closeLabel": "סגירת תפריט נגישות",
+    "textSize": "גודל טקסט",
+    "decreaseLabel": "הקטנת טקסט",
+    "increaseLabel": "הגדלת טקסט",
+    "reset": "איפוס הגדרות"
+  },
+  "toggles": {
+    "highContrast": {
+      "label": "ניגודיות גבוהה",
+      "description": "ערכת צבעים כהה עם ניגודיות גבוהה"
+    },
+    "grayscale": {
+      "label": "מצב אפור",
+      "description": "הסרת צבעים מהדף"
+    },
+    "highlightLinks": {
+      "label": "הדגשת קישורים",
+      "description": "הוספת קו תחתון וצבע לקישורים"
+    },
+    "readableFont": {
+      "label": "גופן קריא",
+      "description": "שימוש בגופן סטנדרטי"
+    },
+    "stopAnimations": {
+      "label": "עצירת אנימציה",
+      "description": "עצירת כל האנימציות באתר"
+    }
+  }
+}

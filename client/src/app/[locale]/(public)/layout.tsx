@@ -8,6 +8,6 @@ export default function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}): JSX.Element {
   return <>{children}</>;
 }

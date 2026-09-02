@@ -31,19 +31,38 @@
     "title": "Something went wrong",
     "generic": "An unexpected error occurred. Try again or head back home.",
     "loadFailed": "We couldn't load this page. Please try again.",
-    "code": "Error code: {digest}"
+    "code": "Error code: {digest}",
+    "safeModeMessage": "This is taking longer than usual. You can refresh the page.",
+    "safeModeReload": "Refresh now"
   },
   "notFound": {
     "title": "Page not found",
     "description": "The link may have changed, or there's a typo. Either way, home is always open.",
     "cta": "Back to home"
   },
+  "welcome": {
+    "dialogLabel": "Welcome screen",
+    "hello": "Hello",
+    "helloName": "Hello, {name}!",
+    "subtitle": "Welcome to HeartNote"
+  },
+  "cookies": {
+    "dialogLabel": "Cookie preferences",
+    "message": "This site uses cookies to improve your browsing experience, show personalized content and analyze our traffic. By continuing to browse, you agree to our <link>privacy policy</link>.",
+    "reject": "Decline",
+    "rejectAriaLabel": "Decline all cookies",
+    "acceptAll": "Accept all",
+    "acceptAllAriaLabel": "Accept all cookies"
+  },
   "a11y": {
     "skipToContent": "Skip to main content",
     "skipToNav": "Skip to navigation",
     "skipToFooter": "Skip to footer",
+    "skipLinksNav": "Skip links",
     "mainHeader": "Site header",
     "mainNav": "Main navigation",
-    "footer": "Site footer"
+    "footer": "Site footer",
+    "on": "On",
+    "off": "Off"
   }
 }

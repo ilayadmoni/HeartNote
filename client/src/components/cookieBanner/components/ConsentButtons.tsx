@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { CookieBannerContentProps } from "../types";
 
 /**
@@ -9,23 +10,24 @@ import type { CookieBannerContentProps } from "../types";
 export function ConsentButtons({
   onAcceptAll,
   onRejectAll,
-}: CookieBannerContentProps) {
+}: CookieBannerContentProps): JSX.Element {
+  const t = useTranslations("common.cookies");
   return (
     <div className="flex flex-col-reverse md:flex-row items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
       <button
         onClick={onRejectAll}
-        className="w-full md:w-auto border border-gray-300 dark:border-gray-600 bg-transparent text-[#2e3c52] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 px-6 py-2.5 rounded-full text-hebrew-body text-sm font-medium transition-all duration-200 whitespace-nowrap"
-        aria-label="דחיית כל העוגיות"
+        className="w-full md:w-auto min-h-[2.75rem] border border-line-strong bg-transparent text-ink hover:bg-surface-sunken px-6 py-2.5 rounded-pill text-body-sm font-medium transition-all duration-200 whitespace-nowrap"
+        aria-label={t("rejectAriaLabel")}
       >
-        דחייה
+        {t("reject")}
       </button>
 
       <button
         onClick={onAcceptAll}
-        className="w-full md:w-auto bg-[#d4826f] hover:bg-[#c4735f] text-white px-8 py-2.5 rounded-full text-hebrew-body text-sm font-bold transition-all duration-200 whitespace-nowrap shadow-sm"
-        aria-label="אישור כל העוגיות"
+        className="w-full md:w-auto min-h-[2.75rem] bg-accent hover:bg-accent-hover text-accent-ink px-8 py-2.5 rounded-pill text-body-sm font-bold transition-all duration-200 whitespace-nowrap shadow-soft"
+        aria-label={t("acceptAllAriaLabel")}
       >
-        אישור הכל
+        {t("acceptAll")}
       </button>
     </div>
   );

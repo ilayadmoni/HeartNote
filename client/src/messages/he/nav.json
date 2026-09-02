@@ -12,5 +12,6 @@
   "closeMenu": "סגירת תפריט",
   "logoAlt": "HeartNote - לעמוד הבית",
   "userMenu": "תפריט משתמש",
-  "greeting": "היי, {name}"
+  "greeting": "היי, {name}",
+  "loginOrRegister": "התחברות / הרשמה"
 }

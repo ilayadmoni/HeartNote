@@ -3,15 +3,17 @@
 /**
  * Header Component
  * Main responsive header with navigation, theme toggle, and auth buttons
- * Supports desktop, tablet (iPad), and mobile (iPhone) layouts
+ * Supports desktop, tablet, and mobile layouts
  */
 
 import { useState } from "react";
 import { usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { HeaderProps } from "./types";
 import { NAV_ITEMS } from "./constants";
 import { useHeader } from "@/hooks/useHeader";
 import { usePasswordResetModal } from "@/hooks/usePasswordResetModal";
+import { cn } from "@/lib/utils";
 import {
   Logo,
   NavLinks,
@@ -24,20 +26,18 @@ import {
 } from "./components";
 import { LoginModal } from "@/components/auth";
 
-export function Header({ className = "" }: HeaderProps) {
+export function Header({ className = "" }: HeaderProps): JSX.Element | null {
+  const t = useTranslations("common");
   const pathname = usePathname();
-  const { isMobileMenuOpen, isScrolled, toggleMobileMenu, closeMobileMenu } =
-    useHeader();
+  const { isMobileMenuOpen, isScrolled, toggleMobileMenu, closeMobileMenu } = useHeader();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loginModalView, setLoginModalView] = useState<
     "login" | "update-password" | "complete-profile"
   >("login");
 
-  // Auto-open modal from password reset link
   usePasswordResetModal(setLoginModalView, setIsLoginModalOpen);
 
-  // Close mobile menu when UserMenu opens on mobile
-  const handleUserMenuToggle = (isOpen: boolean) => {
+  const handleUserMenuToggle = (isOpen: boolean): void => {
     if (isOpen && isMobileMenuOpen) {
       closeMobileMenu();
     }
@@ -48,13 +48,13 @@ export function Header({ className = "" }: HeaderProps) {
     return null;
   }
 
-  const openLoginModal = () => {
+  const openLoginModal = (): void => {
     closeMobileMenu();
     setLoginModalView("login");
     setIsLoginModalOpen(true);
   };
 
-  const closeLoginModal = () => {
+  const closeLoginModal = (): void => {
     setIsLoginModalOpen(false);
     setLoginModalView("login");
   };
@@ -63,59 +63,39 @@ export function Header({ className = "" }: HeaderProps) {
     <>
       <header
         id="main-navigation"
-        dir="rtl"
         role="banner"
-        aria-label="כותרת ראשית"
-        className={`
-          ${isMobileMenuOpen ? "fixed" : "sticky"} top-0 z-[100] w-full
-          bg-[#faf8f5f2] dark:bg-[#1a1f2e]
-          transition-all duration-300 ease-out
-          ${
-            isScrolled
-              ? "shadow-lg shadow-black/5 dark:shadow-black/20 border-b border-gray-200/50 dark:border-gray-700/50"
-              : "border-b border-gray-200/30 dark:border-gray-700/30"
-          }
-          ${className}
-        `}
+        aria-label={t("a11y.mainHeader")}
+        className={cn(
+          isMobileMenuOpen ? "fixed" : "sticky",
+          "top-0 z-[100] w-full bg-surface/90 backdrop-blur transition-all duration-base",
+          isScrolled ? "shadow-soft border-b border-line" : "border-b border-line/60",
+          className,
+        )}
       >
-        <div className="relative z-[2] w-full px-4 lg:px-8 bg-[#faf8f5f2] dark:bg-[#1a1f2e]">
-          <div className="flex items-center justify-between h-16 lg:h-18">
-            {/* Right Side: Logo (RTL) */}
-            <div className="flex-shrink-0">
+        <div className="section-shell">
+          <div className="flex items-center justify-between h-16 lg:h-[4.5rem]">
+            <div className="shrink-0">
               <Logo />
             </div>
 
-            {/* Center: Desktop Navigation */}
             <div className="hidden lg:block">
               <NavLinks items={NAV_ITEMS} />
             </div>
 
-            {/* Left Side: Actions (RTL) */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               <LanguageSwitcher className="hidden sm:inline-flex" />
-              {/* Theme Toggle */}
               <ThemeToggle />
 
-              {/* Desktop Auth Buttons */}
-              <AuthButtons
-                variant="desktop"
-                className="hidden lg:flex"
-                onLoginClick={openLoginModal}
-              />
+              <AuthButtons variant="desktop" className="hidden lg:flex" onLoginClick={openLoginModal} />
 
-              {/* Mobile: Avatar + Hamburger */}
               <div className="flex items-center gap-2 lg:hidden">
                 <UserMenu onMenuToggle={handleUserMenuToggle} />
-                <HamburgerButton
-                  isOpen={isMobileMenuOpen}
-                  onClick={toggleMobileMenu}
-                />
+                <HamburgerButton isOpen={isMobileMenuOpen} onClick={toggleMobileMenu} />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu — absolutely positioned below header bar, inside the sticky container */}
         <MobileMenu
           isOpen={isMobileMenuOpen}
           onClose={closeMobileMenu}
@@ -124,7 +104,6 @@ export function Header({ className = "" }: HeaderProps) {
         />
       </header>
 
-      {/* Login Modal */}
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={closeLoginModal}

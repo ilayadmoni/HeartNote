@@ -1,31 +1,31 @@
 /**
  * Footer Constants
- * Static data for footer links and social media
+ * Static data for footer links and social media. Labels resolve through
+ * `footer.groups.<groupKey>.<labelKey>` at render time.
  */
 
 import type { FooterLinkGroup, SocialLink } from "../types";
 
 export const FOOTER_LINKS: FooterLinkGroup[] = [
   {
-    title: "HeartNote",
+    groupKey: "brand",
     links: [
-      { id: "how-it-works", label: "איך זה עובד?", href: "/#how-it-works" },
-      { id: "faq", label: "שאלות נפוצות", href: "/faq" },
-      { id: "contact", label: "יצירת קשר", href: "/contact" },
-
+      { id: "how-it-works", labelKey: "howItWorks", href: "/#how-it-works" },
+      { id: "faq", labelKey: "faq", href: "/faq" },
+      { id: "contact", labelKey: "contact", href: "/contact" },
     ],
   },
   {
-    title: "משפטי",
+    groupKey: "legal",
     links: [
-      { id: "privacy", label: "מדיניות פרטיות", href: "/privacy" },
-      { id: "terms", label: "תנאי שימוש", href: "/terms" },
-      { id: "accessibility", label: "נגישות", href: "/accessibility" },
-
+      { id: "privacy", labelKey: "privacy", href: "/privacy" },
+      { id: "terms", labelKey: "terms", href: "/terms" },
+      { id: "accessibility", labelKey: "accessibility", href: "/accessibility" },
     ],
   },
 ];
 
+/** Brand names stay untranslated; they are proper nouns, not UI copy. */
 export const SOCIAL_LINKS: SocialLink[] = [
   {
     id: "tiktok",
@@ -40,9 +40,3 @@ export const SOCIAL_LINKS: SocialLink[] = [
     icon: "instagram",
   },
 ];
-
-export const FOOTER_DESCRIPTION =
-  "מפעל הרגעים הדיגיטלי שלכם. יוצרים אהבה, חיוכים וזיכרונות בלחיצת כפתור";
-
-export const COPYRIGHT_TEXT = "© 2026 HeartNote כל הזכויות שמורות";
-export const SECURITY_TEXT = "";

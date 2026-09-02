@@ -1,25 +1,18 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { MobileNavItem } from "./MobileNavItem";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
 import type { MobileMenuProps } from "../types";
 import { FocusTrap } from "@/components/accessibility";
 import { useAuth } from "@/contexts/AuthContext";
-
-const C = {
-  coral: "#d4826f",
-  coralDark: "#b86a57",
-} as const;
-
-
+import { useMotionOk } from "@/lib/motion";
 
 const listVariants = {
-  open: {
-    transition: { staggerChildren: 0.07, delayChildren: 0.05 },
-  },
-  closed: {
-    transition: { staggerChildren: 0.04, staggerDirection: -1 },
-  },
+  open: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+  closed: { transition: { staggerChildren: 0.04, staggerDirection: -1 } },
 };
 
 export function MobileMenu({
@@ -27,15 +20,17 @@ export function MobileMenu({
   onClose,
   navItems,
   onLoginClick,
-}: MobileMenuProps) {
+}: MobileMenuProps): JSX.Element {
+  const t = useTranslations("nav");
   const { user, loading } = useAuth();
+  const motionOk = useMotionOk();
 
   return (
     <>
       {/* Backdrop */}
       <div
         className={`
-          fixed left-0 right-0 bottom-0 bg-black/40 backdrop-blur-sm
+          fixed start-0 end-0 bottom-0 bg-ink/40 backdrop-blur-sm
           transition-opacity duration-300 lg:hidden z-[90]
           ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
         `}
@@ -49,30 +44,17 @@ export function MobileMenu({
           {isOpen && (
             <motion.div
               id="mobile-menu"
-              initial={{ opacity: 0, y: -8 }}
+              initial={motionOk ? { opacity: 0, y: -8 } : undefined}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
+              exit={motionOk ? { opacity: 0, y: -8 } : undefined}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="
-                absolute top-16 left-0 right-0 z-[95] lg:hidden overflow-hidden
-                bg-[#faf8f5f2] dark:bg-[#1a1f2e]
-              "
-              style={{
-                willChange: "opacity, transform",
-                boxShadow:
-                  "0 30px 70px -20px rgba(212,130,111,0.35), 0 2px 6px rgba(0,0,0,0.1)",
-                borderTop: "1px solid rgba(212,130,111,0.18)",
-                padding: "20px 18px 22px",
-                fontFamily: "var(--font-open-sans)",
-              }}
-              aria-label="תפריט ניווט"
+              className="absolute top-16 start-0 end-0 z-[95] lg:hidden overflow-hidden bg-surface border-t border-line shadow-lift px-4 pb-6 pt-5"
+              aria-label={t("menu")}
             >
-  
-
-              <nav aria-label="ניווט נייד" style={{ position: "relative", width: "100%" }}>
+              <nav aria-label={t("menu")} className="relative w-full">
                 <motion.ul
                   role="list"
-                  style={{ listStyle: "none", margin: 0, padding: 0 }}
+                  className="list-none m-0 p-0"
                   variants={listVariants}
                   initial="closed"
                   animate="open"
@@ -82,11 +64,16 @@ export function MobileMenu({
                     <MobileNavItem
                       key={item.id}
                       href={item.href}
-                      label={item.label}
+                      label={t(item.labelKey)}
                       onClick={onClose}
                     />
                   ))}
                 </motion.ul>
+
+                <div className="flex items-center justify-between gap-3 mt-5 pt-5 border-t border-line">
+                  <LanguageSwitcher />
+                  <ThemeToggle />
+                </div>
 
                 {!loading && !user && onLoginClick && (
                   <motion.button
@@ -95,26 +82,21 @@ export function MobileMenu({
                       onClose();
                       onLoginClick();
                     }}
-                    initial={{ opacity: 0, y: 6 }}
+                    initial={motionOk ? { opacity: 0, y: 6 } : undefined}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 6 }}
+                    exit={motionOk ? { opacity: 0, y: 6 } : undefined}
                     transition={{ delay: navItems.length * 0.07 + 0.05, duration: 0.2 }}
-                    whileTap={{ scale: 0.97 }}
+                    whileTap={motionOk ? { scale: 0.97 } : undefined}
                     className="
-                      w-full mt-5 px-4 py-3.5 rounded-full
-                      text-white font-bold text-[15px]
-                      transition-opacity duration-150
+                      w-full mt-5 min-h-[3rem] px-4 py-3.5 rounded-pill
+                      bg-accent text-accent-ink font-bold text-body-md
+                      shadow-glow-sm transition-opacity duration-150
                       active:opacity-90 cursor-pointer
-                      focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]
-                      focus-visible:ring-offset-2 focus-visible:ring-offset-[#faf8f5] dark:focus-visible:ring-offset-[#1a1f2e]
+                      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent
+                      focus-visible:ring-offset-2 focus-visible:ring-offset-surface
                     "
-                    style={{
-                      background: `linear-gradient(135deg, ${C.coral} 0%, ${C.coralDark} 100%)`,
-                      boxShadow: "0 8px 20px -4px rgba(212,130,111,0.45)",
-                      fontFamily: "var(--font-open-sans)",
-                    }}
                   >
-                    התחברות / הרשמה
+                    {t("loginOrRegister")}
                   </motion.button>
                 )}
               </nav>

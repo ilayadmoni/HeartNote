@@ -3,11 +3,11 @@
  * ARIA labels and keyboard navigation constants
  */
 
-// Skip Link Targets
+// Skip Link Targets — labels resolve through common.a11y.<labelKey>
 export const SKIP_LINKS = [
-  { id: "main-content", label: "דלג לתוכן הראשי" },
-  { id: "main-navigation", label: "דלג לניווט" },
-  { id: "footer", label: "דלג לתחתית" },
+  { id: "main-content", labelKey: "skipToContent" },
+  { id: "main-navigation", labelKey: "skipToNav" },
+  { id: "footer", labelKey: "skipToFooter" },
 ] as const;
 
 // Keyboard Keys
@@ -26,6 +26,6 @@ export const KEYS = {
 
 // Focus outline styles
 export const FOCUS_STYLES = {
-  DEFAULT: "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4826f]",
-  INSET: "focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#d4826f]",
+  DEFAULT: "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+  INSET: "focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-accent",
 } as const;

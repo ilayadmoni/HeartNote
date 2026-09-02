@@ -24,7 +24,7 @@ export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}): Promise<JSX.Element> {
   const queryClient = new QueryClient();
   const session = await auth();
 
@@ -57,7 +57,7 @@ export default async function MainLayout({
           id="main-content"
           role="main"
           tabIndex={-1}
-          className="bg-[#faf7f5] dark:bg-gray-900 pb-px"
+          className="bg-surface pb-px"
         >
           {children}
         </main>

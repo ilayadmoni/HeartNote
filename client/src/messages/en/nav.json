@@ -12,5 +12,6 @@
   "closeMenu": "Close menu",
   "logoAlt": "HeartNote - go to homepage",
   "userMenu": "Account menu",
-  "greeting": "Hi, {name}"
+  "greeting": "Hi, {name}",
+  "loginOrRegister": "Sign in / Sign up"
 }

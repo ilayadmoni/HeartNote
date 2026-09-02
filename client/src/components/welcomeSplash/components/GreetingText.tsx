@@ -2,16 +2,13 @@
 
 /**
  * GreetingText Component
- * Animated Hebrew greeting with personalized first + last name.
+ * Animated personalized greeting with first + last name.
  * Typography matches the Header Logo sizing on mobile.
  */
 
 import { motion } from "framer-motion";
-import {
-  GREETING_HELLO,
-  GREETING_WELCOME,
-  TEXT_ENTRANCE_DELAY,
-} from "../constants";
+import { useTranslations } from "next-intl";
+import { TEXT_ENTRANCE_DELAY } from "../constants";
 import type { GreetingTextProps } from "../types";
 
 const greetingVariants = {
@@ -19,11 +16,7 @@ const greetingVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      delay: TEXT_ENTRANCE_DELAY,
-      duration: 0.5,
-      ease: "easeOut",
-    },
+    transition: { delay: TEXT_ENTRANCE_DELAY, duration: 0.5, ease: "easeOut" },
   },
   exit: { opacity: 0, y: -8, transition: { duration: 0.2 } },
 };
@@ -33,26 +26,20 @@ const subtitleVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      delay: TEXT_ENTRANCE_DELAY + 0.15,
-      duration: 0.5,
-      ease: "easeOut",
-    },
+    transition: { delay: TEXT_ENTRANCE_DELAY + 0.15, duration: 0.5, ease: "easeOut" },
   },
   exit: { opacity: 0, transition: { duration: 0.2 } },
 };
 
-export function GreetingText({ firstName, lastName }: GreetingTextProps) {
+export function GreetingText({ firstName, lastName }: GreetingTextProps): JSX.Element {
+  const t = useTranslations("common.welcome");
   const fullName = [firstName, lastName].filter(Boolean).join(" ");
-  const greeting = fullName
-    ? `${GREETING_HELLO}, ${fullName}!`
-    : `${GREETING_HELLO}!`;
+  const greeting = fullName ? t("helloName", { name: fullName }) : `${t("hello")}!`;
 
   return (
     <div className="text-center space-y-2" role="status" aria-live="polite">
-      {/* Personalized Greeting — matches Header Logo: text-2xl md:text-3xl font-bold */}
       <motion.h1
-        className="text-2xl md:text-3xl font-bold text-hebrew-heading text-navy-700 dark:text-white transition-colors duration-300"
+        className="text-title-lg md:text-display-md text-ink transition-colors duration-300"
         variants={greetingVariants}
         initial="hidden"
         animate="visible"
@@ -61,15 +48,14 @@ export function GreetingText({ firstName, lastName }: GreetingTextProps) {
         {greeting}
       </motion.h1>
 
-      {/* Welcome Subtitle */}
       <motion.p
-        className="text-sm md:text-base text-hebrew-body text-[#5f7794] dark:text-gray-400 transition-colors duration-300"
+        className="text-body-sm md:text-body-md text-ink-muted transition-colors duration-300"
         variants={subtitleVariants}
         initial="hidden"
         animate="visible"
         exit="exit"
       >
-        {GREETING_WELCOME}
+        {t("subtitle")}
       </motion.p>
     </div>
   );

@@ -8,13 +8,13 @@ export interface FooterProps {
 }
 
 export interface FooterLinkGroup {
-  title: string;
+  groupKey: "brand" | "legal";
   links: FooterLink[];
 }
 
 export interface FooterLink {
   id: string;
-  label: string;
+  labelKey: string;
   href: string;
 }
 
@@ -22,5 +22,5 @@ export interface SocialLink {
   id: string;
   label: string;
   href: string;
-  icon: 'tiktok' | 'instagram' | 'facebook' | 'twitter';
+  icon: "tiktok" | "instagram" | "facebook" | "twitter";
 }

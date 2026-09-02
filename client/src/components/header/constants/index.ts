@@ -6,9 +6,9 @@
 import type { NavItem } from '../types';
 
 export const NAV_ITEMS: NavItem[] = [
-  { id: 'templates', label: 'גלריית התבניות', href: '/gallery' },
-  { id: 'pricing', label: 'תוכניות ומחירים', href: '/pricing' },
-  { id: 'how-it-works', label: 'איך זה עובד?', href: '/#how-it-works' },
+  { id: 'templates', labelKey: 'gallery', href: '/gallery' },
+  { id: 'pricing', labelKey: 'pricing', href: '/pricing' },
+  { id: 'how-it-works', labelKey: 'howItWorks', href: '/#how-it-works' },
 ];
 
 export const HEADER_HEIGHT = {
