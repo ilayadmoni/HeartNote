@@ -1,1 +1,595 @@
-{}
+{
+  "colors": {
+    "periwinkle": "Periwinkle",
+    "mint": "Mint",
+    "paleLime": "Pale Lime",
+    "lavender": "Lavender",
+    "pink": "Pink",
+    "salmon": "Salmon",
+    "lightCyan": "Light Cyan",
+    "brightBlue": "Bright Blue",
+    "brightGreen": "Bright Green",
+    "brightYellow": "Bright Yellow",
+    "brightRed": "Bright Red",
+    "black": "Black",
+    "selected": "Selected color"
+  },
+  "fields": {
+    "common": {
+      "recipientName": {
+        "label": "Recipient's name",
+        "placeholder": "Alex"
+      },
+      "senderName": {
+        "label": "Your name",
+        "placeholder": "Mom and Dad"
+      },
+      "greetingTitle": {
+        "label": "Card title",
+        "placeholder": "A heartfelt greeting"
+      },
+      "message": {
+        "label": "Your message",
+        "placeholder": "Write a personal note here..."
+      },
+      "title": {
+        "label": "Title",
+        "placeholder": "Title"
+      },
+      "primaryColor": {
+        "label": "Main color"
+      }
+    },
+    "surprise-gift": {
+      "title": {
+        "label": "Title",
+        "placeholder": "You've got a surprise!"
+      },
+      "greeting": {
+        "label": "Message",
+        "placeholder": "The text revealed after opening"
+      },
+      "boxColor": {
+        "label": "Box color"
+      },
+      "ribbonColor": {
+        "label": "Ribbon color"
+      }
+    },
+    "punching-bag": {
+      "introTitle": {
+        "label": "Opening title",
+        "placeholder": "Stress relief station"
+      },
+      "introSubtitle": {
+        "label": "Subtitle",
+        "placeholder": "Give it a few good hits. It's fine."
+      },
+      "hitsRequired": {
+        "label": "Hits required"
+      },
+      "hitInstructions": {
+        "label": "Hit instructions",
+        "placeholder": "Tap the bag to throw a punch"
+      },
+      "resultTitle": {
+        "label": "Result title",
+        "placeholder": "Ouch... feel better?"
+      },
+      "resultMessage": {
+        "label": "Closing message",
+        "placeholder": "Hope you took it out on the bag instead of me. Sorry I was a jerk"
+      },
+      "bagColor": {
+        "label": "Bag color"
+      }
+    },
+    "relationship-quiz": {
+      "title": {
+        "label": "Title",
+        "placeholder": "How well do you know me?"
+      },
+      "questions": {
+        "label": "Questions"
+      }
+    },
+    "decision-wheel": {
+      "title": {
+        "label": "Title",
+        "placeholder": "The decision wheel"
+      },
+      "subtitle": {
+        "label": "Subtitle",
+        "placeholder": "Spin and find out!"
+      },
+      "options": {
+        "label": "Options (2-8)"
+      }
+    },
+    "slot-machine": {
+      "title": {
+        "label": "Title",
+        "placeholder": "The promise machine"
+      },
+      "subtitle": {
+        "label": "Subtitle",
+        "placeholder": "Spin 3 times..."
+      },
+      "reel1Options": {
+        "label": "Reel 1 options"
+      },
+      "reel2Options": {
+        "label": "Reel 2 options"
+      },
+      "reel3Options": {
+        "label": "Reel 3 options"
+      },
+      "targetReel1": {
+        "label": "Final result - reel 1"
+      },
+      "targetReel2": {
+        "label": "Final result - reel 2"
+      },
+      "targetReel3": {
+        "label": "Final result - reel 3"
+      }
+    },
+    "excuse-generator": {
+      "title": {
+        "label": "Title",
+        "placeholder": "The automatic excuse machine"
+      },
+      "subtitle": {
+        "label": "Subtitle",
+        "placeholder": "Not in the mood to go out? We've got an excuse for you."
+      },
+      "excuses": {
+        "label": "Excuses"
+      },
+      "buttonLabel": {
+        "label": "Button text",
+        "placeholder": "Generate excuse"
+      },
+      "disclaimer": {
+        "label": "Disclaimer",
+        "placeholder": "* The company is not responsible for the outcome of using these excuses."
+      }
+    },
+    "timeline": {
+      "title": {
+        "label": "Title",
+        "placeholder": "Our story"
+      },
+      "events": {
+        "label": "Events"
+      }
+    },
+    "love-coupons": {
+      "title": {
+        "label": "Title",
+        "placeholder": "Coupon book"
+      },
+      "coupons": {
+        "label": "Coupons"
+      }
+    },
+    "open-when": {
+      "title": {
+        "label": "Title",
+        "placeholder": "Open when..."
+      },
+      "envelopes": {
+        "label": "Envelopes"
+      }
+    },
+    "date-invite": {
+      "title": {
+        "label": "Title",
+        "placeholder": "Date invitation"
+      },
+      "question": {
+        "label": "Question",
+        "placeholder": "Will you go on a date with me?"
+      },
+      "successMessage": {
+        "label": "Success message",
+        "placeholder": "Yes! So happy"
+      }
+    },
+    "scratch-card": {
+      "title": {
+        "label": "Title",
+        "placeholder": "Scratch to reveal the surprise"
+      },
+      "prizeContent": {
+        "label": "Prize content",
+        "placeholder": "You won a special surprise!"
+      }
+    },
+    "apology-search": {
+      "searchQuery": {
+        "label": "Search query",
+        "placeholder": "How do I apologize to my partner?"
+      },
+      "resultTitle": {
+        "label": "Result title",
+        "placeholder": "Sorry I was so moody"
+      },
+      "resultSubtitle": {
+        "label": "Result subtitle",
+        "placeholder": "You're right. I love you."
+      },
+      "startButtonLabel": {
+        "label": "Start button",
+        "placeholder": "Start searching"
+      }
+    },
+    "bar-bat-mitzvah": {
+      "kind": {
+        "label": "Choose type",
+        "options": {
+          "bar": "Bar mitzvah",
+          "bat": "Bat mitzvah"
+        }
+      },
+      "introTitle": {
+        "label": "Title",
+        "placeholder": "The growing-up machine"
+      },
+      "introSubtitle": {
+        "label": "Description",
+        "placeholder": "Tap the crown or book to reveal the greeting"
+      },
+      "blessingTitle": {
+        "label": "Blessing title",
+        "placeholder": "Time to celebrate!"
+      },
+      "blessingMessage": {
+        "label": "Blessing",
+        "placeholder": "Welcome to this milestone. Wishing you every success and joy."
+      },
+      "tapHintLabel": {
+        "label": "Hint text (optional)",
+        "placeholder": "Tap the crown / tap the book"
+      }
+    },
+    "wedding-glass-interactive": {
+      "coupleNames": {
+        "label": "Couple's names",
+        "placeholder": "Alex and Sam"
+      },
+      "senderName": {
+        "label": "Your name",
+        "placeholder": "The team at work"
+      },
+      "greetingTitle": {
+        "label": "Card title",
+        "placeholder": "Congratulations to the happy couple"
+      },
+      "message": {
+        "label": "Your message",
+        "placeholder": "Write a message for the couple..."
+      }
+    },
+    "birthday-candles-interactive": {
+      "recipientName": {
+        "label": "Recipient's name",
+        "placeholder": "Jordan"
+      },
+      "senderName": {
+        "label": "Your name",
+        "placeholder": "Mom and Dad"
+      },
+      "recipientAge": {
+        "label": "Age",
+        "placeholder": "30"
+      }
+    }
+  },
+  "templates": {
+    "surprise-gift": {
+      "title": "Surprise gift",
+      "description": "An interactive gift box, shake it until it opens!"
+    },
+    "punching-bag": {
+      "title": "Punching bag",
+      "description": "Hit the bag and get a personal message at the end!"
+    },
+    "relationship-quiz": {
+      "title": "Friendship quiz",
+      "description": "Build a quiz to test how well they know you"
+    },
+    "decision-wheel": {
+      "title": "Decision wheel",
+      "description": "Spin the wheel and get an answer!"
+    },
+    "slot-machine": {
+      "title": "The promise machine",
+      "description": "Spin 3 reels and reveal a hidden message!"
+    },
+    "excuse-generator": {
+      "title": "Excuse generator",
+      "description": "Tap for an instant excuse from the machine!"
+    },
+    "timeline": {
+      "title": "Our timeline",
+      "description": "Tell your story through events on a timeline"
+    },
+    "love-coupons": {
+      "title": "Love coupons",
+      "description": "Create digital coupons to redeem"
+    },
+    "open-when": {
+      "title": "Open when...",
+      "description": "Create envelopes with letters for special moments"
+    },
+    "date-invite": {
+      "title": "Date invitation",
+      "description": "An interactive card where the \"no\" button runs away. Impossible to refuse!"
+    },
+    "scratch-card": {
+      "title": "Scratch card",
+      "description": "Scratch to reveal the hidden surprise!"
+    },
+    "apology-search": {
+      "title": "Apology search",
+      "description": "A search-engine style card, typing an apology into a touching result!"
+    },
+    "bar-bat-mitzvah": {
+      "title": "Bar/Bat mitzvah",
+      "description": "An interactive card with a bar or bat mitzvah blessing"
+    },
+    "wedding-glass-interactive": {
+      "title": "Interactive wedding",
+      "description": "Trigger a romantic wedding moment and reveal a congratulations note."
+    },
+    "birthday-candles-interactive": {
+      "title": "Interactive birthday cake",
+      "description": "The recipient blows out candles and reveals a personal greeting."
+    }
+  },
+  "sidebar": {
+    "heading": "Details",
+    "livePreview": "The preview updates live"
+  },
+  "field": {
+    "removeOption": "Remove",
+    "addOption": "Add option ({count}/{max})",
+    "optionPlaceholder": "Option {index}",
+    "charLimitReached": "You've reached the character limit"
+  },
+  "ai": {
+    "trigger": "Write with AI",
+    "prompt": "Describe what to write, and AI will write it for you",
+    "promptPlaceholder": "e.g. a warm greeting for my best friend",
+    "cancel": "Cancel",
+    "generate": "Generate text",
+    "generating": "Generating text...",
+    "genericError": "Couldn't generate the text"
+  },
+  "toolbar": {
+    "settings": "Settings",
+    "text": "Text",
+    "images": "Images",
+    "music": "Music",
+    "effects": "Effects",
+    "publish": "Create"
+  },
+  "preview": {
+    "notFound": "Template not found"
+  },
+  "expiration": {
+    "label": "Creation expires:"
+  },
+  "confirmModal": {
+    "close": "Close",
+    "loading": "Loading details...",
+    "title": "Confirm creation",
+    "subtitle": "Choose which balance to use for this creation",
+    "tierSectionTitle": "Choose balance for this creation",
+    "expiryLabel": "Expires",
+    "remainingLabel": "Remaining after this",
+    "unlimited": "Unlimited",
+    "noExpiry": "No expiry",
+    "unavailable": "Not available",
+    "genericError": "Something went wrong",
+    "premiumBadge": "Premium pick",
+    "freeBadge": "Free pick",
+    "confirmQuestion": "Ready to create your greeting?",
+    "back": "Back",
+    "creating": "Creating...",
+    "create": "Create digital greeting",
+    "editNote": "Note: the greeting can't be edited once created"
+  },
+  "tier": {
+    "free": {
+      "name": "Free",
+      "description": "Use your free balance",
+      "benefit1": "Includes watermark"
+    },
+    "pro": {
+      "name": "Premium",
+      "description": "Use your premium balance",
+      "benefit1": "No watermark",
+      "benefit2": "Extended validity"
+    },
+    "upgradeCta": "Tap to upgrade",
+    "limitReached": "Limit reached",
+    "remainingOf": "{remaining} left of {total}"
+  },
+  "quota": {
+    "close": "Close",
+    "limitTitle": "You've reached your creation limit!",
+    "limitSubtitle": "Free accounts are limited to {limit} creations",
+    "infoText": "Free users can create up to {limit} greetings.",
+    "infoCta": "Upgrade to Premium to create more",
+    "feature1": "Longer validity (more than 24 hours)",
+    "feature2": "Access to premium templates",
+    "upgradeCta": "Upgrade to Premium",
+    "later": "Maybe later",
+    "paidTitle": "You've used all your greetings for this period",
+    "paidSubtitleLite": "Lite plan",
+    "paidSubtitlePremium": "Premium plan",
+    "paidSubtitleCount": "{count} greetings per period",
+    "activeNoticeActive": "still active",
+    "activeNoticeExpiry": "and valid through {date}",
+    "activeNoticeTail": ". You haven't been charged anything extra, you've simply reached this period's limit.",
+    "liteFeature1": "Upgrading to Premium gives you 6 greetings per period",
+    "liteFeature2": "Premium templates and longer validity",
+    "premiumFeature1": "Contact support to add more greetings",
+    "premiumFeature2": "Existing greetings stay active until they expire",
+    "upgradeToPremium": "Upgrade to Premium",
+    "contactSupport": "Contact support",
+    "stayWithCurrent": "I'll stick with what I have"
+  },
+  "quiz": {
+    "atLeastOne": "You need at least one question",
+    "fillDetails": "Question {num}: please fill in the question details",
+    "correctEmpty": "Question {num}: the correct answer is empty",
+    "wrongEmpty": "Question {num}: wrong answer {index} is empty",
+    "noCorrectSelected": "Question {num}: no correct answer selected",
+    "addQuestion": "Add question ({count}/{max})",
+    "questionLabel": "Question {num}",
+    "deleteQuestion": "Delete question",
+    "mustKeepOne": "You need at least one question",
+    "questionPlaceholder": "Question text",
+    "correctAnswer": "Correct answer",
+    "correctAnswerPlaceholder": "The correct answer",
+    "wrongAnswer": "Wrong answer {index}",
+    "wrongAnswerPlaceholder": "Wrong answer"
+  },
+  "coupons": {
+    "colorGreen": "Green",
+    "colorBlue": "Blue",
+    "colorOrange": "Orange",
+    "colorPink": "Pink",
+    "colorPurple": "Purple",
+    "colorCyan": "Cyan",
+    "addCoupon": "Add coupon ({count}/{max})",
+    "couponLabel": "Coupon {num}",
+    "deleteCoupon": "Delete coupon",
+    "titlePlaceholder": "Coupon title",
+    "descriptionPlaceholder": "Short description (optional)"
+  },
+  "timeline": {
+    "addEvent": "Add event ({count}/{max})",
+    "eventLabel": "Event {num}",
+    "deleteEvent": "Delete event",
+    "titlePlaceholder": "Event title",
+    "descriptionPlaceholder": "Short description (optional)",
+    "maxReached": "You've reached the {max}-event maximum"
+  },
+  "envelopes": {
+    "addEnvelope": "Add envelope ({count}/{max})",
+    "envelopeLabel": "Envelope {num}",
+    "deleteEnvelope": "Delete envelope",
+    "titlePlaceholder": "Title (e.g. when you're sad)",
+    "contentPlaceholder": "Write the letter...",
+    "openDateLabel": "Open date"
+  },
+  "success": {
+    "close": "Close",
+    "title": "Your card is ready!",
+    "verificationLabel": "Verification code for redeeming coupons",
+    "verificationAria": "Verification code",
+    "verificationHint": "Forgot the code? You'll always find it again on your profile page.",
+    "linkLabel": "Share link",
+    "copyAria": "Copy link",
+    "whatsappShare": "Share on WhatsApp",
+    "whatsappMessage": "I made you something special on HeartNote!",
+    "openInNewTab": "Open in new tab",
+    "closeAndReturn": "Close and return home"
+  },
+  "previewLab": {
+    "dateInvite": "Date invitation",
+    "scratchCard": "Scratch card",
+    "timeline": "Timeline",
+    "loveCoupons": "Love coupons",
+    "relationshipQuiz": "Friendship quiz",
+    "openWhen": "Open when..."
+  },
+  "errorBoundary": {
+    "title": "Something went wrong in the editor",
+    "body": "Something went wrong while loading the editor. Try again or head back to the gallery.",
+    "retry": "Try again"
+  },
+  "shell": {
+    "templateNotFound": "Template not found",
+    "backToGallery": "Back to gallery",
+    "restoringDraft": "Restoring your creation...",
+    "loading": "Loading...",
+    "back": "Back",
+    "previewTab": "Preview",
+    "editTab": "Edit"
+  },
+  "premiumUpgrade": {
+    "close": "Close",
+    "title": "What a stunning creation!",
+    "body": "The template you picked is a premium template, available to Lite and Premium subscribers only. Upgrade now to save, share and send your greeting.",
+    "cta": "Upgrade my plan",
+    "note": "The payment page opens in a new tab so your creation isn't lost.",
+    "continueEditing": "Keep editing"
+  },
+  "upgrade": {
+    "close": "Close",
+    "titleLite": "Upgrade to Pro",
+    "titlePremium": "Add more greetings",
+    "usedOfLite": "You've used {limit}/{limit} greetings on the Lite plan",
+    "usedOfPro": "You've used {limit}/{limit} greetings on the Pro plan",
+    "activeUntil": "Your plan is active through {date}",
+    "comparePlans": "Compare plans",
+    "currentLitePlan": "Your current Lite plan",
+    "creationsPerPeriod": "greetings per period",
+    "validity30": "30-day validity",
+    "proPlan": "Pro plan",
+    "recommended": "Recommended",
+    "validity45": "45-day validity",
+    "proIncludes": "What's included in Pro",
+    "feature1": "6 greetings per period",
+    "feature2": "45-day greeting validity",
+    "feature3": "Access to every premium template",
+    "feature4": "Removes the watermark from your card",
+    "feature5": "Upload your own photos",
+    "activeNoteLite": "The greetings you've already created stay live. Your plan is active{expiry} and won't be cancelled.",
+    "activeNotePremium": "Your existing greetings keep working. Your plan is active{expiry} and won't be cancelled.",
+    "expirySuffix": " through {date}",
+    "premiumUsedUp": "You've used all {limit} greetings on the Pro plan.",
+    "premiumContactHint": "Contact support to add more greetings to your active plan.",
+    "yourOptions": "Your options",
+    "optionContact": "Contact support to add more greetings",
+    "optionExisting": "Existing greetings stay available until they expire",
+    "optionWait": "Wait for your next billing cycle",
+    "upgradeNow": "Upgrade to Pro now",
+    "newTabHint": "Opens in a new tab, your current creation won't be lost",
+    "contactSupport": "Contact support",
+    "maybeLater": "Maybe later",
+    "back": "Back"
+  },
+  "bottomSheet": {
+    "editLabel": "Edit details",
+    "closeEditLabel": "Close editing",
+    "swipeHint": "Tap or swipe to edit your creation"
+  },
+  "calendar": {
+    "pickDate": "Pick a date",
+    "datePickerAria": "Date picker",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "monthLabel": "Month",
+    "yearLabel": "Year",
+    "scrollToTop": "Scroll to top"
+  },
+  "errors": {
+    "expirationPolicyLoadFailed": "We couldn't load the expiry policy. Please try again.",
+    "draftRestoreFailed": "We couldn't restore your draft.",
+    "draftRestoreError": "Something went wrong restoring your draft. Please try again.",
+    "draftSaveFailed": "Saving your draft failed. Please try again.",
+    "creationFailed": "Something went wrong creating your card. Please try again."
+  },
+  "redeem": {
+    "invalidCodeLength": "Enter a 4-digit code",
+    "alreadyRedeemed": "This coupon has already been redeemed",
+    "wrongCode": "Incorrect verification code",
+    "genericError": "Something went wrong redeeming the coupon"
+  }
+}

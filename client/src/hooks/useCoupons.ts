@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { redeemCouponAction } from "@/actions/creations";
 import type { LoveCoupon } from "@/components/templates/LoveCoupons/types";
 
@@ -10,6 +11,7 @@ export function useCoupons(
   creationId?: string,
   providedCode?: string | null,
 ) {
+  const t = useTranslations("editor");
   const [coupons, setCoupons] = useState<LoveCoupon[]>(initial);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +49,7 @@ export function useCoupons(
 
     const code = (providedCode ?? enteredCode).trim();
     if (!/^[0-9]{4}$/.test(code)) {
-      setCodeError("יש להזין קוד בן 4 ספרות");
+      setCodeError(t("redeem.invalidCodeLength"));
       return;
     }
 
@@ -66,12 +68,12 @@ export function useCoupons(
     if (!result.success) {
       setCoupons(snapshot);
       if (result.code === 409) {
-        toast.error("הקופון כבר מומש");
+        toast.error(t("redeem.alreadyRedeemed"));
         setPendingId(null);
       } else if (result.code === 400) {
-        setCodeError("קוד אימות שגוי");
+        setCodeError(t("redeem.wrongCode"));
       } else {
-        toast.error("שגיאה במימוש");
+        toast.error(t("redeem.genericError"));
         setPendingId(null);
       }
       return;

@@ -1,1 +1,595 @@
-{}
+{
+  "colors": {
+    "periwinkle": "סגלגל",
+    "mint": "מנטה",
+    "paleLime": "ליים",
+    "lavender": "לבנדר",
+    "pink": "ורוד",
+    "salmon": "סלמון",
+    "lightCyan": "תכלת",
+    "brightBlue": "כחול בהיר",
+    "brightGreen": "ירוק בהיר",
+    "brightYellow": "צהוב בהיר",
+    "brightRed": "אדום בהיר",
+    "black": "שחור",
+    "selected": "צבע נבחר"
+  },
+  "fields": {
+    "common": {
+      "recipientName": {
+        "label": "שם המקבל/ת",
+        "placeholder": "ניצן"
+      },
+      "senderName": {
+        "label": "שם השולח/ת",
+        "placeholder": "מאמא ואבא"
+      },
+      "greetingTitle": {
+        "label": "כותרת הברכה",
+        "placeholder": "ברכה מכל הלב"
+      },
+      "message": {
+        "label": "הברכה",
+        "placeholder": "כתבו כאן ברכה אישית..."
+      },
+      "title": {
+        "label": "כותרת",
+        "placeholder": "כותרת"
+      },
+      "primaryColor": {
+        "label": "צבע ראשי"
+      }
+    },
+    "surprise-gift": {
+      "title": {
+        "label": "כותרת",
+        "placeholder": "יש לך הפתעה!"
+      },
+      "greeting": {
+        "label": "ברכה / הודעה",
+        "placeholder": "הטקסט שייחשף אחרי הפתיחה"
+      },
+      "boxColor": {
+        "label": "צבע קופסה"
+      },
+      "ribbonColor": {
+        "label": "צבע סרט"
+      }
+    },
+    "punching-bag": {
+      "introTitle": {
+        "label": "כותרת פתיחה",
+        "placeholder": "מערכת לשחרור לחצים"
+      },
+      "introSubtitle": {
+        "label": "תת-כותרת",
+        "placeholder": "תני לזה כמה מכות טובות. הכל בסדר."
+      },
+      "hitsRequired": {
+        "label": "מספר מכות נדרשות"
+      },
+      "hitInstructions": {
+        "label": "הוראות הכאה",
+        "placeholder": "הקישי על השק כדי להרביץ"
+      },
+      "resultTitle": {
+        "label": "כותרת תוצאה",
+        "placeholder": "אאוץ׳... זה שחרר?"
+      },
+      "resultMessage": {
+        "label": "הודעת סיום",
+        "placeholder": "מקווה שהוצאת את העצבים על השק איגרוף במקום עליי. סליחה שהייתי מניאק"
+      },
+      "bagColor": {
+        "label": "צבע השק"
+      }
+    },
+    "relationship-quiz": {
+      "title": {
+        "label": "כותרת",
+        "placeholder": "כמה טוב את מכירה אותי?"
+      },
+      "questions": {
+        "label": "שאלות"
+      }
+    },
+    "decision-wheel": {
+      "title": {
+        "label": "כותרת",
+        "placeholder": "גלגל ההחלטות"
+      },
+      "subtitle": {
+        "label": "כותרת משנה",
+        "placeholder": "סובבו וגלו!"
+      },
+      "options": {
+        "label": "אופציות (2-8)"
+      }
+    },
+    "slot-machine": {
+      "title": {
+        "label": "כותרת",
+        "placeholder": "מכונת ההבטחות"
+      },
+      "subtitle": {
+        "label": "כותרת משנה",
+        "placeholder": "סובבי 3 פעמים..."
+      },
+      "reel1Options": {
+        "label": "אפשרויות גלגל 1"
+      },
+      "reel2Options": {
+        "label": "אפשרויות גלגל 2"
+      },
+      "reel3Options": {
+        "label": "אפשרויות גלגל 3"
+      },
+      "targetReel1": {
+        "label": "תוצאה סופית - גלגל 1"
+      },
+      "targetReel2": {
+        "label": "תוצאה סופית - גלגל 2"
+      },
+      "targetReel3": {
+        "label": "תוצאה סופית - גלגל 3"
+      }
+    },
+    "excuse-generator": {
+      "title": {
+        "label": "כותרת",
+        "placeholder": "מכונת התירוצים האוטומטית"
+      },
+      "subtitle": {
+        "label": "כותרת משנה",
+        "placeholder": "לא בא לך לצאת? יש לנו תירוץ בשבילך."
+      },
+      "excuses": {
+        "label": "תירוצים"
+      },
+      "buttonLabel": {
+        "label": "טקסט כפתור",
+        "placeholder": "ג'נרט תירוץ"
+      },
+      "disclaimer": {
+        "label": "כתב ויתור",
+        "placeholder": "* החברה אינה אחראית לתוצאות השימוש בתירוצים אלו."
+      }
+    },
+    "timeline": {
+      "title": {
+        "label": "כותרת",
+        "placeholder": "הסיפור שלנו"
+      },
+      "events": {
+        "label": "אירועים"
+      }
+    },
+    "love-coupons": {
+      "title": {
+        "label": "כותרת",
+        "placeholder": "פנקס קופונים"
+      },
+      "coupons": {
+        "label": "קופונים"
+      }
+    },
+    "open-when": {
+      "title": {
+        "label": "כותרת",
+        "placeholder": "מכתבים מיוחדים"
+      },
+      "envelopes": {
+        "label": "מעטפות"
+      }
+    },
+    "date-invite": {
+      "title": {
+        "label": "כותרת",
+        "placeholder": "הזמנה לדייט"
+      },
+      "question": {
+        "label": "שאלה",
+        "placeholder": "האם תצא/י איתי לדייט?"
+      },
+      "successMessage": {
+        "label": "הודעת הצלחה",
+        "placeholder": "יש! איזה כיף"
+      }
+    },
+    "scratch-card": {
+      "title": {
+        "label": "כותרת",
+        "placeholder": "גרד וגלה את ההפתעה"
+      },
+      "prizeContent": {
+        "label": "תוכן הפרס",
+        "placeholder": "זכית בהפתעה מיוחדת!"
+      }
+    },
+    "apology-search": {
+      "searchQuery": {
+        "label": "שאילתת חיפוש",
+        "placeholder": "איך לבקש סליחה מהבן זוג שלי?"
+      },
+      "resultTitle": {
+        "label": "כותרת תוצאה",
+        "placeholder": "סליחה שהייתי עצבנית"
+      },
+      "resultSubtitle": {
+        "label": "תיאור תוצאה",
+        "placeholder": "אתה צודק. אוהבת אותך."
+      },
+      "startButtonLabel": {
+        "label": "כפתור התחלה",
+        "placeholder": "התחל חיפוש"
+      }
+    },
+    "bar-bat-mitzvah": {
+      "kind": {
+        "label": "בחר סוג",
+        "options": {
+          "bar": "בר מצווה",
+          "bat": "בת מצווה"
+        }
+      },
+      "introTitle": {
+        "label": "כותרת",
+        "placeholder": "מכונת ההתבגרות"
+      },
+      "introSubtitle": {
+        "label": "תיאור",
+        "placeholder": "לחצו על הכתר או הספר כדי לגלות את הברכה"
+      },
+      "blessingTitle": {
+        "label": "כותרת הברכה",
+        "placeholder": "הגיע הזמן לחגוג!"
+      },
+      "blessingMessage": {
+        "label": "הברכה",
+        "placeholder": "ברוכים הבאים לגיל הבגרות. המון הצלחה ושמחה."
+      },
+      "tapHintLabel": {
+        "label": "טקסט הרמז (אופציונלי)",
+        "placeholder": "לחצו על הכתר / לחצו על הספר"
+      }
+    },
+    "wedding-glass-interactive": {
+      "coupleNames": {
+        "label": "שמות הזוג",
+        "placeholder": "ניצן ועילי"
+      },
+      "senderName": {
+        "label": "שם השולח/ת",
+        "placeholder": "החברים מהעבודה"
+      },
+      "greetingTitle": {
+        "label": "כותרת הברכה",
+        "placeholder": "מזל טוב לזוג האהוב"
+      },
+      "message": {
+        "label": "הברכה",
+        "placeholder": "כתבו כאן ברכה לזוג..."
+      }
+    },
+    "birthday-candles-interactive": {
+      "recipientName": {
+        "label": "שם המקבל/ת",
+        "placeholder": "יואב"
+      },
+      "senderName": {
+        "label": "שם השולח/ת",
+        "placeholder": "מאמא ואבא"
+      },
+      "recipientAge": {
+        "label": "גיל",
+        "placeholder": "30"
+      }
+    }
+  },
+  "templates": {
+    "surprise-gift": {
+      "title": "מתנה בהפתעה",
+      "description": "קופסת מתנה אינטראקטיבית - נערו אותה עד שתיפתח!"
+    },
+    "punching-bag": {
+      "title": "שק האיגרוף",
+      "description": "תנו מכות לשק ובסוף תקבלו מסר אישי מיוחד!"
+    },
+    "relationship-quiz": {
+      "title": "חידון חברות",
+      "description": "צרו חידון לבדיקת כמה מכירים אתכם"
+    },
+    "decision-wheel": {
+      "title": "גלגל החלטות",
+      "description": "סובבו את הגלגל וקבלו תשובה!"
+    },
+    "slot-machine": {
+      "title": "מכונת ההבטחות",
+      "description": "סובבו 3 גלגלים ותקבלו הודעה מוסתרת!"
+    },
+    "excuse-generator": {
+      "title": "מכונת התירוצים",
+      "description": "לחצו וקבלו תירוץ אוטומטי מהמכונה!"
+    },
+    "timeline": {
+      "title": "ציר הזמן שלנו",
+      "description": "ספרו את הסיפור שלכם דרך אירועים בציר זמן"
+    },
+    "love-coupons": {
+      "title": "קופוני אהבה",
+      "description": "צרו קופונים דיגיטליים למימוש"
+    },
+    "open-when": {
+      "title": "פתח כש...",
+      "description": "צרו מעטפות עם מכתבים לרגעים מיוחדים"
+    },
+    "date-invite": {
+      "title": "הזמנה לדייט",
+      "description": "כרטיס אינטראקטיבי שבו כפתור ה\"לא\" בורח. אי אפשר לסרב!"
+    },
+    "scratch-card": {
+      "title": "כרטיס גירוד",
+      "description": "גרדו וגלו את ההפתעה המוסתרת!"
+    },
+    "apology-search": {
+      "title": "חיפוש סליחה",
+      "description": "חיפוש שמדמה גוגל - מקליד את הסליחה ומגיע לתוצאה מרגשת!"
+    },
+    "bar-bat-mitzvah": {
+      "title": "בר/בת מצווה",
+      "description": "כרטיס אינטראקטיבי עם ברכה לבר או בת מצווה"
+    },
+    "wedding-glass-interactive": {
+      "title": "חתונה אינטראקטיבית",
+      "description": "מפעילים רגע חתונה רומנטי וחושפים ברכת מזל טוב."
+    },
+    "birthday-candles-interactive": {
+      "title": "עוגת יום הולדת אינטראקטיבית",
+      "description": "המקבל/ת מכבה נרות ומגלה ברכה אישית."
+    }
+  },
+  "sidebar": {
+    "heading": "מאפיינים",
+    "livePreview": "התצוגה מתעדכנת בזמן אמת"
+  },
+  "field": {
+    "removeOption": "הסר",
+    "addOption": "הוסף אופציה ({count}/{max})",
+    "optionPlaceholder": "אופציה {index}",
+    "charLimitReached": "הגעת למגבלת התווים"
+  },
+  "ai": {
+    "trigger": "כתיבה עם AI",
+    "prompt": "תארו מה לכתוב, וה-AI יכתוב עבורכם",
+    "promptPlaceholder": "למשל: ברכה חמה לחברה הכי טובה",
+    "cancel": "ביטול",
+    "generate": "צור טקסט",
+    "generating": "יוצר טקסט...",
+    "genericError": "יצירת הטקסט נכשלה"
+  },
+  "toolbar": {
+    "settings": "הגדרות",
+    "text": "טקסט",
+    "images": "תמונות",
+    "music": "מוזיקה",
+    "effects": "אפקטים",
+    "publish": "יצירה"
+  },
+  "preview": {
+    "notFound": "תבנית לא נמצאה"
+  },
+  "expiration": {
+    "label": "תוקף היצירה:"
+  },
+  "confirmModal": {
+    "close": "סגור",
+    "loading": "טוען פרטים...",
+    "title": "אישור יצירה",
+    "subtitle": "בחר איך להשתמש ביתרה עבור היצירה הזו",
+    "tierSectionTitle": "בחירת יתרה ליצירה זו",
+    "expiryLabel": "תוקף היצירה",
+    "remainingLabel": "יתרה לאחר היצירה",
+    "unlimited": "ללא הגבלה",
+    "noExpiry": "ללא תוקף",
+    "unavailable": "לא זמין",
+    "genericError": "אירעה שגיאה",
+    "premiumBadge": "בחירת פרימיום",
+    "freeBadge": "בחירה חינמית",
+    "confirmQuestion": "האם אתה בטוח שברצונך ליצור את הברכה?",
+    "back": "חזור",
+    "creating": "יוצר...",
+    "create": "יצירת ברכה דיגיטלית",
+    "editNote": "הערה: לאחר יצירה לא ניתן לערוך את הברכה"
+  },
+  "tier": {
+    "free": {
+      "name": "חינם",
+      "description": "שימוש ביתרה חינמית",
+      "benefit1": "כולל סימן מים"
+    },
+    "pro": {
+      "name": "פרימיום",
+      "description": "שימוש ביתרת פרימיום",
+      "benefit1": "ללא סימן מים",
+      "benefit2": "תוקף מורחב"
+    },
+    "upgradeCta": "לחץ לשדרג",
+    "limitReached": "מגבלה הושגה",
+    "remainingOf": "נותר {remaining} מתוך {total}"
+  },
+  "quota": {
+    "close": "סגור",
+    "limitTitle": "הגעת למגבלת היצירות!",
+    "limitSubtitle": "חשבון חינמי מוגבל ל-{limit} יצירות",
+    "infoText": "משתמשים חינמיים יכולים ליצור עד {limit} ברכות.",
+    "infoCta": "שדרגו לפרימיום ליצירת עוד ברכות",
+    "feature1": "תוקף ארוך יותר (יותר מ-24 שעות)",
+    "feature2": "תמיכה בתבניות פרימיום",
+    "upgradeCta": "שדרגו לפרימיום",
+    "later": "אחזור מאוחר יותר",
+    "paidTitle": "ניצלת את כל הברכות לתקופה זו",
+    "paidSubtitleLite": "מנוי לייט",
+    "paidSubtitlePremium": "מנוי פרימיום",
+    "paidSubtitleCount": "{count} ברכות לתקופה",
+    "activeNoticeActive": "עדיין פעיל",
+    "activeNoticeExpiry": "ותקף עד {date}",
+    "activeNoticeTail": ". לא חויבת דבר נוסף - פשוט הגעת למגבלת הברכות לתקופה הנוכחית.",
+    "liteFeature1": "שדרוג לפרימיום מעניק 6 ברכות לתקופה",
+    "liteFeature2": "תבניות פרימיום ותוקף ארוך יותר",
+    "premiumFeature1": "ניתן לפנות לתמיכה להוספת ברכות",
+    "premiumFeature2": "ברכות קיימות פעילות עד תאריך התפוגה",
+    "upgradeToPremium": "שדרגו לפרימיום",
+    "contactSupport": "צרו קשר עם התמיכה",
+    "stayWithCurrent": "אסתפק בברכות הקיימות"
+  },
+  "quiz": {
+    "atLeastOne": "חייבת להיות לפחות שאלה אחת",
+    "fillDetails": "שאלה {num}: אנא מלא את הפרטים של השאלה",
+    "correctEmpty": "שאלה {num}: התשובה הנכונה ריקה",
+    "wrongEmpty": "שאלה {num}: תשובה שגויה {index} ריקה",
+    "noCorrectSelected": "שאלה {num}: לא נבחרה תשובה נכונה",
+    "addQuestion": "הוסף שאלה ({count}/{max})",
+    "questionLabel": "שאלה {num}",
+    "deleteQuestion": "מחק שאלה",
+    "mustKeepOne": "חייבת להיות לפחות שאלה אחת",
+    "questionPlaceholder": "טקסט השאלה",
+    "correctAnswer": "תשובה נכונה",
+    "correctAnswerPlaceholder": "התשובה הנכונה",
+    "wrongAnswer": "תשובה שגויה {index}",
+    "wrongAnswerPlaceholder": "תשובה שגויה"
+  },
+  "coupons": {
+    "colorGreen": "ירוק",
+    "colorBlue": "כחול",
+    "colorOrange": "כתום",
+    "colorPink": "ורוד",
+    "colorPurple": "סגול",
+    "colorCyan": "תכלת",
+    "addCoupon": "הוסף קופון ({count}/{max})",
+    "couponLabel": "קופון {num}",
+    "deleteCoupon": "מחק קופון",
+    "titlePlaceholder": "כותרת הקופון",
+    "descriptionPlaceholder": "תיאור קצר (אופציונלי)"
+  },
+  "timeline": {
+    "addEvent": "הוסף אירוע ({count}/{max})",
+    "eventLabel": "אירוע {num}",
+    "deleteEvent": "מחק אירוע",
+    "titlePlaceholder": "כותרת האירוע",
+    "descriptionPlaceholder": "תיאור קצר (אופציונלי)",
+    "maxReached": "הגעת למקסימום {max} אירועים"
+  },
+  "envelopes": {
+    "addEnvelope": "הוסף מעטפה ({count}/{max})",
+    "envelopeLabel": "מעטפה {num}",
+    "deleteEnvelope": "מחק מעטפה",
+    "titlePlaceholder": "כותרת (למשל: כשאת עצובה)",
+    "contentPlaceholder": "תוכן המכתב...",
+    "openDateLabel": "תאריך פתיחה"
+  },
+  "success": {
+    "close": "סגור",
+    "title": "הכרטיס נוצר בהצלחה!",
+    "verificationLabel": "קוד אימות למימוש קופונים",
+    "verificationAria": "קוד אימות",
+    "verificationHint": "אם תשכחו את הקוד, תמיד תוכלו למצוא אותו בעמוד הפרופיל שלכם.",
+    "linkLabel": "קישור לשיתוף",
+    "copyAria": "העתק קישור",
+    "whatsappShare": "שיתוף בווצאפ",
+    "whatsappMessage": "הכנתי לך כרטיס מיוחד ב-HeartNote!",
+    "openInNewTab": "פתח בעמוד חדש",
+    "closeAndReturn": "סגור וחזור לעמוד הבית"
+  },
+  "previewLab": {
+    "dateInvite": "הזמנה לדייט",
+    "scratchCard": "כרטיס גירוד",
+    "timeline": "ציר זמן",
+    "loveCoupons": "קופוני אהבה",
+    "relationshipQuiz": "חידון חברות",
+    "openWhen": "פתח כש..."
+  },
+  "errorBoundary": {
+    "title": "אירעה שגיאה בעורך",
+    "body": "משהו השתבש בזמן טעינת העורך. נסו שוב או חזרו לגלריה.",
+    "retry": "נסו שוב"
+  },
+  "shell": {
+    "templateNotFound": "תבנית לא נמצאה",
+    "backToGallery": "חזרה לגלריה",
+    "restoringDraft": "משחזר את היצירה שלך...",
+    "loading": "טוען...",
+    "back": "חזרה",
+    "previewTab": "תצוגה מקדימה",
+    "editTab": "עריכה"
+  },
+  "premiumUpgrade": {
+    "close": "סגור",
+    "title": "איזו יצירה מהממת!",
+    "body": "התבנית שבחרת היא תבנית פרימיום שזמינה למנויי לייט ופרימיום בלבד. כדי לשמור, לשתף ולשלוח את הברכה, שדרג/י את המנוי עכשיו.",
+    "cta": "לשדרוג המנוי",
+    "note": "עמוד התשלום ייפתח בחלון חדש כדי שהיצירה שלך לא תאבד.",
+    "continueEditing": "המשך לערוך"
+  },
+  "upgrade": {
+    "close": "סגור",
+    "titleLite": "שדרג לפרו",
+    "titlePremium": "הוסף ברכות",
+    "usedOfLite": "ניצלת את {limit}/{limit} ברכות בתוכנית Lite",
+    "usedOfPro": "ניצלת את {limit}/{limit} ברכות בתוכנית Pro",
+    "activeUntil": "המנוי פעיל עד {date}",
+    "comparePlans": "השוואת תוכניות",
+    "currentLitePlan": "תוכנית Lite הנוכחית",
+    "creationsPerPeriod": "ברכות לתקופה",
+    "validity30": "תוקף 30 ימים",
+    "proPlan": "תוכנית Pro",
+    "recommended": "מומלץ",
+    "validity45": "תוקף 45 ימים",
+    "proIncludes": "מה כוללת תוכנית Pro",
+    "feature1": "6 ברכות לתקופה",
+    "feature2": "תוקף הברכות - 45 יום",
+    "feature3": "גישה לכל תבניות הפרימיום",
+    "feature4": "הסרת סימן מים מהכרטיס",
+    "feature5": "העלאת תמונות אישיות",
+    "activeNoteLite": "הברכות שיצרת כבר פעילות ונגישות. המנוי שלך פעיל{expiry} - לא יבוטל.",
+    "activeNotePremium": "הברכות הקיימות שלך ממשיכות לפעול. המנוי פעיל{expiry} - לא יבוטל.",
+    "expirySuffix": " עד {date}",
+    "premiumUsedUp": "ניצלת את כל {limit} הברכות בתוכנית Pro.",
+    "premiumContactHint": "ניתן לפנות לתמיכה כדי להוסיף ברכות נוספות לתוכנית הפעילה.",
+    "yourOptions": "האפשרויות שלך",
+    "optionContact": "פנו לתמיכה להוספת ברכות נוספות",
+    "optionExisting": "ברכות קיימות זמינות עד תאריך תפוגתן",
+    "optionWait": "המתינו לתחילת מחזור המנוי הבא",
+    "upgradeNow": "שדרג לפרו עכשיו",
+    "newTabHint": "ייפתח בחלון חדש - היצירה הנוכחית לא תאבד",
+    "contactSupport": "צרו קשר עם התמיכה",
+    "maybeLater": "אולי מאוחר יותר",
+    "back": "חזרה"
+  },
+  "bottomSheet": {
+    "editLabel": "ערוך מאפיינים",
+    "closeEditLabel": "סגור עריכה",
+    "swipeHint": "לחצו או החליקו לעריכת היצירה"
+  },
+  "calendar": {
+    "pickDate": "בחר תאריך",
+    "datePickerAria": "בחירת תאריך",
+    "prevMonth": "חודש קודם",
+    "nextMonth": "חודש הבא",
+    "monthLabel": "חודש",
+    "yearLabel": "שנה",
+    "scrollToTop": "גלול למעלה"
+  },
+  "errors": {
+    "expirationPolicyLoadFailed": "לא הצלחנו לטעון את מדיניות התוקף. נסו שוב.",
+    "draftRestoreFailed": "לא הצלחנו לשחזר את הטיוטה.",
+    "draftRestoreError": "שגיאה בשחזור הטיוטה. נסו שוב.",
+    "draftSaveFailed": "שמירת טיוטה נכשלה. נסו שוב.",
+    "creationFailed": "שגיאה ביצירת הכרטיס. נסו שוב."
+  },
+  "redeem": {
+    "invalidCodeLength": "יש להזין קוד בן 4 ספרות",
+    "alreadyRedeemed": "הקופון כבר מומש",
+    "wrongCode": "קוד אימות שגוי",
+    "genericError": "שגיאה במימוש"
+  }
+}

@@ -11,7 +11,7 @@ import { TemplateEditor } from "@/components/editor";
 
 import { pushToDataLayer } from "@/utils/gtm";
 
-export default function CreateTemplatePage() {
+export default function CreateTemplatePage(): JSX.Element {
   const params = useParams();
   const templateId = params.templateId as string;
   const hasTrackedView = useRef(false);

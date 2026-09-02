@@ -42,7 +42,7 @@ export function FieldRenderer({
   handleConfirmCreation,
   templateId,
   templateName,
-}: FieldRendererProps) {
+}: FieldRendererProps): JSX.Element {
   const closeModal = () => setActiveModal("none");
 
   return (

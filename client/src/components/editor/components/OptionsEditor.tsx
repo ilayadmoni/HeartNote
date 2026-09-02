@@ -8,6 +8,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
 
 const MAX_OPTIONS = 8;
@@ -23,7 +24,8 @@ export function OptionsEditor({
   options = [],
   onChange,
   maxLength = CHAR_LIMITS.OPTION,
-}: OptionsEditorProps) {
+}: OptionsEditorProps): JSX.Element {
+  const t = useTranslations("editor");
   const canAdd = options.length < MAX_OPTIONS;
   const canRemove = options.length > MIN_OPTIONS;
 
@@ -55,22 +57,22 @@ export function OptionsEditor({
             transition={{ duration: 0.15 }}
             className="flex items-center gap-2"
           >
-            <span className="text-xs font-bold text-gray-400 w-5 text-center flex-shrink-0">
+            <span className="text-caption font-bold text-ink-subtle w-5 text-center flex-shrink-0">
               {index + 1}
             </span>
             <LimitedInput
               value={opt}
               onChange={(v) => updateOption(index, v)}
               maxLength={maxLength}
-              placeholder={`אופציה ${index + 1}`}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f]/50 text-hebrew-body"
+              placeholder={t("field.optionPlaceholder", { index: index + 1 })}
+              className="w-full px-3 py-2 text-body-sm rounded-control border border-line-strong bg-surface-raised text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-accent/25"
               wrapperClassName="flex-1 min-w-0"
             />
             {canRemove && (
               <button
                 onClick={() => removeOption(index)}
-                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0"
-                title="הסר"
+                className="p-1.5 text-ink-subtle hover:text-red-500 transition-colors rounded-control hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0"
+                title={t("field.removeOption")}
               >
                 <Trash2 size={14} />
               </button>
@@ -84,10 +86,10 @@ export function OptionsEditor({
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={addOption}
-          className="w-full py-2 flex items-center justify-center gap-2 text-sm font-medium text-[#d4826f] bg-[#d4826f]/10 hover:bg-[#d4826f]/20 rounded-xl transition-colors text-hebrew-body"
+          className="w-full py-2 flex items-center justify-center gap-2 text-body-sm font-bold text-accent bg-accent-soft hover:bg-accent-soft/70 rounded-control transition-colors"
         >
           <Plus size={16} />
-          <span>הוסף אופציה ({options.length}/{MAX_OPTIONS})</span>
+          <span>{t("field.addOption", { count: options.length, max: MAX_OPTIONS })}</span>
         </motion.button>
       )}
     </div>

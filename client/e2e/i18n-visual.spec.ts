@@ -6,8 +6,10 @@ const LOCALES: Locale[] = ["he", "en"];
 async function settle(page: Page): Promise<void> {
   await page.waitForLoadState("networkidle").catch(() => undefined);
   // Pre-hydration loader fades after fonts + load; give animations a beat.
-  await page.waitForSelector("#initial-loader.il-hidden", { timeout: 20_000 }).catch(() => undefined);
-  await page.waitForTimeout(900);
+  await page.waitForSelector("#initial-loader.il-hidden", { timeout: 30_000 }).catch(() => undefined);
+  await page.waitForSelector("[data-testid=route-loading]", { state: "detached", timeout: 60_000 }).catch(() => undefined);
+  await page.waitForFunction(() => (document.body.innerText ?? "").trim().length > 40, undefined, { timeout: 30_000 }).catch(() => undefined);
+  await page.waitForTimeout(1200);
 }
 
 for (const locale of LOCALES) {

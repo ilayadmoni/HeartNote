@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfileComplete } from "@/hooks/useProfileComplete";
 import { useProfile } from "@/hooks/useProfile";
@@ -18,6 +19,7 @@ import { useEditorValidation } from "./useEditorValidation";
 import { runCreationSubmission } from "./helpers/submitCreation";
 
 export function useEditorState(templateId: string) {
+  const t = useTranslations("editor");
   const { user, loading } = useAuth();
   const { isProfileComplete } = useProfileComplete();
   const { profile, loading: profileLoading } = useProfile();
@@ -80,7 +82,7 @@ export function useEditorState(templateId: string) {
   const handlePublish = async () => {
     if (isSubscriptionLoading) return;
     if (!validateContent()) return;
-    if (!user) return saveDraftAndRedirect(data, openLoginFlow, "שמירת טיוטה נכשלה. נסו שוב.");
+    if (!user) return saveDraftAndRedirect(data, openLoginFlow, t("errors.draftSaveFailed"));
 
     const guard = computeGuard();
     if (guard === "upgrade") { modals.setActiveModal("upgrade"); return; }
@@ -90,7 +92,7 @@ export function useEditorState(templateId: string) {
         const redirectPath = encodeURIComponent(`/create/${templateId}?draft_id=${id}`);
         modals.setActiveModal("none");
         window.location.href = `/complete-profile?returnTo=${redirectPath}&reason=incomplete_profile`;
-      }, "שמירת טיוטה נכשלה. נסו שוב.");
+      }, t("errors.draftSaveFailed"));
     }
 
     if (guard === "paid-quota") { modals.setActiveModal("paid-quota"); return; }
@@ -102,23 +104,23 @@ export function useEditorState(templateId: string) {
     quotaPreference: "free" | "pro",
     submissionData: Record<string, unknown> = data,
   ) => {
-    if (!user) return saveDraftAndRedirect(submissionData, openLoginFlow, "שמירת טיוטה נכשלה. נסה שוב.");
+    if (!user) return saveDraftAndRedirect(submissionData, openLoginFlow, t("errors.draftSaveFailed"));
     if (isPremiumTemplate && isEffectivelyFreeUser) { modals.setActiveModal("upgrade"); return; }
 
-    logData("שליחה");
+    logData("submit");
     setIsPublishing(true);
     try {
       const result = await runCreationSubmission(templateId, submissionData, quotaPreference);
       const blockedModal = resolveBlockedModalFromCreationResult(result);
       if (blockedModal) { modals.showBlockingModal(blockedModal); return; }
-      if (!result.success) { toast.error("שגיאה ביצירת הכרטיס. נסה שוב."); return; }
+      if (!result.success) { toast.error(t("errors.creationFailed")); return; }
       modals.setActiveModal("none");
       modals.setSuccessData({
         url: `${window.location.origin}/p/${result.data.creationId}`,
         expiresAt: null,
         verificationCode: result.data.verification_code ?? null,
       });
-    } catch { toast.error("שגיאה ביצירת הכרטיס. נסה שוב."); }
+    } catch { toast.error(t("errors.creationFailed")); }
     finally { setIsPublishing(false); }
   };
 

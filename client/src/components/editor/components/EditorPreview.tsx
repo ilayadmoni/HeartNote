@@ -7,6 +7,7 @@
  */
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import {
   TEMPLATE_REGISTRY,
   templateIdToComponentKey,
@@ -23,15 +24,16 @@ export const EditorPreview = React.memo(
     { templateId, data },
     ref,
   ) {
+    const t = useTranslations("editor");
     // Convert kebab-case templateId to PascalCase registry key
     const componentKey = templateIdToComponentKey(templateId);
     const Component = TEMPLATE_REGISTRY[componentKey];
 
     if (!Component) {
       return (
-        <div className="min-h-[390px] 2xl:min-h-[650px] flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900 rounded-xl">
-          <p className="text-gray-400 text-sm text-hebrew-body">
-            תבנית לא נמצאה
+        <div className="min-h-[390px] 2xl:min-h-[650px] flex items-center justify-center bg-surface-sunken rounded-card">
+          <p className="text-ink-subtle text-body-sm">
+            {t("preview.notFound")}
           </p>
         </div>
       );
@@ -41,7 +43,7 @@ export const EditorPreview = React.memo(
     return (
       <div
         ref={ref}
-        className="w-full min-h-[390px] 2xl:min-h-[650px] rounded-xl overflow-hidden shadow-lg"
+        className="w-full min-h-[390px] 2xl:min-h-[650px] rounded-card overflow-hidden shadow-lift"
       >
         <Component data={data} />
       </div>

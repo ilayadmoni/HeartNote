@@ -3,13 +3,15 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { EditorSidebar } from "../components/EditorSidebar";
 import { EditorPreview } from "../components/EditorPreview";
 import { FieldRenderer } from "../components/FieldRenderer";
 import { useEditorState } from "../hooks/useEditorState";
 import type { TemplateEditorProps } from "../types";
 
-export function EditorDesktop({ templateId }: TemplateEditorProps) {
+export function EditorDesktop({ templateId }: TemplateEditorProps): JSX.Element {
+  const t = useTranslations("editor");
   const router = useRouter();
   const editor = useEditorState(templateId);
   const {
@@ -35,15 +37,15 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
   if (!config) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center bg-[#faf7f5] dark:bg-gray-900">
+      <div className="min-h-[60vh] flex items-center justify-center bg-surface-sunken">
         <div className="text-center">
           <p className="text-2xl mb-4">❌</p>
-          <p className="text-gray-600 dark:text-gray-400 text-hebrew-body">תבנית לא נמצאה</p>
+          <p className="text-ink-muted">{t("shell.templateNotFound")}</p>
           <button
             onClick={() => router.push("/gallery")}
-            className="mt-4 px-4 py-2 bg-[#d4826f] hover:bg-[#c4735f] text-white rounded-full text-hebrew-body transition-colors"
+            className="mt-4 px-4 py-2 bg-accent hover:bg-accent-hover text-accent-ink rounded-pill transition-colors"
           >
-            חזרה לגלריה
+            {t("shell.backToGallery")}
           </button>
         </div>
       </div>
@@ -52,28 +54,29 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
 
   if (isRestoringDraft) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-50/80">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        <p className="mt-4 text-lg font-medium text-gray-700">משחזר את היצירה שלך...</p>
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-surface-sunken/80">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-accent border-t-transparent" />
+        <p className="mt-4 text-body-lg font-medium text-ink-muted">{t("shell.restoringDraft")}</p>
       </div>
     );
   }
 
   const isLoading = isPublishing || isSubscriptionLoading;
+  const templateTitle = config.title ?? (config.titleKey ? t(config.titleKey) : "");
 
   return (
-    <div className="min-h-[200px] xl:min-h-[calc(100vh-16rem)] bg-[#faf7f5] dark:bg-gray-900 flex flex-col">
+    <div className="min-h-[200px] xl:min-h-[calc(100vh-16rem)] bg-surface-sunken flex flex-col">
       {/* Header bar */}
-      <div className="flex-shrink-0 bg-[#faf7f5] dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
-          {config.title}
+      <div className="flex-shrink-0 bg-surface-sunken border-b border-line px-6 py-3 flex items-center justify-between">
+        <h1 className="text-title-sm font-bold text-ink">
+          {templateTitle}
         </h1>
         <button
           onClick={handlePublish}
           disabled={isLoading}
-          className="inline-flex items-center gap-2 bg-[#C47A5A] hover:bg-[#a86244] hover:-translate-y-px active:scale-[0.97] text-white font-medium text-[15px] text-hebrew-heading px-5 py-[11px] rounded-[10px] transition-all duration-150 disabled:opacity-50 disabled:hover:translate-y-0"
+          className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover hover:-translate-y-px active:scale-[0.97] text-accent-ink font-medium text-body-md px-5 py-[11px] rounded-pill transition-colors duration-150 disabled:opacity-50 disabled:hover:translate-y-0"
         >
-          <span>{isLoading ? "טוען..." : "יצירה"}</span>
+          <span>{isLoading ? t("shell.loading") : t("toolbar.publish")}</span>
           {isLoading
             ? <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             : <Send size={14} strokeWidth={2} />
@@ -87,7 +90,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
           <EditorPreview ref={previewRef} templateId={templateId} data={data} />
         </main>
         <aside
-          className="w-80 bg-faf7f5 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-y-auto flex-shrink-0"
+          className="w-80 bg-surface-raised border border-line rounded-card overflow-y-auto flex-shrink-0 shadow-card"
           style={{ height: previewHeight ? `${previewHeight}px` : "auto" }}
         >
           <EditorSidebar
@@ -101,7 +104,7 @@ export function EditorDesktop({ templateId }: TemplateEditorProps) {
       <FieldRenderer
         {...editor}
         templateId={templateId}
-        templateName={config.title}
+        templateName={templateTitle}
       />
     </div>
   );

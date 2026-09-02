@@ -1,8 +1,12 @@
 "use client";
 
-import { CalendarDay, DAYS_HE, toISO } from "./useBrandCalendar";
+import { useMemo } from "react";
+import type { CalendarDay } from "./useBrandCalendar";
+import { toISO, getLocalizedDays } from "./useBrandCalendar";
+import type { Locale } from "@/i18n/locale";
 
 interface CalendarDayGridProps {
+  locale: Locale;
   days: CalendarDay[];
   value: string;
   todayISO: string;
@@ -11,13 +15,14 @@ interface CalendarDayGridProps {
   onSelect: (day: CalendarDay) => void;
 }
 
-export function CalendarDayGrid({ days, value, todayISO, min, max, onSelect }: CalendarDayGridProps) {
+export function CalendarDayGrid({ locale, days, value, todayISO, min, max, onSelect }: CalendarDayGridProps): JSX.Element {
+  const dayLabels = useMemo(() => getLocalizedDays(locale), [locale]);
   return (
-    <div className="pb-3 bg-white dark:bg-gray-800 rounded-b-2xl">
+    <div className="pb-3 bg-surface-raised rounded-b-card">
       {/* Day-of-week headers */}
       <div className="grid grid-cols-7 px-2 pt-2">
-        {DAYS_HE.map((d) => (
-          <div key={d} className="text-center text-[10px] font-bold text-gray-400 py-1 select-none">
+        {dayLabels.map((d, i) => (
+          <div key={i} className="text-center text-[10px] font-bold text-ink-subtle py-1 select-none">
             {d}
           </div>
         ))}
@@ -39,12 +44,12 @@ export function CalendarDayGrid({ days, value, todayISO, min, max, onSelect }: C
               onClick={() => !isDisabled && onSelect(day)}
               disabled={isDisabled}
               className={`
-                w-7 h-7 rounded-lg text-[11px] font-medium mx-auto
-                flex items-center justify-center transition-all
-                ${isSelected ? "bg-[#F8BBD0] text-[#2e3c52] font-bold shadow-sm" : ""}
-                ${isToday && !isSelected ? "ring-1 ring-[#C7CEEA] text-[#2e3c52] dark:text-white font-bold" : ""}
-                ${!isSelected && !isToday && day.isCurrentMonth ? "text-[#2e3c52] dark:text-gray-200 hover:bg-[#F8BBD0]/30" : ""}
-                ${!day.isCurrentMonth ? "text-gray-300 dark:text-gray-600" : ""}
+                w-7 h-7 rounded-control text-[11px] font-medium mx-auto
+                flex items-center justify-center transition-colors
+                ${isSelected ? "bg-[#F8BBD0] text-ink font-bold shadow-soft" : ""}
+                ${isToday && !isSelected ? "ring-1 ring-accent text-ink font-bold" : ""}
+                ${!isSelected && !isToday && day.isCurrentMonth ? "text-ink hover:bg-[#F8BBD0]/30" : ""}
+                ${!day.isCurrentMonth ? "text-ink-subtle" : ""}
                 ${isDisabled && day.isCurrentMonth ? "opacity-40 cursor-not-allowed" : ""}
                 ${!isDisabled ? "cursor-pointer" : ""}
               `}

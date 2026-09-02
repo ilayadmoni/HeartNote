@@ -9,25 +9,27 @@
 export interface PaletteColor {
   hex: string;
   name: string;
-  nameHe: string;
+  /** Resolve via useTranslations("editor") as `colors.<nameKey>` */
+  nameKey: string;
 }
 
 /**
  * The 13 approved colors in the HeartNote design system.
+ * Display names are resolved through `editor.colors.<nameKey>`.
  */
 export const COLOR_PALETTE: PaletteColor[] = [
-  { hex: "#C7CEEA", name: "Periwinkle",    nameHe: "סגלגל" },
-  { hex: "#B5EAD7", name: "Mint",          nameHe: "מנטה" },
-  { hex: "#E2F0CB", name: "Pale Lime",     nameHe: "ליים" },
-  { hex: "#E1BEE7", name: "Lavender",      nameHe: "לבנדר" },
-  { hex: "#F8BBD0", name: "Pink",          nameHe: "ורוד" },
-  { hex: "#d4826f", name: "Salmon",        nameHe: "סלמון" },
-  { hex: "#D4F0F0", name: "Light Cyan",    nameHe: "תכלת" },
-  { hex: "#38b6ff", name: "Bright Blue",   nameHe: "כחול בהיר" },
-  { hex: "#7ed957", name: "Bright Green",  nameHe: "ירוק בהיר" },
-  { hex: "#ffde59", name: "Bright Yellow", nameHe: "צהוב בהיר" },
-  { hex: "#ff5757", name: "Bright Red",    nameHe: "אדום בהיר" },
-  { hex: "#000000", name: "Black",         nameHe: "שחור" }
+  { hex: "#C7CEEA", name: "Periwinkle",    nameKey: "periwinkle" },
+  { hex: "#B5EAD7", name: "Mint",          nameKey: "mint" },
+  { hex: "#E2F0CB", name: "Pale Lime",     nameKey: "paleLime" },
+  { hex: "#E1BEE7", name: "Lavender",      nameKey: "lavender" },
+  { hex: "#F8BBD0", name: "Pink",          nameKey: "pink" },
+  { hex: "#d4826f", name: "Salmon",        nameKey: "salmon" },
+  { hex: "#D4F0F0", name: "Light Cyan",    nameKey: "lightCyan" },
+  { hex: "#38b6ff", name: "Bright Blue",   nameKey: "brightBlue" },
+  { hex: "#7ed957", name: "Bright Green",  nameKey: "brightGreen" },
+  { hex: "#ffde59", name: "Bright Yellow", nameKey: "brightYellow" },
+  { hex: "#ff5757", name: "Bright Red",    nameKey: "brightRed" },
+  { hex: "#000000", name: "Black",         nameKey: "black" }
 ];
 
 /**

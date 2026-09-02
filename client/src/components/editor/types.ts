@@ -21,10 +21,19 @@ export type EditorFieldType =
 
 export interface EditorField {
   key: string;
-  label: string;
+  /**
+   * Message key under the `editor` namespace, e.g. `fields.common.recipientName.label`
+   * or `fields.<templateSlug>.<key>.label`. Falls back to the DB `config_schema`
+   * label only if no client catalog entry exists for this slug + key.
+   */
+  labelKey: string;
   type: EditorFieldType;
-  placeholder?: string;
-  options?: { value: string; label: string }[];
+  placeholderKey?: string;
+  /**
+   * Select options. Use `labelKey` for Hebrew copy that needs translation;
+   * use `label` for locale-neutral literals (numbers, codes).
+   */
+  options?: { value: string; label?: string; labelKey?: string }[];
   defaultValue?: unknown;
   /** Custom character limit for text/textarea fields (overrides default) */
   maxLength?: number;
@@ -39,8 +48,16 @@ export interface EditorField {
 
 export interface EditorConfig {
   templateId: string;
-  title: string;
-  description: string;
+  /** Message key under `editor`, e.g. `templates.date-invite.title` */
+  titleKey?: string;
+  descriptionKey?: string;
+  /**
+   * Raw fallback strings — used only for configs sourced from a shared
+   * catalog outside the editor's own message keys (e.g. holiday configs
+   * whose copy is owned by the templates chrome namespace).
+   */
+  title?: string;
+  description?: string;
   fields: EditorField[];
   defaultData: Record<string, unknown>;
 }

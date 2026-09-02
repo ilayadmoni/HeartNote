@@ -3,24 +3,24 @@ import type { EditorConfig } from "../types";
 export const SPECIAL_OCCASIONS_CONFIGS: Record<string, EditorConfig> = {
   "bar-bat-mitzvah": {
     templateId: "bar-bat-mitzvah",
-    title: "בר/בת מצווה",
-    description: "כרטיס אינטראקטיבי עם ברכה לבר או בת מצווה",
+    titleKey: "templates.bar-bat-mitzvah.title",
+    descriptionKey: "templates.bar-bat-mitzvah.description",
     fields: [
       {
         key: "kind",
-        label: "בחר סוג",
+        labelKey: "fields.bar-bat-mitzvah.kind.label",
         type: "select",
         options: [
-          { value: "bar", label: "בר מצווה" },
-          { value: "bat", label: "בת מצווה" },
+          { value: "bar", labelKey: "fields.bar-bat-mitzvah.kind.options.bar" },
+          { value: "bat", labelKey: "fields.bar-bat-mitzvah.kind.options.bat" },
         ],
       },
-      { key: "introTitle", label: "כותרת", type: "text", placeholder: "מכונת ההתבגרות", maxLength: 60 },
-      { key: "introSubtitle", label: "תיאור", type: "text", placeholder: "לחצו על הכתר או הספר כדי לגלות את הברכה", maxLength: 120 },
-      { key: "blessingTitle", label: "כותרת הברכה", type: "text", placeholder: "הגיע הזמן לחגוג! 🎉", maxLength: 80 },
-      { key: "blessingMessage", label: "הברכה", type: "textarea", placeholder: "ברוכים הבאים לגיל הבגרות. המון הצלחה ושמחה.", maxLength: 300 },
-      { key: "tapHintLabel", label: "טקסט הרמז (אופציונלי)", type: "text", placeholder: "לחצו על הכתר / לחצו על הספר", maxLength: 60 },
-      { key: "primaryColor", label: "צבע ראשי", type: "color" },
+      { key: "introTitle", labelKey: "fields.bar-bat-mitzvah.introTitle.label", type: "text", placeholderKey: "fields.bar-bat-mitzvah.introTitle.placeholder", maxLength: 60 },
+      { key: "introSubtitle", labelKey: "fields.bar-bat-mitzvah.introSubtitle.label", type: "text", placeholderKey: "fields.bar-bat-mitzvah.introSubtitle.placeholder", maxLength: 120 },
+      { key: "blessingTitle", labelKey: "fields.bar-bat-mitzvah.blessingTitle.label", type: "text", placeholderKey: "fields.bar-bat-mitzvah.blessingTitle.placeholder", maxLength: 80 },
+      { key: "blessingMessage", labelKey: "fields.bar-bat-mitzvah.blessingMessage.label", type: "textarea", placeholderKey: "fields.bar-bat-mitzvah.blessingMessage.placeholder", maxLength: 300 },
+      { key: "tapHintLabel", labelKey: "fields.bar-bat-mitzvah.tapHintLabel.label", type: "text", placeholderKey: "fields.bar-bat-mitzvah.tapHintLabel.placeholder", maxLength: 60 },
+      { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {
       kind: "bat" as const,

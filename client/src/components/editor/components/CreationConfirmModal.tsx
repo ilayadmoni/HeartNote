@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useProfile } from "@/hooks/useProfile";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 import { usePolicies } from "@/hooks/usePolicies";
 import { pushToDataLayer } from "@/utils/gtm";
-import { TierCard } from "./TierCard";
+import { ConfirmModalHeader } from "./ConfirmModalHeader";
 import { CreationDetails } from "./CreationDetails";
 import { ModalActions } from "./ModalActions";
 
@@ -30,7 +31,8 @@ function formatDate(seconds: number | null | undefined): string | null {
   return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
-export function CreationConfirmModal({ isOpen, onClose, onConfirm, templateSlug, templateName, isPremiumTemplate = false, templateFreeDays = 1 }: CreationConfirmModalProps) {
+export function CreationConfirmModal({ isOpen, onClose, onConfirm, templateSlug, templateName, isPremiumTemplate = false, templateFreeDays = 1 }: CreationConfirmModalProps): JSX.Element {
+  const t = useTranslations("editor");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedQuota, setSelectedQuota] = useState<QuotaPreference>("pro");
@@ -56,8 +58,8 @@ export function CreationConfirmModal({ isOpen, onClose, onConfirm, templateSlug,
     ? Math.max(0, freeRemaining - 1)
     : proRemaining === Infinity ? Infinity : Math.max(0, proRemaining - 1);
   const freeExpirySeconds = templateFreeDays * 24 * 60 * 60;
-  const freeExpiryDate = formatDate(freeExpirySeconds) ?? "ללא תוקף";
-  const proExpiryDate  = formatDate(paidPolicy.expirySeconds) ?? "לא זמין";
+  const freeExpiryDate = formatDate(freeExpirySeconds) ?? t("confirmModal.noExpiry");
+  const proExpiryDate  = formatDate(paidPolicy.expirySeconds) ?? t("confirmModal.unavailable");
   const selectedExpirationDate = selectedQuota === "free" ? freeExpiryDate : proExpiryDate;
   const avatar   = profile?.avatarUrl;
   const initials = `${(profile?.firstName?.[0] ?? "").toUpperCase()}${(profile?.lastName?.[0] ?? "").toUpperCase()}` || "❤️";
@@ -70,7 +72,7 @@ export function CreationConfirmModal({ isOpen, onClose, onConfirm, templateSlug,
       await onConfirm(appliedQuota);
       pushToDataLayer({ event: "generate_link", template_name: templateSlug });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "אירעה שגיאה");
+      setError(err instanceof Error ? err.message : t("confirmModal.genericError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -87,57 +89,34 @@ export function CreationConfirmModal({ isOpen, onClose, onConfirm, templateSlug,
           className="fixed inset-0 z-[999] flex items-center justify-center backdrop-blur-sm bg-black/50" onClick={onClose}>
           <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }} onClick={(e) => e.stopPropagation()}
-            className="relative w-full md:max-h-[90vh] max-h-[85dvh] max-w-[28rem] mx-4 bg-white dark:bg-navy-800 rounded-3xl shadow-2xl overflow-y-auto border border-coral-100 dark:border-navy-600">
+            className="relative w-full md:max-h-[90vh] max-h-[85dvh] max-w-[28rem] mx-4 bg-surface-raised rounded-card shadow-lift overflow-y-auto border border-accent/15">
             <button onClick={onClose} disabled={isSubmitting}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors disabled:opacity-50 z-10" aria-label="סגור">
-              <X size={24} className="text-gray-500 dark:text-gray-300" />
+              className="absolute top-4 end-4 p-2 rounded-full hover:bg-surface-sunken transition-colors disabled:opacity-50 z-10" aria-label={t("confirmModal.close")}>
+              <X size={24} className="text-ink-muted" />
             </button>
 
             <div className="pt-5 px-4 pb-4">
               {loading ? (
                 <div className="text-center py-6">
                   <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                    className="w-8 h-8 border-2 border-coral-500 border-t-transparent rounded-full mx-auto mb-3" />
-                  <p className="text-gray-600 dark:text-gray-400 text-hebrew-body">טוען פרטים...</p>
+                    className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full mx-auto mb-3" />
+                  <p className="text-ink-muted">{t("confirmModal.loading")}</p>
                 </div>
               ) : (
                 <>
-                  {/* Avatar */}
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.1, type: "spring", stiffness: 300 }} className="flex justify-center mb-2">
-                    {avatar
-                      // eslint-disable-next-line @next/next/no-img-element
-                      ? <img src={avatar} alt="Profile" className="w-12 h-12 rounded-full object-cover border-3 border-coral-200 dark:border-coral-500/40 shadow-md" />
-                      : <div className="w-12 h-12 rounded-full bg-gradient-to-br from-coral-500 to-coral-600 flex items-center justify-center text-base font-bold text-white shadow-md border-3 border-coral-200 dark:border-coral-500/40">{initials}</div>
-                    }
-                  </motion.div>
-
-                  {/* Header */}
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="text-center mb-3">
-                    <h2 className="text-lg font-bold text-navy-700 dark:text-white mb-0.5 text-hebrew-heading">אישור יצירה</h2>
-                    <p className="text-xs text-gray-600 dark:text-gray-300 text-hebrew-body">בחר איך להשתמש ביתרה עבור היצירה הזו</p>
-                  </motion.div>
-
-                  {/* 2-column tier selection */}
-                  {!isPremiumTemplate && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }} className="mb-3">
-                      <p className="text-xs font-bold text-navy-700 dark:text-white text-hebrew-heading text-right mb-1.5">בחירת יתרה ליצירה זו</p>
-                      <div className="grid grid-cols-2 gap-3">
-                        <TierCard tier="free" used={freeUsed} totalAllowed={freeTotalAllowed}
-                          isSelected={selectedQuota === "free"} isDisabled={freeRemaining === 0}
-                          isUpgradeRequired={false} onSelect={() => handleTierSelect("free")} />
-                        <TierCard tier="pro" used={proUsed} totalAllowed={proTotalAllowed}
-                          isSelected={selectedQuota === "pro"} isDisabled={proRemaining === 0}
-                          isUpgradeRequired={!isPaidTier} onSelect={() => handleTierSelect("pro")} />
-                      </div>
-                    </motion.div>
-                  )}
+                  <ConfirmModalHeader
+                    avatar={avatar} initials={initials} isPremiumTemplate={isPremiumTemplate} isPaidTier={isPaidTier}
+                    selectedQuota={selectedQuota} freeUsed={freeUsed} proUsed={proUsed}
+                    freeTotalAllowed={freeTotalAllowed} proTotalAllowed={proTotalAllowed}
+                    freeRemaining={freeRemaining} proRemaining={proRemaining} onSelectTier={handleTierSelect}
+                  />
 
                   <CreationDetails templateName={templateName} expirationDate={selectedExpirationDate}
                     remainingAfterCreate={remainingAfterCreate} selectedQuota={selectedQuota} />
 
                   {error && (
-                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-xl p-3 mb-4">
-                      <p className="text-sm text-red-700 dark:text-red-300 text-hebrew-body">{error}</p>
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-control p-3 mb-4">
+                      <p className="text-body-sm text-red-700 dark:text-red-300">{error}</p>
                     </motion.div>
                   )}
 

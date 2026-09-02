@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { generateAiText } from "@/actions/ai/generateText";
 import { useServerAction } from "@/hooks/useServerAction";
 import { LimitedInput } from "./LimitedInput";
@@ -15,7 +16,8 @@ interface AiAssistButtonProps {
 
 const PROMPT_MAX_LENGTH = 200;
 
-export function AiAssistButton({ templateId, fieldKey, onGenerated }: AiAssistButtonProps) {
+export function AiAssistButton({ templateId, fieldKey, onGenerated }: AiAssistButtonProps): JSX.Element {
+  const t = useTranslations("editor");
   const [isOpen, setIsOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +34,7 @@ export function AiAssistButton({ templateId, fieldKey, onGenerated }: AiAssistBu
       setIsOpen(false);
       setPrompt("");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "יצירת הטקסט נכשלה";
+      const message = err instanceof Error ? err.message : t("ai.genericError");
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -44,53 +46,53 @@ export function AiAssistButton({ templateId, fieldKey, onGenerated }: AiAssistBu
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-1 text-xs font-medium text-[#d4826f] hover:text-[#c4735f] transition-colors mb-2"
+        className="inline-flex items-center gap-1 text-caption font-bold text-accent hover:text-accent-hover transition-colors mb-2"
       >
         <Sparkles size={13} />
-        כתיבה עם AI
+        {t("ai.trigger")}
       </button>
     );
   }
 
   return (
-    <div className="mb-2 rounded-xl border border-[#d4826f]/30 bg-[#fdf6f3] dark:bg-gray-800 dark:border-[#d4826f]/40 p-3 sm:p-4">
-      <div className="flex items-center gap-1.5 text-xs font-semibold text-[#d4826f] mb-2.5">
+    <div className="mb-2 rounded-control border border-accent/30 bg-accent-soft p-3 sm:p-4">
+      <div className="flex items-center gap-1.5 text-caption font-bold text-accent mb-2.5">
         <Sparkles size={13} />
-        תארו מה לכתוב, וה-AI יכתוב עבורכם
+        {t("ai.prompt")}
       </div>
 
       <LimitedInput
         value={prompt}
         onChange={setPrompt}
         maxLength={PROMPT_MAX_LENGTH}
-        placeholder="למשל: ברכה חמה לחברה הכי טובה"
+        placeholder={t("ai.promptPlaceholder")}
         multiline
         rows={4}
         wrapperClassName="w-full"
-        className="w-full px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm sm:text-base text-[#2e3c52] dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-[#d4826f] focus:border-transparent resize-none"
+        className="w-full px-3 py-2.5 rounded-control border border-line-strong bg-surface-raised text-body-sm sm:text-body-md text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent resize-none"
       />
 
       <div className="flex flex-col-reverse sm:flex-row gap-2 mt-3">
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="w-full sm:w-auto px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="w-full sm:w-auto px-4 py-2.5 rounded-control text-body-sm font-bold text-ink-muted hover:text-ink hover:bg-surface-sunken transition-colors"
         >
-          ביטול
+          {t("ai.cancel")}
         </button>
         <button
           type="button"
           onClick={handleGenerate}
           disabled={!prompt.trim() || isLoading}
-          className="w-full sm:flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#d4826f] text-white text-sm font-medium hover:bg-[#c4735f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full sm:flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-control bg-accent text-accent-ink text-body-sm font-bold hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isLoading ? (
             <>
               <Loader2 size={16} className="animate-spin" />
-              יוצר טקסט...
+              {t("ai.generating")}
             </>
           ) : (
-            "צור טקסט"
+            t("ai.generate")
           )}
         </button>
       </div>

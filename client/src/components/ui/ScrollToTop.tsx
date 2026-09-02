@@ -8,10 +8,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const SCROLL_THRESHOLD = 300;
 
-export function ScrollToTop() {
+export function ScrollToTop(): JSX.Element {
+  const t = useTranslations("editor");
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -41,17 +43,15 @@ export function ScrollToTop() {
           exit={{ opacity: 0, scale: 0.8, y: 20 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
           onClick={scrollToTop}
-          aria-label="גלול למעלה"
+          aria-label={t("calendar.scrollToTop")}
           className="
-            fixed bottom-6 left-6 z-50
+            fixed bottom-6 start-6 z-50
             w-12 h-12 rounded-full
-            bg-[#d4826f] hover:bg-[#c4735f]
-            dark:bg-[#e8917a] dark:hover:bg-[#d4826f]
-            text-white
-            shadow-lg shadow-[#d4826f]/30 dark:shadow-[#e8917a]/30
-            hover:shadow-xl hover:shadow-[#d4826f]/40
+            bg-accent hover:bg-accent-hover
+            text-accent-ink
+            shadow-glow-sm hover:shadow-glow
             flex items-center justify-center
-            transition-all duration-200
+            transition-colors duration-base ease-out-quint
             backdrop-blur-sm
           "
           whileHover={{ scale: 1.1 }}

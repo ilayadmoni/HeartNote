@@ -6,9 +6,10 @@
  * Mobile: native <input type="date"> for optimal OS picker.
  */
 
-import { useId, useRef, useEffect } from "react";
+import { useId, useRef, useEffect, useMemo } from "react";
 import { Calendar } from "lucide-react";
-import { useBrandCalendar, MIN_YEAR, MAX_YEAR } from "./useBrandCalendar";
+import { useTranslations, useLocale } from "next-intl";
+import { useBrandCalendar, MIN_YEAR, MAX_YEAR, getLocalizedMonths } from "./useBrandCalendar";
 import { MonthYearSelector } from "./MonthYearSelector";
 import { CalendarDayGrid } from "./CalendarDayGrid";
 import { MobileNativeDateInput } from "./MobileNativeDateInput";
@@ -33,13 +34,17 @@ export function BrandCalendar({
   value,
   onChange,
   label,
-  placeholder = "בחר תאריך",
+  placeholder,
   error,
   className = "",
   min,
   max,
   disabled = false,
-}: BrandCalendarProps) {
+}: BrandCalendarProps): JSX.Element {
+  const t = useTranslations("editor");
+  const locale = useLocale() as "he" | "en";
+  const months = useMemo(() => getLocalizedMonths(locale), [locale]);
+  const resolvedPlaceholder = placeholder ?? t("calendar.pickDate");
   const uid = useId();
   const calendarPopupRef = useRef<HTMLDivElement>(null);
   const {
@@ -51,7 +56,7 @@ export function BrandCalendar({
     days, todayISO, yearOptions,
     prevMonth, nextMonth,
     handleSelect, displayValue,
-  } = useBrandCalendar({ value, placeholder, onChange });
+  } = useBrandCalendar({ value, placeholder: resolvedPlaceholder, onChange, locale });
 
   useEffect(() => {
     if (isOpen && calendarPopupRef.current) {
@@ -61,12 +66,9 @@ export function BrandCalendar({
   }, [isOpen]);
 
   return (
-    <div className={`relative w-full ${className}`} dir="rtl" ref={containerRef}>
+    <div className={`relative w-full ${className}`} ref={containerRef}>
       {label && (
-        <label
-          htmlFor={uid}
-          className="block text-xs font-bold text-[#2e3c52] dark:text-gray-200 mb-1 text-right text-hebrew-heading"
-        >
+        <label htmlFor={uid} className="block text-caption font-bold text-ink mb-1 text-end">
           {label}
         </label>
       )}
@@ -90,26 +92,27 @@ export function BrandCalendar({
           aria-haspopup="dialog"
           aria-expanded={isOpen}
           className={`
-            w-full flex items-center gap-2 px-3 py-2.5 text-sm rounded-xl
-            bg-white dark:bg-gray-700 text-right
-            border-2 transition-all duration-200
+            w-full flex items-center gap-2 px-3 py-2.5 text-body-sm rounded-control
+            bg-surface-raised text-end
+            border-2 transition-colors duration-base ease-out-quint
             disabled:opacity-50 disabled:cursor-not-allowed
-            ${error ? "border-red-400" : isOpen ? "border-[#C7CEEA] dark:border-[#B5EAD7]" : "border-gray-200 dark:border-gray-600"}
-            ${value ? "text-[#2e3c52] dark:text-white" : "text-gray-400 dark:text-gray-500"}
+            ${error ? "border-red-400" : isOpen ? "border-accent" : "border-line-strong"}
+            ${value ? "text-ink" : "text-ink-subtle"}
           `}
         >
-          <Calendar size={16} className="text-[#C7CEEA] dark:text-[#B5EAD7] flex-shrink-0" />
-          <span className="flex-1 text-right text-hebrew-body">{displayValue}</span>
+          <Calendar size={16} className="text-accent flex-shrink-0" />
+          <span className="flex-1 text-end">{displayValue}</span>
         </button>
 
         {isOpen && (
           <div
             ref={calendarPopupRef}
             role="dialog"
-            aria-label="בחירת תאריך"
-            className="absolute top-full z-50 mt-1.5 right-0 w-full max-w-[300px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700"
+            aria-label={t("calendar.datePickerAria")}
+            className="absolute top-full z-50 mt-1.5 end-0 w-full max-w-[300px] bg-surface-raised rounded-card shadow-card border border-line"
           >
             <MonthYearSelector
+              months={months}
               viewMonth={viewMonth}
               viewYear={viewYear}
               yearOptions={yearOptions}
@@ -121,6 +124,7 @@ export function BrandCalendar({
               nextMonth={nextMonth}
             />
             <CalendarDayGrid
+              locale={locale}
               days={days}
               value={value}
               todayISO={todayISO}
@@ -133,7 +137,7 @@ export function BrandCalendar({
       </div>
 
       {error && (
-        <p role="alert" className="mt-1 text-xs text-red-500 text-right text-hebrew-body">
+        <p role="alert" className="mt-1 text-caption text-red-500 text-end">
           {error}
         </p>
       )}

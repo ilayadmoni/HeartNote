@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { validateQuizQuestions } from "@/components/editor/components/QuestionsEditor";
 import type { QuizQuestion } from "@/components/templates/types";
 
@@ -30,18 +31,17 @@ export function useEditorValidation({
   isEffectivelyFreeUser,
   profile,
 }: UseEditorValidationArgs) {
+  const t = useTranslations("editor");
   const validateContent = useCallback(() => {
     if (templateId === "relationship-quiz" && data.questions) {
-      const validation = validateQuizQuestions(data.questions as QuizQuestion[]);
+      const validation = validateQuizQuestions(data.questions as QuizQuestion[], t);
       if (!validation.isValid) {
-        toast.error(
-          validation.errors[0] || "יש להשלים את כל השאלות לפני היצירה",
-        );
+        toast.error(validation.errors[0] || t("quiz.fillDetails", { num: 1 }));
         return false;
       }
     }
     return true;
-  }, [templateId, data]);
+  }, [templateId, data, t]);
 
   const computeGuard = useCallback((): PrePublishGuard => {
     if (isPremiumTemplate && isEffectivelyFreeUser) return "upgrade";

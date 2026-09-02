@@ -7,6 +7,7 @@
  */
 
 import { useCallback } from "react";
+import { useTranslations } from "next-intl";
 
 /** Standard character limits for HeartNote greeting card fields */
 export const CHAR_LIMITS = {
@@ -43,7 +44,8 @@ export function LimitedInput({
   className = "",
   wrapperClassName = "w-full",
   dir = "auto",
-}: LimitedInputProps) {
+}: LimitedInputProps): JSX.Element {
+  const t = useTranslations("editor");
   const count = value.length;
   const isAtLimit = count >= maxLength;
 
@@ -82,8 +84,8 @@ export function LimitedInput({
       {/* Counter + limit warning */}
       <div className="flex items-center justify-between mt-1 px-0.5">
         {isAtLimit ? (
-          <p className="text-[11px] text-red-500 dark:text-red-400 text-hebrew-body animate-fade-in">
-            הגעת למגבלת התווים
+          <p className="text-[11px] text-red-500 dark:text-red-400 animate-fade-in">
+            {t("field.charLimitReached")}
           </p>
         ) : (
           <span />
@@ -93,7 +95,7 @@ export function LimitedInput({
           className={`text-[10px] tabular-nums transition-colors ${
             isAtLimit
               ? "text-red-500 dark:text-red-400 font-bold"
-              : "text-gray-400 dark:text-gray-500"
+              : "text-ink-subtle"
           }`}
         >
           {count}/{maxLength}

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle2, Crown, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
 export interface TierCardProps {
@@ -18,48 +19,38 @@ export interface TierCardProps {
   onSelect: () => void;
 }
 
-const TIER_CONFIG = {
-  free: {
-    name: "חינם",
-    icon: <Sparkles className="h-3.5 w-3.5" />,
-    description: "שימוש ביתרה חינמית",
-    benefits: ["כולל סימן מים"],
-    iconColor: "text-navy-500 dark:text-gray-300",
-    nameColor: "text-navy-700 dark:text-white",
-  },
-  pro: {
-    name: "פרימיום",
-    icon: <Crown className="h-3.5 w-3.5" />,
-    description: "שימוש ביתרת פרימיום",
-    benefits: ["ללא סימן מים", "תוקף מורחב"],
-    iconColor: "text-coral-500",
-    nameColor: "text-coral-600 dark:text-coral-300",
-  },
+const TIER_ICON = {
+  free: <Sparkles className="h-3.5 w-3.5" />,
+  pro: <Crown className="h-3.5 w-3.5" />,
 } as const;
 
-export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isUpgradeRequired, onSelect }: TierCardProps) {
-  const cfg = TIER_CONFIG[tier];
+export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isUpgradeRequired, onSelect }: TierCardProps): JSX.Element {
+  const t = useTranslations("editor");
+  const isPro = tier === "pro";
   const isClickable = !isDisabled && !isUpgradeRequired;
   const remaining = totalAllowed == null ? null : Math.max(0, totalAllowed - used);
+  const benefits = isPro
+    ? [t("tier.pro.benefit1"), t("tier.pro.benefit2")]
+    : [t("tier.free.benefit1")];
 
   const borderClass = isSelected
-    ? "border-coral-500 bg-coral-50 dark:bg-coral-900/20 shadow-md"
+    ? "border-accent bg-accent-soft shadow-card"
     : isDisabled
-    ? "border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 opacity-60 cursor-not-allowed"
-    : "border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 hover:border-coral-300 hover:shadow-sm cursor-pointer";
+    ? "border-line bg-surface-sunken opacity-60 cursor-not-allowed"
+    : "border-line bg-surface-raised hover:border-accent/50 hover:shadow-soft cursor-pointer";
 
   return (
     <motion.div
       whileHover={isClickable ? { scale: 1.02 } : {}}
       whileTap={isClickable ? { scale: 0.98 } : {}}
       onClick={isClickable ? onSelect : undefined}
-      className={`relative overflow-hidden rounded-xl border-2 p-2 transition-all select-none ${borderClass}`}
+      className={`relative overflow-hidden rounded-card border-2 p-2 transition-colors select-none ${borderClass}`}
       aria-pressed={isSelected}
     >
       {/* Selected checkmark */}
       {isSelected && (
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-2 right-2">
-          <CheckCircle2 className="h-4 w-4 text-coral-500" />
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-2 end-2">
+          <CheckCircle2 className="h-4 w-4 text-accent" />
         </motion.div>
       )}
 
@@ -70,26 +61,26 @@ export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isU
           <Link
             href="/pricing"
             onClick={(e) => e.stopPropagation()}
-            aria-label="שדרג"
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] rotate-[-45deg] bg-amber-400/70 hover:bg-amber-400/90 text-white text-[11px] font-bold text-center py-1 shadow-sm transition-colors text-hebrew-heading z-10"
+            aria-label={t("tier.upgradeCta")}
+            className="absolute top-1/2 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 -translate-y-1/2 w-[160%] rotate-[-45deg] rtl:rotate-[45deg] bg-amber-400/70 hover:bg-amber-400/90 text-white text-[11px] font-bold text-center py-1 shadow-soft transition-colors z-10"
           >
-          לחץ לשדרג
+            {t("tier.upgradeCta")}
           </Link>
         </>
       )}
 
       {/* Header */}
       <div className="flex items-center justify-end gap-1 mb-1.5">
-        <span className={`text-xs font-bold text-hebrew-heading ${cfg.nameColor}`}>{cfg.name}</span>
-        <span className={cfg.iconColor}>{cfg.icon}</span>
+        <span className={`text-caption font-bold ${isPro ? "text-accent" : "text-ink"}`}>
+          {isPro ? t("tier.pro.name") : t("tier.free.name")}
+        </span>
+        <span className={isPro ? "text-accent" : "text-ink-muted"}>{TIER_ICON[tier]}</span>
       </div>
-
-
 
       {/* Benefit tags */}
       <div className="flex flex-wrap justify-center gap-1 mb-1.5">
-        {cfg.benefits.map((b) => (
-          <span key={b} className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-navy-600 text-gray-600 dark:text-gray-300 text-hebrew-body">
+        {benefits.map((b) => (
+          <span key={b} className="text-[10px] px-1.5 py-0.5 rounded-pill bg-surface-sunken text-ink-muted">
             {b}
           </span>
         ))}
@@ -97,10 +88,10 @@ export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isU
 
       {/* Remaining / disabled */}
       {isDisabled ? (
-        <p className="text-[10px] text-red-500 font-bold text-center mt-0.5 text-hebrew-body">מגבלה הושגה</p>
+        <p className="text-[10px] text-red-500 font-bold text-center mt-0.5">{t("tier.limitReached")}</p>
       ) : (
-        <p className="text-[10px] text-gray-500 dark:text-gray-300 text-right text-hebrew-body">
-          נותר {remaining == null ? "0" : remaining} מתוך {totalAllowed ?? "0"}
+        <p className="text-[10px] text-ink-muted text-end">
+          {t("tier.remainingOf", { remaining: remaining ?? 0, total: totalAllowed ?? 0 })}
         </p>
       )}
     </motion.div>

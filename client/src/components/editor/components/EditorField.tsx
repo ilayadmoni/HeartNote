@@ -6,6 +6,7 @@
  */
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import type { EditorField as EditorFieldType } from "../types";
 import { ColorPicker } from "./ColorPicker";
 import { TimelineEventsEditor } from "./TimelineEventsEditor";
@@ -29,18 +30,20 @@ interface EditorFieldProps {
   templateId?: string;
 }
 
-export function EditorField({ field, value, onChange, templateId }: EditorFieldProps) {
-  const baseInputClass = `
-    w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
-    bg-white dark:bg-gray-700 text-[#2e3c52] dark:text-white
-    text-hebrew-body placeholder:text-gray-400
-    focus:ring-2 focus:ring-[#d4826f] focus:border-transparent transition-all duration-200
-  `;
+const baseInputClass =
+  "w-full px-4 py-3 rounded-control border border-line-strong bg-surface-raised text-ink " +
+  "placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent " +
+  "transition-colors duration-base ease-out-quint";
+
+export function EditorField({ field, value, onChange, templateId }: EditorFieldProps): JSX.Element {
+  const t = useTranslations("editor");
+  const label = t(field.labelKey);
+  const placeholder = field.placeholderKey ? t(field.placeholderKey) : undefined;
 
   return (
     <div>
-      <label className="block text-sm font-medium text-[#2e3c52] dark:text-gray-200 mb-2 text-hebrew-heading">
-        {field.label}
+      <label className="block text-body-sm font-bold text-ink mb-2">
+        {label}
       </label>
 
       {(field.type === "text" || field.type === "textarea") && (
@@ -61,7 +64,7 @@ export function EditorField({ field, value, onChange, templateId }: EditorFieldP
         >
           {field.options?.map((option) => (
             <option key={option.value} value={option.value}>
-              {option.label}
+              {option.labelKey ? t(option.labelKey) : option.label}
             </option>
           ))}
         </select>
@@ -72,7 +75,7 @@ export function EditorField({ field, value, onChange, templateId }: EditorFieldP
           type="number"
           value={(value as number) || 0}
           onChange={(e) => onChange(Number(e.target.value))}
-          placeholder={field.placeholder}
+          placeholder={placeholder}
           min={field.min}
           max={field.max}
           className={baseInputClass}
@@ -83,7 +86,7 @@ export function EditorField({ field, value, onChange, templateId }: EditorFieldP
         <ColorPicker
           value={(value as string) || ""}
           onChange={(c) => onChange(c)}
-          label={field.label}
+          label={label}
         />
       )}
 
@@ -93,7 +96,7 @@ export function EditorField({ field, value, onChange, templateId }: EditorFieldP
           onClick={() => onChange(!value)}
           className={`
             relative w-12 h-6 rounded-full transition-colors duration-200
-            ${value ? "bg-[#d4826f]" : "bg-gray-300 dark:bg-gray-600"}
+            ${value ? "bg-accent" : "bg-surface-sunken border border-line-strong"}
           `}
           aria-checked={!!value}
           role="switch"

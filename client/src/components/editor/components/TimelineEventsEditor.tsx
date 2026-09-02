@@ -2,40 +2,25 @@
 
 /**
  * TimelineEventsEditor Component
- * Dynamic editor for timeline events - add/remove up to 7 events
+ * Dynamic editor for timeline events - add/remove up to 7 events.
+ * The single-item card lives in TimelineEventItem.tsx (150-line file cap).
  */
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BrandCalendar } from "@/components/ui/BrandCalendar";
+import { useTranslations } from "next-intl";
 import type { TimelineEvent } from "@/components/templates/types";
-import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
+import { TimelineEventItem } from "./TimelineEventItem";
+import { TIMELINE_EMOJI_OPTIONS, MAX_TIMELINE_EVENTS } from "./timelineEventsEditor.constants";
 
 interface TimelineEventsEditorProps {
   events: TimelineEvent[];
   onChange: (events: TimelineEvent[]) => void;
 }
 
-const EMOJI_OPTIONS = [
-  "📅",
-  "💖",
-  "⭐",
-  "🎉",
-  "💍",
-  "🏠",
-  "✈️",
-  "🎂",
-  "💕",
-  "🌟",
-  "🐶",
-];
-const MAX_EVENTS = 7;
-
-export function TimelineEventsEditor({
-  events = [],
-  onChange,
-}: TimelineEventsEditorProps) {
-  const canAddMore = events.length < MAX_EVENTS;
+export function TimelineEventsEditor({ events = [], onChange }: TimelineEventsEditorProps): JSX.Element {
+  const t = useTranslations("editor");
+  const canAddMore = events.length < MAX_TIMELINE_EVENTS;
 
   const addEvent = () => {
     if (!canAddMore) return;
@@ -44,7 +29,7 @@ export function TimelineEventsEditor({
       date: new Date().toISOString().split("T")[0],
       title: "",
       description: "",
-      icon: EMOJI_OPTIONS[events.length % EMOJI_OPTIONS.length],
+      icon: TIMELINE_EMOJI_OPTIONS[events.length % TIMELINE_EMOJI_OPTIONS.length],
     };
     onChange([...events, newEvent]);
   };
@@ -53,105 +38,32 @@ export function TimelineEventsEditor({
     onChange(events.filter((e) => e.id !== id));
   };
 
-  const updateEvent = (
-    id: string,
-    field: keyof TimelineEvent,
-    value: string,
-  ) => {
+  const updateEvent = (id: string, field: keyof TimelineEvent, value: string) => {
     onChange(events.map((e) => (e.id === id ? { ...e, [field]: value } : e)));
   };
 
   return (
     <div className="space-y-3">
-      {/* Events List */}
       <AnimatePresence mode="popLayout">
         {events.map((event, index) => (
-          <motion.div
-            key={event.id}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 space-y-2"
-          >
-            {/* Event Header */}
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-gray-500 dark:text-gray-400 text-hebrew-body">
-                אירוע {index + 1}
-              </span>
-              <button
-                onClick={() => removeEvent(event.id)}
-                className="p-1 text-gray-400 hover:text-red-500 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
-                title="מחק אירוע"
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
-
-            {/* Icon Picker */}
-            <div className="flex gap-1 flex-wrap">
-              {EMOJI_OPTIONS.map((emoji) => (
-                <button
-                  key={emoji}
-                  onClick={() => updateEvent(event.id, "icon", emoji)}
-                  className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center transition-all ${
-                    event.icon === emoji
-                      ? "bg-[#d4826f] shadow-sm scale-110"
-                      : "bg-white dark:bg-gray-600 hover:bg-gray-100 dark:hover:bg-gray-500"
-                  }`}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-
-            {/* Date Input */}
-            <BrandCalendar
-              value={event.date}
-              onChange={(val) => updateEvent(event.id, "date", val)}
-            />
-
-            {/* Title Input */}
-            <LimitedInput
-              value={event.title}
-              onChange={(v) => updateEvent(event.id, "title", v)}
-              maxLength={CHAR_LIMITS.TITLE}
-              placeholder="כותרת האירוע"
-              className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f]/50 text-hebrew-body"
-            />
-
-            {/* Description Input */}
-            <LimitedInput
-              value={event.description || ""}
-              onChange={(v) => updateEvent(event.id, "description", v)}
-              maxLength={CHAR_LIMITS.BODY}
-              placeholder="תיאור קצר (אופציונלי)"
-              className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f]/50 text-hebrew-body"
-            />
-          </motion.div>
+          <TimelineEventItem key={event.id} event={event} index={index} onRemove={removeEvent} onUpdate={updateEvent} />
         ))}
       </AnimatePresence>
 
-      {/* Add Event Button */}
       {canAddMore && (
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={addEvent}
-          className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-medium text-[#d4826f] bg-[#d4826f]/10 hover:bg-[#d4826f]/20 rounded-xl transition-colors text-hebrew-body"
+          className="w-full py-2.5 flex items-center justify-center gap-2 text-body-sm font-bold text-accent bg-accent-soft hover:bg-accent-soft/70 rounded-control transition-colors"
         >
           <Plus size={16} />
-          <span>
-            הוסף אירוע ({events.length}/{MAX_EVENTS})
-          </span>
+          <span>{t("timeline.addEvent", { count: events.length, max: MAX_TIMELINE_EVENTS })}</span>
         </motion.button>
       )}
 
-      {/* Max Events Warning */}
       {!canAddMore && (
-        <p className="text-xs text-center text-gray-400 text-hebrew-body">
-          הגעת למקסימום {MAX_EVENTS} אירועים
-        </p>
+        <p className="text-caption text-center text-ink-subtle">{t("timeline.maxReached", { max: MAX_TIMELINE_EVENTS })}</p>
       )}
     </div>
   );

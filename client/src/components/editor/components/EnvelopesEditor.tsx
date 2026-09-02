@@ -2,28 +2,26 @@
 
 /**
  * EnvelopesEditor Component
- * Timeline-style editor for OpenWhen envelopes — up to 6 items
- * Each item: title (headline), dateOpen, content (textarea)
+ * Timeline-style editor for OpenWhen envelopes — up to 6 items.
+ * The single-item card lives in EnvelopeItem.tsx (150-line file cap).
  */
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BrandCalendar } from "@/components/ui/BrandCalendar";
+import { useTranslations } from "next-intl";
 import type { OpenWhenEnvelope } from "@/components/templates/types";
-import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
+import { EnvelopeItem } from "./EnvelopeItem";
 
 const MAX_ENVELOPES = 6;
 const MIN_ENVELOPES = 1;
-
-/** Default emoji choices for new envelopes (internal, not shown to user) */
-const FALLBACK_EMOJIS = ["💌", "😢", "😊", "💪", "🎉", "💖"];
 
 interface EnvelopesEditorProps {
   envelopes: OpenWhenEnvelope[];
   onChange: (envelopes: OpenWhenEnvelope[]) => void;
 }
 
-export function EnvelopesEditor({ envelopes = [], onChange }: EnvelopesEditorProps) {
+export function EnvelopesEditor({ envelopes = [], onChange }: EnvelopesEditorProps): JSX.Element {
+  const t = useTranslations("editor");
   const canAddMore = envelopes.length < MAX_ENVELOPES;
   const canRemove = envelopes.length > MIN_ENVELOPES;
 
@@ -51,14 +49,7 @@ export function EnvelopesEditor({ envelopes = [], onChange }: EnvelopesEditorPro
     <div className="space-y-3">
       <AnimatePresence mode="popLayout">
         {envelopes.map((env, index) => (
-          <EnvelopeItem
-            key={env.id}
-            envelope={env}
-            index={index}
-            onRemove={removeEnvelope}
-            onUpdate={updateEnvelope}
-            canRemove={canRemove}
-          />
+          <EnvelopeItem key={env.id} envelope={env} index={index} onRemove={removeEnvelope} onUpdate={updateEnvelope} canRemove={canRemove} />
         ))}
       </AnimatePresence>
 
@@ -67,79 +58,12 @@ export function EnvelopesEditor({ envelopes = [], onChange }: EnvelopesEditorPro
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={addEnvelope}
-          className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-medium text-[#d4826f] bg-[#d4826f]/10 hover:bg-[#d4826f]/20 rounded-xl transition-colors text-hebrew-body"
+          className="w-full py-2.5 flex items-center justify-center gap-2 text-body-sm font-bold text-accent bg-accent-soft hover:bg-accent-soft/70 rounded-control transition-colors"
         >
           <Plus size={16} />
-          <span>הוסף מעטפה ({envelopes.length}/{MAX_ENVELOPES})</span>
+          <span>{t("envelopes.addEnvelope", { count: envelopes.length, max: MAX_ENVELOPES })}</span>
         </motion.button>
       )}
     </div>
-  );
-}
-
-/** Single envelope editing card */
-interface EnvelopeItemProps {
-  envelope: OpenWhenEnvelope;
-  index: number;
-  onRemove: (id: string) => void;
-  onUpdate: (id: string, field: keyof OpenWhenEnvelope, value: string) => void;
-  canRemove: boolean;
-}
-
-function EnvelopeItem({ envelope, index, onRemove, onUpdate, canRemove }: EnvelopeItemProps) {
-  const inputClass =
-    "w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4826f]/50 text-hebrew-body";
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.2 }}
-      className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 space-y-2"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-gray-500 dark:text-gray-400 text-hebrew-body">
-          מעטפה {index + 1}
-        </span>
-        {canRemove && (
-          <button
-            onClick={() => onRemove(envelope.id)}
-            className="p-1 text-gray-400 hover:text-red-500 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
-            title="מחק מעטפה"
-          >
-            <Trash2 size={14} />
-          </button>
-        )}
-      </div>
-
-      {/* Title */}
-      <LimitedInput
-        value={envelope.title}
-        onChange={(v) => onUpdate(envelope.id, "title", v)}
-        maxLength={CHAR_LIMITS.ENVELOPE_TITLE}
-        placeholder="כותרת (למשל: כשאת עצובה)"
-        className={inputClass}
-      />
-
-      {/* Date Open */}
-      <BrandCalendar
-        value={envelope.dateOpen}
-        onChange={(val) => onUpdate(envelope.id, "dateOpen", val)}
-        className="w-full min-w-0 box-border"
-      />
-
-      {/* Content */}
-      <LimitedInput
-        value={envelope.content}
-        onChange={(v) => onUpdate(envelope.id, "content", v)}
-        maxLength={CHAR_LIMITS.BODY}
-        placeholder="תוכן המכתב..."
-        className={`${inputClass} resize-none`}
-        multiline
-        rows={3}
-      />
-    </motion.div>
   );
 }

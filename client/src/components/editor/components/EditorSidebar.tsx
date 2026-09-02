@@ -8,6 +8,7 @@
 
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { EditorField } from "./EditorField";
 import { ExpirationBanner } from "./ExpirationBanner";
 import type { EditorSidebarProps } from "../types";
@@ -16,22 +17,24 @@ export function EditorSidebar({
   config,
   data,
   onChange,
-}: EditorSidebarProps) {
+}: EditorSidebarProps): JSX.Element {
+  const t = useTranslations("editor");
   // Deduplicate fields by key — prevents duplicate form inputs when the
   // config_schema accidentally contains repeated keys.
   const uniqueFields = config.fields.filter(
     (field, index, arr) => arr.findIndex((f) => f.key === field.key) === index,
   );
+  const description = config.description ?? (config.descriptionKey ? t(config.descriptionKey) : "");
 
   return (
     <div className="flex flex-col h-full">
       {/* Compact Header - Fixed */}
-      <div className="flex-shrink-0 px-4 sm:px-5 pt-2 pb-3 border-b border-gray-100 dark:border-gray-700">
-        <h2 className="text-base font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
-          מאפיינים
+      <div className="flex-shrink-0 px-4 sm:px-5 pt-2 pb-3 border-b border-line">
+        <h2 className="text-body-md font-bold text-ink">
+          {t("sidebar.heading")}
         </h2>
-        <p className="text-xs text-gray-400 dark:text-gray-500 text-hebrew-body mt-0.5">
-          {config.description}
+        <p className="text-caption text-ink-subtle mt-0.5">
+          {description}
         </p>
       </div>
 
@@ -56,10 +59,10 @@ export function EditorSidebar({
       </div>
 
       {/* Footer Hint - Fixed */}
-      <div className="flex-shrink-0 px-4 sm:px-5 py-3 border-t border-gray-50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/50">
-        <p className="text-[11px] text-gray-400 dark:text-gray-500 text-center text-hebrew-body flex items-center justify-center gap-1.5">
-          <Sparkles size={12} className="text-[#d4826f]" />
-          <span>התצוגה מתעדכנת בזמן אמת</span>
+      <div className="flex-shrink-0 px-4 sm:px-5 py-3 border-t border-line bg-surface-sunken/50">
+        <p className="text-caption text-ink-subtle text-center flex items-center justify-center gap-1.5">
+          <Sparkles size={12} className="text-accent" />
+          <span>{t("sidebar.livePreview")}</span>
         </p>
       </div>
     </div>

@@ -3,12 +3,12 @@ import type { EditorConfig } from "../types";
 export const RELATIONSHIPS_CONFIGS: Record<string, EditorConfig> = {
   timeline: {
     templateId: "timeline",
-    title: "ציר הזמן שלנו",
-    description: "ספרו את הסיפור שלכם דרך אירועים בציר זמן",
+    titleKey: "templates.timeline.title",
+    descriptionKey: "templates.timeline.description",
     fields: [
-      { key: "title", label: "כותרת", type: "text", placeholder: "הסיפור שלנו" },
-      { key: "events", label: "אירועים", type: "events" },
-      { key: "primaryColor", label: "צבע ראשי", type: "color" },
+      { key: "title", labelKey: "fields.timeline.title.label", type: "text", placeholderKey: "fields.timeline.title.placeholder" },
+      { key: "events", labelKey: "fields.timeline.events.label", type: "events" },
+      { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {
       title: "הסיפור שלנו",
@@ -18,12 +18,12 @@ export const RELATIONSHIPS_CONFIGS: Record<string, EditorConfig> = {
   },
   "love-coupons": {
     templateId: "love-coupons",
-    title: "קופוני אהבה",
-    description: "צרו קופונים דיגיטליים למימוש",
+    titleKey: "templates.love-coupons.title",
+    descriptionKey: "templates.love-coupons.description",
     fields: [
-      { key: "title", label: "כותרת", type: "text", placeholder: "פנקס קופונים" },
-      { key: "coupons", label: "קופונים", type: "coupons" },
-      { key: "primaryColor", label: "צבע ראשי", type: "color" },
+      { key: "title", labelKey: "fields.love-coupons.title.label", type: "text", placeholderKey: "fields.love-coupons.title.placeholder" },
+      { key: "coupons", labelKey: "fields.love-coupons.coupons.label", type: "coupons" },
+      { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {
       title: "פנקס קופונים",
@@ -37,12 +37,12 @@ export const RELATIONSHIPS_CONFIGS: Record<string, EditorConfig> = {
   },
   "open-when": {
     templateId: "open-when",
-    title: "פתח כש...",
-    description: "צרו מעטפות עם מכתבים לרגעים מיוחדים",
+    titleKey: "templates.open-when.title",
+    descriptionKey: "templates.open-when.description",
     fields: [
-      { key: "title", label: "כותרת", type: "text", placeholder: "מכתבים מיוחדים" },
-      { key: "primaryColor", label: "צבע ראשי", type: "color" },
-      { key: "envelopes", label: "מעטפות", type: "envelopes", min: 1, max: 6 },
+      { key: "title", labelKey: "fields.open-when.title.label", type: "text", placeholderKey: "fields.open-when.title.placeholder" },
+      { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
+      { key: "envelopes", labelKey: "fields.open-when.envelopes.label", type: "envelopes", min: 1, max: 6 },
     ],
     defaultData: {
       title: "תפתחי כש...",

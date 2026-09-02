@@ -9,6 +9,7 @@
 
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "./useProfile";
 import { useTemplateBySlug } from "./useTemplatesQuery";
@@ -31,13 +32,14 @@ function formatDate(d: Date): string {
 }
 
 export function useExpirationPolicy(slug: string): ExpirationPolicyResult {
+  const t = useTranslations("editor");
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
   const { template, isLoading: templatesLoading, error } = useTemplateBySlug(slug);
 
   useEffect(() => {
-    if (error) toast.error("לא הצלחנו לטעון את מדיניות התוקף. נסו שוב.");
-  }, [error]);
+    if (error) toast.error(t("errors.expirationPolicyLoadFailed"));
+  }, [error, t]);
 
   if (!user || !slug) return { expirationDate: null, loading: false };
   if (templatesLoading || profileLoading) {

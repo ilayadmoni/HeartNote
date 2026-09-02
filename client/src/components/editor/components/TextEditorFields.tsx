@@ -4,6 +4,7 @@
  * optional AI-assist button above an aiAssist textarea. Split out of
  * EditorField.tsx to keep that file under the project's line limit. */
 
+import { useTranslations } from "next-intl";
 import type { EditorField as EditorFieldType } from "../types";
 import { LimitedInput, CHAR_LIMITS } from "./LimitedInput";
 import { AiAssistButton } from "./AiAssistButton";
@@ -16,14 +17,17 @@ interface TextEditorFieldsProps {
   className: string;
 }
 
-export function TextEditorFields({ field, value, onChange, templateId, className }: TextEditorFieldsProps) {
+export function TextEditorFields({ field, value, onChange, templateId, className }: TextEditorFieldsProps): JSX.Element | null {
+  const t = useTranslations("editor");
+  const placeholder = field.placeholderKey ? t(field.placeholderKey) : undefined;
+
   if (field.type === "text") {
     return (
       <LimitedInput
         value={(value as string) || ""}
         onChange={(v) => onChange(v)}
         maxLength={field.maxLength || CHAR_LIMITS.TITLE}
-        placeholder={field.placeholder}
+        placeholder={placeholder}
         className={className}
       />
     );
@@ -43,7 +47,7 @@ export function TextEditorFields({ field, value, onChange, templateId, className
           value={(value as string) || ""}
           onChange={(v) => onChange(v)}
           maxLength={field.maxLength || CHAR_LIMITS.BODY}
-          placeholder={field.placeholder}
+          placeholder={placeholder}
           className={`${className} resize-none`}
           multiline
           rows={3}

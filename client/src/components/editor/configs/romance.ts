@@ -3,13 +3,13 @@ import type { EditorConfig } from "../types";
 export const ROMANCE_CONFIGS: Record<string, EditorConfig> = {
   "date-invite": {
     templateId: "date-invite",
-    title: "הזמנה לדייט",
-    description: 'כרטיס אינטראקטיבי שבו כפתור ה"לא" בורח. אי אפשר לסרב!',
+    titleKey: "templates.date-invite.title",
+    descriptionKey: "templates.date-invite.description",
     fields: [
-      { key: "title", label: "כותרת", type: "text", placeholder: "הזמנה לדייט" },
-      { key: "question", label: "שאלה", type: "text", placeholder: "?האם תצא/י איתי לדייט" },
-      { key: "successMessage", label: "הודעת הצלחה", type: "text", placeholder: "!יש! איזה כיף" },
-      { key: "primaryColor", label: "צבע ראשי", type: "color" },
+      { key: "title", labelKey: "fields.date-invite.title.label", type: "text", placeholderKey: "fields.date-invite.title.placeholder" },
+      { key: "question", labelKey: "fields.date-invite.question.label", type: "text", placeholderKey: "fields.date-invite.question.placeholder" },
+      { key: "successMessage", labelKey: "fields.date-invite.successMessage.label", type: "text", placeholderKey: "fields.date-invite.successMessage.placeholder" },
+      { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {
       title: "הזמנה לדייט",
@@ -22,12 +22,12 @@ export const ROMANCE_CONFIGS: Record<string, EditorConfig> = {
   },
   "scratch-card": {
     templateId: "scratch-card",
-    title: "כרטיס גירוד",
-    description: "גרדו וגלו את ההפתעה המוסתרת!",
+    titleKey: "templates.scratch-card.title",
+    descriptionKey: "templates.scratch-card.description",
     fields: [
-      { key: "title", label: "כותרת", type: "text", placeholder: "גרד וגלה את ההפתעה" },
-      { key: "prizeContent", label: "תוכן הפרס", type: "textarea", placeholder: "🎁 זכית בהפתעה מיוחדת!", aiAssist: true },
-      { key: "primaryColor", label: "צבע ראשי", type: "color" },
+      { key: "title", labelKey: "fields.scratch-card.title.label", type: "text", placeholderKey: "fields.scratch-card.title.placeholder" },
+      { key: "prizeContent", labelKey: "fields.scratch-card.prizeContent.label", type: "textarea", placeholderKey: "fields.scratch-card.prizeContent.placeholder", aiAssist: true },
+      { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {
       title: "גרד וגלה את ההפתעה",
@@ -37,14 +37,14 @@ export const ROMANCE_CONFIGS: Record<string, EditorConfig> = {
   },
   "apology-search": {
     templateId: "apology-search",
-    title: "חיפוש סליחה",
-    description: "חיפוש שמדמה גוגל — מקליד את הסליחה ומגיע לתוצאה מרגשת!",
+    titleKey: "templates.apology-search.title",
+    descriptionKey: "templates.apology-search.description",
     fields: [
-      { key: "searchQuery", label: "שאילתת חיפוש", type: "text", placeholder: "איך לבקש סליחה מהבן זוג שלי?", maxLength: 70 },
-      { key: "resultTitle", label: "כותרת תוצאה", type: "text", placeholder: "סליחה שהייתי עצבנית", maxLength: 30 },
-      { key: "resultSubtitle", label: "תיאור תוצאה", type: "textarea", placeholder: "אתה צודק. אוהבת אותך.", maxLength: 100 },
-      { key: "startButtonLabel", label: "כפתור התחלה", type: "text", placeholder: "התחל חיפוש", maxLength: 40 },
-      { key: "primaryColor", label: "צבע ראשי", type: "color" },
+      { key: "searchQuery", labelKey: "fields.apology-search.searchQuery.label", type: "text", placeholderKey: "fields.apology-search.searchQuery.placeholder", maxLength: 70 },
+      { key: "resultTitle", labelKey: "fields.apology-search.resultTitle.label", type: "text", placeholderKey: "fields.apology-search.resultTitle.placeholder", maxLength: 30 },
+      { key: "resultSubtitle", labelKey: "fields.apology-search.resultSubtitle.label", type: "textarea", placeholderKey: "fields.apology-search.resultSubtitle.placeholder", maxLength: 100 },
+      { key: "startButtonLabel", labelKey: "fields.apology-search.startButtonLabel.label", type: "text", placeholderKey: "fields.apology-search.startButtonLabel.placeholder", maxLength: 40 },
+      { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {
       searchQuery: "איך לבקש סליחה מהבן זוג שלי?",

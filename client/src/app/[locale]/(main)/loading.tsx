@@ -13,7 +13,7 @@ export default function Loading(): JSX.Element {
   const t = useTranslations("common.actions");
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-surface transition-colors duration-300">
+    <div data-testid="route-loading" className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-surface transition-colors duration-300">
       <motion.div
         className="absolute w-64 h-64 rounded-full bg-accent/20 blur-3xl"
         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}

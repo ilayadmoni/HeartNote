@@ -6,6 +6,7 @@
  */
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 interface ModalActionsProps {
   isSubmitting: boolean;
@@ -14,36 +15,37 @@ interface ModalActionsProps {
   onConfirm: () => void;
 }
 
-export function ModalActions({ isSubmitting, loading, onClose, onConfirm }: ModalActionsProps) {
+export function ModalActions({ isSubmitting, loading, onClose, onConfirm }: ModalActionsProps): JSX.Element {
+  const t = useTranslations("editor");
   const busy = isSubmitting || loading;
 
   return (
     <>
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }}
-        className="text-center text-xs text-navy-600 dark:text-gray-300 mb-2.5 text-hebrew-heading">
-        האם אתה בטוח שברצונך ליצור את הברכה?
+        className="text-center text-caption font-bold text-ink mb-2.5">
+        {t("confirmModal.confirmQuestion")}
       </motion.p>
 
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex gap-2.5">
         <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={onClose} disabled={busy}
-          className="flex-1 py-2 px-3 border border-gray-300 dark:border-navy-500 rounded-xl font-bold text-sm text-navy-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-hebrew-heading">
-          חזור
+          className="flex-1 py-2 px-3 border border-line-strong rounded-pill font-bold text-body-sm text-ink hover:bg-surface-sunken transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          {t("confirmModal.back")}
         </motion.button>
         <motion.button whileHover={{ scale: !isSubmitting ? 1.02 : 1 }} whileTap={{ scale: !isSubmitting ? 0.98 : 1 }}
           onClick={onConfirm} disabled={busy}
-          className="flex-1 py-2 px-3 bg-gradient-to-r from-coral-500 to-coral-600 hover:from-coral-600 hover:to-coral-700 text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed text-hebrew-heading shadow-md hover:shadow-lg">
+          className="flex-1 py-2 px-3 bg-accent hover:bg-accent-hover text-accent-ink rounded-pill font-bold text-body-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-glow-sm">
           {isSubmitting ? (
             <div className="flex items-center justify-center gap-2">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>יוצר...</span>
+              <span>{t("confirmModal.creating")}</span>
             </div>
-          ) : "יצירת ברכה דיגיטלית"}
+          ) : t("confirmModal.create")}
         </motion.button>
       </motion.div>
 
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
-        className="text-xs text-center text-gray-500 dark:text-gray-300 mt-2 text-hebrew-body">
-        הערה: לאחר יצירה לא ניתן לערוך את הברכה
+        className="text-caption text-center text-ink-muted mt-2">
+        {t("confirmModal.editNote")}
       </motion.p>
     </>
   );

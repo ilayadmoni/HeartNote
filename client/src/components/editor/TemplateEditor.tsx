@@ -10,7 +10,7 @@ import { EditorDesktop } from "./Desktop/EditorDesktop";
 import { EditorMobile } from "./Mobile/EditorMobile";
 import type { TemplateEditorProps } from "./types";
 
-export function TemplateEditor(props: TemplateEditorProps) {
+export function TemplateEditor(props: TemplateEditorProps): JSX.Element {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return isMobile ? <EditorMobile {...props} /> : <EditorDesktop {...props} />;

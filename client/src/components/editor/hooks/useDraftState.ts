@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import type { AuthUser } from "@/contexts/AuthContext";
 import { saveGuestDraft, claimGuestDraft } from "@/actions/draftActions";
 
@@ -22,6 +23,7 @@ export function useDraftState({
   setChoices,
   onDraftRestored,
 }: UseDraftStateArgs) {
+  const t = useTranslations("editor");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -49,10 +51,10 @@ export function useDraftState({
         } else if (res.success) {
           setTimeout(() => router.replace(pathname, { scroll: false }), 150);
         } else {
-          toast.error(res.error || "לא הצלחנו לשחזר את הטיוטה.");
+          toast.error(res.error || t("errors.draftRestoreFailed"));
         }
       } catch {
-        toast.error("שגיאה בשחזור הטיוטה. נסו שוב.");
+        toast.error(t("errors.draftRestoreError"));
       } finally {
         setIsRestoringDraft(false);
       }
