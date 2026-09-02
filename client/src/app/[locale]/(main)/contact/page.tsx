@@ -1,17 +1,25 @@
 /**
- * Contact Page - צרו קשר
+ * Contact Page
  * Contact form page for HeartNote
  */
 
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 import { Contact } from "@/components/contact";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import type { Locale } from "@/i18n/locale";
 
-export const metadata: Metadata = {
-  title: "יצירת קשר | HeartNote",
-  description:
-    "צרו איתנו קשר - נשמח לענות על כל שאלה ולעזור לכם במידה ונתקלתם בבעיה. אנחנו כאן בשבילכם",
-};
+interface ContactPageProps {
+  params: Promise<{ locale: Locale }>;
+}
 
-export default function ContactPage() {
+export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  return buildPageMetadata({ locale, path: "/contact", key: "contact" });
+}
+
+export default async function ContactPage({ params }: ContactPageProps): Promise<JSX.Element> {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return <Contact />;
 }

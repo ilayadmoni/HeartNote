@@ -1,45 +1,39 @@
-"use client";
-
 /**
  * TermsSection Component
- * Individual terms of use section
+ * Renders one clause group of the terms of use.
  */
 
-import { motion } from "framer-motion";
-import type { TermsSection as TermsSectionType } from "../types";
+import { getTranslations } from "next-intl/server";
+import type { TermsSectionId } from "../constants";
 
 interface TermsSectionProps {
-  section: TermsSectionType;
-  index: number;
+  id: TermsSectionId;
 }
 
-export function TermsSection({ section, index }: TermsSectionProps) {
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((entry) => typeof entry === "string");
+}
+
+export async function TermsSection({ id }: TermsSectionProps): Promise<JSX.Element> {
+  const t = await getTranslations("legal.terms");
+  const title = t(`sections.${id}.title`);
+  const raw = t.raw(`sections.${id}.paragraphs`);
+  const paragraphs = isStringArray(raw) ? raw : [];
+
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
-      className="mb-8 last:mb-0"
-      aria-labelledby={section.title ? `section-${section.id}` : undefined}
-    >
-      {section.title && (
-        <h2
-          id={`section-${section.id}`}
-          className="text-xl font-bold text-[#2e3c52] dark:text-white mb-3 text-hebrew-heading"
-        >
-          {section.title}
+    <section className="mb-8 last:mb-0" aria-labelledby={title ? `terms-section-${id}` : undefined}>
+      {title && (
+        <h2 id={`terms-section-${id}`} className="text-title-sm text-ink mb-3">
+          {title}
         </h2>
       )}
-      <div className="space-y-2">
-        {section.content.map((paragraph, pIndex) => (
-          <p
-            key={pIndex}
-            className="text-[#2e3c52] dark:text-gray-300 text-sm leading-relaxed text-hebrew-body"
-          >
+      <div className="space-y-2 max-w-prose">
+        {paragraphs.map((paragraph, index) => (
+          <p key={index} className="text-body-sm text-ink-muted leading-relaxed">
             {paragraph}
           </p>
         ))}
       </div>
-    </motion.section>
+    </section>
   );
 }

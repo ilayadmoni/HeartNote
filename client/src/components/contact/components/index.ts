@@ -4,5 +4,5 @@
 
 export { ContactHeader } from "./ContactHeader";
 export { ContactForm } from "./ContactForm";
-export { FormField } from "./FormField";
-
+export { Textarea } from "./Textarea";
+export { SubmitStatus } from "./SubmitStatus";

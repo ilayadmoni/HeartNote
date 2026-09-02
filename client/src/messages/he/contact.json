@@ -1,1 +1,40 @@
-{}
+{
+  "header": {
+    "title": "צרו קשר",
+    "subtitle": "נשמח לשמוע מכם! מלאו את הטופס ונחזור אליכם בהקדם"
+  },
+  "form": {
+    "labels": {
+      "name": "שם מלא",
+      "email": "כתובת אימייל",
+      "subject": "נושא הפנייה",
+      "message": "תוכן ההודעה",
+      "submit": "שלח הודעה",
+      "submitting": "שולח..."
+    },
+    "placeholders": {
+      "name": "הכניסו את שמכם",
+      "email": "example@email.com",
+      "subject": "במה נוכל לעזור?",
+      "message": "ספרו לנו על הפנייה שלכם..."
+    },
+    "validation": {
+      "nameRequired": "נא להזין שם",
+      "emailRequired": "נא להזין כתובת אימייל",
+      "emailInvalid": "כתובת אימייל לא תקינה",
+      "subjectRequired": "נא להזין נושא",
+      "messageRequired": "נא להזין הודעה",
+      "messageMinLength": "ההודעה חייבת להכיל לפחות 10 תווים"
+    },
+    "status": {
+      "success": "ההודעה נשלחה בהצלחה! נחזור אליכם בהקדם",
+      "error": "אירעה שגיאה בשליחת ההודעה. אנא נסו שוב"
+    }
+  },
+  "toast": {
+    "successTitle": "ההודעה נשלחה בהצלחה!",
+    "successDescription": "תודה {name}, נחזור אליך בהקדם האפשרי.",
+    "errorDescription": "אנא נסו שוב או פנו אלינו ישירות.",
+    "unexpectedError": "שגיאה בלתי צפויה. נסו שוב מאוחר יותר."
+  }
+}

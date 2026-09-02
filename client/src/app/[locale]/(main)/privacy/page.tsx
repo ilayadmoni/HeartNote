@@ -1,16 +1,25 @@
 /**
- * Privacy Page - מדיניות פרטיות
+ * Privacy Page
  * Privacy policy page for HeartNote
  */
 
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 import { Privacy } from "@/components/privacy";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import type { Locale } from "@/i18n/locale";
 
-export const metadata: Metadata = {
-  title: "מדיניות פרטיות | HeartNote",
-  description: "מדיניות הפרטיות של HeartNote - התחייבותנו לפרטיותך ואבטחת המידע",
-};
+interface PrivacyPageProps {
+  params: Promise<{ locale: Locale }>;
+}
 
-export default function PrivacyPage() {
+export async function generateMetadata({ params }: PrivacyPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  return buildPageMetadata({ locale, path: "/privacy", key: "privacy" });
+}
+
+export default async function PrivacyPage({ params }: PrivacyPageProps): Promise<JSX.Element> {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return <Privacy />;
 }

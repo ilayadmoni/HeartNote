@@ -2,31 +2,24 @@
 
 /**
  * FAQAccordion Component
- * Container for FAQ items with single-open behavior
+ * Container for FAQ items with single-open behavior.
  */
 
 import { useState } from "react";
 import { FAQAccordionItem } from "./FAQAccordionItem";
-import { FAQ_ITEMS } from "../constants";
+import { FAQ_ITEM_IDS } from "../constants";
 
-export function FAQAccordion() {
-  // Track which item is open (only one at a time)
+export function FAQAccordion(): JSX.Element {
   const [openId, setOpenId] = useState<string | null>(null);
 
-  const handleToggle = (id: string) => {
+  const handleToggle = (id: string): void => {
     setOpenId((prevId) => (prevId === id ? null : id));
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
-      {FAQ_ITEMS.map((item, index) => (
-        <FAQAccordionItem
-          key={item.id}
-          item={item}
-          isOpen={openId === item.id}
-          onToggle={() => handleToggle(item.id)}
-          index={index}
-        />
+    <div className="bg-surface-raised rounded-card shadow-card border border-line overflow-hidden">
+      {FAQ_ITEM_IDS.map((id, index) => (
+        <FAQAccordionItem key={id} id={id} isOpen={openId === id} onToggle={() => handleToggle(id)} index={index} />
       ))}
     </div>
   );

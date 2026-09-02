@@ -1,47 +1,38 @@
-"use client";
-
 /**
  * Terms Component
- * Main terms of use page content
+ * Main terms of use page content.
  */
 
+import { getTranslations } from "next-intl/server";
 import { Settings } from "lucide-react";
 import { TermsHeader, TermsSection } from "./components";
-import { TERMS_SECTIONS } from "./constants";
+import { TERMS_SECTION_IDS } from "./constants";
 import type { TermsProps } from "./types";
 
-export function Terms({ className = "" }: TermsProps) {
+export async function Terms({ className = "" }: TermsProps): Promise<JSX.Element> {
+  const t = await getTranslations("legal.terms");
+
   return (
-    <section
-      className={`relative py-12 lg:py-20 px-4 min-h-screen bg-[#faf7f5] dark:bg-gray-900 ${className}`}
-    >
+    <section className={`relative py-section-sm px-gutter min-h-[100dvh] bg-surface ${className}`}>
       {/* Background Decorative Gears */}
-      <div className="absolute top-20 left-10 opacity-10 pointer-events-none hidden lg:block">
-        <Settings size={160} className="animate-spin-slow text-[#2e3c52]" />
+      <div className="absolute top-20 start-10 opacity-10 pointer-events-none hidden lg:block">
+        <Settings size={160} className="animate-spin-slow text-ink" />
       </div>
-      <div className="absolute bottom-20 right-10 opacity-10 pointer-events-none hidden lg:block">
-        <Settings
-          size={120}
-          className="animate-spin-slow-reverse text-[#2e3c52]"
-        />
+      <div className="absolute bottom-20 end-10 opacity-10 pointer-events-none hidden lg:block">
+        <Settings size={120} className="animate-spin-slow-reverse text-ink" />
       </div>
 
-      <div className="container mx-auto max-w-3xl relative z-10">
+      <div className="mx-auto max-w-3xl relative z-10">
         <TermsHeader />
 
-        {/* Terms Content */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 lg:p-10 shadow-lg">
-          {TERMS_SECTIONS.map((section, index) => (
-            <TermsSection key={section.id} section={section} index={index} />
+        <div className="bg-surface-raised rounded-card p-6 lg:p-10 shadow-card border border-line">
+          {TERMS_SECTION_IDS.map((id) => (
+            <TermsSection key={id} id={id} />
           ))}
 
-          {/* Divider */}
-          <div className="h-px bg-gray-200 dark:bg-gray-700 my-8" />
+          <div className="h-px bg-line my-8" />
 
-          {/* Footer Note */}
-          <p className="text-center text-xs text-gray-400 dark:text-gray-500 text-hebrew-body">
-            בשימוש באתר HeartNote, אתם מסכימים לתנאי השימוש ומדיניות הפרטיות.
-          </p>
+          <p className="text-center text-caption text-ink-subtle">{t("footerNote")}</p>
         </div>
       </div>
     </section>

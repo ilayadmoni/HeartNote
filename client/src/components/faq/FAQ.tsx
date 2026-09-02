@@ -1,42 +1,38 @@
-"use client";
-
 /**
  * FAQ Component
- * Main FAQ page content with accordion
+ * Main FAQ page content with accordion.
  */
 
+import { getTranslations } from "next-intl/server";
 import { HelpCircle } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { FAQHeader, FAQAccordion } from "./components";
 import type { FAQProps } from "./types";
 
-export function FAQ({ className = "" }: FAQProps) {
+export async function FAQ({ className = "" }: FAQProps): Promise<JSX.Element> {
+  const t = await getTranslations("faq");
+
   return (
-    <section
-      className={`relative py-12 lg:py-20 px-4 min-h-screen bg-[#faf7f5] dark:bg-gray-900 ${className}`}
-      dir="rtl"
-    >
+    <section className={`relative py-section-sm px-gutter min-h-[100dvh] bg-surface ${className}`}>
       {/* Background Decorative Elements */}
-      <div className="absolute top-20 left-10 opacity-5 pointer-events-none hidden lg:block">
-        <HelpCircle size={180} className="text-[#2e3c52] dark:text-white" />
+      <div className="absolute top-20 start-10 opacity-5 pointer-events-none hidden lg:block">
+        <HelpCircle size={180} className="text-ink" />
       </div>
-      <div className="absolute bottom-20 right-10 opacity-5 pointer-events-none hidden lg:block">
-        <HelpCircle size={140} className="text-[#2e3c52] dark:text-white" />
+      <div className="absolute bottom-20 end-10 opacity-5 pointer-events-none hidden lg:block">
+        <HelpCircle size={140} className="text-ink" />
       </div>
 
-      <div className="container mx-auto max-w-3xl relative z-10">
+      <div className="mx-auto max-w-3xl relative z-10">
         <FAQHeader />
         <FAQAccordion />
 
         {/* Contact CTA */}
         <div className="mt-10 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-hebrew-body">
-            לא מצאת את התשובה שחיפשת?{" "}
-            <a
-              href="/contact"
-              className="text-[#d4826f] dark:text-[#e8917a] hover:underline font-medium"
-            >
-              צרו איתנו קשר
-            </a>
+          <p className="text-body-sm text-ink-subtle">
+            {t("footer.prompt")}{" "}
+            <Link href="/contact" className="text-accent hover:underline font-medium">
+              {t("footer.cta")}
+            </Link>
           </p>
         </div>
       </div>

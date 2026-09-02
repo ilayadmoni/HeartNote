@@ -1,1 +1,54 @@
-{}
+{
+  "title": "Frequently asked questions",
+  "subtitle": "Everything you need to know about HeartNote, answered.",
+  "items": {
+    "item-1": {
+      "question": "Is HeartNote free to use?",
+      "answer": "Yes, you can use HeartNote's basic plan for free. It lets you create up to 5 greetings, for life.<br></br><br></br><i>Keep in mind:</i> on this plan the greeting link stays active for <b>24 hours only</b>, premium templates aren't available, and the template shows a small HeartNote watermark."
+    },
+    "item-2": {
+      "question": "What's the difference between the Lite and Premium cards?",
+      "answer": "<ul><li><b>Lite (12 ILS):</b> great for 2 meaningful greetings. Includes everything Premium offers (no watermark, premium templates, and links active for 14 to 30 days). The card is valid for one month and doesn't renew automatically. Once you've used your premium templates, you can keep using the basic templates, up to 5 greetings for life.</li><li><b>Premium (29 ILS):</b> the best value. Includes up to 6 premium greetings and 5 basic ones, access to every template (including special ones like coupons), advanced editing, no watermark, and links active for 14 days (or 30 days for long-running templates). The card is valid for 45 days and unlocks every template during that time.</li></ul>"
+    },
+    "item-3": {
+      "question": "The link I sent stopped working. Why?",
+      "answer": "Every link has an expiry, to protect your privacy:<ul><li><b>Free plan:</b> expires after 24 hours.</li><li><b>Paid (short-run templates):</b> active for 14 days.</li><li><b>Special templates (long-running):</b> active for 30 days.</li></ul>After that, the content is deleted, but you can always create a new greeting."
+    },
+    "item-4": {
+      "question": "Do I need to download an app?",
+      "answer": "No. HeartNote is fully web-based. You can create and view greetings from any computer, phone or tablet, no download needed."
+    },
+    "item-5": {
+      "question": "What kinds of greetings can I create?",
+      "answer": "We offer a range of interactive experiences: date invites, scratch cards, a decision wheel, a couple's timeline, a friendship quiz, and love or friendship coupons."
+    },
+    "item-6": {
+      "question": "Can I change the design?",
+      "answer": "Absolutely. You can edit the text in every greeting. Changing the color palette and personalizing the design further are open to paying users, whether on the one-time plan or the premium subscription. Once a link is created, it can no longer be edited."
+    },
+    "item-7": {
+      "question": "Do you store my credit card details?",
+      "answer": "No. We never store credit card details. Payment is handled through a secure external payment processor."
+    },
+    "item-8": {
+      "question": "Can I cancel a purchase?",
+      "answer": "Since this is a digital product for immediate use, purchases generally can't be cancelled once access is granted, though each case is reviewed individually under Israeli consumer protection law. Contact us by email for special circumstances."
+    },
+    "item-9": {
+      "question": "Is there an age restriction?",
+      "answer": "HeartNote is intended for adults over 18. Users under that age need a parent or guardian's approval."
+    },
+    "item-10": {
+      "question": "What happens after I delete my account?",
+      "answer": "Account deletion is permanent. Once deleted, you can't open a new account with an email that was already registered. Because of that, we recommend only deleting your account if you're certain you won't want to use HeartNote again."
+    },
+    "item-11": {
+      "question": "I signed up but didn't get a verification email.",
+      "answer": "Verification emails usually arrive within a few minutes if you're connected to the internet. We recommend checking your spam folder or trying to sign up again. If you're still stuck, write to us at heartnote.web@gmail.com"
+    }
+  },
+  "footer": {
+    "prompt": "Didn't find the answer you were looking for?",
+    "cta": "Get in touch"
+  }
+}

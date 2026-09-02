@@ -1,1 +1,40 @@
-{}
+{
+  "header": {
+    "title": "Get in touch",
+    "subtitle": "We'd love to hear from you. Fill out the form and we'll get back to you soon."
+  },
+  "form": {
+    "labels": {
+      "name": "Full name",
+      "email": "Email address",
+      "subject": "Subject",
+      "message": "Your message",
+      "submit": "Send message",
+      "submitting": "Sending..."
+    },
+    "placeholders": {
+      "name": "Your name",
+      "email": "example@email.com",
+      "subject": "What can we help with?",
+      "message": "Tell us what's on your mind..."
+    },
+    "validation": {
+      "nameRequired": "Please enter your name",
+      "emailRequired": "Please enter your email address",
+      "emailInvalid": "That email address doesn't look right",
+      "subjectRequired": "Please enter a subject",
+      "messageRequired": "Please enter a message",
+      "messageMinLength": "Your message needs at least 10 characters"
+    },
+    "status": {
+      "success": "Message sent. We'll get back to you soon.",
+      "error": "Something went wrong sending your message. Please try again."
+    }
+  },
+  "toast": {
+    "successTitle": "Message sent!",
+    "successDescription": "Thanks {name}, we'll be in touch as soon as we can.",
+    "errorDescription": "Please try again or reach us directly.",
+    "unexpectedError": "Unexpected error. Please try again later."
+  }
+}

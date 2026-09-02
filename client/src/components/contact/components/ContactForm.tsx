@@ -2,19 +2,19 @@
 
 /**
  * ContactForm Component
- * Main contact form with validation
+ * Main contact form with client-side validation.
  */
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { Send, CheckCircle, AlertCircle } from "lucide-react";
-import { FormField } from "./FormField";
-import {
-  FORM_LABELS,
-  FORM_PLACEHOLDERS,
-  VALIDATION_MESSAGES,
-  FORM_MESSAGES,
-} from "../constants";
+import { Send } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { useMotionOk } from "@/lib/motion";
+import { Textarea } from "./Textarea";
+import { SubmitStatus } from "./SubmitStatus";
+import { CONTACT_MAX_LENGTHS } from "../constants";
 import type { ContactFormData } from "../types";
 
 interface ContactFormProps {
@@ -23,59 +23,49 @@ interface ContactFormProps {
   isPending?: boolean;
 }
 
-export function ContactForm({ onSubmit, isPending = false }: ContactFormProps) {
-  const [formData, setFormData] = useState<ContactFormData>({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
+const EMPTY_FORM: ContactFormData = { name: "", email: "", subject: "", message: "" };
+
+export function ContactForm({ onSubmit, isPending = false }: ContactFormProps): JSX.Element {
+  const t = useTranslations("contact");
+  const motionOk = useMotionOk();
+  const [formData, setFormData] = useState<ContactFormData>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<ContactFormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
-    null,
-  );
+  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
+  const [serverError, setServerError] = useState<string>();
 
   const validateForm = (): boolean => {
     const newErrors: Partial<ContactFormData> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = VALIDATION_MESSAGES.nameRequired;
-    }
-
+    if (!formData.name.trim()) newErrors.name = t("form.validation.nameRequired");
     if (!formData.email.trim()) {
-      newErrors.email = VALIDATION_MESSAGES.emailRequired;
+      newErrors.email = t("form.validation.emailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = VALIDATION_MESSAGES.emailInvalid;
+      newErrors.email = t("form.validation.emailInvalid");
     }
-
-    if (!formData.subject.trim()) {
-      newErrors.subject = VALIDATION_MESSAGES.subjectRequired;
-    }
-
+    if (!formData.subject.trim()) newErrors.subject = t("form.validation.subjectRequired");
     if (!formData.message.trim()) {
-      newErrors.message = VALIDATION_MESSAGES.messageRequired;
+      newErrors.message = t("form.validation.messageRequired");
     } else if (formData.message.trim().length < 10) {
-      newErrors.message = VALIDATION_MESSAGES.messageMinLength;
+      newErrors.message = t("form.validation.messageMinLength");
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent): Promise<void> => {
     e.preventDefault();
     setSubmitStatus(null);
-
+    setServerError(undefined);
     if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
       await onSubmit(formData);
       setSubmitStatus("success");
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch {
+      setFormData(EMPTY_FORM);
+    } catch (err) {
       setSubmitStatus("error");
+      setServerError(err instanceof Error ? err.message : undefined);
     } finally {
       setIsSubmitting(false);
     }
@@ -83,129 +73,69 @@ export function ContactForm({ onSubmit, isPending = false }: ContactFormProps) {
 
   return (
     <motion.form
-      initial={{ opacity: 0, y: 20 }}
+      initial={motionOk ? { opacity: 0, y: 20 } : false}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
+      transition={{ duration: 0.5, delay: motionOk ? 0.3 : 0 }}
       onSubmit={handleSubmit}
-      className="bg-white dark:bg-gray-800 rounded-2xl p-6 lg:p-8 shadow-lg"
+      className="bg-surface-raised rounded-card p-6 lg:p-8 shadow-card border border-line"
       noValidate
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-1">
+        <Input
           id="name"
-          label={FORM_LABELS.name}
-          placeholder={FORM_PLACEHOLDERS.name}
+          label={t("form.labels.name")}
+          placeholder={t("form.placeholders.name")}
           value={formData.name}
-          onChange={(value) => setFormData({ ...formData, name: value })}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           error={errors.name}
           required
-          maxLength={100}
+          maxLength={CONTACT_MAX_LENGTHS.name}
         />
-        <FormField
+        <Input
           id="email"
-          label={FORM_LABELS.email}
           type="email"
-          placeholder={FORM_PLACEHOLDERS.email}
+          label={t("form.labels.email")}
+          placeholder={t("form.placeholders.email")}
           value={formData.email}
-          onChange={(value) => setFormData({ ...formData, email: value })}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           error={errors.email}
           required
-          maxLength={254}
+          maxLength={CONTACT_MAX_LENGTHS.email}
         />
       </div>
 
-      <FormField
-        id="subject"
-        label={FORM_LABELS.subject}
-        placeholder={FORM_PLACEHOLDERS.subject}
-        value={formData.subject}
-        onChange={(value) => setFormData({ ...formData, subject: value })}
-        error={errors.subject}
-        required
-        maxLength={200}
-      />
+      <div className="mb-1">
+        <Input
+          id="subject"
+          label={t("form.labels.subject")}
+          placeholder={t("form.placeholders.subject")}
+          value={formData.subject}
+          onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+          error={errors.subject}
+          required
+          maxLength={CONTACT_MAX_LENGTHS.subject}
+        />
+      </div>
 
-      <FormField
-        id="message"
-        label={FORM_LABELS.message}
-        type="textarea"
-        placeholder={FORM_PLACEHOLDERS.message}
-        value={formData.message}
-        onChange={(value) => setFormData({ ...formData, message: value })}
-        error={errors.message}
-        required
-        maxLength={5000}
-      />
+      <div className="mb-5">
+        <Textarea
+          id="message"
+          label={t("form.labels.message")}
+          placeholder={t("form.placeholders.message")}
+          value={formData.message}
+          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+          error={errors.message}
+          required
+          maxLength={CONTACT_MAX_LENGTHS.message}
+        />
+      </div>
 
-      {/* Submit Status Messages */}
-      {submitStatus && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`flex items-center gap-2 p-4 rounded-xl mb-4 ${
-            submitStatus === "success"
-              ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400"
-              : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
-          }`}
-        >
-          {submitStatus === "success" ? (
-            <CheckCircle size={20} />
-          ) : (
-            <AlertCircle size={20} />
-          )}
-          <span className="text-hebrew-body">
-            {submitStatus === "success"
-              ? FORM_MESSAGES.success
-              : FORM_MESSAGES.error}
-          </span>
-        </motion.div>
-      )}
+      {submitStatus && <SubmitStatus status={submitStatus} errorMessage={serverError} />}
 
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={isSubmitting || isPending}
-        className="
-          w-full py-4 px-6 rounded-xl
-          bg-[#d4826f] hover:bg-[#c4735f]
-          text-white font-bold text-lg
-          transition-all duration-200
-          disabled:opacity-50 disabled:cursor-not-allowed
-          flex items-center justify-center gap-2
-          text-hebrew-heading
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f] focus-visible:ring-offset-2
-        "
-      >
-        {isSubmitting || isPending ? (
-          <>
-            <svg
-              className="animate-spin h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-              />
-            </svg>
-            {FORM_LABELS.submitting}
-          </>
-        ) : (
-          <>
-            <Send size={20} />
-            {FORM_LABELS.submit}
-          </>
-        )}
-      </button>
+      <Button type="submit" variant="primary" size="lg" isLoading={isSubmitting || isPending} className="w-full">
+        {!isSubmitting && !isPending && <Send size={20} aria-hidden="true" />}
+        {isSubmitting || isPending ? t("form.labels.submitting") : t("form.labels.submit")}
+      </Button>
     </motion.form>
   );
 }

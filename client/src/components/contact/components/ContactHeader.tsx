@@ -2,44 +2,45 @@
 
 /**
  * ContactHeader Component
- * Header section with title and subtitle
+ * Header section with title and subtitle.
  */
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { MessageCircle } from "lucide-react";
-import { CONTACT_TITLE, CONTACT_SUBTITLE } from "../constants";
+import { useMotionOk } from "@/lib/motion";
 
-export function ContactHeader() {
+export function ContactHeader(): JSX.Element {
+  const t = useTranslations("contact");
+  const motionOk = useMotionOk();
+
   return (
     <div className="text-center mb-12">
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={motionOk ? { opacity: 0, scale: 0.8 } : false}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#d4826f]/10 dark:bg-[#e8917a]/10 mb-6"
+        className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent-soft mb-6"
       >
-        <MessageCircle
-          size={40}
-          className="text-[#d4826f] dark:text-[#e8917a]"
-        />
+        <MessageCircle size={40} className="text-accent" />
       </motion.div>
 
       <motion.h1
-        initial={{ opacity: 0, y: 20 }}
+        initial={motionOk ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-4xl lg:text-5xl font-black text-[#2e3c52] dark:text-white mb-4 text-hebrew-heading"
+        transition={{ duration: 0.5, delay: motionOk ? 0.1 : 0 }}
+        className="text-title-lg text-ink mb-4"
       >
-        {CONTACT_TITLE}
+        {t("header.title")}
       </motion.h1>
 
       <motion.p
-        initial={{ opacity: 0, y: 20 }}
+        initial={motionOk ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="text-lg text-[#2e3c52] dark:text-gray-300 text-hebrew-body max-w-2xl mx-auto"
+        transition={{ duration: 0.5, delay: motionOk ? 0.2 : 0 }}
+        className="text-body-lg text-ink-muted max-w-2xl mx-auto"
       >
-        {CONTACT_SUBTITLE}
+        {t("header.subtitle")}
       </motion.p>
     </div>
   );

@@ -3,4 +3,4 @@
  */
 
 export { FAQ } from "./FAQ";
-export type { FAQProps, FAQItem } from "./types";
+export type { FAQProps } from "./types";

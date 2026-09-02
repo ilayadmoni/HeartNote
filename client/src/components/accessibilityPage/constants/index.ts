@@ -1,66 +1,13 @@
 /**
  * Accessibility Statement Page Constants
- * Content from the official legal document (Feb 2026).
+ * Copy lives in `legal.accessibilityStatement` (message namespace); this
+ * file only holds non-translatable config: section order and the
+ * last-updated date.
  */
 
-import type { AccessibilitySection } from "../types";
+export const ACCESSIBILITY_SECTION_IDS = ["1", "2", "3", "4", "5"] as const;
 
-// Page Header
-export const ACCESSIBILITY_TITLE = "הצהרת נגישות";
-export const LAST_UPDATED = "11.2.2026";
+export type AccessibilitySectionId = (typeof ACCESSIBILITY_SECTION_IDS)[number];
 
-// Contact Information
-export const ACCESSIBILITY_CONTACT = {
-  email: "heartnote.web@gmail.com",
-  phone: "050-123-4567",
-};
-
-// Commitment Text
-export const COMMITMENT_TEXT = `אנו מחויבים להבטיח שהאתר יהיה נגיש ושימושי עבור כולם.
-אם נתקלתם בבעיית נגישות או שיש לכם הצעות לשיפור, נשמח לשמוע מכם.
-אנו נעשה כל מאמץ לטפל בפנייתכם בהקדם האפשרי.`;
-
-// Accessibility Sections
-export const ACCESSIBILITY_SECTIONS: AccessibilitySection[] = [
-  {
-    id: "intro",
-    title: "",
-    content: [
-      "אנו רואים חשיבות רבה בהנגשת האתר והפיכתו לזמין עבור כלל המשתמשים, לרבות אנשים עם מוגבלויות.",
-      "אנו משקיעים משאבים רבים על מנת להבטיח חוויית גלישה נגישה, נוחה ושוויונית.",
-    ],
-  },
-  {
-    id: "standards",
-    title: "עמידה בתקני נגישות",
-    content: [
-      "אתר זה נבנה והותאם בהתאם להנחיות התקן הישראלי ת\"י 5568 ולתקן הבינלאומי WCAG 2.1 לרמה AA.",
-    ],
-  },
-  {
-    id: "features",
-    title: "התאמות עיקריות באתר",
-    content: [
-      "שימוש בטכנולוגיות התומכות בתוכנות קוראות מסך.",
-      "אפשרות ניווט באתר בעזרת מקלדת בלבד.",
-      "שימוש בצבעים עם ניגודיות גבוהה והאפשרות להתאמת צבעים והגדלת טקסט.",
-      "הדגשה והבהרה של פוקוס עבור רכיבי הדף.",
-      "שימוש בטקסטים חלופיים (Alt) לתמונות ולאלמנטים גרפיים.",
-    ],
-  },
-  {
-    id: "disclaimer",
-    title: "הבהרה והחרגות",
-    content: [
-      "על אף המאמצים והמשאבים הרבים שאנחנו משקיעים, ייתכנו חלקים באתר שטרם הונגשו במלואם, כתוצאה מפתרונות צד שלישי המשתלבים באתר (כגון יישומונים חיצוניים). נמשיך לפעול לשיפור הנגישות והסרת החסמים הקיימים.",
-    ],
-  },
-  {
-    id: "contact",
-    title: "משוב ופנייה בנושא נגישות",
-    content: [
-      "נשמח לקבל הערות והצעות לשיפור הנגישות באתר.",
-      "ליצירת קשר בנושא נגישות, אנא פנו אלינו בדוא\"ל: heartnote.web@gmail.com",
-    ],
-  },
-];
+/** Formatted per-locale via `useFormatter`/`getFormatter` where it's shown. */
+export const LEGAL_LAST_UPDATED = new Date("2026-02-11T00:00:00Z");

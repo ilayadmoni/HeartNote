@@ -2,41 +2,45 @@
 
 /**
  * FAQHeader Component
- * Header section for FAQ page with icon, title, and subtitle
+ * Header section for FAQ page with icon, title, and subtitle.
  */
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { HelpCircle } from "lucide-react";
-import { FAQ_TITLE, FAQ_SUBTITLE } from "../constants";
+import { useMotionOk } from "@/lib/motion";
 
-export function FAQHeader() {
+export function FAQHeader(): JSX.Element {
+  const t = useTranslations("faq");
+  const motionOk = useMotionOk();
+
   return (
     <div className="text-center mb-10">
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={motionOk ? { opacity: 0, scale: 0.8 } : false}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#d4826f]/10 dark:bg-[#e8917a]/10 mb-5"
+        className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent-soft mb-5"
       >
-        <HelpCircle size={32} className="text-[#d4826f] dark:text-[#e8917a]" />
+        <HelpCircle size={32} className="text-accent" />
       </motion.div>
 
       <motion.h1
-        initial={{ opacity: 0, y: 20 }}
+        initial={motionOk ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-3xl lg:text-4xl font-black text-[#2e3c52] dark:text-white mb-3 text-hebrew-heading"
+        transition={{ duration: 0.5, delay: motionOk ? 0.1 : 0 }}
+        className="text-title-lg text-ink mb-3"
       >
-        {FAQ_TITLE}
+        {t("title")}
       </motion.h1>
 
       <motion.p
-        initial={{ opacity: 0, y: 20 }}
+        initial={motionOk ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="text-base text-[#2e3c52] dark:text-gray-300 text-hebrew-body max-w-md mx-auto"
+        transition={{ duration: 0.5, delay: motionOk ? 0.2 : 0 }}
+        className="text-body-md text-ink-muted max-w-md mx-auto"
       >
-        {FAQ_SUBTITLE}
+        {t("subtitle")}
       </motion.p>
     </div>
   );
