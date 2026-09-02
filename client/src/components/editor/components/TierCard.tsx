@@ -62,7 +62,7 @@ export function TierCard({ tier, used, totalAllowed, isSelected, isDisabled, isU
             href="/pricing"
             onClick={(e) => e.stopPropagation()}
             aria-label={t("tier.upgradeCta")}
-            className="absolute top-1/2 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 -translate-y-1/2 w-[160%] rotate-[-45deg] rtl:rotate-[45deg] bg-amber-400/70 hover:bg-amber-400/90 text-white text-[11px] font-bold text-center py-1 shadow-soft transition-colors z-10"
+            className="absolute top-1/2 start-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 rtl:translate-x-1/2 -translate-y-1/2 w-[160%] rotate-[-45deg] rtl:rotate-[45deg] bg-amber-400/70 hover:bg-amber-400/90 text-white text-[11px] font-bold text-center py-1 shadow-soft transition-colors z-10"
           >
             {t("tier.upgradeCta")}
           </Link>

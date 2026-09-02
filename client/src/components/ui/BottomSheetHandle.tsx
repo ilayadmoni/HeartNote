@@ -28,7 +28,7 @@ export function BottomSheetHandle({
     <>
       <AnimatePresence>
         {showTutorial && !isOpen && (
-          <div className="absolute -top-14 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 md:hidden z-50 flex flex-col items-center pointer-events-none">
+          <div className="absolute -top-14 start-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 rtl:translate-x-1/2 md:hidden z-50 flex flex-col items-center pointer-events-none">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

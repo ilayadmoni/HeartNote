@@ -66,12 +66,12 @@ export function PricingTeaser({ className = "" }: PricingTeaserProps): JSX.Eleme
                 variants={fadeUp}
                 className={
                   isUpgrade
-                    ? "relative rounded-card p-5 bg-accent-soft border border-accent/30 shadow-card"
-                    : "relative rounded-card p-5 bg-surface border border-line"
+                    ? "relative rounded-card px-5 pb-5 pt-7 bg-accent-soft border border-accent/30 shadow-card"
+                    : "relative rounded-card px-5 pb-5 pt-7 bg-surface border border-line"
                 }
               >
                 {isUpgrade && (
-                  <span className="absolute -top-3 start-1/2 -translate-x-1/2 inline-flex items-center gap-1 bg-accent text-accent-ink text-caption font-bold px-3 py-1 rounded-pill shadow-soft">
+                  <span className="absolute -top-3 start-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 inline-flex items-center gap-1 whitespace-nowrap bg-accent text-accent-ink text-caption font-bold px-3 py-1 rounded-pill shadow-soft">
                     <Sparkles size={12} />
                     {t(`${tier}.badge`)}
                   </span>

@@ -9,7 +9,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useMotionOk } from "@/lib/motion";
 import { PhoneScreen } from "./PhoneScreen";
 
@@ -20,6 +20,11 @@ const HAND_POKE = { x: [0, 30, 30, 0], y: [0, -6, -6, 0], transition: { duration
 export function HeroVisual(): JSX.Element {
   const t = useTranslations("home.hero");
   const motionOk = useMotionOk();
+  // The hand always approaches from the outer page edge and pokes inward, so
+  // phone and hand swap sides per direction instead of mirroring the artwork.
+  const isLtr = useLocale() === "en";
+  const handSide = isLtr ? "-start-[90%] md:-start-[110%]" : "-end-[90%] md:-end-[110%]";
+  const phoneSide = isLtr ? "end-0" : "start-0";
 
   const [isDodging, setIsDodging] = useState(false);
   const [poking, setPoking] = useState(false);
@@ -59,7 +64,7 @@ export function HeroVisual(): JSX.Element {
       {/* Hand image — extends toward the outer edge, poking the phone */}
       <motion.div
         animate={motionOk ? (poking ? HAND_POKE : HAND_FLOAT) : HAND_STATIC}
-        className="absolute bottom-[-170px] -end-[90%] md:-end-[110%] w-[160%] md:w-[180%] z-20 pointer-events-none ltr:-scale-x-100"
+        className={`absolute bottom-[-170px] ${handSide} w-[160%] md:w-[180%] z-20 pointer-events-none`}
       >
         <Image
           src="/assets/images/hand.svg"
@@ -72,9 +77,9 @@ export function HeroVisual(): JSX.Element {
       </motion.div>
 
       {/* Phone frame — anchored on the edge nearest the text column */}
-      <div className={`absolute top-0 start-0 w-[65%] h-full z-10 ${motionOk ? "hero-float" : ""}`}>
+      <div className={`absolute top-0 ${phoneSide} w-[65%] h-full z-10 ${motionOk ? "hero-float" : ""}`}>
         <div className="bg-navy-950 rounded-[2rem] p-[5px] shadow-lift h-full relative">
-          <div className="absolute top-[6px] start-1/2 -translate-x-1/2 w-[38%] h-[16px] bg-black rounded-full z-20" />
+          <div className="absolute top-[6px] start-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 w-[38%] h-[16px] bg-black rounded-full z-20" />
           <div className="absolute -end-[3px] top-[20%] w-[3px] h-5 bg-navy-700 rounded-s-sm" />
           <div className="absolute -end-[3px] top-[30%] w-[3px] h-5 bg-navy-700 rounded-s-sm" />
           <div className="rounded-[1.6rem] overflow-hidden bg-surface h-full">

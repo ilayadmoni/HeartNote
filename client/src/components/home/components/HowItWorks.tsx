@@ -50,7 +50,7 @@ export function HowItWorks({ className = "" }: HowItWorksProps): JSX.Element {
           variants={stagger(0.12)}
           className="relative flex flex-col md:flex-row md:items-start gap-10 md:gap-6"
         >
-          <div className="hidden md:block absolute top-8 start-[16%] end-[16%] h-px border-t-2 border-dashed border-line-strong z-0" />
+          <div className="hidden md:block absolute top-[4.75rem] start-[16%] end-[16%] h-px border-t-2 border-dashed border-line-strong z-0" />
 
           {STEPS.map((step) => {
             const Icon = ICONS[step.icon];
@@ -58,7 +58,7 @@ export function HowItWorks({ className = "" }: HowItWorksProps): JSX.Element {
               <motion.div key={step.id} variants={fadeUp} className="relative z-10 flex-1 flex flex-col items-center text-center">
                 <div className="flex items-center gap-3 md:flex-col md:gap-2 mb-4">
                   <span className="text-display-md text-accent font-display leading-none">{step.id}</span>
-                  <div className="w-14 h-14 rounded-pill bg-accent-soft flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-pill bg-accent-soft ring-8 ring-surface flex items-center justify-center">
                     <Icon className="text-accent w-6 h-6" />
                   </div>
                 </div>

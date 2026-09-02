@@ -51,7 +51,7 @@ export function WelcomeSplash({ className = "" }: WelcomeSplashProps): JSX.Eleme
             className="absolute inset-0 pointer-events-none"
             aria-hidden="true"
           >
-            <div className="absolute top-[15%] start-1/2 -translate-x-1/2 w-[420px] h-[420px] rounded-full bg-accent/10 blur-3xl" />
+            <div className="absolute top-[15%] start-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 w-[420px] h-[420px] rounded-full bg-accent/10 blur-3xl" />
           </div>
 
           {/* Splash Content */}

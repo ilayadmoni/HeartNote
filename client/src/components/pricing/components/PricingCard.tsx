@@ -57,7 +57,7 @@ export function PricingCard({
     >
       {(isComingSoon || (isAccentCard && !isComingSoon)) && (
         <div
-          className={`absolute -top-4 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 flex items-center gap-1.5 px-4 py-1.5 rounded-pill text-body-sm font-bold shadow-soft z-10 ${
+          className={`absolute -top-4 start-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 rtl:translate-x-1/2 flex items-center gap-1.5 px-4 py-1.5 rounded-pill text-body-sm font-bold shadow-soft z-10 ${
             isComingSoon ? "bg-ink text-surface" : "bg-surface text-accent"
           }`}
         >

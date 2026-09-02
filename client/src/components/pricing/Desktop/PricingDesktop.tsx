@@ -15,12 +15,10 @@ export function PricingDesktop({
   hasActivePaidSubscription = false,
 }: PricingProps): JSX.Element {
   const plans = useLocalizedPlans();
-  // Reorder for desktop: premium (start), lite (center), free (end).
-  const orderedPlans = [
-    plans.find((p) => p.id === "premium")!,
-    plans.find((p) => p.id === "lite")!,
-    plans.find((p) => p.id === "free")!,
-  ];
+  // Reading order ascends free -> lite -> premium in both directions,
+  // matching the home teaser, so the upgrade path reads as a climb.
+  const order = ["free", "lite", "premium"];
+  const orderedPlans = [...plans].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
 
   return (
     <section className={`relative py-section-sm px-gutter min-h-[100dvh] bg-surface ${className}`}>
