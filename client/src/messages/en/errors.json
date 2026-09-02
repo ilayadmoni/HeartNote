@@ -1,1 +1,47 @@
-{}
+{
+  "csrf": {
+    "invalidRequest": "Invalid request. Please refresh the page and try again."
+  },
+  "contact": {
+    "emailInvalid": "That email address isn't valid.",
+    "nameTooLong": "That name is too long (100 characters max).",
+    "subjectTooLong": "That subject is too long (200 characters max).",
+    "messageTooLong": "That message is too long (5000 characters max).",
+    "fieldsRequired": "Please fill in all required fields.",
+    "rateLimited": "You've sent too many messages. Please try again in a minute.",
+    "sendFailed": "We couldn't send your message. Please try again later.",
+    "sendSuccess": "Your message is on its way! We'll get back to you soon.",
+    "unexpected": "Something unexpected happened. Please try again later."
+  },
+  "password": {
+    "genericSuccess": "If that address is active in our system, we've sent a reset link. Don't see it in your inbox? Check spam too.",
+    "internal": "An internal error occurred. Please try again later.",
+    "resetProcessFailed": "Something went wrong resetting your password. This link may have expired.",
+    "rateLimited": "Too many attempts. Please try again in 15 minutes.",
+    "emailInvalid": "Please enter a valid email address.",
+    "tooShort": "Your password needs at least 8 characters.",
+    "updateSuccess": "Your password has been updated."
+  },
+  "registration": {
+    "genericSuccess": "If that email is valid, we've sent you a message. Don't see it in your inbox? Check your spam folder too.",
+    "internal": "An internal error occurred. Please try again later.",
+    "rateLimited": "Too many sign-up attempts. Please try again later.",
+    "emailInvalid": "Please enter a valid email address.",
+    "nameRequired": "Please enter your first and last name.",
+    "fieldsRequired": "Please fill in all required fields.",
+    "bannedEmail": "Invalid email",
+    "passwordTooShort": "Your password needs at least 8 characters.",
+    "passwordTooLong": "That password is too long.",
+    "passwordHebrew": "Passwords can only use English letters and numbers, no Hebrew characters."
+  },
+  "ai": {
+    "promptRequired": "Tell us what you'd like it to say",
+    "unavailable": "The AI helper isn't available right now. Please try again in a moment.",
+    "invalidInput": "Invalid input",
+    "unsupportedField": "This field isn't supported",
+    "rateLimited": "You've reached the text-generation limit for this hour. Please try again later."
+  },
+  "dashboard": {
+    "cardFallbackName": "Card"
+  }
+}

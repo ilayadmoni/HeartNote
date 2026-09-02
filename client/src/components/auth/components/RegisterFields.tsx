@@ -1,10 +1,11 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { AuthInput } from "./AuthInput";
 import { BrandCalendar } from "@/components/ui/BrandCalendar";
-import { RegisterTermsCheckbox } from "./RegisterTermsCheckbox";
+import { AuthTermsCheckbox } from "./AuthTermsCheckbox";
 import { RegisterSubmitButton } from "./RegisterSubmitButton";
-import { AUTH_LABELS, AUTH_PLACEHOLDERS } from "../constants";
+import { useAuthLabels } from "../hooks/useAuthLabels";
 import type { RegisterFormData, RegisterFormErrors } from "./useRegisterForm";
 
 interface RegisterFieldsProps {
@@ -27,24 +28,25 @@ export function RegisterFields({
   isSubmitting,
   onFieldChange,
 }: RegisterFieldsProps) {
-  const emailServerError =
-    serverError === "מייל לא חוקי" ? serverError : undefined;
-  const genericServerError =
-    serverError && serverError !== "מייל לא חוקי" ? serverError : null;
+  const t = useTranslations("errors");
+  const { AUTH_LABELS, AUTH_PLACEHOLDERS } = useAuthLabels();
+  const bannedEmailMessage = t("registration.bannedEmail");
+  const emailServerError = serverError === bannedEmailMessage ? serverError : undefined;
+  const genericServerError = serverError && serverError !== bannedEmailMessage ? serverError : null;
 
   return (
     <>
       {genericServerError && (
-        <div className="mb-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-          <p className="text-red-600 dark:text-red-400 text-sm text-center text-hebrew-body">
+        <div className="mb-3 p-3 rounded-control bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+          <p className="text-body-sm text-red-600 dark:text-red-400 text-center">
             {genericServerError}
           </p>
         </div>
       )}
 
       {submitError && (
-        <div className="mb-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-          <p className="text-red-600 dark:text-red-400 text-sm text-center text-hebrew-body">
+        <div className="mb-3 p-3 rounded-control bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+          <p className="text-body-sm text-red-600 dark:text-red-400 text-center">
             {submitError}
           </p>
         </div>
@@ -115,11 +117,9 @@ export function RegisterFields({
         showPasswordToggle
       />
 
-      <RegisterTermsCheckbox
+      <AuthTermsCheckbox
         checked={formData.agreedToTerms}
-        onToggle={() =>
-          onFieldChange("agreedToTerms", !formData.agreedToTerms)
-        }
+        onToggle={() => onFieldChange("agreedToTerms", !formData.agreedToTerms)}
         error={errors.agreedToTerms}
       />
 

@@ -19,18 +19,18 @@
 "use client";
 
 import { useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { ActionError, type ActionResult } from "@/lib/action-response";
 
-const SESSION_EXPIRED_MSG = "הפגישה שלך פגה. אנא התחבר/י שוב.";
-const SESSION_EXPIRED_DESC = "מעביר אותך לדף ההתחברות…";
 const LOGIN_REDIRECT = "/gallery?login=true";
 
 export function useServerAction() {
   const { signOut } = useAuth();
   const router = useRouter();
+  const t = useTranslations("auth");
 
   /**
    * Execute a server action and handle 401 automatically.
@@ -49,8 +49,8 @@ export function useServerAction() {
         } catch {
           // Redirect still happens below even if client sign-out fails.
         }
-        toast.error(SESSION_EXPIRED_MSG, {
-          description: SESSION_EXPIRED_DESC,
+        toast.error(t("session.expiredTitle"), {
+          description: t("session.expiredDescription"),
         });
         router.push(LOGIN_REDIRECT);
         throw new ActionError(result.error, result.code);
@@ -58,7 +58,7 @@ export function useServerAction() {
 
       throw new ActionError(result.error, result.code);
     },
-    [signOut, router],
+    [signOut, router, t],
   );
 
   return { execute };

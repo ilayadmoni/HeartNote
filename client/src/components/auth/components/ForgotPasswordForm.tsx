@@ -7,25 +7,22 @@
  */
 
 import { useState, useTransition } from "react";
-import { KeyRound, ArrowRight, CheckCircle } from "lucide-react";
+import { KeyRound } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/Button";
 import { AuthInput } from "./AuthInput";
+import { ForgotPasswordSuccess } from "./ForgotPasswordSuccess";
 import { requestPasswordReset } from "@/actions/password";
-import {
-  FORGOT_PASSWORD_TITLE,
-  FORGOT_PASSWORD_SUBTITLE,
-  FORGOT_PASSWORD_BUTTON,
-  FORGOT_PASSWORD_SUCCESS,
-  FORGOT_PASSWORD_BACK,
-  AUTH_LABELS,
-  AUTH_PLACEHOLDERS,
-  AUTH_VALIDATION,
-} from "../constants";
+import { logger } from "@/lib/utils/logger";
+import { useAuthLabels } from "../hooks/useAuthLabels";
 
 interface ForgotPasswordFormProps {
   onBack: () => void;
 }
 
 export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
+  const t = useTranslations("auth");
+  const { AUTH_LABELS, AUTH_PLACEHOLDERS, AUTH_VALIDATION, FORGOT_PASSWORD_TITLE, FORGOT_PASSWORD_SUBTITLE, FORGOT_PASSWORD_BUTTON } = useAuthLabels();
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [serverError, setServerError] = useState<string | null>(null);
@@ -48,89 +45,41 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setServerError(null);
-
-    if (!validate()) {
-      return;
-    }
+    if (!validate()) return;
 
     startTransition(async () => {
       try {
         const fd = new FormData();
         fd.append("email", email);
-
         const result = await requestPasswordReset(fd);
-
         if (result.error) {
           setServerError(result.error);
         } else {
           setIsSuccess(true);
         }
       } catch (err) {
-        console.error("[ForgotPassword] Unexpected error:", err);
-        setServerError("שגיאה בלתי צפויה. נסו שוב מאוחר יותר.");
+        logger.error("[ForgotPassword] Unexpected error", { error: err });
+        setServerError(t("forgotPassword.unexpectedError"));
       }
     });
   };
 
-  // ── Success State ─────────────────────────────────────────────────────
-  if (isSuccess) {
-    return (
-      <div className="text-center py-4">
-        <div className="flex justify-center mb-3">
-          <div className="w-14 h-14 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-            <CheckCircle
-              size={28}
-              className="text-green-600 dark:text-green-400"
-            />
-          </div>
-        </div>
-        <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white mb-2 text-hebrew-heading">
-          בקשה התקבלה
-        </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 text-hebrew-body leading-relaxed">
-          {FORGOT_PASSWORD_SUCCESS}
-        </p>
-        <button
-          type="button"
-          onClick={onBack}
-          className="
-            flex items-center gap-2 mx-auto
-            text-sm text-[#d4826f] hover:text-[#c4735f]
-            dark:text-[#e8917a] dark:hover:text-[#d4826f]
-            transition-colors text-hebrew-body
-          "
-        >
-          <ArrowRight size={16} />
-          {FORGOT_PASSWORD_BACK}
-        </button>
-      </div>
-    );
-  }
+  if (isSuccess) return <ForgotPasswordSuccess onBack={onBack} />;
 
-  // ── Form State ────────────────────────────────────────────────────────
   return (
     <div>
-      {/* Icon */}
       <div className="flex justify-center mb-2">
-        <div className="w-12 h-12 rounded-full bg-[#faf7f5] dark:bg-gray-700 flex items-center justify-center">
-          <KeyRound size={20} className="text-[#2e3c52] dark:text-white" />
+        <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center">
+          <KeyRound size={20} className="text-ink" />
         </div>
       </div>
 
-      {/* Title */}
-      <h3 className="text-xl font-black text-center text-[#2e3c52] dark:text-white mb-1">
-        {FORGOT_PASSWORD_TITLE}
-      </h3>
-      <p className="text-center text-gray-500 dark:text-gray-400 mb-4 text-hebrew-body text-xs">
-        {FORGOT_PASSWORD_SUBTITLE}
-      </p>
+      <h3 className="text-title-md font-black text-center text-ink mb-1">{FORGOT_PASSWORD_TITLE}</h3>
+      <p className="text-center text-ink-muted mb-4 text-caption">{FORGOT_PASSWORD_SUBTITLE}</p>
 
-      {/* Server Error */}
       {serverError && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-          <p className="text-red-600 dark:text-red-400 text-sm text-center text-hebrew-body">
-            {serverError}
-          </p>
+        <div className="mb-4 p-3 rounded-control bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+          <p className="text-body-sm text-red-600 dark:text-red-400 text-center">{serverError}</p>
         </div>
       )}
 
@@ -145,60 +94,17 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
           error={emailError}
         />
 
-        <button
-          type="submit"
-          disabled={isPending}
-          className="
-            w-full py-2.5 px-4 mt-2 rounded-lg
-            bg-[#2e3c52] hover:bg-[#1B263B]
-            text-white font-bold text-base
-            transition-all duration-200
-            disabled:opacity-50 disabled:cursor-not-allowed
-            text-hebrew-heading
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2e3c52] focus-visible:ring-offset-2
-          "
-        >
-          {isPending ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg
-                className="animate-spin h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-            </span>
-          ) : (
-            FORGOT_PASSWORD_BUTTON
-          )}
-        </button>
+        <Button type="submit" isLoading={isPending} className="w-full mt-2">
+          {FORGOT_PASSWORD_BUTTON}
+        </Button>
       </form>
 
-      {/* Back Link */}
       <button
         type="button"
         onClick={onBack}
-        className="
-          flex items-center gap-2 mx-auto mt-4
-          text-sm text-[#d4826f] hover:text-[#c4735f]
-          dark:text-[#e8917a] dark:hover:text-[#d4826f]
-          transition-colors text-hebrew-body
-        "
+        className="flex items-center gap-2 mx-auto mt-4 text-body-sm text-accent hover:text-accent-hover transition-colors"
       >
-        <ArrowRight size={16} />
-        {FORGOT_PASSWORD_BACK}
+        {t("forgotPassword.back")}
       </button>
     </div>
   );

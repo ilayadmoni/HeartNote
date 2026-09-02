@@ -71,7 +71,7 @@ export async function claimGuestDraft(draftId: string) {
   // Draft missing — already cleaned by Cron or prior call
   if (!draftRow) {
     logger.info("[claimGuestDraft] Draft not found", { draftId });
-    return { success: false, error: "Draft not found — it may have expired." };
+    return { success: false, error: "Draft not found. It may have expired." };
   }
 
   // ── Process guest draft ────────────────────────────────────────────

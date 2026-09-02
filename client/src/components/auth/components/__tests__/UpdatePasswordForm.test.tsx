@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { NextIntlClientProvider } from "next-intl";
 import { UpdatePasswordForm } from "../UpdatePasswordForm";
+import authMessages from "@/messages/he/auth.json";
 
 const mockUpdatePassword = vi.fn();
 
@@ -15,10 +17,23 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams({ token: "valid-token" }),
 }));
 
+// ── Mock @/i18n/navigation (used for router.push after redirect) ────
+vi.mock("@/i18n/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
 // ── Mock sonner toast ───────────────────────────────────────────────
 vi.mock("sonner", () => ({
   toast: { success: vi.fn() },
 }));
+
+function renderForm(onComplete: () => void) {
+  return render(
+    <NextIntlClientProvider locale="he" messages={{ auth: authMessages }}>
+      <UpdatePasswordForm onComplete={onComplete} />
+    </NextIntlClientProvider>,
+  );
+}
 
 describe("UpdatePasswordForm", () => {
   const onComplete = vi.fn();
@@ -30,58 +45,50 @@ describe("UpdatePasswordForm", () => {
   async function fillAndSubmit(password: string) {
     const user = userEvent.setup();
 
-    // The form has two password fields with these exact placeholders
-    const passwordInput = await screen.findByPlaceholderText("הכניסו סיסמה");
-    const confirmInput = await screen.findByPlaceholderText("הכניסו סיסמה שוב");
+    const passwordInput = await screen.findByPlaceholderText(authMessages.placeholders.password);
+    const confirmInput = await screen.findByPlaceholderText(authMessages.placeholders.confirmPassword);
 
     await user.type(passwordInput, password);
     await user.type(confirmInput, password);
 
-    // Button text from constants: UPDATE_PASSWORD_BUTTON = "עדכון סיסמה"
-    const submitButton = screen.getByRole("button", { name: "עדכון סיסמה" });
+    const submitButton = screen.getByRole("button", { name: authMessages.updatePassword.button });
     await user.click(submitButton);
   }
 
-  it("displays the Hebrew 'same password' error when backend returns that specific error", async () => {
-    const SAME_PASSWORD_ERROR = "סיסמא ישנה, אנא הכנס סיסמא חדשה";
+  it("displays a server-returned error (e.g. same-password rejection)", async () => {
+    const SERVER_ERROR = "סיסמא ישנה, אנא הכנס סיסמא חדשה";
+    mockUpdatePassword.mockResolvedValueOnce({ error: SERVER_ERROR });
 
-    mockUpdatePassword.mockResolvedValueOnce({ error: SAME_PASSWORD_ERROR });
-
-    render(<UpdatePasswordForm onComplete={onComplete} />);
+    renderForm(onComplete);
     await fillAndSubmit("MyOldPassword123");
 
-    // Wait for the error message to appear
     await waitFor(() => {
-      expect(screen.getByText(SAME_PASSWORD_ERROR)).toBeInTheDocument();
+      expect(screen.getByText(SERVER_ERROR)).toBeInTheDocument();
     });
 
     // Ensure onComplete was NOT called (password update failed)
     expect(onComplete).not.toHaveBeenCalled();
   });
 
-  it("shows generic error for other server errors", async () => {
-    const GENERIC_ERROR =
-      "שגיאה בתהליך איפוס הסיסמה. ייתכן שהקישור פג תוקף.";
+  it("shows the translated generic error for other server errors", async () => {
+    mockUpdatePassword.mockResolvedValueOnce({ error: authMessages.updatePassword.expiredMessage });
 
-    mockUpdatePassword.mockResolvedValueOnce({ error: GENERIC_ERROR });
-
-    render(<UpdatePasswordForm onComplete={onComplete} />);
+    renderForm(onComplete);
     await fillAndSubmit("SomeNewPassword123");
 
     await waitFor(() => {
-      expect(screen.getByText(GENERIC_ERROR)).toBeInTheDocument();
+      expect(screen.getByText(authMessages.updatePassword.expiredMessage)).toBeInTheDocument();
     });
   });
 
-  it("shows success state when password update succeeds", async () => {
-    mockUpdatePassword.mockResolvedValueOnce({ success: "הסיסמה עודכנה בהצלחה!" });
+  it("shows the translated success state when password update succeeds", async () => {
+    mockUpdatePassword.mockResolvedValueOnce({ success: authMessages.updatePassword.success });
 
-    render(<UpdatePasswordForm onComplete={onComplete} />);
+    renderForm(onComplete);
     await fillAndSubmit("BrandNewPassword123");
 
-    // UPDATE_PASSWORD_SUCCESS = "הסיסמה שונתה בהצלחה!"
     await waitFor(() => {
-      expect(screen.getByText("הסיסמה שונתה בהצלחה!")).toBeInTheDocument();
+      expect(screen.getByText(authMessages.updatePassword.success)).toBeInTheDocument();
     });
   });
 });

@@ -1,49 +1,53 @@
 /**
  * Auth Error Helpers
  *
- * Converts auth error messages to user-facing Hebrew strings.
- * Extracted from AuthContext.tsx to keep files under 150 lines.
+ * Converts raw NextAuth/network error messages to a translated,
+ * user-facing string. Extracted from AuthContext.tsx to keep files
+ * under 150 lines.
  */
 
-/** Convert auth errors to Hebrew messages */
-export function getErrorMessage(errorMessage: string): string {
+/** Translator shape for the `auth.errorMap` namespace keys. */
+type ErrorMapT = (key: string) => string;
+
+/** Convert auth errors to a translated user-facing message. */
+export function getErrorMessage(errorMessage: string, t: ErrorMapT): string {
   const lowerMessage = errorMessage.toLowerCase();
 
   if (
     lowerMessage.includes("email already registered") ||
     lowerMessage.includes("user already registered")
   ) {
-    return "כתובת האימייל כבר בשימוש";
+    return t("errorMap.emailInUse");
   }
   if (lowerMessage.includes("invalid email")) {
-    return "כתובת אימייל לא תקינה";
+    return t("errorMap.emailInvalid");
   }
   if (lowerMessage.includes("password") && lowerMessage.includes("weak")) {
-    return "הסיסמה חלשה מדי";
+    return t("errorMap.passwordWeak");
   }
   if (lowerMessage.includes("password") && lowerMessage.includes("short")) {
-    return "הסיסמה קצרה מדי (מינימום 6 תווים)";
+    return t("errorMap.passwordShort");
   }
   if (
     lowerMessage.includes("invalid login credentials") ||
     lowerMessage.includes("invalid credentials")
   ) {
-    return "פרטי ההתחברות שגויים";
+    return t("errorMap.invalidCredentials");
   }
   if (lowerMessage.includes("email not confirmed")) {
-    return "יש לאמת את כתובת האימייל";
+    return t("errorMap.emailNotConfirmed");
   }
   if (lowerMessage.includes("user not found")) {
-    return "משתמש לא נמצא";
+    return t("errorMap.userNotFound");
   }
   if (lowerMessage.includes("too many requests")) {
-    return "יותר מדי ניסיונות. נסו שוב מאוחר יותר";
+    return t("errorMap.tooManyRequests");
   }
   if (lowerMessage.includes("network")) {
-    return "שגיאת רשת. בדקו את החיבור לאינטרנט";
+    return t("errorMap.networkError");
   }
 
-  return "אירעה שגיאה. נסו שנית";
+  return t("errorMap.generic");
 }
 
 /** Format a date-of-birth string to YYYY-MM-DD for PostgreSQL.

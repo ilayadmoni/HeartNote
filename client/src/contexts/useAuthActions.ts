@@ -10,6 +10,7 @@
  */
 
 import { useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { signIn as nextAuthSignIn, signOut as nextAuthSignOut } from "next-auth/react";
@@ -31,16 +32,17 @@ export function useAuthActions({ setError }: AuthActionsConfig) {
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
+  const t = useTranslations("auth");
 
   const signIn = useCallback(async (email: string, password: string) => {
     setError(null);
     const result = await nextAuthSignIn("credentials", { email, password, redirect: false });
     if (result?.error) {
-      const msg = "שם משתמש או סיסמה שגויים";
+      const msg = t("login.errorMessage");
       setError(msg);
       throw new Error(msg);
     }
-  }, [setError]);
+  }, [setError, t]);
 
   const signUp = useCallback(async (
     email: string, password: string,
@@ -52,24 +54,27 @@ export function useAuthActions({ setError }: AuthActionsConfig) {
       if (dateOfBirth) {
         const dob = formatDateOfBirth(dateOfBirth);
         if (!dob) {
-          setError("תאריך לידה לא תקין");
-          return { error: "תאריך לידה לא תקין" };
+          const msg = t("validation.dateInvalid");
+          setError(msg);
+          return { error: msg };
         }
         formattedDob = dob;
       }
       const result = await registerUser(firstName, lastName, email, password, formattedDob);
       if (result.error) {
-        // Server errors are already in Hebrew — set directly, don't translate
+        // Server errors already come back translated — set directly.
         setError(result.error);
         return { error: result.error };
       }
       return { success: result.success || true };
     } catch (err) {
-      const msg = err instanceof Error ? getErrorMessage(err.message) : "שגיאה פנימית";
+      const msg = err instanceof Error
+        ? getErrorMessage(err.message, (key) => t(key))
+        : t("errorMap.internal");
       setError(msg);
       return { error: msg };
     }
-  }, [setError]);
+  }, [setError, t]);
 
   const signOut = useCallback(async () => {
     setError(null);

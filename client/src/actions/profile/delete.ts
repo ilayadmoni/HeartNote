@@ -28,7 +28,7 @@ import { logAudit } from "@/lib/audit-logger";
 export async function deleteMyAccount(): Promise<ActionResult<null>> {
   // SEC-HIGH-2: CSRF protection for destructive action
   if (!await validateOrigin()) {
-    return csrfError() as ActionResult<null>;
+    return (await csrfError()) as ActionResult<null>;
   }
 
   return protectedAction(async (user) => {

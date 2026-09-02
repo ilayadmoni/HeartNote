@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { protectedAction } from "@/lib/protectedAction";
 import { ok, fail, type ActionResult } from "@/lib/action-response";
 import { logger } from "@/lib/utils/logger";
+import { getActionT } from "@/lib/i18n/server";
 import type { CreationListItem, CreationDetail } from "@/lib/validations";
 
 // ---------------------------------------------------------------------------
@@ -24,6 +25,7 @@ export async function getMyCreations(): Promise<
   ActionResult<CreationListItem[]>
 > {
   return protectedAction(async (user) => {
+    const t = await getActionT("errors");
     const creations = await prisma.creation.findMany({
       where: { userId: user.id, isDeleted: false },
       orderBy: { createdAt: "desc" },
@@ -33,7 +35,7 @@ export async function getMyCreations(): Promise<
     return creations.map((c) => ({
       id: c.id,
       template_slug: c.template.slug,
-      template_name: c.template.name ?? "כרטיס",
+      template_name: c.template.name ?? t("dashboard.cardFallbackName"),
       is_paid: c.isPaid,
       expires_at: c.expiresAt ? c.expiresAt.toISOString() : null,
       is_deleted: c.isDeleted,
@@ -53,6 +55,7 @@ export async function getCreation(
   creationId: string,
 ): Promise<ActionResult<CreationDetail>> {
   try {
+    const t = await getActionT("errors");
     const c = await prisma.creation.findUnique({
       where: { id: creationId },
       include: { template: { select: { slug: true, name: true } } },
@@ -75,7 +78,7 @@ export async function getCreation(
     return ok({
       id: c.id,
       template_slug: c.template.slug,
-      template_name: c.template.name ?? "כרטיס",
+      template_name: c.template.name ?? t("dashboard.cardFallbackName"),
       metadata: (c.metadata as Record<string, unknown>) ?? {},
       is_paid: c.isPaid,
       expires_at: c.expiresAt ? c.expiresAt.toISOString() : null,

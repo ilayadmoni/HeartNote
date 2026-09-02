@@ -1,6 +1,6 @@
 // src/utils/gtm.ts
 
-// src/utils/gtm.ts
+import { logger } from "@/lib/utils/logger";
 
 // Define the precise GTMEvent required schema
 export type GTMEvent =
@@ -19,17 +19,14 @@ export const pushToDataLayer = (data: GTMEvent) => {
   if (typeof window !== "undefined") {
     // Local typecast avoids overriding @next/third-parties global Window interfaces
     // which otherwise causes TS2717 "identical modifiers" typescript errors.
-    const w = window as unknown as { dataLayer: Record<string, any>[] };
-    
+    const w = window as unknown as { dataLayer: GTMEvent[] };
+
     // Safety Array Initialization: if GTM script hasn't loaded yet, create the queue
     w.dataLayer = w.dataLayer || [];
-    
+
     // Push the event to the queue
     w.dataLayer.push(data);
-  } else {
-    // In development or server context, do nothing or log (optional)
-    if (process.env.NODE_ENV === "development") {
-      console.log('📊 GTM Event:', data);
-    }
+  } else if (process.env.NODE_ENV === "development") {
+    logger.info("[gtm] Event (SSR, not pushed)", { event: data });
   }
 };

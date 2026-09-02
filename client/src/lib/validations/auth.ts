@@ -14,10 +14,10 @@ export const RegisterFormSchema = z.object({
   email: z.string().trim().toLowerCase().min(1).max(254).email(),
   password: z
     .string()
-    .min(8, "הסיסמה חייבת להכיל לפחות 8 תווים.")
-    .max(128, "הסיסמה ארוכה מידי.")
+    .min(8, { message: "errors.registration.passwordTooShort" })
+    .max(128, { message: "errors.registration.passwordTooLong" })
     .refine((v) => !HEBREW_REGEX.test(v), {
-      message: "הסיסמה חייבת להכיל אותיות באנגלית ומספרים בלבד. אין להשתמש בתווים בעברית.",
+      message: "errors.registration.passwordHebrew",
     }),
   dateOfBirth: z.string().optional(),
   emailRedirectTo: z.string().url().optional(),

@@ -2,10 +2,12 @@
 
 /**
  * AuthTabs Component
- * Tab switcher for Login/Register
+ * Pill-style tab switcher for Login/Register
  */
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 interface AuthTabsProps {
   activeTab: "login" | "register";
@@ -13,15 +15,16 @@ interface AuthTabsProps {
 }
 
 export function AuthTabs({ activeTab, onTabChange }: AuthTabsProps) {
+  const t = useTranslations("auth");
   return (
-    <div className="flex rounded-lg bg-gray-100 dark:bg-gray-700 p-1 mb-4">
+    <div className="flex rounded-pill bg-surface-sunken p-1 mb-4">
       <TabButton
-        label="התחברות"
+        label={t("tabs.login")}
         isActive={activeTab === "login"}
         onClick={() => onTabChange("login")}
       />
       <TabButton
-        label="הרשמה"
+        label={t("tabs.register")}
         isActive={activeTab === "register"}
         onClick={() => onTabChange("register")}
       />
@@ -40,21 +43,15 @@ function TabButton({ label, isActive, onClick }: TabButtonProps) {
     <button
       type="button"
       onClick={onClick}
-      className={`
-        relative flex-1 py-1.5 px-3 rounded-md
-        text-xs font-bold text-hebrew-heading
-        transition-colors duration-200
-        ${
-          isActive
-            ? "text-[#2e3c52] dark:text-white"
-            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-        }
-      `}
+      className={cn(
+        "relative flex-1 py-1.5 px-3 rounded-pill text-body-sm font-bold transition-colors duration-base",
+        isActive ? "text-ink" : "text-ink-subtle hover:text-ink-muted",
+      )}
     >
       {isActive && (
         <motion.div
           layoutId="auth-tab-indicator"
-          className="absolute inset-0 bg-white dark:bg-gray-600 rounded-lg shadow-sm"
+          className="absolute inset-0 bg-surface rounded-pill shadow-soft"
           transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
         />
       )}

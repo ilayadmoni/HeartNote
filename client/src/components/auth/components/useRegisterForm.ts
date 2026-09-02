@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { AUTH_VALIDATION } from "../constants";
+import { logger } from "@/lib/utils/logger";
+import type { AuthLabels } from "../hooks/useAuthLabels";
 
 export interface RegisterFormData {
   firstName: string;
@@ -31,6 +32,8 @@ export type RegisterSubmit = (
   dateOfBirth: string,
 ) => Promise<{ error?: string; success?: boolean | string } | void>;
 
+type Validation = AuthLabels["AUTH_VALIDATION"];
+
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 const HEBREW_REGEX = /[֐-׿]/;
 
@@ -38,49 +41,42 @@ function validateField(
   field: keyof RegisterFormData,
   value: string | boolean,
   password: string,
+  v: Validation,
 ): string | undefined {
   switch (field) {
     case "firstName":
-      return !(value as string).trim()
-        ? AUTH_VALIDATION.firstNameRequired
-        : undefined;
+      return !(value as string).trim() ? v.firstNameRequired : undefined;
     case "lastName":
-      return !(value as string).trim()
-        ? AUTH_VALIDATION.lastNameRequired
-        : undefined;
+      return !(value as string).trim() ? v.lastNameRequired : undefined;
     case "email":
-      if (!(value as string).trim()) return AUTH_VALIDATION.emailRequired;
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value as string))
-        return AUTH_VALIDATION.emailInvalid;
+      if (!(value as string).trim()) return v.emailRequired;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value as string)) return v.emailInvalid;
       return undefined;
     case "password":
-      if (!value) return AUTH_VALIDATION.passwordRequired;
-      if (HEBREW_REGEX.test(value as string))
-        return AUTH_VALIDATION.passwordHebrew;
-      if ((value as string).length < 8)
-        return AUTH_VALIDATION.passwordMinLength;
-      if (!PASSWORD_REGEX.test(value as string))
-        return AUTH_VALIDATION.passwordFormat;
+      if (!value) return v.passwordRequired;
+      if (HEBREW_REGEX.test(value as string)) return v.passwordHebrew;
+      if ((value as string).length < 8) return v.passwordMinLength;
+      if (!PASSWORD_REGEX.test(value as string)) return v.passwordFormat;
       return undefined;
     case "confirmPassword":
-      if (value !== password) return AUTH_VALIDATION.passwordMismatch;
+      if (value !== password) return v.passwordMismatch;
       return undefined;
     case "dateOfBirth": {
-      if (!value) return AUTH_VALIDATION.dateOfBirthRequired;
+      if (!value) return v.dateOfBirthRequired;
       const dateStr = value as string;
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return "תאריך לא תקין";
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return v.dateInvalid;
       const parsed = new Date(dateStr + "T00:00:00");
-      if (isNaN(parsed.getTime())) return "תאריך לא תקין";
+      if (isNaN(parsed.getTime())) return v.dateInvalid;
       return undefined;
     }
     case "agreedToTerms":
-      return !value ? AUTH_VALIDATION.termsRequired : undefined;
+      return !value ? v.termsRequired : undefined;
     default:
       return undefined;
   }
 }
 
-export function useRegisterForm(onSubmit: RegisterSubmit) {
+export function useRegisterForm(onSubmit: RegisterSubmit, validation: Validation) {
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: "",
     lastName: "",
@@ -107,7 +103,7 @@ export function useRegisterForm(onSubmit: RegisterSubmit) {
   const validate = (): boolean => {
     const newErrors: RegisterFormErrors = {};
     (Object.keys(formData) as (keyof RegisterFormData)[]).forEach((field) => {
-      const error = validateField(field, formData[field], formData.password);
+      const error = validateField(field, formData[field], formData.password, validation);
       if (error) newErrors[field] = error;
     });
     setErrors(newErrors);
@@ -133,7 +129,7 @@ export function useRegisterForm(onSubmit: RegisterSubmit) {
       }
       setIsSuccess(true);
     } catch (err) {
-      console.error("[RegisterForm] Submit error:", err);
+      logger.error("[RegisterForm] Submit error", { error: err });
     }
   };
 

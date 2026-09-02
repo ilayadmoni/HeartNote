@@ -19,13 +19,17 @@
 
 import { headers } from "next/headers";
 import { logger } from "@/lib/utils/logger";
+import { getActionT } from "@/lib/i18n/server";
 
 /** Standard error response for CSRF failures */
-export const csrfError = () => ({
-  success: false,
-  error: "בקשה לא חוקית. נא לרענן את הדף ולנסות שוב.",
-  code: 403,
-});
+export const csrfError = async () => {
+  const t = await getActionT("errors");
+  return {
+    success: false as const,
+    error: t("csrf.invalidRequest"),
+    code: 403,
+  };
+};
 
 /**
  * Build the list of allowed origins from environment ONLY.

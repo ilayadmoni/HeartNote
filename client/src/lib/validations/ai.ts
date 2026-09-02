@@ -22,7 +22,7 @@ export const GenerateAiTextSchema = z.object({
   fieldKey: z.enum(
     AI_ASSISTABLE_FIELDS.map((f) => f.fieldKey) as [string, ...string[]],
   ),
-  prompt: z.string().trim().min(1, "נא לתאר מה לכתוב").max(200),
+  prompt: z.string().trim().min(1, { message: "errors.ai.promptRequired" }).max(200),
 });
 
 export type GenerateAiTextInput = z.infer<typeof GenerateAiTextSchema>;

@@ -16,24 +16,29 @@ import { aiTextLimiter } from "@/lib/utils/rate-limiters";
 import { generateGreetingText, AiGenerationError } from "@/lib/ai/client";
 import { GenerateAiTextSchema, AI_ASSISTABLE_FIELDS } from "@/lib/validations/ai";
 import { logger } from "@/lib/utils/logger";
+import { getActionT } from "@/lib/i18n/server";
+import { translateZodIssue } from "@/lib/validations/i18n";
 
 export interface GenerateAiTextOutput {
   text: string;
 }
 
-const AI_UNAVAILABLE_MESSAGE = "שרת ה-AI אינו זמין כרגע. נסו שוב בעוד כמה רגעים.";
-
 export async function generateAiText(
   input: unknown,
 ): Promise<ActionResult<GenerateAiTextOutput>> {
   return protectedAction<GenerateAiTextOutput>(async (user) => {
+    const t = await getActionT("errors");
+    const aiUnavailable = t("ai.unavailable");
+
     if (!(await validateOrigin())) {
-      throw new ActionError("בקשה לא חוקית. נא לרענן את הדף ולנסות שוב.", 403);
+      throw new ActionError(t("csrf.invalidRequest"), 403);
     }
 
     const parsed = GenerateAiTextSchema.safeParse(input);
     if (!parsed.success) {
-      throw new ActionError(parsed.error.issues[0]?.message ?? "קלט לא תקין", 400);
+      const issue = parsed.error.issues[0];
+      const message = issue ? await translateZodIssue(issue) : t("ai.invalidInput");
+      throw new ActionError(message, 400);
     }
     const { templateId, fieldKey, prompt } = parsed.data;
 
@@ -41,7 +46,7 @@ export async function generateAiText(
       (f) => f.templateId === templateId && f.fieldKey === fieldKey,
     );
     if (!field) {
-      throw new ActionError("שדה לא נתמך", 400);
+      throw new ActionError(t("ai.unsupportedField"), 400);
     }
 
     // Covers both an actual over-quota response and the rate limiter itself
@@ -52,10 +57,10 @@ export async function generateAiText(
       rateLimitResult = await aiTextLimiter.check(user.id);
     } catch (err) {
       logger.error("[generateAiText] Rate limiter unavailable", { error: err });
-      throw new ActionError(AI_UNAVAILABLE_MESSAGE, 503);
+      throw new ActionError(aiUnavailable, 503);
     }
     if (!rateLimitResult.success) {
-      throw new ActionError("הגעת למגבלת יצירת הטקסטים לשעה זו. נסה שוב מאוחר יותר.", 429);
+      throw new ActionError(t("ai.rateLimited"), 429);
     }
 
     try {
@@ -67,7 +72,7 @@ export async function generateAiText(
       } else {
         logger.error("[generateAiText] Unexpected error", { error: err });
       }
-      throw new ActionError(AI_UNAVAILABLE_MESSAGE, 502);
+      throw new ActionError(aiUnavailable, 502);
     }
   });
 }

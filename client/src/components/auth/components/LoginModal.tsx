@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, LogIn, AlertTriangle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { FocusTrap } from "@/components/accessibility";
 import { AuthTabs } from "./AuthTabs";
 import { RegisterForm } from "./RegisterForm";
@@ -15,14 +17,21 @@ import { useAuthModalState } from "../hooks/useAuthModalState";
 import type { LoginModalProps } from "../types";
 
 export function LoginModal({ isOpen, onClose, redirectTo, initialView }: LoginModalProps) {
+  const t = useTranslations("auth");
+  const tErrors = useTranslations("errors");
   const s = useAuthModalState({ isOpen, onClose, redirectTo, initialView });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!isOpen) document.body.style.pointerEvents = "auto";
     return () => { document.body.style.pointerEvents = "auto"; };
   }, [isOpen]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence mode="wait" onExitComplete={() => { document.body.style.pointerEvents = "auto"; }}>
       {isOpen && (
         <motion.div
@@ -41,13 +50,13 @@ export function LoginModal({ isOpen, onClose, redirectTo, initialView }: LoginMo
               aria-hidden="true"
             />
 
-            <div className="relative flex items-start md:items-center justify-center h-[100dvh] p-4 pt-[5dvh] md:p-4 overscroll-contain">
+            <div className="relative flex items-start md:items-center justify-center min-h-[100dvh] p-4 pt-[5dvh] md:p-4 overscroll-contain">
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.95, y: 20 }}
                 transition={{ duration: 0.2 }}
-                className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden touch-pan-y"
+                className="relative w-full max-w-md bg-surface rounded-card shadow-lift overflow-hidden touch-pan-y"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="auth-title"
@@ -55,15 +64,14 @@ export function LoginModal({ isOpen, onClose, redirectTo, initialView }: LoginMo
               >
                 <button
                   onClick={s.handleClose}
-                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors z-10"
-                  aria-label="סגור"
+                  className="absolute top-4 end-4 p-2 rounded-full hover:bg-surface-sunken transition-colors z-10"
+                  aria-label={t("modal.close")}
                 >
-                  <X size={20} className="text-gray-500 dark:text-gray-400" />
+                  <X size={20} className="text-ink-muted" />
                 </button>
 
                 <div className="h-[540px] md:h-auto max-h-[85vh] overflow-y-auto">
                   <div className="p-4 sm:p-5 pt-8 pb-12 sm:pb-6 box-border">
-
                     {s.showUpdatePassword ? (
                       <UpdatePasswordForm onComplete={s.handleUpdatePasswordComplete} />
                     ) : s.showForgotPassword ? (
@@ -84,24 +92,22 @@ export function LoginModal({ isOpen, onClose, redirectTo, initialView }: LoginMo
                     ) : (
                       <>
                         <div className="flex justify-center mb-2">
-                          <div className="w-12 h-12 rounded-full bg-[#faf7f5] dark:bg-gray-700 flex items-center justify-center">
-                            <LogIn size={20} className="text-[#2e3c52] dark:text-white" />
+                          <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center">
+                            <LogIn size={20} className="text-ink" />
                           </div>
                         </div>
-                        <h2 id="auth-title" className="text-xl font-black text-center text-[#2e3c52] dark:text-white mb-1">
+                        <h2 id="auth-title" className="text-title-md font-black text-center text-ink mb-1">
                           {s.title}
                         </h2>
-                        <p className="text-center text-gray-500 dark:text-gray-400 mb-3 text-hebrew-body text-xs">
-                          {s.subtitle}
-                        </p>
+                        <p className="text-center text-ink-muted mb-3 text-caption">{s.subtitle}</p>
 
                         <AuthTabs activeTab={s.activeTab} onTabChange={s.setActiveTab} />
 
-                        {s.activeTab === "register" && s.authError && s.authError !== "מייל לא חוקי" && (
-                          <div className="mb-4 p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800/60" role="alert">
+                        {s.activeTab === "register" && s.authError && s.authError !== tErrors("registration.bannedEmail") && (
+                          <div className="mb-4 p-3 rounded-control bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800/60" role="alert">
                             <div className="flex items-center justify-center gap-2">
                               <AlertTriangle size={16} className="text-red-500 dark:text-red-400 shrink-0" />
-                              <p className="text-red-500 dark:text-red-400 text-sm font-semibold text-hebrew-body">{s.authError}</p>
+                              <p className="text-body-sm font-semibold text-red-500 dark:text-red-400">{s.authError}</p>
                             </div>
                           </div>
                         )}
@@ -132,25 +138,26 @@ export function LoginModal({ isOpen, onClose, redirectTo, initialView }: LoginMo
                       </>
                     )}
 
-                    <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400 text-hebrew-body">
-                      נתקלתם בבעיה?{" "}
+                    <div className="mt-6 text-center text-body-sm text-ink-muted">
+                      {t("modal.helpPrompt")}{" "}
                       <Link
                         href="/contact"
                         onClick={s.handleClose}
-                        className="text-[#d4826f] hover:text-[#c4735f] dark:text-[#e8917a] dark:hover:text-[#d4826f] font-semibold hover:underline transition-colors"
+                        className="text-accent hover:text-accent-hover font-semibold hover:underline transition-colors"
                       >
-                        צרו קשר
+                        {t("modal.helpLink")}
                       </Link>
                     </div>
                   </div>
                 </div>
 
-                <div className="h-1.5 bg-gradient-to-r from-[#d4826f] to-[#2e3c52]" />
+                <div className="h-1.5 bg-accent" />
               </motion.div>
             </div>
           </FocusTrap>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

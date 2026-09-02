@@ -8,6 +8,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { protectedAction } from "@/lib/protectedAction";
+import { getActionT } from "@/lib/i18n/server";
 import type {
   DashboardResponse,
   DashboardStats,
@@ -24,6 +25,7 @@ import type { ActionResult } from "@/lib/action-response";
 export async function getDashboard(): Promise<ActionResult<DashboardResponse>> {
   return protectedAction(async (user) => {
     const now = Date.now();
+    const t = await getActionT("errors");
 
     const profile = await prisma.profile.findUnique({
       where: { id: user.id },
@@ -53,7 +55,7 @@ export async function getDashboard(): Promise<ActionResult<DashboardResponse>> {
     const creations: DashboardCreation[] = rawCreations.map((c) => ({
       id: c.id,
       template_slug: c.template.slug,
-      template_name: c.template.name ?? "כרטיס",
+      template_name: c.template.name ?? t("dashboard.cardFallbackName"),
       created_at: c.createdAt.toISOString(),
       expires_at: c.expiresAt ? c.expiresAt.toISOString() : null,
       is_expired: c.expiresAt ? c.expiresAt.getTime() < now : false,

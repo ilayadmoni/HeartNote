@@ -1,58 +1,53 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-
-const DEFAULT_ERROR = "Authentication failed. The link may be invalid or expired.";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 function getReadableError(
   errorDescription: string | null,
   message: string | null,
+  fallback: string,
 ): string {
   const raw = errorDescription ?? message;
-  if (!raw) return DEFAULT_ERROR;
+  if (!raw) return fallback;
 
   const normalized = raw.replace(/\+/g, " ").trim();
-  return normalized.length > 0 ? normalized : DEFAULT_ERROR;
+  return normalized.length > 0 ? normalized : fallback;
 }
 
 export default function AuthCodeErrorPage() {
+  const t = useTranslations("auth");
   const searchParams = useSearchParams();
 
   const errorMessage = useMemo(() => {
     const errorDescription = searchParams.get("error_description");
     const message = searchParams.get("message");
-    return getReadableError(errorDescription, message);
-  }, [searchParams]);
+    return getReadableError(errorDescription, message, t("authCodeError.defaultError"));
+  }, [searchParams, t]);
 
   return (
-    <main className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 flex items-center justify-center p-6">
-      <section className="w-full max-w-xl rounded-2xl border border-[#ebe7e0] dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-8 text-center">
-        <p className="text-sm text-[#d4826f] dark:text-[#e8917a] text-english-heading">
-          Authentication Error
-        </p>
+    <main className="min-h-[100dvh] bg-surface flex items-center justify-center p-6">
+      <section className="w-full max-w-xl rounded-card border border-line bg-surface-raised shadow-soft p-8 text-center">
+        <p className="text-caption font-bold text-accent">{t("authCodeError.eyebrow")}</p>
 
-        <h1 className="mt-2 text-2xl md:text-3xl text-[#2e3c52] dark:text-white text-english-heading">
-          המייל שהשתמשתם בו לא חוקי
-        </h1>
+        <h1 className="mt-2 text-title-lg text-ink">{t("authCodeError.title")}</h1>
 
-        <p className="mt-4 text-[#4b5563] dark:text-gray-300 text-english-body leading-relaxed">
-          במידה ויש בעיה פנו לתמיכה דרך דף &apos;יצירת קשר&apos;
-        </p>
+        <p className="mt-4 text-body-md text-ink-muted leading-relaxed">{errorMessage}</p>
 
         <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:justify-center">
           <Link
             href="/login"
-            className="inline-flex items-center justify-center rounded-full bg-[#d4826f] hover:bg-[#c4735f] text-white px-6 py-3 text-english-body transition-colors duration-200"
+            className="inline-flex items-center justify-center h-11 px-6 rounded-pill bg-accent text-accent-ink font-bold text-body-sm shadow-glow-sm hover:bg-accent-hover hover:shadow-glow transition-colors duration-base"
           >
-            התחברות עם מייל אחר
+            {t("authCodeError.tryAnotherEmail")}
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center justify-center rounded-full border border-[#d9d3cb] dark:border-gray-600 text-[#2e3c52] dark:text-gray-200 hover:bg-[#f7f3ef] dark:hover:bg-gray-700 px-6 py-3 text-english-body transition-colors duration-200"
+            className="inline-flex items-center justify-center h-11 px-6 rounded-pill bg-surface-raised text-ink border border-line-strong font-bold text-body-sm hover:border-accent hover:text-accent transition-colors duration-base"
           >
-            חזרה לעמוד הראשי
+            {t("authCodeError.backHome")}
           </Link>
         </div>
       </section>
