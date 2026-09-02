@@ -1,46 +1,24 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/seo/metadata";
 
-const SITE_URL = "https://www.heartnote.co.il";
+const PRIVATE_PATHS = [
+  "/profile",
+  "/auth/",
+  "/complete-profile",
+  "/preview",
+  "/preview-frame",
+  "/login",
+];
 
 /**
- * App Robots Configuration
- * 
- * Controls search engine crawler access to the site:
- * - Allows public pages and template galleries
- * - Disallows private user routes, auth flows, and internal preview pages
- * - References the sitemap for SEO crawlers
+ * Crawler policy. Public marketing, gallery, editor and share pages are
+ * open in both locales; private account and internal preview routes are
+ * blocked for Hebrew (unprefixed) and English (/en) alike.
  */
 export default function robots(): MetadataRoute.Robots {
+  const disallow = ["/api/", ...PRIVATE_PATHS, ...PRIVATE_PATHS.map((p) => `/en${p}`)];
   return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: [
-          "/",           // Home page
-          "/gallery",    // Template gallery
-          "/pricing",    // Pricing page
-          "/faq",        // FAQ page
-          "/contact",    // Contact page
-          "/terms",      // Terms of service
-          "/privacy",    // Privacy policy
-          "/accessibility", // Accessibility statement
-          "/demo",       // Demo page
-          "/create/",    // Template editor (public, no auth required)
-          "/p/",         // Public creation pages (user-generated cards)
-        ],
-        disallow: [
-          "/api/",       // API routes (if any exist)
-          "/profile",    // User profile/dashboard (private)
-          "/profile/",   // User profile routes
-          "/auth/",      // Authentication flows (login, signup, password reset)
-          "/complete-profile", // Profile completion (after OAuth)
-          "/complete-profile/", // Profile completion routes
-          "/preview",    // Internal preview page
-          "/preview-frame", // Internal preview frame
-          "/preview-frame/", // Preview frame routes
-        ],
-      },
-    ],
+    rules: [{ userAgent: "*", allow: "/", disallow }],
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

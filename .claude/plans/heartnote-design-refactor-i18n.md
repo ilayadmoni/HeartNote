@@ -59,7 +59,7 @@ Audit of current state:
 | `client/src/lib/i18n/server.ts` | `getActionT(ns)` helper for server actions (`getTranslations`) |
 | codemod | replace `next/link` → `@/i18n/navigation` (26 files), `useRouter/usePathname/redirect` from `next/navigation` → `@/i18n/navigation` (45 files; keep `notFound`, `useSearchParams`, `useParams` from next) |
 | `client/src/components/header/components/LanguageSwitcher.tsx` | pill toggle HE/EN, `router.replace(pathname, { locale })`, persists to profile when signed in |
-| `client/src/actions/profile/setLocale.ts` + `db/20260902_add_profile_locale.sql` + `prisma/schema.prisma` | `locale TEXT NOT NULL DEFAULT 'he' CHECK (locale IN ('he','en'))`; `protectedAction` + `validateOrigin` + Zod |
+| `client/src/actions/profile/setLocale.ts` + `supabase/migrations/20260902_add_profile_locale.sql` (dated SQL migrations live there; `db/schema.sql` updated too) + `prisma/schema.prisma` | `locale TEXT NOT NULL DEFAULT 'he' CHECK (locale IN ('he','en'))`; `protectedAction` + `validateOrigin` + Zod |
 | `client/src/lib/validations/profile.ts` | `localeSchema` |
 
 ### Task 1 - Design system tokens (orchestrator)
@@ -93,19 +93,19 @@ Audit of current state:
 ## Steps
 
 ### Task 0 - Infra
-- [ ] 0.1 `npm i next-intl@^4.14 -w` (from `client/`), `npm i -D @playwright/test@1.62.1`
-- [ ] 0.2 Create `src/i18n/{routing,navigation,request,locale}.ts`, `src/messages/{he,en}/*.json` skeletons (all namespaces, `{}` bodies)
-- [ ] 0.3 `git mv` route tree under `src/app/[locale]/`; new `[locale]/layout.tsx` (html/body, `dir`, provider, hreflang metadata), `[locale]/[...rest]/page.tsx` → `notFound()`
-- [ ] 0.4 Middleware composition; matcher excludes `api|_next|assets|robots|sitemap|auth/verify|.*\..*`
-- [ ] 0.5 Codemod navigation imports; keep `notFound`, `useSearchParams`, `useParams`
-- [ ] 0.6 Locale persistence: Prisma column + `db/` migration + `setLocale` action + `LanguageSwitcher`
-- [ ] 0.7 `type-check` + `build` green; commit `feat(i18n): locale routing, message catalog skeleton, switcher`
+- [x] 0.1 `npm i next-intl@^4.14 -w` (from `client/`), `npm i -D @playwright/test@1.62.1`
+- [x] 0.2 Create `src/i18n/{routing,navigation,request,locale}.ts`, `src/messages/{he,en}/*.json` skeletons (all namespaces, `{}` bodies)
+- [x] 0.3 `git mv` route tree under `src/app/[locale]/`; new `[locale]/layout.tsx` (html/body, `dir`, provider, hreflang metadata), `[locale]/[...rest]/page.tsx` → `notFound()`
+- [x] 0.4 Middleware composition; matcher excludes `api|_next|assets|robots|sitemap|auth/verify|.*\..*`
+- [x] 0.5 Codemod navigation imports; keep `notFound`, `useSearchParams`, `useParams`
+- [x] 0.6 Locale persistence: Prisma column + `db/` migration + `setLocale` action + `LanguageSwitcher`
+- [x] 0.7 `type-check` + `build` green; commit `feat(i18n): locale routing, message catalog skeleton, switcher`
 
 ### Task 1 - Tokens
-- [ ] 1.1 Rewrite `tailwind.config.ts` + `globals.css` semantic vars; grep-verify no `primary-`/`secondary-` remains
-- [ ] 1.2 `src/lib/motion.ts` shared variants + `useMotionOk`
-- [ ] 1.3 Rebuild `ui/Button`, `ui/Card`, `ui/Input` on tokens
-- [ ] 1.4 `type-check`; commit `feat(design): brand token system, motion primitives, ui primitives`
+- [x] 1.1 Rewrite `tailwind.config.ts` + `globals.css` semantic vars; grep-verify no `primary-`/`secondary-` remains
+- [x] 1.2 `src/lib/motion.ts` shared variants + `useMotionOk`
+- [x] 1.3 Rebuild `ui/Button`, `ui/Card`, `ui/Input` on tokens
+- [x] 1.4 `type-check`; commit `feat(design): brand token system, motion primitives, ui primitives`
 
 ### Task 1+2 - Areas A..H (parallel Sonnet, one agent per area)
 Each agent brief (identical contract):
@@ -130,7 +130,7 @@ Each agent brief (identical contract):
 
 1. **Next 14.2, not 15.** Brief assumed 15; no upgrade performed (out of scope, risky). next-intl 4.14 peer-supports `^14`.
 2. **Routing mode `as-needed`:** Hebrew URLs unchanged (`/gallery`, `/p/<id>`), English prefixed (`/en/gallery`). Preserves all shared links and SEO equity. `hreflang` `he-IL`, `en`, `x-default → he`.
-3. **First-visit locale:** cookie → `Accept-Language` (next-intl matcher, only exact `en*` match flips to English) → `he`. Signed-in users' DB `locale` is applied by the switcher writing both cookie and profile; cross-device sync only on explicit switch (middleware is edge and cannot query Prisma).
+3. **First-visit locale:** cookie → `he`. Accept-Language detection is OFF (`localeDetection: false`): many Israeli users run English-UI browsers, so guessing would push Hebrew speakers to English. English is reached via the switcher or an explicit `/en` URL, then remembered by cookie for a year. Signed-in users' DB `locale` is applied by the switcher writing both cookie and profile; cross-device sync only on explicit switch (middleware is edge and cannot query Prisma).
 4. **User content is never translated.** Card metadata, sample defaults typed by users, and AI-generated greetings stay as authored. Template *chrome* (buttons, hints, empty states) is translated.
 5. **Template default sample text** (preview data, editor placeholders) is translated because it is UI copy the user sees before typing.
 6. **Fonts:** Open Sans Hebrew covers Latin; no new font. Glacial Indifference stays for brand wordmark/display Latin. tasteskill's "avoid Inter" satisfied by removing Inter as body default.
@@ -142,6 +142,12 @@ Each agent brief (identical contract):
 12. **Playwright run needs a live DB.** If Postgres is unreachable, DB-backed routes (gallery, create, p/) are verified against the demo/preview data and the gap is reported.
 13. **`impeccable` gates** (PRODUCT.md, shape approval) intentionally bypassed; its design laws (no gradient text, no side-stripe borders, OKLCH-tinted neutrals, no em dashes) applied.
 14. **Em dash** appears in existing Hebrew copy occasionally; catalog rewrites use `-` or punctuation per tasteskill §9.G.
+
+## Learned during execution
+- Locale switch must be a hard navigation (`window.location.assign`): a soft transition re-renders `<html>` and collides with the self-removing pre-hydration loader (`removeChild` NotFoundError).
+- `redirect()` from `@/i18n/navigation` needs `{ href, locale }` in server code and does not narrow types; `return redirect(...)`.
+- `.next/types` goes stale after moving routes; `rm -rf .next` before `tsc`.
+- Local Postgres migration applied with `docker exec heartnote-postgres psql`.
 
 ## Rollback
 - All work on `dev`, one commit per task/area. `git revert <sha>` per commit; infra commit reverts route move cleanly (`git mv` preserved history).
