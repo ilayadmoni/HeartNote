@@ -8,6 +8,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Edit3, Save, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Input } from "@/components/ui/Input";
 
 interface EditProfileCardProps {
   firstName: string;
@@ -19,16 +21,17 @@ export function EditProfileCard({
   firstName: initialFirstName,
   lastName: initialLastName,
   onSave,
-}: EditProfileCardProps) {
+}: EditProfileCardProps): JSX.Element {
+  const t = useTranslations("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [firstName, setFirstName] = useState(initialFirstName);
   const [lastName, setLastName] = useState(initialLastName);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     if (!firstName.trim() || !lastName.trim()) {
-      setError("יש למלא שם פרטי ושם משפחה");
+      setError(t("editProfile.errors.required"));
       return;
     }
 
@@ -39,13 +42,13 @@ export function EditProfileCard({
       await onSave(firstName.trim(), lastName.trim());
       setIsEditing(false);
     } catch {
-      setError("שגיאה בשמירת הפרטים");
+      setError(t("editProfile.errors.saveFailed"));
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setFirstName(initialFirstName);
     setLastName(initialLastName);
     setIsEditing(false);
@@ -53,114 +56,69 @@ export function EditProfileCard({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+    <div className="bg-surface-raised rounded-card p-6 shadow-soft border border-line">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
-          עריכת פרטים
-        </h3>
+        <h3 className="text-title-sm font-bold text-ink">{t("editProfile.title")}</h3>
         {!isEditing && (
           <button
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm text-[#2e3c52] dark:text-white"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-control bg-surface-sunken hover:bg-line transition-colors text-body-sm text-ink"
           >
             <Edit3 size={14} />
-            <span className="text-hebrew-body">עריכה</span>
+            <span>{t("editProfile.edit")}</span>
           </button>
         )}
       </div>
 
       {isEditing ? (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
-        >
-          {/* First Name */}
-          <div>
-            <label
-              htmlFor="edit-firstName"
-              className="block text-xs font-bold text-[#2e3c52] dark:text-gray-200 mb-1 text-right text-hebrew-heading"
-            >
-              שם פרטי
-            </label>
-            <input
-              id="edit-firstName"
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg text-base bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-[#d4826f] dark:focus:border-[#e8917a] transition-all duration-200 text-[#2e3c52] dark:text-white text-right text-hebrew-body focus:outline-none"
-              dir="rtl"
-            />
-          </div>
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+          <Input
+            label={t("editProfile.firstNameLabel")}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <Input
+            label={t("editProfile.lastNameLabel")}
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
 
-          {/* Last Name */}
-          <div>
-            <label
-              htmlFor="edit-lastName"
-              className="block text-xs font-bold text-[#2e3c52] dark:text-gray-200 mb-1 text-right text-hebrew-heading"
-            >
-              שם משפחה
-            </label>
-            <input
-              id="edit-lastName"
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg text-base bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 focus:border-[#d4826f] dark:focus:border-[#e8917a] transition-all duration-200 text-[#2e3c52] dark:text-white text-right text-hebrew-body focus:outline-none"
-              dir="rtl"
-            />
-          </div>
+          {error && <p className="text-body-sm text-red-500">{error}</p>}
 
-          {/* Error */}
-          {error && (
-            <p className="text-sm text-red-500 text-right text-hebrew-body">
-              {error}
-            </p>
-          )}
-
-          {/* Buttons */}
           <div className="flex gap-3 pt-2">
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#d4826f] hover:bg-[#c4735f] text-white font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed text-hebrew-heading"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-control bg-accent hover:bg-accent-hover text-accent-ink font-bold text-body-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSaving ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-accent-ink border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
                   <Save size={16} />
-                  <span>שמירה</span>
+                  <span>{t("editProfile.save")}</span>
                 </>
               )}
             </button>
             <button
               onClick={handleCancel}
               disabled={isSaving}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-[#2e3c52] dark:text-white font-bold text-sm transition-all disabled:opacity-50 text-hebrew-heading"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-control bg-surface-sunken hover:bg-line text-ink font-bold text-body-sm transition-all disabled:opacity-50"
             >
               <X size={16} />
-              <span>ביטול</span>
+              <span>{t("editProfile.cancel")}</span>
             </button>
           </div>
         </motion.div>
       ) : (
         <div className="space-y-3">
-          <div className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700">
-            <span className="text-sm text-gray-500 dark:text-gray-400 text-hebrew-body">
-              שם פרטי
-            </span>
-            <span className="text-sm font-medium text-[#2e3c52] dark:text-white text-hebrew-body">
-              {initialFirstName}
-            </span>
+          <div className="flex items-center justify-between py-2 border-b border-line">
+            <span className="text-body-sm text-ink-muted">{t("editProfile.firstNameLabel")}</span>
+            <span className="text-body-sm font-medium text-ink">{initialFirstName}</span>
           </div>
           <div className="flex items-center justify-between py-2">
-            <span className="text-sm text-gray-500 dark:text-gray-400 text-hebrew-body">
-              שם משפחה
-            </span>
-            <span className="text-sm font-medium text-[#2e3c52] dark:text-white text-hebrew-body">
-              {initialLastName}
-            </span>
+            <span className="text-body-sm text-ink-muted">{t("editProfile.lastNameLabel")}</span>
+            <span className="text-body-sm font-medium text-ink">{initialLastName}</span>
           </div>
         </div>
       )}

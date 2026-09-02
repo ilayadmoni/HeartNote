@@ -10,19 +10,32 @@
  * No API route needed — the server component queries the DB directly.
  */
 
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkAndDowngradeSubscription } from "@/lib/subscription/checkAndDowngradeSubscription";
 import { buildProfileResponse } from "@/actions/profile/helpers";
 import { ProfileClient } from "@/components/profile/ProfileClient";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import type { Locale } from "@/i18n/locale";
 import type {
   DashboardResponse,
   DashboardStats,
   DashboardCreation,
 } from "@/lib/validations";
+
+interface ProfilePageProps {
+  params: Promise<{ locale: Locale }>;
+}
+
+export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const meta = await buildPageMetadata({ locale, path: "/profile", key: "profile" });
+  return { ...meta, robots: { index: false, follow: false } };
+}
 
 function isSubscriptionActive(tier: string, premiumExpiry: Date | null): boolean {
   if (tier === "free") return true;
@@ -30,7 +43,9 @@ function isSubscriptionActive(tier: string, premiumExpiry: Date | null): boolean
   return premiumExpiry > new Date();
 }
 
-export default async function ProfilePage() {
+export default async function ProfilePage(): Promise<JSX.Element> {
+  const t = await getTranslations("profile");
+
   // ── 1. Auth (server-side session validation) ─────────────────────────
   const session = await auth();
   if (!session?.user?.id) {
@@ -134,7 +149,7 @@ export default async function ProfilePage() {
   const creations: DashboardCreation[] = rawCreations.map((c) => ({
     id: c.id,
     template_slug: c.template.slug,
-    template_name: c.template.name ?? "כרטיס",
+    template_name: c.template.name ?? t("fallbackTemplateName"),
     created_at: c.createdAt.toISOString(),
     expires_at: c.expiresAt ? c.expiresAt.toISOString() : null,
     is_expired: c.expiresAt ? c.expiresAt.getTime() < now : false,

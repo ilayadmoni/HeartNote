@@ -1,20 +1,25 @@
 /**
- * Pricing Page - תוכניות ומחירים
+ * Pricing Page
  * Plans and pricing page for HeartNote
  */
 
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { Pricing } from "@/components/pricing";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import type { Locale } from "@/i18n/locale";
 
-export const metadata: Metadata = {
-  title: "תוכניות ומחירים | HeartNote",
-  description:
-    "בחרו את התוכנית המתאימה לכם. יש לנו מגוון כרטיסיות פרימיום בתשלום, אבל כמובן שתוכלו להתחיל להתנסות בחינם :)",
-};
+interface PricingPageProps {
+  params: Promise<{ locale: Locale }>;
+}
 
-export default async function PricingPage() {
+export async function generateMetadata({ params }: PricingPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  return buildPageMetadata({ locale, path: "/pricing", key: "pricing" });
+}
+
+export default async function PricingPage(): Promise<JSX.Element> {
   const upgradesEnabled =
     (process.env.NEXT_PUBLIC_ENABLE_UPGRADES ?? "").toLowerCase() === "true";
 

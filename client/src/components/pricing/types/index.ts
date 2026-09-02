@@ -2,22 +2,34 @@
  * Pricing Component Types
  */
 
-export interface PricingFeature {
-  id: string;
-  text: string;
+export type PlanId = "free" | "lite" | "premium";
+
+export interface PricingFeatureDef {
+  key: string;
   included: boolean;
 }
 
+/** Static plan shape — text is resolved from messages via useLocalizedPlans. */
+export interface PricingPlanDef {
+  id: PlanId;
+  tierCode?: "lite" | "premium";
+  price: number;
+  features: PricingFeatureDef[];
+  isFeatured?: boolean;
+  isComingSoon?: boolean;
+}
+
+/** Plan with every string resolved for the current locale. */
 export interface PricingPlan {
-  id: string;
+  id: PlanId;
   tierCode?: "lite" | "premium";
   name: string;
   price: number;
   period: string;
-  features: PricingFeature[];
+  features: { id: string; text: string; included: boolean }[];
   ctaText: string;
   isFeatured?: boolean;
-  badge?: string;
+  isComingSoon?: boolean;
 }
 
 export interface PricingProps {

@@ -9,34 +9,31 @@ interface ProfileSkeletonProps {
   isMobile?: boolean;
 }
 
-export function ProfileSkeleton({ isMobile = false }: ProfileSkeletonProps) {
-  const SkeletonCard = ({ height = "h-48" }: { height?: string }) => (
-    <div
-      className={`bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 ${height} animate-pulse`}
-    >
+function SkeletonCard({ height = "h-48" }: { height?: string }): JSX.Element {
+  return (
+    <div className={`bg-surface-raised rounded-card p-6 shadow-soft border border-line ${height} animate-pulse`}>
       <div className="flex items-center gap-4 mb-4">
-        <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700" />
+        <div className="w-16 h-16 rounded-full bg-surface-sunken" />
         <div className="flex-1 space-y-2">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
-          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+          <div className="h-4 bg-surface-sunken rounded-control w-2/3" />
+          <div className="h-3 bg-surface-sunken rounded-control w-1/2" />
         </div>
       </div>
       <div className="space-y-3">
-        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded" />
-        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+        <div className="h-3 bg-surface-sunken rounded-control" />
+        <div className="h-3 bg-surface-sunken rounded-control w-3/4" />
+        <div className="h-3 bg-surface-sunken rounded-control w-1/2" />
       </div>
     </div>
   );
+}
 
+export function ProfileSkeleton({ isMobile = false }: ProfileSkeletonProps): JSX.Element {
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-6 px-4">
+      <div className="min-h-[100dvh] bg-surface py-6 px-gutter">
         <div className="max-w-md mx-auto">
-          {/* Title skeleton */}
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-6 animate-pulse" />
-
-          {/* Cards */}
+          <div className="h-8 bg-surface-sunken rounded-control w-32 mb-6 animate-pulse" />
           <div className="space-y-4">
             <SkeletonCard height="h-44" />
             <SkeletonCard height="h-36" />
@@ -49,12 +46,9 @@ export function ProfileSkeleton({ isMobile = false }: ProfileSkeletonProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf7f5] dark:bg-gray-900 py-10 px-6">
+    <div className="min-h-[100dvh] bg-surface py-10 px-gutter">
       <div className="max-w-5xl mx-auto">
-        {/* Title skeleton */}
-        <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded w-40 mb-8 animate-pulse" />
-
-        {/* Two column grid */}
+        <div className="h-9 bg-surface-sunken rounded-control w-40 mb-8 animate-pulse" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-6">
             <SkeletonCard height="h-52" />

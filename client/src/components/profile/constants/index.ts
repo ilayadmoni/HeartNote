@@ -1,29 +1,13 @@
 /**
  * Profile Constants
- * Tier configurations for profile page.
- * Aligned with new DB schema (subscription_tier: free | premium).
+ * Token-based tier badge styling. Tier display names/features live in
+ * messages/*\/profile.json and are resolved via useTranslations("profile").
  */
 
 import type { TierConfig, SubscriptionTier } from "../types";
 
-/** Tier configurations */
 export const TIER_CONFIGS: Record<SubscriptionTier, TierConfig> = {
-  free: {
-    name: "Free",
-    nameHe: "חינמי",
-    color: "#6b7280", // gray
-    features: ["3 יצירות חינם"],
-  },
-  lite: {
-    name: "Lite",
-    nameHe: "לייט",
-    color: "#d4826f",
-    features: ["מסלול לייט"],
-  },
-  premium: {
-    name: "Premium",
-    nameHe: "פרימיום",
-    color: "#8b5cf6", // purple
-    features: ["ללא הגבלה - הכל כלול"],
-  },
+  free: { iconBg: "bg-surface-sunken", iconColor: "text-ink-muted" },
+  lite: { iconBg: "bg-accent-soft", iconColor: "text-accent" },
+  premium: { iconBg: "bg-accent-soft", iconColor: "text-accent" },
 };

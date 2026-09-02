@@ -7,6 +7,7 @@
 
 import { Calendar, Mail, User, Cake } from "lucide-react";
 import Image from "next/image";
+import { useFormatter, useTranslations } from "next-intl";
 
 interface UserInfoCardProps {
   firstName: string;
@@ -24,68 +25,41 @@ export function UserInfoCard({
   joinDate,
   avatarUrl,
   dateOfBirth,
-}: UserInfoCardProps) {
-  const fullName = `${firstName} ${lastName}`.trim() || "משתמש";
-  const formattedJoinDate = joinDate
-    ? new Date(joinDate).toLocaleDateString("he-IL", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : "—";
+}: UserInfoCardProps): JSX.Element {
+  const t = useTranslations("profile");
+  const format = useFormatter();
+  const fullName = `${firstName} ${lastName}`.trim() || t("userInfo.nameFallback");
+  const formattedJoinDate = joinDate ? format.dateTime(new Date(joinDate), { dateStyle: "medium" }) : "-";
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-      {/* Header with avatar */}
+    <div className="bg-surface-raised rounded-card p-6 shadow-soft border border-line">
       <div className="flex items-center gap-4 mb-6">
-        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-[#d4826f] to-[#c4735f] flex items-center justify-center shadow-lg">
+        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-accent flex items-center justify-center shadow-card">
           {avatarUrl ? (
-            <Image
-              src={avatarUrl}
-              alt={fullName}
-              fill
-              className="object-cover"
-              unoptimized
-            />
+            <Image src={avatarUrl} alt={fullName} fill className="object-cover" unoptimized />
           ) : (
-            <span className="text-2xl font-bold text-white">
+            <span className="text-title-md font-bold text-accent-ink">
               {firstName.charAt(0) || (email ?? "").charAt(0).toUpperCase() || "?"}
             </span>
           )}
         </div>
         <div>
-          <h2 className="text-xl font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
-            {fullName}
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400" dir="ltr">
+          <h2 className="text-title-md font-bold text-ink">{fullName}</h2>
+          <p className="text-body-sm text-ink-muted" dir="ltr">
             {email}
           </p>
         </div>
       </div>
 
-      {/* Info rows */}
       <div className="space-y-3">
-        <InfoRow icon={<User size={16} />} label="שם מלא" value={fullName} />
-        <InfoRow
-          icon={<Mail size={16} />}
-          label="אימייל"
-          value={email ?? "—"}
-          dir="ltr"
-        />
-        <InfoRow
-          icon={<Calendar size={16} />}
-          label="תאריך הצטרפות"
-          value={formattedJoinDate}
-        />
+        <InfoRow icon={<User size={16} />} label={t("userInfo.fullName")} value={fullName} />
+        <InfoRow icon={<Mail size={16} />} label={t("userInfo.email")} value={email ?? "-"} dir="ltr" />
+        <InfoRow icon={<Calendar size={16} />} label={t("userInfo.joinDate")} value={formattedJoinDate} />
         {dateOfBirth && (
           <InfoRow
             icon={<Cake size={16} />}
-            label="תאריך לידה"
-            value={new Date(dateOfBirth).toLocaleDateString("he-IL", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })}
+            label={t("userInfo.dateOfBirth")}
+            value={format.dateTime(new Date(dateOfBirth), { dateStyle: "medium" })}
           />
         )}
       </div>
@@ -100,17 +74,14 @@ interface InfoRowProps {
   dir?: "ltr" | "rtl";
 }
 
-function InfoRow({ icon, label, value, dir = "rtl" }: InfoRowProps) {
+function InfoRow({ icon, label, value, dir }: InfoRowProps): JSX.Element {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
-      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+    <div className="flex items-center justify-between py-2 border-b border-line last:border-0">
+      <div className="flex items-center gap-2 text-ink-muted">
         {icon}
-        <span className="text-sm text-hebrew-body">{label}</span>
+        <span className="text-body-sm">{label}</span>
       </div>
-      <span
-        className="text-sm font-medium text-[#2e3c52] dark:text-white text-hebrew-body"
-        dir={dir}
-      >
+      <span className="text-body-sm font-medium text-ink" dir={dir}>
         {value}
       </span>
     </div>

@@ -1,7 +1,9 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 import { FocusTrap } from "@/components/accessibility";
 
@@ -17,62 +19,66 @@ export function ActiveSubscriptionWarningModal({
   onCancel,
   onConfirm,
   isSubmitting = false,
-}: ActiveSubscriptionWarningModalProps) {
+}: ActiveSubscriptionWarningModalProps): JSX.Element | null {
+  const t = useTranslations("pricing");
   useLockBodyScroll(isOpen);
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center backdrop-blur-sm"
+          className="fixed inset-0 z-[999] bg-ink/60 flex items-center justify-center backdrop-blur-sm"
           onClick={onCancel}
         >
           <FocusTrap active={isOpen} onEscape={onCancel}>
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 300, damping: 24 }}
-            onClick={(event) => event.stopPropagation()}
-            className="w-full max-w-md mx-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden"
-          >
-            <div className="p-6 border-b border-gray-100 dark:border-gray-700">
-              <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto mb-3">
-                <AlertTriangle className="text-amber-600 dark:text-amber-300" size={22} />
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300, damping: 24 }}
+              onClick={(event) => event.stopPropagation()}
+              className="w-full max-w-md mx-4 bg-surface-raised rounded-card shadow-lift overflow-hidden"
+            >
+              <div className="p-6 border-b border-line">
+                <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center mx-auto mb-3">
+                  <AlertTriangle className="text-accent" size={22} />
+                </div>
+                <h3 className="text-center text-title-md font-bold text-ink mb-2">
+                  {t("warningModal.title")}
+                </h3>
+                <p className="text-center text-body-sm text-ink-muted leading-relaxed">
+                  {t("warningModal.body")}
+                </p>
               </div>
-              <h3 className="text-center text-xl font-bold text-[#2e3c52] dark:text-white text-hebrew-heading mb-2">
-                החלפת מנוי פעיל ⚠️
-              </h3>
-              <p className="text-center text-sm text-gray-600 dark:text-gray-300 text-hebrew-body leading-relaxed">
-                שמנו לב שיש לך מנוי פעיל. רכישת מנוי חדש תחליף את המנוי הנוכחי, ותאפס את כמות היצירות שנותרו לך ואת תאריך התפוגה. האם להמשיך?
-              </p>
-            </div>
 
-            <div className="p-4 flex gap-3">
-              <button
-                type="button"
-                onClick={onCancel}
-                disabled={isSubmitting}
-                className="flex-1 py-2.5 px-4 rounded-xl border border-gray-300 dark:border-gray-600 text-[#2e3c52] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-hebrew-heading disabled:opacity-50"
-              >
-                ביטול
-              </button>
-              <button
-                type="button"
-                onClick={onConfirm}
-                disabled={isSubmitting}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-[#d4826f] hover:bg-[#c4735f] text-white transition-colors text-hebrew-heading disabled:opacity-50"
-              >
-                {isSubmitting ? "מעבד..." : "כן, למחוק ולשדרג"}
-              </button>
-            </div>
-          </motion.div>
+              <div className="p-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  disabled={isSubmitting}
+                  className="flex-1 py-2.5 px-4 rounded-control border border-line-strong text-ink hover:bg-surface-sunken transition-colors disabled:opacity-50"
+                >
+                  {t("warningModal.cancel")}
+                </button>
+                <button
+                  type="button"
+                  onClick={onConfirm}
+                  disabled={isSubmitting}
+                  className="flex-1 py-2.5 px-4 rounded-control bg-accent hover:bg-accent-hover text-accent-ink transition-colors disabled:opacity-50"
+                >
+                  {isSubmitting ? t("warningModal.confirming") : t("warningModal.confirm")}
+                </button>
+              </div>
+            </motion.div>
           </FocusTrap>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

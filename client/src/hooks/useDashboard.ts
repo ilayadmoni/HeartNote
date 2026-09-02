@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * useDashboard Hook
  *
@@ -7,6 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { getDashboard } from "@/actions/dashboard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useServerAction } from "@/hooks/useServerAction";
@@ -57,6 +60,7 @@ export function useDashboard(): UseDashboardReturn {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   const { execute } = useServerAction();
+  const t = useTranslations("profile");
 
   const fetchDashboard = useCallback(async () => {
     if (!user) {
@@ -73,11 +77,11 @@ export function useDashboard(): UseDashboardReturn {
       setDashboard(data);
     } catch (err: unknown) {
       const apiError = err as { message?: string };
-      setError(apiError.message || "שגיאה בטעינת הנתונים");
+      setError(apiError.message || t("dashboard.loadError"));
     } finally {
       setLoading(false);
     }
-  }, [user, execute]);
+  }, [user, execute, t]);
 
   useEffect(() => {
     fetchDashboard();

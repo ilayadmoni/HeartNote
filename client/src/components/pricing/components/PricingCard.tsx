@@ -2,16 +2,17 @@
 
 /**
  * PricingCard Component
- * Individual pricing plan card with features
+ * Free is the calm baseline; Lite and Premium read as the upgrade
+ * (accent-outlined / accent-filled with a badge).
  */
 
-import { Link, useRouter } from "@/i18n/navigation";
-import { useState, useTransition } from "react";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
-import { Check, Lock } from "lucide-react";
-import { toast } from "sonner";
-import { upgradeSubscription } from "@/actions/subscription";
+import { useFormatter, useTranslations } from "next-intl";
+import { Check, Lock, Sparkles, Crown } from "lucide-react";
+import { usePricingUpgrade } from "@/hooks/usePricingUpgrade";
 import { ActiveSubscriptionWarningModal } from "./ActiveSubscriptionWarningModal";
+import { transitions } from "@/lib/motion";
 import type { PricingCardProps } from "../types";
 
 export function PricingCard({
@@ -19,130 +20,83 @@ export function PricingCard({
   index,
   upgradesEnabled = false,
   hasActivePaidSubscription = false,
-}: PricingCardProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
-  const isComingSoon = !upgradesEnabled && !!plan.badge;
-  const isFree = plan.price === 0;
-  const canUpgrade = !isFree && upgradesEnabled && !!plan.tierCode;
+}: PricingCardProps): JSX.Element {
+  const t = useTranslations("pricing");
+  const format = useFormatter();
+  const {
+    isPending,
+    canUpgrade,
+    isFree,
+    isWarningOpen,
+    handleUpgradeClick,
+    handleWarningConfirm,
+    closeWarning,
+  } = usePricingUpgrade({ plan, hasActivePaidSubscription, upgradesEnabled });
 
-  const baseCardStyles = plan.isFeatured
-    ? "bg-[#d4826f] text-white shadow-2xl scale-105 z-10"
-    : "bg-white dark:bg-gray-800 text-[#2e3c52] dark:text-white shadow-lg";
+  const isComingSoon = !upgradesEnabled && !!plan.isComingSoon;
+  const isAccentCard = plan.isFeatured;
 
-  const featureTextStyles = plan.isFeatured
-    ? "text-white/90"
-    : "text-[#2e3c52] dark:text-gray-300";
-
-  const buttonStyles = plan.isFeatured
-    ? "bg-white text-[#d4826f] hover:bg-gray-100"
-    : "bg-transparent border-2 border-[#2e3c52] dark:border-gray-400 text-[#2e3c52] dark:text-gray-200 hover:border-[#d4826f] hover:text-[#d4826f] dark:hover:border-[#e8917a] dark:hover:text-[#e8917a]";
-
-  const runUpgrade = () => {
-    if (!plan.tierCode || isPending) {
-      return;
-    }
-
-    startTransition(async () => {
-      const result = await upgradeSubscription({ tierCode: plan.tierCode! });
-
-      if (!result.success) {
-        if (result.code === 401) {
-          toast.error("יש להתחבר כדי לשדרג מסלול.");
-          router.push("/login");
-          return;
-        }
-
-        toast.error(result.error || "שדרוג המסלול נכשל.");
-        return;
-      }
-
-      toast.success("המסלול שודרג בהצלחה.");
-      router.refresh();
-    });
-  };
-
-  const handleUpgradeClick = () => {
-    if (!canUpgrade || isPending) {
-      return;
-    }
-
-    if (hasActivePaidSubscription) {
-      setIsWarningModalOpen(true);
-      return;
-    }
-
-    runUpgrade();
-  };
-
-  const handleWarningConfirm = () => {
-    setIsWarningModalOpen(false);
-    runUpgrade();
-  };
+  const priceText = format.number(plan.price, {
+    style: "currency",
+    currency: "ILS",
+    maximumFractionDigits: 0,
+  });
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.15 }}
-      className={`relative rounded-3xl p-8 transition-all duration-300 ${baseCardStyles} ${isComingSoon ? "opacity-60" : ""}`}
+      transition={{ ...transitions.enter, delay: index * 0.1 }}
+      className={`relative rounded-card p-8 transition-shadow duration-base ease-out-quint ${
+        isAccentCard
+          ? "bg-accent text-accent-ink shadow-glow"
+          : plan.tierCode
+            ? "bg-surface-raised border-2 border-accent text-ink shadow-card"
+            : "bg-surface-raised border border-line text-ink shadow-card"
+      } ${isComingSoon ? "opacity-70" : ""}`}
     >
-      {/* Coming Soon Badge */}
-      {isComingSoon && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-bold text-hebrew-heading shadow-lg flex items-center gap-1.5 border border-amber-400/30 z-10">
-          <span>🔒</span>
-          <span>{plan.badge}</span>
+      {(isComingSoon || (isAccentCard && !isComingSoon)) && (
+        <div
+          className={`absolute -top-4 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 flex items-center gap-1.5 px-4 py-1.5 rounded-pill text-body-sm font-bold shadow-soft z-10 ${
+            isComingSoon ? "bg-ink text-surface" : "bg-surface text-accent"
+          }`}
+        >
+          {isComingSoon ? <Crown size={14} /> : <Sparkles size={14} />}
+          <span>{isComingSoon ? t("badge.comingSoon") : t("badge.bestValue")}</span>
         </div>
       )}
 
-      {/* Plan Name */}
-      <h3 className="text-xl font-bold text-center mb-4 text-hebrew-heading">
-        {plan.name}
-      </h3>
+      <h3 className="text-title-md font-bold text-center mb-4">{plan.name}</h3>
 
-      {/* Price */}
       <div className="text-center mb-6">
-        <span className="text-5xl font-black text-hebrew-heading">
-          {plan.price}
-        </span>
-        <span className="text-2xl font-bold mr-1 text-hebrew-heading">₪</span>
+        <span className="text-display-md font-black">{priceText}</span>
         {plan.period && (
-          <p className={`text-sm mt-1 ${featureTextStyles} text-hebrew-body`}>
+          <p className={`text-body-sm mt-1 ${isAccentCard ? "text-accent-ink/80" : "text-ink-muted"}`}>
             {plan.period}
           </p>
         )}
       </div>
 
-      {/* Features */}
       <ul className="space-y-3 mb-8">
         {plan.features.map((feature) => (
-          <li key={feature.id} className="flex items-center gap-3 justify-end">
-            <span className={`text-sm ${featureTextStyles} text-hebrew-body`}>
-              {feature.text}
-            </span>
+          <li key={feature.id} className="flex items-center gap-3">
             {feature.included ? (
-              <Check
-                size={18}
-                className={plan.isFeatured ? "text-white" : "text-[#d4826f]"}
-              />
+              <Check size={18} className={isAccentCard ? "text-accent-ink" : "text-accent"} />
             ) : (
-              <Lock
-                size={16}
-                className={plan.isFeatured ? "text-white/50" : "text-gray-400"}
-              />
+              <Lock size={16} className={isAccentCard ? "text-accent-ink/50" : "text-ink-subtle"} />
             )}
+            <span className="text-body-sm">{feature.text}</span>
           </li>
         ))}
       </ul>
 
-      {/* CTA Button */}
       {isFree ? (
         <Link href="/gallery" className="block w-full">
           <motion.button
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ y: -1 }}
             whileTap={{ scale: 0.98 }}
-            className={`w-full py-3 px-6 rounded-full font-bold transition-all duration-200 text-hebrew-heading ${buttonStyles}`}
+            transition={transitions.spring}
+            className="w-full py-3 px-6 rounded-pill font-bold bg-ink text-surface hover:bg-ink/90"
           >
             {plan.ctaText}
           </motion.button>
@@ -154,17 +108,23 @@ export function PricingCard({
           disabled={!canUpgrade || isPending}
           className={
             canUpgrade
-              ? `w-full py-3 px-6 rounded-full font-bold transition-all duration-200 text-hebrew-heading ${buttonStyles}`
-              : "w-full py-3 px-6 rounded-full font-bold text-hebrew-heading bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+              ? `w-full py-3 px-6 rounded-pill font-bold transition-colors duration-base ${
+                  isAccentCard
+                    ? "bg-surface text-accent hover:bg-surface/90"
+                    : "bg-accent text-accent-ink hover:bg-accent-hover"
+                }`
+              : `w-full py-3 px-6 rounded-pill font-bold cursor-not-allowed ${
+                  isAccentCard ? "bg-accent-ink/15 text-accent-ink/60" : "bg-surface-sunken text-ink-subtle"
+                }`
           }
         >
-          {isPending ? "משדרגים..." : canUpgrade ? "שדרגו עכשיו" : plan.ctaText}
+          {isPending ? t("cta.upgrading") : canUpgrade ? t("cta.upgradeNow") : plan.ctaText}
         </button>
       )}
 
       <ActiveSubscriptionWarningModal
-        isOpen={isWarningModalOpen}
-        onCancel={() => setIsWarningModalOpen(false)}
+        isOpen={isWarningOpen}
+        onCancel={closeWarning}
         onConfirm={handleWarningConfirm}
         isSubmitting={isPending}
       />

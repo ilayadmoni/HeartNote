@@ -1,1 +1,96 @@
-{}
+{
+  "page": {
+    "title": "הפרופיל שלי"
+  },
+  "fallbackTemplateName": "כרטיס",
+  "dashboard": {
+    "loadError": "שגיאה בטעינת הנתונים"
+  },
+  "userInfo": {
+    "nameFallback": "משתמש",
+    "fullName": "שם מלא",
+    "email": "אימייל",
+    "joinDate": "תאריך הצטרפות",
+    "dateOfBirth": "תאריך לידה"
+  },
+  "editProfile": {
+    "title": "עריכת פרטים",
+    "edit": "עריכה",
+    "firstNameLabel": "שם פרטי",
+    "lastNameLabel": "שם משפחה",
+    "save": "שמירה",
+    "cancel": "ביטול",
+    "errors": {
+      "required": "יש למלא שם פרטי ושם משפחה",
+      "saveFailed": "שגיאה בשמירת הפרטים"
+    }
+  },
+  "avatar": {
+    "title": "בחירת אווטאר",
+    "subtitle": "בחרו דמות שתייצג אתכם"
+  },
+  "tier": {
+    "free": "חינמי",
+    "lite": "לייט",
+    "premium": "פרימיום"
+  },
+  "subscription": {
+    "startDate": "תאריך התחלה",
+    "endDate": "תאריך סיום",
+    "featureFree": "{limit} יצירות חינם",
+    "featureUnlimited": "ללא הגבלה - הכל כלול",
+    "featurePaid": "{limit} יצירות במסלול",
+    "quotaFullNotice": "נוצלו כל היצירות בתוכנית. המנוי פעיל עד {date}.",
+    "status": {
+      "active": "פעיל",
+      "expired": "פג תוקף",
+      "quotaFull": "מכסה מלאה"
+    },
+    "actions": {
+      "upgradeToPremium": "שדרוג לפרימיום",
+      "renew": "חידוש מנוי",
+      "upgradeToPro": "שדרג לפרו",
+      "addCreations": "הוסף ברכות"
+    },
+    "expiryDays": "{days, plural, =0 {ללא תוקף} one {יום אחד} other {# ימים}}"
+  },
+  "usage": {
+    "title": "יתרת היצירות שלי",
+    "usedOfLimit": "נוצלו {used} מתוך {limit} יצירות",
+    "unlimitedUsed": "נוצרו {used} יצירות - ללא הגבלה",
+    "planLabel": "מסלול {tier}"
+  },
+  "creations": {
+    "title": "היצירות שלי ({count})",
+    "empty": "עדיין לא יצרת יצירות",
+    "statusDeleted": "נמחק",
+    "statusExpired": "פג תוקף",
+    "statusArchived": "בארכיון",
+    "verificationCode": "קוד אימות:",
+    "viewAria": "צפייה בכרטיס",
+    "deleteAria": "מחיקת כרטיס"
+  },
+  "deleteCreationModal": {
+    "title": "מחיקת כרטיס",
+    "body": "האם אתם בטוחים? פעולה זו לא ניתנת לביטול.",
+    "confirm": "מחיקה לצמיתות",
+    "cancel": "ביטול"
+  },
+  "deleteAccount": {
+    "dangerZoneTitle": "אזור סכנה",
+    "dangerZoneSubtitle": "פעולות שלא ניתן לבטל",
+    "body": "מחיקת החשבון תמחק את כל הנתונים שלכם לצמיתות, כולל כל הברכות שיצרתם. פעולה זו אינה ניתנת לביטול.",
+    "cta": "מחיקת חשבון",
+    "modalTitle": "מחיקת חשבון",
+    "modalBody": "האם אתם בטוחים? לאחר מחיקת החשבון לא תוכלו לפתוח חשבון חדש עם אותו מייל. בנוסף, פעולה זו לא ניתנת לביטול.",
+    "confirmWord": "מחק",
+    "confirmLabel": "הקלידו {word} לאישור:",
+    "confirmCta": "מחיקה לצמיתות",
+    "cancel": "ביטול",
+    "genericError": "אירעה שגיאה בעת מחיקת החשבון"
+  },
+  "error": {
+    "title": "שגיאה בטעינת הפרופיל",
+    "body": "לא הצלחנו לטעון את הפרופיל. נסו שוב או חזרו לדף הבית."
+  }
+}

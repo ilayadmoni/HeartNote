@@ -1,1 +1,96 @@
-{}
+{
+  "page": {
+    "title": "My profile"
+  },
+  "fallbackTemplateName": "Greeting",
+  "dashboard": {
+    "loadError": "We couldn't load your data"
+  },
+  "userInfo": {
+    "nameFallback": "User",
+    "fullName": "Full name",
+    "email": "Email",
+    "joinDate": "Joined",
+    "dateOfBirth": "Date of birth"
+  },
+  "editProfile": {
+    "title": "Edit details",
+    "edit": "Edit",
+    "firstNameLabel": "First name",
+    "lastNameLabel": "Last name",
+    "save": "Save",
+    "cancel": "Cancel",
+    "errors": {
+      "required": "Enter a first and last name",
+      "saveFailed": "We couldn't save your details"
+    }
+  },
+  "avatar": {
+    "title": "Choose an avatar",
+    "subtitle": "Pick a face to represent you"
+  },
+  "tier": {
+    "free": "Free",
+    "lite": "Lite",
+    "premium": "Premium"
+  },
+  "subscription": {
+    "startDate": "Start date",
+    "endDate": "End date",
+    "featureFree": "{limit} free creations",
+    "featureUnlimited": "No limit, everything included",
+    "featurePaid": "{limit} creations on this plan",
+    "quotaFullNotice": "You've used every creation on this plan. It stays active until {date}.",
+    "status": {
+      "active": "Active",
+      "expired": "Expired",
+      "quotaFull": "Quota full"
+    },
+    "actions": {
+      "upgradeToPremium": "Upgrade to Premium",
+      "renew": "Renew plan",
+      "upgradeToPro": "Upgrade to Pro",
+      "addCreations": "Add creations"
+    },
+    "expiryDays": "{days, plural, =0 {No expiry} one {One day} other {# days}}"
+  },
+  "usage": {
+    "title": "My remaining creations",
+    "usedOfLimit": "{used} of {limit} creations used",
+    "unlimitedUsed": "{used} creations made, no limit",
+    "planLabel": "{tier} plan"
+  },
+  "creations": {
+    "title": "My creations ({count})",
+    "empty": "You haven't created anything yet",
+    "statusDeleted": "Deleted",
+    "statusExpired": "Expired",
+    "statusArchived": "Archived",
+    "verificationCode": "Verification code:",
+    "viewAria": "View greeting",
+    "deleteAria": "Delete greeting"
+  },
+  "deleteCreationModal": {
+    "title": "Delete greeting",
+    "body": "Are you sure? This can't be undone.",
+    "confirm": "Delete permanently",
+    "cancel": "Cancel"
+  },
+  "deleteAccount": {
+    "dangerZoneTitle": "Danger zone",
+    "dangerZoneSubtitle": "Actions you can't undo",
+    "body": "Deleting your account permanently removes all your data, including every greeting you've made. This can't be undone.",
+    "cta": "Delete account",
+    "modalTitle": "Delete account",
+    "modalBody": "Are you sure? Once your account is deleted you won't be able to open a new one with the same email. This can't be undone either.",
+    "confirmWord": "DELETE",
+    "confirmLabel": "Type {word} to confirm:",
+    "confirmCta": "Delete permanently",
+    "cancel": "Cancel",
+    "genericError": "Something went wrong deleting your account"
+  },
+  "error": {
+    "title": "We couldn't load your profile",
+    "body": "Something went wrong loading your profile. Try again or head back home."
+  }
+}

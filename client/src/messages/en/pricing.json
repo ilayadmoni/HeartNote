@@ -1,1 +1,67 @@
-{}
+{
+  "header": {
+    "title": "Plans and pricing",
+    "subtitle": "Pick the plan that fits you."
+  },
+  "plans": {
+    "free": {
+      "name": "Starter",
+      "period": "",
+      "cta": "Create a free greeting",
+      "features": {
+        "1": "Access to basic templates",
+        "2": "Edit text and colors",
+        "3": "Watermark-free cards",
+        "4": "Up to 5 free creations, forever",
+        "5": "Link stays live for 24 hours"
+      }
+    },
+    "lite": {
+      "name": "Lite",
+      "period": "2 premium creations",
+      "cta": "Details coming soon",
+      "features": {
+        "1": "Access to every template",
+        "2": "Edit text and colors",
+        "3": "Watermark-free cards",
+        "4": "Upload your own photos",
+        "5": "Links stay live 14-30 days",
+        "6": "Plan valid for 30 days"
+      }
+    },
+    "premium": {
+      "name": "Premium",
+      "period": "6 premium creations",
+      "cta": "Details coming soon",
+      "features": {
+        "1": "Access to every template",
+        "2": "Edit text and colors",
+        "3": "Watermark-free cards",
+        "4": "Upload your own photos",
+        "5": "Links stay live 14-30 days",
+        "6": "Plan valid for 45 days"
+      }
+    }
+  },
+  "badge": {
+    "comingSoon": "Coming soon",
+    "mostPopular": "Most popular",
+    "bestValue": "Best value"
+  },
+  "cta": {
+    "upgradeNow": "Upgrade now",
+    "upgrading": "Upgrading..."
+  },
+  "toasts": {
+    "loginRequired": "Sign in to upgrade your plan.",
+    "upgradeFailed": "We couldn't upgrade your plan.",
+    "upgradeSuccess": "Your plan is upgraded."
+  },
+  "warningModal": {
+    "title": "Replace your active plan",
+    "body": "You already have an active plan. Buying a new one replaces it, and resets your remaining creations and expiry date. Continue?",
+    "cancel": "Cancel",
+    "confirm": "Yes, replace and upgrade",
+    "confirming": "Processing..."
+  }
+}

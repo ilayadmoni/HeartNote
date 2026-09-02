@@ -2,13 +2,13 @@
 
 /**
  * CreationRow — individual list item for TemplatesList.
- *
- * Visual state is derived from is_deleted and is_expired flags.
- * Deleted items show grey/grayscale with disabled buttons.
+ * Visual state is derived from is_deleted and is_expired flags, shown via
+ * an icon chip and status tag (no side-stripe borders).
  */
 
 import { motion } from "framer-motion";
 import { FileText, ExternalLink, Trash2, Clock } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 import type { DashboardCreation } from "@/hooks/useDashboard";
 
 interface CreationRowProps {
@@ -18,82 +18,66 @@ interface CreationRowProps {
   onDelete: (id: string) => void;
 }
 
-export function CreationRow({
-  creation,
-  index,
-  onView,
-  onDelete,
-}: CreationRowProps) {
-  const createdDate = new Date(creation.created_at).toLocaleDateString("he-IL");
+export function CreationRow({ creation, index, onView, onDelete }: CreationRowProps): JSX.Element {
+  const t = useTranslations("profile");
+  const format = useFormatter();
+  const createdDate = format.dateTime(new Date(creation.created_at), { dateStyle: "medium" });
   const { is_expired: isExpired, is_deleted: isDeleted } = creation;
+  const templateName = creation.template_name || t("fallbackTemplateName");
 
   const rowClasses = isDeleted
-    ? "border-l-4 border-gray-300 opacity-50 grayscale bg-gray-100 dark:bg-gray-800/40"
+    ? "opacity-50 grayscale bg-surface-sunken"
     : isExpired
-      ? "border-l-4 border-red-500 opacity-75 bg-red-50/50 dark:bg-red-950/20"
-      : "border-l-4 border-green-500 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700";
+      ? "opacity-75 bg-surface-sunken"
+      : "bg-surface-sunken hover:bg-line/30";
 
-  const iconClasses = isDeleted
-    ? "bg-gray-200 dark:bg-gray-700"
-    : isExpired
-      ? "bg-red-100 dark:bg-red-900/30"
-      : "bg-[#d4826f]/10";
+  const iconClasses = isDeleted ? "bg-line" : isExpired ? "bg-accent-soft" : "bg-accent-soft";
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className={`flex items-center justify-between p-3 rounded-xl transition-colors ${rowClasses}`}
+      className={`flex items-center justify-between p-3 rounded-control transition-colors duration-base ${rowClasses}`}
     >
-      {/* Left: icon + text */}
       <div className="flex items-center gap-3 min-w-0">
-        <div
-          className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${iconClasses}`}
-        >
+        <div className={`w-10 h-10 rounded-control flex items-center justify-center shrink-0 ${iconClasses}`}>
           {isDeleted ? (
-            <Trash2 size={18} className="text-gray-400" />
+            <Trash2 size={18} className="text-ink-subtle" />
           ) : isExpired ? (
-            <Clock size={18} className="text-red-500" />
+            <Clock size={18} className="text-accent" />
           ) : (
-            <FileText size={18} className="text-[#d4826f]" />
+            <FileText size={18} className="text-accent" />
           )}
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <p
-              className={`text-sm font-medium text-hebrew-body truncate ${
-                isDeleted
-                  ? "text-gray-400 dark:text-gray-500 line-through"
-                  : isExpired
-                    ? "text-gray-400 dark:text-gray-500"
-                    : "text-[#2e3c52] dark:text-white"
+              className={`text-body-sm font-medium truncate ${
+                isDeleted ? "text-ink-subtle line-through" : isExpired ? "text-ink-subtle" : "text-ink"
               }`}
             >
-              {creation.template_name || "כרטיס"}
+              {templateName}
             </p>
             {isDeleted && (
-              <span className="text-[10px] font-bold text-gray-500 bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded shrink-0">
-                נמחק
+              <span className="text-caption font-bold text-ink-muted bg-surface px-1.5 py-0.5 rounded-control shrink-0">
+                {t("creations.statusDeleted")}
               </span>
             )}
             {!isDeleted && isExpired && (
-              <span className="text-[10px] font-bold text-red-500 bg-red-100 dark:bg-red-900/40 px-1.5 py-0.5 rounded shrink-0">
-                פג תוקף
+              <span className="text-caption font-bold text-accent bg-accent-soft px-1.5 py-0.5 rounded-control shrink-0">
+                {t("creations.statusExpired")}
               </span>
             )}
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {creation.template_name ? `${creation.template_name} • ` : ""}
+          <p className="text-caption text-ink-muted">
+            {templateName ? `${templateName} • ` : ""}
             {createdDate}
           </p>
           {creation.verification_code && !isDeleted && (
-            <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-              <span>קוד אימות:</span>
-              <span
-                className="font-mono font-bold tracking-wider text-[#d4826f] bg-[#d4826f]/10 px-1.5 py-0.5 rounded"
-                dir="ltr"
-              >
+            <p className="mt-1 text-caption text-ink-muted flex items-center gap-1.5">
+              <span>{t("creations.verificationCode")}</span>
+              <span className="font-mono font-bold tracking-wider text-accent bg-accent-soft px-1.5 py-0.5 rounded-control" dir="ltr">
                 {creation.verification_code}
               </span>
             </p>
@@ -101,21 +85,20 @@ export function CreationRow({
         </div>
       </div>
 
-      {/* Right: actions */}
       <div className="flex items-center gap-2 shrink-0">
         {isDeleted ? (
-          <span className="text-xs text-gray-400 dark:text-gray-500 font-medium px-3 py-1.5">
-            נמחק
+          <span className="text-caption text-ink-subtle font-medium px-3 py-1.5">
+            {t("creations.statusDeleted")}
           </span>
         ) : isExpired ? (
-          <span className="text-xs text-gray-400 dark:text-gray-500 font-medium px-3 py-1.5">
-            בארכיון
+          <span className="text-caption text-ink-subtle font-medium px-3 py-1.5">
+            {t("creations.statusArchived")}
           </span>
         ) : (
           <button
             onClick={() => onView(creation.id)}
-            className="p-2 text-gray-400 hover:text-[#d4826f] transition-colors"
-            aria-label="צפייה בכרטיס"
+            className="p-2 text-ink-subtle hover:text-accent transition-colors"
+            aria-label={t("creations.viewAria")}
           >
             <ExternalLink size={16} />
           </button>
@@ -123,8 +106,8 @@ export function CreationRow({
         {!isDeleted && !isExpired && (
           <button
             onClick={() => onDelete(creation.id)}
-            className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-            aria-label="מחיקת כרטיס"
+            className="p-2 text-ink-subtle hover:text-red-500 transition-colors"
+            aria-label={t("creations.deleteAria")}
           >
             <Trash2 size={16} />
           </button>

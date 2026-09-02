@@ -2,13 +2,13 @@
 
 /**
  * DeleteConfirmModal
- *
- * Hebrew confirmation dialog for card deletion.
- * Animated with Framer Motion, includes backdrop blur.
+ * Confirmation dialog for creation (card) deletion.
  */
 
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { Trash2, AlertTriangle, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface DeleteConfirmModalProps {
   isPending: boolean;
@@ -16,23 +16,20 @@ interface DeleteConfirmModalProps {
   onCancel: () => void;
 }
 
-export function DeleteConfirmModal({
-  isPending,
-  onConfirm,
-  onCancel,
-}: DeleteConfirmModalProps) {
-  return (
+export function DeleteConfirmModal({ isPending, onConfirm, onCancel }: DeleteConfirmModalProps): JSX.Element | null {
+  const t = useTranslations("profile");
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <>
-      {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[999]"
+        className="fixed inset-0 bg-ink/50 backdrop-blur-sm z-[999]"
         onClick={onCancel}
       />
 
-      {/* Dialog */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -40,63 +37,44 @@ export function DeleteConfirmModal({
         className="fixed inset-0 z-[999] flex items-center justify-center p-4 pointer-events-none"
       >
         <div
-          className="w-full max-w-sm bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden pointer-events-auto"
+          className="w-full max-w-sm bg-surface-raised rounded-card shadow-lift overflow-hidden pointer-events-auto"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
-          <div className="p-6 text-center border-b border-gray-100 dark:border-gray-700">
+          <div className="p-6 text-center border-b border-line">
             <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
               <AlertTriangle size={28} className="text-red-500" />
             </div>
-            <h3 className="text-xl font-bold text-[#2e3c52] dark:text-white text-hebrew-heading">
-              מחיקת כרטיס
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 text-hebrew-body">
-              האם אתם בטוחים? פעולה זו לא ניתנת לביטול.
-            </p>
+            <h3 className="text-title-md font-bold text-ink">{t("deleteCreationModal.title")}</h3>
+            <p className="text-body-sm text-ink-muted mt-2">{t("deleteCreationModal.body")}</p>
           </div>
 
-          {/* Actions */}
           <div className="p-6 flex gap-3">
             <button
               onClick={onConfirm}
               disabled={isPending}
-              className="
-                flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg
-                bg-red-500 hover:bg-red-600 text-white font-bold text-sm
-                transition-all duration-200
-                disabled:opacity-50 disabled:cursor-not-allowed
-                text-hebrew-heading
-              "
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-control bg-red-500 hover:bg-red-600 text-white font-bold text-body-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isPending ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
                   <Trash2 size={16} />
-                  <span>מחיקה לצמיתות</span>
+                  <span>{t("deleteCreationModal.confirm")}</span>
                 </>
               )}
             </button>
             <button
               onClick={onCancel}
               disabled={isPending}
-              className="
-                flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
-                bg-gray-100 dark:bg-gray-700
-                hover:bg-gray-200 dark:hover:bg-gray-600
-                text-[#2e3c52] dark:text-white font-bold text-sm
-                transition-all duration-200
-                disabled:opacity-50 disabled:cursor-not-allowed
-                text-hebrew-heading
-              "
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-control bg-surface-sunken hover:bg-line text-ink font-bold text-body-sm transition-all disabled:opacity-50"
             >
               <X size={16} />
-              <span>ביטול</span>
+              <span>{t("deleteCreationModal.cancel")}</span>
             </button>
           </div>
         </div>
       </motion.div>
-    </>
+    </>,
+    document.body,
   );
 }
