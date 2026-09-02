@@ -6,9 +6,7 @@ export const LOADER_SCRIPT = /* js */ `
 (function () {
   var stored = null;
   try { stored = localStorage.getItem('heartnote-theme'); } catch (_) { console.warn('[InitialLoader] localStorage unavailable, falling back to prefers-color-scheme'); }
-  var isDark =
-    stored === 'dark' ||
-    (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  var isDark = stored === 'dark';
   var el = document.getElementById('initial-loader');
   if (isDark && el) el.classList.add('dark-loader');
 

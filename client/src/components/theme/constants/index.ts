@@ -10,4 +10,5 @@ export const THEME_VALUES = {
   DARK: 'dark',
 } as const;
 
-export const DEFAULT_THEME = THEME_VALUES.DARK;
+// Cream paper is the brand surface; dark mode is an explicit toggle.
+export const DEFAULT_THEME = THEME_VALUES.LIGHT;

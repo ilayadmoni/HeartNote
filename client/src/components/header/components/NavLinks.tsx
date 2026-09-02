@@ -18,7 +18,9 @@ export function NavLinks({ items, className = "", onItemClick }: NavLinksProps):
     <nav className={className} aria-label={t("menu")}>
       <ul className="flex items-center gap-6 lg:gap-8">
         {items.map((item) => {
-          const isActive = item.href !== "/" && pathname?.startsWith(item.href.split("#")[0]);
+          const base = item.href.split("#")[0];
+          const isActive =
+            base !== "/" && (pathname === base || pathname?.startsWith(`${base}/`) === true);
           return (
             <li key={item.id} className="relative">
               <Link
