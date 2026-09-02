@@ -10,7 +10,7 @@
 import { useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { getPathname, usePathname } from "@/i18n/navigation";
 import { LOCALES, type Locale } from "@/i18n/locale";
 import { useAuth } from "@/contexts/AuthContext";
 import { setMyLocale } from "@/actions/profile/setLocale";
@@ -21,7 +21,6 @@ const LABELS: Record<Locale, string> = { he: "עב", en: "EN" };
 export function LanguageSwitcher({ className = "" }: { className?: string }): JSX.Element {
   const t = useTranslations("common");
   const locale = useLocale() as Locale;
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user } = useAuth();
@@ -30,10 +29,14 @@ export function LanguageSwitcher({ className = "" }: { className?: string }): JS
   const switchTo = (next: Locale): void => {
     if (next === locale || isPending) return;
     const query = searchParams?.toString();
-    const target = query ? `${pathname}?${query}` : pathname;
-    startTransition(() => {
-      router.replace(target, { locale: next });
-      if (user) void setMyLocale(next);
+    const href = getPathname({ href: pathname, locale: next });
+    const target = query ? `${href}?${query}` : href;
+    startTransition(async () => {
+      // Persist before leaving so the choice survives the reload.
+      if (user) await setMyLocale(next);
+      // Hard navigation: <html lang/dir> and the pre-hydration loader must be
+      // rebuilt from the server, which a soft transition cannot do safely.
+      window.location.assign(target);
     });
   };
 

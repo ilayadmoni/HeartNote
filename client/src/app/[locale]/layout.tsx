@@ -86,9 +86,9 @@ export default async function LocaleLayout({
             duration={4000}
             closeButton
           />
+          <GTMVerifierWrapper />
         </NextIntlClientProvider>
         <StructuredData />
-        <GTMVerifierWrapper />
       </body>
     </html>
   );

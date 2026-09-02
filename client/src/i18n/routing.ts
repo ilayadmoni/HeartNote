@@ -11,6 +11,9 @@ export const routing = defineRouting({
   locales: LOCALES,
   defaultLocale: DEFAULT_LOCALE,
   localePrefix: "as-needed",
+  // Hebrew-first market: never guess from Accept-Language. The cookie set by
+  // the switcher (or an explicit /en URL) is the only way to land in English.
+  localeDetection: false,
   localeCookie: {
     name: "NEXT_LOCALE",
     maxAge: ONE_YEAR_SECONDS,
