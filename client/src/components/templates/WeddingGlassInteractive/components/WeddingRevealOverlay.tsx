@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import type { WeddingInteractiveData } from "@/components/templates/types";
 
 interface WeddingRevealOverlayProps {
@@ -9,45 +10,45 @@ interface WeddingRevealOverlayProps {
 }
 
 export function WeddingRevealOverlay({ data, onReplay }: WeddingRevealOverlayProps) {
-  const title = data.greetingTitle || "מזל טוב!";
+  const t = useTranslations("templates");
+  const title = data.greetingTitle || t("weddingGlass.mazalTov");
 
   return (
     <motion.div
-      className="absolute inset-0 z-20 flex items-center justify-center bg-[#faf7f5]/60 p-4 backdrop-blur-[1px] dark:bg-slate-950/60 sm:p-5"
+      className="absolute inset-0 z-20 flex items-center justify-center bg-surface/60 p-4 backdrop-blur-[1px] sm:p-5"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.45 }}
     >
       <motion.section
-        className="w-full max-w-[22rem] overflow-hidden rounded-3xl border border-white/80 bg-[#fffaf4]/95 p-5 text-center shadow-2xl shadow-coral-900/15 backdrop-blur-md dark:border-white/10 dark:bg-slate-900/95 sm:p-6"
+        className="w-full max-w-[22rem] overflow-hidden rounded-card border border-line bg-surface-raised/95 p-5 text-center shadow-2xl backdrop-blur-md sm:p-6"
         initial={{ opacity: 0, y: 18, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.45, delay: 0.1 }}
-        dir="rtl"
         aria-live="polite"
       >
-        <h2 className="max-w-full break-words text-2xl font-black text-[#1b263b] dark:text-white">
+        <h2 className="max-w-full break-words text-title-lg font-black text-ink" dir="auto">
           {title}
         </h2>
         {data.coupleNames && (
-          <p className="mt-1 max-w-full break-words text-sm font-bold text-[#d4826f]">
+          <p className="mt-1 max-w-full break-words text-sm font-bold text-accent" dir="auto">
             {data.coupleNames}
           </p>
         )}
-        <p className="mt-4 max-w-full whitespace-pre-line break-words text-base leading-7 text-[#2e3c52] dark:text-slate-100">
-          {data.message || "שתבנו יחד בית מלא באהבה, צחוק וחברות טובה."}
+        <p className="mt-4 max-w-full whitespace-pre-line break-words text-base leading-7 text-ink-muted" dir="auto">
+          {data.message || t("weddingGlass.messageDefault")}
         </p>
         {data.senderName && (
-          <p className="mt-4 max-w-full break-words text-sm font-bold text-slate-600 dark:text-slate-300">
+          <p className="mt-4 max-w-full break-words text-sm font-bold text-ink-muted" dir="auto">
             {data.senderName}
           </p>
         )}
         <button
           type="button"
           onClick={onReplay}
-          className="mt-5 rounded-full bg-[#1b263b] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-[#2e3c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]"
+          className="mt-5 rounded-pill bg-ink px-5 py-2.5 text-sm font-bold text-surface shadow-md transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
-          להפעיל שוב
+          {t("weddingGlass.replay")}
         </button>
       </motion.section>
     </motion.div>

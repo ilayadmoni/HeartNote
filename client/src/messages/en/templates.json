@@ -1,1 +1,153 @@
-{}
+{
+  "common": {
+    "backToGallery": "Back to gallery",
+    "resetDefault": "Start over",
+    "createdUsing": "Created using",
+    "notFound": "Template not found: {key}",
+    "loading": "Loading..."
+  },
+  "apologySearch": {
+    "heading": "Apology search",
+    "placeholder": "Type your search...",
+    "startButton": "Start searching",
+    "searchAgain": "Search again"
+  },
+  "barBatMitzvah": {
+    "introTitle": "The coming-of-age machine",
+    "introSubtitle": "Tap the character to reveal the blessing",
+    "introSubtitleMobile": "Tap the button to throw the candy!",
+    "blessingTitleDefault": "Time to celebrate! 🎉",
+    "mazalTov": "Mazal tov!",
+    "startOver": "Start over",
+    "throwCandy": "Throw the candy!",
+    "tryAgain": "Try again!",
+    "boyAlt": "Bar mitzvah boy",
+    "girlAlt": "Bat mitzvah girl"
+  },
+  "birthdayCandles": {
+    "greetingDefault": "Happy birthday",
+    "instruction": "Tap the flames to blow out the candles",
+    "cakeAlt": "A festive birthday cake",
+    "blowCandle": "Blow out candle number {number}",
+    "mazalTov": "Happy birthday!",
+    "messageDefault": "Wishing you a day full of joy and celebration!",
+    "relight": "Relight the candles"
+  },
+  "weddingGlass": {
+    "titleDefault": "Mazal tov to the happy couple",
+    "instruction": "Tap to play the wedding moment",
+    "trigger": "Play the moment",
+    "illustrationAlt": "Interactive wedding illustration",
+    "mazalTov": "Mazal tov!",
+    "messageDefault": "May you build a home filled with love, laughter and good friends.",
+    "replay": "Play again"
+  },
+  "holidays": {
+    "messageDefault": "A personal greeting, waiting to be revealed.",
+    "replay": "Play again",
+    "hanukkahAlt": "Hanukkah animation with the shamash and candles",
+    "purimAlt": "Purim animation with a mask",
+    "roshHashanahAlt": "Rosh Hashanah animation with a honey dipper",
+    "shavuotAlt": "Blooming Shavuot animation",
+    "sukkotAlt": "Sukkot animation with a sukkah",
+    "passoverAlt": "Passover greeting with matzah and flowers",
+    "matzahOpenAlt": "Matzah opening"
+  },
+  "dateInvite": {
+    "titleDefault": "Date invite",
+    "hint": "You might want to pick the right answer...",
+    "successHint": "I knew you'd say yes 😉",
+    "askAgain": "Ask again"
+  },
+  "decisionWheel": {
+    "optionDefault1": "Option 1",
+    "optionDefault2": "Option 2",
+    "canvasLabel": "Decision wheel with {count} options: {options}",
+    "spin": "Spin!",
+    "resultLabel": "Your result:"
+  },
+  "excuseGenerator": {
+    "defaults": [
+      "My dog ate my free time.",
+      "The rain made me reconsider.",
+      "My plant is sick and needs looking after.",
+      "My neighbor was playing guitar and I couldn't focus.",
+      "My mom invited me over to eat, I couldn't say no."
+    ],
+    "titleDefault": "The automatic excuse machine",
+    "subtitleDefault": "Not feeling up to it? We've got an excuse for you.",
+    "promptDefault": "Press the button for the perfect excuse",
+    "generating": "Cooking up an excuse...",
+    "buttonLabel": "Generate excuse",
+    "disclaimer": "* We are not responsible for how you use these excuses."
+  },
+  "loveCoupons": {
+    "redeem": "Redeem",
+    "redeemAria": "Redeem coupon: {title}",
+    "redeemed": "Redeemed",
+    "modalTitle": "Redeem coupon",
+    "modalSubtitle": "Final confirmation",
+    "confirmQuestion": "Are you sure? This can't be undone.",
+    "codeLabel": "Enter the 4-digit code you received",
+    "cancel": "Cancel",
+    "redeeming": "Redeeming...",
+    "resetAll": "Reset all",
+    "resetAllAria": "Reset all coupons"
+  },
+  "openWhen": {
+    "openLetterAria": "Open letter: {title}",
+    "lockedLetterAria": "Locked letter: {title}"
+  },
+  "punchingBag": {
+    "introTitle": "The stress-relief system",
+    "introSubtitle": "Give it a few good hits. It's all good.",
+    "hitAria": "Hit the bag",
+    "hitInstructions": "Tap the bag to punch it",
+    "resultTitleDefault": "Ouch... did that help?",
+    "anotherRound": "One more round"
+  },
+  "relationshipQuiz": {
+    "feedbackTiers": [
+      "Oh no... do we even know each other?!",
+      "Okay, at least you knew my name... I think. Lots of room to grow!",
+      "A fair start, but I expected more!",
+      "Not bad, but we've still got a lot to learn about each other",
+      "Halfway there! We're pretty good friends, but we could go deeper.",
+      "Nicely done! You genuinely know me pretty well.",
+      "Impressive! We're good friends and it shows. When's our next hangout?",
+      "Wow, almost perfect! You know my quirks almost as well as I do.",
+      "Amazing! We're true friends, no doubt. Almost 100%!",
+      "Total telepathy! A perfect score!"
+    ],
+    "finalScore": "Final Score",
+    "titleDefault": "How well do you know me?",
+    "playAgain": "Play again",
+    "questionLabel": "QUESTION {current} / {total}"
+  },
+  "scratchCard": {
+    "scratchHere": "Scratch here",
+    "congratulations": "CONGRATULATIONS",
+    "prizeDefault": "You won a surprise!",
+    "dragHint": "👆 Drag your finger across the card",
+    "scratchAgain": "Scratch again"
+  },
+  "slotMachine": {
+    "reelDefault1": "Tap",
+    "reelDefault2": "to",
+    "reelDefault3": "reveal",
+    "spinLabel": "Spin",
+    "titleDefault": "The promise machine",
+    "subtitleDefault": "Spin 3 times to find out what's waiting for you tonight...",
+    "won": "Yesss!",
+    "spinWithRemaining": "{label} ({remaining} left)"
+  },
+  "surpriseGift": {
+    "titleDefault": "You've got a surprise! 🎁",
+    "greetingDefault": "I love you!",
+    "shakeAria": "Shake the gift ({clicks}/{needed})",
+    "tapAria": "Tap to shake ({clicks}/{needed})"
+  },
+  "timeline": {
+    "emptyState": "Add events to your timeline"
+  }
+}

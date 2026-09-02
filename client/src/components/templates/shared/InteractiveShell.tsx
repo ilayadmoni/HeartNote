@@ -16,20 +16,17 @@ export function InteractiveShell({
   children,
 }: InteractiveShellProps) {
   return (
-    <div
-      className="relative flex min-h-[560px] flex-col overflow-hidden rounded-xl bg-[#faf7f5] px-4 py-5 text-[#1b263b] dark:bg-slate-950 dark:text-slate-50"
-      dir="rtl"
-    >
-      <BackToGallery className="absolute right-4 top-4 z-20" />
+    <div className="relative flex min-h-[560px] flex-col overflow-hidden rounded-card bg-surface px-4 py-5 text-ink">
+      <BackToGallery className="absolute end-4 top-4 z-20" />
       <motion.header
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         className="mx-auto mt-8 max-w-lg text-center"
       >
-        <h1 className="text-2xl font-black text-hebrew-heading sm:text-3xl">
+        <h1 className="text-title-lg font-black sm:text-display-md" dir="auto">
           {title}
         </h1>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+        <p className="mt-2 text-sm text-ink-muted" dir="auto">
           {instruction}
         </p>
       </motion.header>

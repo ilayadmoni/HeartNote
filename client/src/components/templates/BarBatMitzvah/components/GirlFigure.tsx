@@ -1,14 +1,18 @@
+"use client";
+
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface GirlFigureProps {
   onClick?: () => void;
 }
 
 export function GirlFigure({ onClick }: GirlFigureProps) {
+  const t = useTranslations("templates");
   return (
     <Image
       src="/assets/images/BarBatMitzva/bat_mitzvah_girl.svg"
-      alt="ילדת בת מצווה"
+      alt={t("barBatMitzvah.girlAlt")}
       width={280}
       height={360}
       priority

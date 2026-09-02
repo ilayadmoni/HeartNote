@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import type { SlotMachineDesktopProps } from "../types";
 import { Reel } from "../components/Reel";
 import {
@@ -20,13 +21,14 @@ export function SlotMachineDesktop({
   onSpin,
   onReset,
 }: SlotMachineDesktopProps) {
+  const t = useTranslations("templates");
   const remaining = spinsRequired - spinCount;
-  const spinLabel = data.spinButtonLabel ?? "סובבי";
+  const spinLabel = data.spinButtonLabel ?? t("slotMachine.spinLabel");
   const successEmoji = data.successEmoji ?? "🎉";
 
   return (
     <div className="flex flex-col h-full min-h-[390px] bg-transparent relative isolate overflow-hidden">
-      <BackToGallery className="absolute top-4 right-4" />
+      <BackToGallery className="absolute top-4 end-4" />
 
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl mx-auto px-6 py-8 relative z-10">
         {/* Header */}
@@ -36,17 +38,11 @@ export function SlotMachineDesktop({
           transition={{ duration: 0.4 }}
           className="text-center mb-8"
         >
-          <h2
-            className="text-2xl font-bold text-hebrew-heading mb-2 break-words"
-            style={{ color: primaryColor }}
-          >
-            {data.title ?? "מכונת ההבטחות"}
+          <h2 className="text-title-lg font-bold mb-2 break-words" style={{ color: primaryColor }} dir="auto">
+            {data.title ?? t("slotMachine.titleDefault")}
           </h2>
-          <p
-            className="text-hebrew-body break-words"
-            style={{ color: primaryColor, opacity: 0.75 }}
-          >
-            {data.subtitle ?? "סובבי 3 פעמים כדי לגלות מה מחכה לך הערב..."}
+          <p className="break-words" style={{ color: primaryColor, opacity: 0.75 }} dir="auto">
+            {data.subtitle ?? t("slotMachine.subtitleDefault")}
           </p>
         </motion.div>
 
@@ -74,17 +70,17 @@ export function SlotMachineDesktop({
           whileTap={!isSpinning && !hasWon ? { scale: 0.96 } : {}}
           onClick={onSpin}
           disabled={isSpinning || hasWon}
-          className="px-10 py-4 rounded-full text-xl font-bold shadow-lg transition-all duration-300 text-white text-hebrew-heading disabled:opacity-75 disabled:cursor-not-allowed"
+          className="px-10 py-4 rounded-pill text-xl font-bold shadow-lg transition-all duration-300 text-accent-ink disabled:opacity-75 disabled:cursor-not-allowed"
           style={{
             backgroundColor: hasWon ? "#22c55e" : primaryColor,
             boxShadow: `0 8px 25px ${hasWon ? "#22c55e" : primaryColor}40`,
           }}
         >
           {hasWon
-            ? `${successEmoji} יששש!`
+            ? `${successEmoji} ${t("slotMachine.won")}`
             : isSpinning
             ? `${spinLabel}...`
-            : `${spinLabel} (${remaining} נותרו)`}
+            : t("slotMachine.spinWithRemaining", { label: spinLabel, remaining })}
         </motion.button>
 
         {/* Reset button — shown after winning */}
@@ -95,7 +91,7 @@ export function SlotMachineDesktop({
             transition={{ delay: 0.3 }}
             className="mt-5"
           >
-            <TemplateResetButton onClick={onReset} label="נסה שוב" />
+            <TemplateResetButton onClick={onReset} label={t("common.resetDefault")} />
           </motion.div>
         )}
       </div>

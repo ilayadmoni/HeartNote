@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { InteractiveShell } from "@/components/templates/shared/InteractiveShell";
 import { BirthdayFlame } from "./BirthdayFlame";
 import { BirthdayRevealOverlay } from "./BirthdayRevealOverlay";
@@ -12,6 +13,7 @@ import type { BirthdayInteractiveData, TemplateComponentProps } from "@/componen
 export function BirthdayCandlesCore({
   data,
 }: TemplateComponentProps<BirthdayInteractiveData>) {
+  const t = useTranslations("templates");
   const reduceMotion = Boolean(useReducedMotion());
   const plan = useMemo(() => getBirthdayCandlePlan(data.recipientAge), [data.recipientAge]);
   const [lit, setLit] = useState<boolean[]>(() => Array(plan.candleCount).fill(true));
@@ -47,10 +49,12 @@ export function BirthdayCandlesCore({
     setLit(Array(plan.candleCount).fill(true));
   };
 
-  const title = data.greetingTitle || `יום הולדת שמח${data.recipientName ? `, ${data.recipientName}` : ""}`;
+  const title =
+    data.greetingTitle ||
+    `${t("birthdayCandles.greetingDefault")}${data.recipientName ? `, ${data.recipientName}` : ""}`;
 
   return (
-    <InteractiveShell title={title} instruction="לחצו על הלהבות כדי לכבות את הנרות">
+    <InteractiveShell title={title} instruction={t("birthdayCandles.instruction")}>
       <div className="relative aspect-square w-full max-w-sm overflow-visible">
         <motion.div
           className="relative flex w-full flex-col items-center"
@@ -58,7 +62,7 @@ export function BirthdayCandlesCore({
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         >
           {plan.showAgeNumber && (
-            <div className="absolute top-0 z-20 text-5xl font-black leading-none text-[#1b263b] drop-shadow-[0_3px_0_rgba(212,130,111,0.24)] dark:text-white">
+            <div className="absolute top-0 z-20 text-5xl font-black leading-none text-ink drop-shadow-[0_3px_0_rgba(212,130,111,0.24)]">
               {plan.age}
             </div>
           )}
@@ -79,7 +83,7 @@ export function BirthdayCandlesCore({
             </div>
             <Image
               src="/assets/images/birthday-interactive/birthday-cake.svg"
-              alt="עוגת יום הולדת חגיגית"
+              alt={t("birthdayCandles.cakeAlt")}
               width={384}
               height={384}
               priority={false}

@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { BackToGallery, FooterBranding } from "@/components/templates/components";
 import { BoyFigure } from "../components/BoyFigure";
 import { GirlFigure } from "../components/GirlFigure";
@@ -29,11 +30,12 @@ export function BarBatMitzvahDesktop({
   onReset,
   onBurstComplete,
 }: BarBatMitzvahDesktopProps) {
-  const introTitle = data.introTitle || "מכונת ההתבגרות";
-  const introSubtitle = data.introSubtitle || "לחצו על הדמות כדי לגלות את הברכה";
+  const t = useTranslations("templates");
+  const introTitle = data.introTitle || t("barBatMitzvah.introTitle");
+  const introSubtitle = data.introSubtitle || t("barBatMitzvah.introSubtitle");
 
   return (
-    <div dir="rtl" className="relative w-full h-full flex flex-col items-center justify-center p-6 text-right">
+    <div className="relative w-full h-full flex flex-col items-center justify-center p-6">
       <BackToGallery />
 
       <motion.div
@@ -43,16 +45,16 @@ export function BarBatMitzvahDesktop({
         className="w-full max-w-2xl"
       >
         <h1
-          className="text-4xl font-black text-center text-hebrew-heading mb-4 break-words w-full"
+          className="text-display-lg font-black text-center mb-4 break-words w-full" dir="auto"
           style={{ color: primaryColor }}
         >
           {introTitle}
         </h1>
-        <p className="text-center text-hebrew-body text-stone-600 mb-8 break-words">
+        <p className="text-center text-ink-muted mb-8 break-words" dir="auto">
           {introSubtitle}
         </p>
 
-        <div className="relative w-full max-w-lg mx-auto h-80 mb-8 border-b-4 border-[#F5EBDD] pb-2 overflow-visible">
+        <div className="relative w-full max-w-lg mx-auto h-80 mb-8 border-b-4 border-line pb-2 overflow-visible">
           <div className="relative w-full h-full flex flex-col items-center justify-center">
             <CandyBurst key={burstKey} trigger={burstKey > 0} onComplete={onBurstComplete} />
 
@@ -82,25 +84,26 @@ export function BarBatMitzvahDesktop({
                   className="absolute top-1/2 left-1/2 z-50 w-[85%]"
                   style={{ maxWidth: 420 }}
                 >
-                  <div className="rounded-3xl bg-white/70 backdrop-blur-md border border-white/50 shadow-2xl px-8 py-6 text-center overflow-hidden">
+                  <div className="rounded-card bg-surface-raised/70 backdrop-blur-md border border-line shadow-2xl px-8 py-6 text-center overflow-hidden">
                     <div
-                      className="absolute top-0 left-0 right-0 h-1.5 rounded-t-3xl"
+                      className="absolute top-0 start-0 end-0 h-1.5 rounded-t-card"
                       style={{ backgroundColor: primaryColor }}
                     />
                     <button
                       onClick={onReset}
-                      className="absolute top-3 left-3 p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+                      className="absolute top-3 end-3 p-1.5 hover:bg-surface-sunken rounded-full transition-colors"
                     >
                       <X size={20} className="text-slate-600" />
                     </button>
                     <h3
-                      className="text-4xl font-black text-hebrew-heading mb-3 break-words"
+                      className="text-display-lg font-black mb-3 break-words"
                       style={{ color: primaryColor }}
+                      dir="auto"
                     >
-                      {data.blessingTitle || "הגיע הזמן לחגוג! 🎉"}
+                      {data.blessingTitle || t("barBatMitzvah.blessingTitleDefault")}
                     </h3>
                     <div className="w-12 h-0.5 mb-4 rounded-full mx-auto" style={{ backgroundColor: primaryColor }} />
-                    <p className="text-lg text-hebrew-body text-slate-600 leading-relaxed break-words">
+                    <p className="text-lg text-ink-muted leading-relaxed break-words" dir="auto">
                       {data.blessingMessage}
                     </p>
                   </div>
@@ -116,13 +119,13 @@ export function BarBatMitzvahDesktop({
             disabled={isThrowing}
             whileHover={!isThrowing ? { scale: 1.05 } : {}}
             whileTap={!isThrowing ? { scale: 0.95 } : {}}
-            className="px-8 py-4 text-lg font-bold rounded-full text-white shadow-lg"
+            className="px-8 py-4 text-lg font-bold rounded-pill text-accent-ink shadow-lg"
             style={{
               background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}BF 100%)`,
               cursor: isThrowing ? "not-allowed" : "pointer",
             }}
           >
-            {showGreeting ? "חזור להתחלה" : "זרקו סוכריות!"}
+            {showGreeting ? t("barBatMitzvah.startOver") : t("barBatMitzvah.throwCandy")}
           </motion.button>
         </div>
       </motion.div>

@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { FooterBranding } from "@/components/templates/components";
 import { BoyFigure } from "../components/BoyFigure";
 import { GirlFigure } from "../components/GirlFigure";
@@ -33,14 +34,14 @@ export function BarBatMitzvahMobile({
 }: BarBatMitzvahMobileProps) {
   const pathname = usePathname();
   const isCreateRoute = pathname?.includes("/create/");
+  const t = useTranslations("templates");
 
-  const buttonLabel = showGreeting ? "נסה שוב!" : "זרקו סוכריות!";
+  const buttonLabel = showGreeting ? t("barBatMitzvah.tryAgain") : t("barBatMitzvah.throwCandy");
 
   return (
     <div
-      dir="rtl"
-      className={`relative w-full flex flex-col items-center justify-between p-5 text-right ${
-        isCreateRoute ? "min-h-[450px]" : "min-h-screen"
+      className={`relative w-full flex flex-col items-center justify-between p-5 ${
+        isCreateRoute ? "min-h-[450px]" : "min-h-[100dvh]"
       }`}
     >
       {/* Hoisted outside motion wrappers so position:fixed is viewport-relative */}
@@ -53,13 +54,14 @@ export function BarBatMitzvahMobile({
         className="w-full flex flex-col items-center flex-1"
       >
         <h2
-          className="text-2xl font-black text-center text-hebrew-heading mb-1 break-words w-full"
+          className="text-title-lg font-black text-center mb-1 break-words w-full"
           style={{ color: primaryColor }}
+          dir="auto"
         >
-          {data.introTitle || "מכונת ההתבגרות"}
+          {data.introTitle || t("barBatMitzvah.introTitle")}
         </h2>
-        <p className="text-center text-hebrew-body text-sm text-stone-500 dark:text-stone-400 mb-6 break-words">
-          {data.introSubtitle || "לחצו על הכפתור כדי לזרוק סוכריות!"}
+        <p className="text-center text-sm text-ink-muted mb-6 break-words" dir="auto">
+          {data.introSubtitle || t("barBatMitzvah.introSubtitleMobile")}
         </p>
 
         <div className="relative flex-1 w-full flex items-center justify-center">
@@ -92,17 +94,18 @@ export function BarBatMitzvahMobile({
                 className="absolute top-1/2 left-1/2 z-40 w-[90%]"
                 style={{ maxWidth: 380 }}
               >
-                <div className="rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-2xl px-6 py-6 text-center">
-                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
+                <div className="rounded-card bg-surface-raised border border-line shadow-2xl px-6 py-6 text-center">
+                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-surface-sunken">
                     <span className="text-xl">✡︎</span>
                   </div>
                   <h3
-                    className="text-3xl font-black text-hebrew-heading mb-3"
+                    className="text-title-lg font-black mb-3"
                     style={{ color: primaryColor }}
+                    dir="auto"
                   >
-                    {data.blessingTitle || "מזל טוב!"}
+                    {data.blessingTitle || t("barBatMitzvah.mazalTov")}
                   </h3>
-                  <p className="text-base text-hebrew-body text-zinc-700 dark:text-zinc-200 leading-relaxed">
+                  <p className="text-base text-ink-muted leading-relaxed" dir="auto">
                     {data.blessingMessage}
                   </p>
                 </div>
@@ -116,8 +119,8 @@ export function BarBatMitzvahMobile({
           disabled={isThrowing}
           whileHover={!isThrowing ? { scale: 1.04 } : {}}
           whileTap={!isThrowing ? { scale: 0.96 } : {}}
-          className={`w-full mt-6 px-6 py-3.5 text-base font-extrabold rounded-full text-white shadow-xl uppercase tracking-wide ${
-            showGreeting ? "bg-orange-500 hover:bg-orange-600 active:bg-orange-700" : ""
+          className={`w-full mt-6 px-6 py-3.5 text-base font-extrabold rounded-pill text-accent-ink shadow-xl uppercase tracking-wide ${
+            showGreeting ? "bg-accent hover:bg-accent-hover" : ""
           }`}
           style={{
             background: showGreeting

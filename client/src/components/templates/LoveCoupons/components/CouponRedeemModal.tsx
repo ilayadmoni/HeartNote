@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { CouponCodeInput } from "./CouponCodeInput";
 
 interface Props {
   open: boolean;
@@ -30,6 +32,7 @@ export function CouponRedeemModal({
   onEnteredCodeChange,
   codeError,
 }: Props) {
+  const t = useTranslations("templates");
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -79,7 +82,6 @@ export function CouponRedeemModal({
           onClick={isSubmitting ? undefined : onCancel}
           role="dialog"
           aria-modal="true"
-          dir="rtl"
         >
           <motion.div
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -87,92 +89,55 @@ export function CouponRedeemModal({
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-3xl w-full max-w-sm mx-4 shadow-2xl overflow-hidden border border-coral-100"
+            className="bg-surface-raised rounded-card w-full max-w-sm mx-4 shadow-2xl overflow-hidden border border-line"
           >
             <div className="pt-5 px-6 pb-6">
               {/* Header */}
               <div className="text-center mb-4">
-                <h2 className="text-lg font-bold text-navy-700 mb-0.5 text-hebrew-heading">
-                  מימוש קופון
+                <h2 className="text-title-md font-bold text-ink mb-0.5">
+                  {t("loveCoupons.modalTitle")}
                 </h2>
-                <p className="text-xs text-gray-500 text-hebrew-body">
-                  אישור מימוש סופי
-                </p>
+                <p className="text-xs text-ink-muted">{t("loveCoupons.modalSubtitle")}</p>
               </div>
 
               {/* Body */}
               <div className="text-center mb-5">
-                <p className="font-semibold text-gray-800 text-base mb-2 text-hebrew-body">
+                <p className="font-semibold text-ink text-base mb-2" dir="auto">
                   {couponTitle}
                 </p>
-                <p className="text-sm text-gray-500 text-hebrew-body">
-                  האם את/ה בטוח/ה? פעולה זו אינה ניתנת לביטול.
-                </p>
+                <p className="text-sm text-ink-muted">{t("loveCoupons.confirmQuestion")}</p>
               </div>
 
               {needsCodeInput && (
-                <div className="mb-5">
-                  <label
-                    htmlFor="coupon-verification-code"
-                    className="block text-xs font-medium text-gray-600 mb-2 text-center text-hebrew-body"
-                  >
-                    הזינו את קוד האימות בן 4 הספרות שקיבלתם
-                  </label>
-                  <input
-                    id="coupon-verification-code"
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength={4}
-                    autoComplete="off"
-                    value={enteredCode ?? ""}
-                    onChange={(e) => {
-                      const digits = e.target.value.replace(/[^0-9]/g, "").slice(0, 4);
-                      onEnteredCodeChange?.(digits);
-                    }}
-                    disabled={isSubmitting}
-                    dir="ltr"
-                    className={`w-full mx-auto text-center text-2xl font-mono font-bold tracking-[0.6em] py-3 rounded-xl border-2 bg-white focus:outline-none focus:ring-2 focus:ring-offset-1 transition-colors ${
-                      codeError
-                        ? "border-rose-400 focus:ring-rose-300"
-                        : "border-gray-200 focus:ring-coral-300"
-                    }`}
-                    placeholder="••••"
-                    aria-invalid={!!codeError}
-                    aria-describedby={codeError ? "coupon-code-error" : undefined}
-                  />
-                  {codeError && (
-                    <p
-                      id="coupon-code-error"
-                      className="mt-2 text-center text-xs text-rose-500 text-hebrew-body"
-                    >
-                      {codeError}
-                    </p>
-                  )}
-                </div>
+                <CouponCodeInput
+                  enteredCode={enteredCode}
+                  onEnteredCodeChange={onEnteredCodeChange}
+                  isSubmitting={isSubmitting}
+                  codeError={codeError}
+                />
               )}
 
               {/* Buttons */}
-              <div className="flex flex-col sm:flex-row-reverse gap-3">
-                <button
-                  type="button"
-                  onClick={onConfirm}
-                  disabled={isSubmitting}
-                  style={primaryColor ? { backgroundColor: primaryColor } : undefined}
-                  className="w-full sm:flex-1 py-3 rounded-xl text-white font-semibold text-sm bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity hover:opacity-90 inline-flex items-center justify-center gap-2 text-hebrew-body cursor-pointer"
-                >
-                  {isSubmitting && <Loader2 className="animate-spin" size={16} />}
-                  {isSubmitting ? "ממש..." : "מימוש קופון"}
-                </button>
-
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   ref={cancelButtonRef}
                   type="button"
                   onClick={onCancel}
                   disabled={isSubmitting}
-                  className="w-full sm:flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-hebrew-body"
+                  className="w-full sm:flex-1 py-3 rounded-pill border border-line text-ink-muted font-semibold text-sm transition-colors hover:bg-surface-sunken disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  ביטול
+                  {t("loveCoupons.cancel")}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onConfirm}
+                  disabled={isSubmitting}
+                  style={primaryColor ? { backgroundColor: primaryColor } : undefined}
+                  className="w-full sm:flex-1 py-3 rounded-pill text-accent-ink font-semibold text-sm bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity hover:opacity-90 inline-flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {isSubmitting && <Loader2 className="animate-spin" size={16} />}
+                  {isSubmitting ? t("loveCoupons.redeeming") : t("loveCoupons.modalTitle")}
                 </button>
               </div>
             </div>

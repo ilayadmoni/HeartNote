@@ -6,6 +6,7 @@
  */
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import type { DecisionWheelViewProps } from "../types";
 import { WheelCanvas } from "../components";
 import {
@@ -16,16 +17,19 @@ import { FloatingIcons } from "../../OpenWhen/components";
 
 
 export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
+  const t = useTranslations("templates");
   const options =
-    data.options?.length >= 2 ? data.options : ["אופציה 1", "אופציה 2"];
+    data.options?.length >= 2
+      ? data.options
+      : [t("decisionWheel.optionDefault1"), t("decisionWheel.optionDefault2")];
 
   return (
     <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
       <FloatingIcons/>
-      <BackToGallery className="top-4 right-4 absolute" />
+      <BackToGallery className="top-4 end-4 absolute" />
       {/* Decorative blobs */}
-      <div className="absolute top-10 left-10 w-40 h-40 bg-[#F8BBD0]/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-20 right-10 w-56 h-56 bg-[#C7CEEA]/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-10 start-10 w-40 h-40 bg-accent-soft/40 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-20 end-10 w-56 h-56 bg-accent-soft/40 rounded-full blur-3xl pointer-events-none" />
 
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center w-full max-w-md mx-auto px-6 py-8">
@@ -34,8 +38,9 @@ export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-bold text-center dark:text-white mb-3 text-hebrew-heading"
-            style={{ color: data.primaryColor || "#2e3c52" }}
+            className="text-display-md font-bold text-center mb-3"
+            style={{ color: data.primaryColor || "rgb(var(--ink))" }}
+            dir="auto"
           >
             {data.title}
           </motion.h1>
@@ -47,7 +52,7 @@ export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.15 }}
-            className="text-base text-gray-500 dark:text-gray-400 text-center mb-8 text-hebrew-body"
+            className="text-base text-ink-muted text-center mb-8" dir="auto"
           >
             {data.subtitle}
           </motion.p>

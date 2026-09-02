@@ -1,1 +1,153 @@
-{}
+{
+  "common": {
+    "backToGallery": "חזרה לגלריה",
+    "resetDefault": "התחל מחדש",
+    "createdUsing": "Created using",
+    "notFound": "תבנית לא נמצאה: {key}",
+    "loading": "טוען..."
+  },
+  "apologySearch": {
+    "heading": "חיפוש סליחה",
+    "placeholder": "הקלידי חיפוש...",
+    "startButton": "התחל חיפוש",
+    "searchAgain": "חפש שוב"
+  },
+  "barBatMitzvah": {
+    "introTitle": "מכונת ההתבגרות",
+    "introSubtitle": "לחצו על הדמות כדי לגלות את הברכה",
+    "introSubtitleMobile": "לחצו על הכפתור כדי לזרוק סוכריות!",
+    "blessingTitleDefault": "הגיע הזמן לחגוג! 🎉",
+    "mazalTov": "מזל טוב!",
+    "startOver": "חזור להתחלה",
+    "throwCandy": "זרקו סוכריות!",
+    "tryAgain": "נסה שוב!",
+    "boyAlt": "ילד בר מצווה",
+    "girlAlt": "ילדת בת מצווה"
+  },
+  "birthdayCandles": {
+    "greetingDefault": "יום הולדת שמח",
+    "instruction": "לחצו על הלהבות כדי לכבות את הנרות",
+    "cakeAlt": "עוגת יום הולדת חגיגית",
+    "blowCandle": "כיבוי נר מספר {number}",
+    "mazalTov": "מזל טוב!",
+    "messageDefault": "יום נפלא וחגיגי מלא בשמחה וברכות!",
+    "relight": "הדלק נרות שוב"
+  },
+  "weddingGlass": {
+    "titleDefault": "מזל טוב לזוג האהוב",
+    "instruction": "לחצו כדי להפעיל את רגע החתונה",
+    "trigger": "להפעיל את הרגע",
+    "illustrationAlt": "איור חתונה אינטראקטיבי",
+    "mazalTov": "מזל טוב!",
+    "messageDefault": "שתבנו יחד בית מלא באהבה, צחוק וחברות טובה.",
+    "replay": "להפעיל שוב"
+  },
+  "holidays": {
+    "messageDefault": "ברכה אישית שמחכה להתגלות.",
+    "replay": "להפעיל שוב",
+    "hanukkahAlt": "אנימציית חנוכה עם השמש והנרות",
+    "purimAlt": "אנימציית פורים עם מסכה",
+    "roshHashanahAlt": "אנימציית ראש השנה עם מקל דבש",
+    "shavuotAlt": "אנימציית שבועות פורחת",
+    "sukkotAlt": "אנימציית סוכות עם סוכה",
+    "passoverAlt": "ברכת פסח עם מצה ופרחים",
+    "matzahOpenAlt": "מצה נפתחת"
+  },
+  "dateInvite": {
+    "titleDefault": "הזמנה לדייט",
+    "hint": "כדאי לך לבחור את התשובה הנכונה...",
+    "successHint": "ידעתי שהתשובה שלך תהיה כן 😉",
+    "askAgain": "שאל שוב"
+  },
+  "decisionWheel": {
+    "optionDefault1": "אופציה 1",
+    "optionDefault2": "אופציה 2",
+    "canvasLabel": "גלגל החלטות עם {count} אפשרויות: {options}",
+    "spin": "סובב!",
+    "resultLabel": "התוצאה שלך:"
+  },
+  "excuseGenerator": {
+    "defaults": [
+      "הכלב שלי אכל את הזמן הפנוי שלי.",
+      "הגשם גרם לי לחשוב מחדש.",
+      "הצמח שלי חלה ואני צריך/ה לטפל בו.",
+      "השכן שלי נגן על גיטרה ולא הצלחתי להתרכז.",
+      "אמא שלי הזמינה אותי לאכול, לא יכול/ה לסרב."
+    ],
+    "titleDefault": "מכונת התירוצים האוטומטית",
+    "subtitleDefault": "לא בא לך לצאת? יש לנו תירוץ בשבילך.",
+    "promptDefault": "לחץ על הכפתור וקבל תירוץ מושלם",
+    "generating": "מחשב תירוץ...",
+    "buttonLabel": "ג'נרט תירוץ",
+    "disclaimer": "* החברה אינה אחראית לתוצאות השימוש בתירוצים אלו."
+  },
+  "loveCoupons": {
+    "redeem": "ממש",
+    "redeemAria": "ממש קופון: {title}",
+    "redeemed": "מומש",
+    "modalTitle": "מימוש קופון",
+    "modalSubtitle": "אישור מימוש סופי",
+    "confirmQuestion": "האם את/ה בטוח/ה? פעולה זו אינה ניתנת לביטול.",
+    "codeLabel": "הזינו את קוד האימות בן 4 הספרות שקיבלתם",
+    "cancel": "ביטול",
+    "redeeming": "ממש...",
+    "resetAll": "איפוס הכל",
+    "resetAllAria": "איפוס כל הקופונים"
+  },
+  "openWhen": {
+    "openLetterAria": "פתח מכתב: {title}",
+    "lockedLetterAria": "מכתב נעול: {title}"
+  },
+  "punchingBag": {
+    "introTitle": "מערכת לשחרור לחצים",
+    "introSubtitle": "תני לזה כמה מכות טובות. הכל בסדר.",
+    "hitAria": "הכה בשק",
+    "hitInstructions": "הקישי על השק כדי להרביץ",
+    "resultTitleDefault": "אאוץ׳... זה שחרר?",
+    "anotherRound": "אשמח לעוד סיבוב"
+  },
+  "relationshipQuiz": {
+    "feedbackTiers": [
+      "אוי ואבוי... אנחנו בכלל מכירים?!",
+      "טוב, לפחות ידעת איך קוראים לי... נראה לי. יש הרבה מקום לשיפור!",
+      "התחלה סבירה, אבל ציפיתי ליותר!",
+      "לא רע, אבל יש לנו עוד הרבה מה ללמוד אחד על השני",
+      "חצי כוח! אנחנו חברים סבבה, אבל אפשר להעמיק את הקשר.",
+      "יפה מאוד! אתה בהחלט מכיר אותי לא רע בכלל.",
+      "מרשים! אנחנו חברים טובים ורואים את זה. מתי קובעים שוב?",
+      "וואו, כמעט מושלם! אתה מכיר את השריטות שלי כמעט כמוני.",
+      "מדהים! אין ספק שאנחנו חברי אמת. כמעט 100%!",
+      "טלפתיה מוחלטת! ציון מושלם!"
+    ],
+    "finalScore": "Final Score",
+    "titleDefault": "כמה את/ה מכיר/ה אותי?",
+    "playAgain": "לשחק שוב",
+    "questionLabel": "שאלה {current} / {total}"
+  },
+  "scratchCard": {
+    "scratchHere": "גרד כאן",
+    "congratulations": "CONGRATULATIONS",
+    "prizeDefault": "זכית בהפתעה!",
+    "dragHint": "👆 גררו את הכרטיס עם האצבע",
+    "scratchAgain": "גרד שוב"
+  },
+  "slotMachine": {
+    "reelDefault1": "לחצי",
+    "reelDefault2": "כדי",
+    "reelDefault3": "לגלות",
+    "spinLabel": "סובבי",
+    "titleDefault": "מכונת ההבטחות",
+    "subtitleDefault": "סובבי 3 פעמים כדי לגלות מה מחכה לך הערב...",
+    "won": "יששש!",
+    "spinWithRemaining": "{label} ({remaining} נותרו)"
+  },
+  "surpriseGift": {
+    "titleDefault": "יש לך הפתעה! 🎁",
+    "greetingDefault": "אוהב/ת אותך!",
+    "shakeAria": "לחצו לנער את המתנה ({clicks}/{needed})",
+    "tapAria": "הקישו לנער ({clicks}/{needed})"
+  },
+  "timeline": {
+    "emptyState": "הוסף אירועים לציר הזמן שלך"
+  }
+}

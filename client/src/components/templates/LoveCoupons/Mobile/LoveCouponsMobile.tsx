@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { RotateCcw } from "lucide-react";
 import { usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { CouponsViewProps } from "../types";
 import { useCoupons } from "@/hooks/useCoupons";
 import { CouponCard, CouponRedeemModal } from "../components";
@@ -11,6 +12,7 @@ import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import { FloatingIcons } from "../../OpenWhen/components";
 
 export function LoveCouponsMobile({ data, creationId, verificationCode }: CouponsViewProps) {
+  const t = useTranslations("templates");
   const pathname = usePathname();
   const isCreateRoute = pathname?.includes("/create/");
   const {
@@ -31,7 +33,7 @@ export function LoveCouponsMobile({ data, creationId, verificationCode }: Coupon
   return (
     <div
       className={`bg-transparent px-4 py-6 relative isolate flex flex-col justify-between items-center gap-6 ${
-        isCreateRoute ? "min-h-[450px]" : "min-h-[650px]"
+        isCreateRoute ? "min-h-[450px]" : "min-h-[100dvh]"
       }`}
     >
       <FloatingIcons />
@@ -40,7 +42,7 @@ export function LoveCouponsMobile({ data, creationId, verificationCode }: Coupon
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold text-center mb-6 text-hebrew-heading break-words max-w-[280px] mx-auto"
+            className="text-title-lg font-bold text-center mb-6 break-words max-w-[280px] mx-auto" dir="auto"
             style={{ color: primaryColor }}
           >
             {data.title}
@@ -69,11 +71,11 @@ export function LoveCouponsMobile({ data, creationId, verificationCode }: Coupon
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={handleReset}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full text-sm font-medium text-hebrew-body"
-              aria-label="איפוס כל הקופונים"
+              className="flex items-center gap-2 px-4 py-2 bg-surface-sunken text-ink-muted rounded-pill text-sm font-medium"
+              aria-label={t("loveCoupons.resetAllAria")}
             >
               <RotateCcw size={14} />
-              <span>איפוס הכל</span>
+              <span>{t("loveCoupons.resetAll")}</span>
             </motion.button>
           </motion.div>
         )}

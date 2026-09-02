@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 import type { PunchingBagDesktopProps } from "../types";
-import {
-  FooterBranding,
-  BackToGallery,
-  TemplateResetButton,
-} from "@/components/templates/components";
+import { FooterBranding, BackToGallery } from "@/components/templates/components";
+import { PunchingBagResult } from "../components/PunchingBagResult";
 
 export function PunchingBagDesktop({
   data,
@@ -20,6 +18,7 @@ export function PunchingBagDesktop({
   onHit,
   onReset,
 }: PunchingBagDesktopProps) {
+  const t = useTranslations("templates");
   const remaining = hitsRequired - hits;
   const [showPunch, setShowPunch] = useState(false);
 
@@ -31,7 +30,7 @@ export function PunchingBagDesktop({
 
   return (
     <div className="flex flex-col min-h-[390px] bg-transparent relative isolate overflow-hidden">
-      <BackToGallery className="absolute top-4 right-4" />
+      <BackToGallery className="absolute top-4 end-4" />
 
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl mx-auto px-6 py-8 relative z-10">
         <AnimatePresence mode="wait">
@@ -51,23 +50,21 @@ export function PunchingBagDesktop({
                 className="text-center mb-10"
               >
                 <h2
-                  className="text-2xl font-bold text-hebrew-heading mb-2 break-words"
+                  className="text-title-lg font-bold mb-2 break-words"
                   style={{ color: primaryColor }}
+                  dir="auto"
                 >
-                  {data.introTitle ?? "מערכת לשחרור לחצים"}
+                  {data.introTitle ?? t("punchingBag.introTitle")}
                 </h2>
-                <p
-                  className="text-hebrew-body break-words"
-                  style={{ color: primaryColor, opacity: 0.75 }}
-                >
-                  {data.introSubtitle ?? "תני לזה כמה מכות טובות. הכל בסדר."}
+                <p className="break-words" style={{ color: primaryColor, opacity: 0.75 }} dir="auto">
+                  {data.introSubtitle ?? t("punchingBag.introSubtitle")}
                 </p>
               </motion.div>
 
               {/* Rope + Bag */}
               <div className="flex flex-col items-center mb-10 relative">
                 {/* Rope */}
-                <div className="w-0.5 h-14 bg-gray-300" />
+                <div className="w-0.5 h-14 bg-line-strong" />
 
                 {/* Bag */}
                 <motion.div
@@ -76,7 +73,7 @@ export function PunchingBagDesktop({
                   className="cursor-pointer select-none"
                   onClick={handleHit}
                   role="button"
-                  aria-label="הכה בשק"
+                  aria-label={t("punchingBag.hitAria")}
                 >
                   <div
                     className="w-32 h-48 rounded-[60px] shadow-2xl flex flex-col items-center justify-center transition-transform hover:scale-105 active:scale-95"
@@ -96,7 +93,7 @@ export function PunchingBagDesktop({
                       animate={{ opacity: 1, x: -10, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.1 } }}
                       transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                      className="absolute top-1/2 -right-4 transform -translate-y-1/2 pointer-events-none z-20 drop-shadow-xl"
+                      className="absolute top-1/2 -end-4 transform -translate-y-1/2 pointer-events-none z-20 drop-shadow-xl"
                     >
                       <div className="relative w-16 h-16">
                         <div className="absolute inset-0 bg-red-500 rounded-[2rem] rounded-tl-md border-2 border-red-700 shadow-inner z-10" />
@@ -112,56 +109,15 @@ export function PunchingBagDesktop({
               <motion.p
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="font-medium text-hebrew-body break-words text-center max-w-xs"
+                className="font-medium break-words text-center max-w-xs"
                 style={{ color: primaryColor, opacity: 0.7 }}
+                dir="auto"
               >
-                {data.hitInstructions ?? "הקישי על השק כדי להרביץ"}
+                {data.hitInstructions ?? t("punchingBag.hitInstructions")}
               </motion.p>
             </motion.div>
           ) : (
-            <motion.div
-              key="result-view"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="flex flex-col items-center text-center"
-            >
-              {/* Heart icon */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 1.2, repeat: Infinity }}
-                className="mb-6"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="64"
-                  height="64"
-                  viewBox="0 0 24 24"
-                  fill={primaryColor}
-                  stroke={primaryColor}
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                </svg>
-              </motion.div>
-
-              <h2
-                className="text-3xl font-bold text-hebrew-heading mb-4 break-words"
-                style={{ color: primaryColor }}
-              >
-                {data.resultTitle ?? "אאוץ׳... זה שחרר?"}
-              </h2>
-
-              <p className="text-xl text-[#415a77] max-w-md mb-8 text-hebrew-body leading-relaxed break-words">
-                {data.resultMessage}
-              </p>
-
-              <TemplateResetButton onClick={onReset} label="אשמח לעוד סיבוב" />
-            </motion.div>
+            <PunchingBagResult data={data} primaryColor={primaryColor} onReset={onReset} />
           )}
         </AnimatePresence>
       </div>

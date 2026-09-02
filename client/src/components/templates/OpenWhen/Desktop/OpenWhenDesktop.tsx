@@ -31,7 +31,7 @@ export function OpenWhenDesktop({ data }: OpenWhenViewProps) {
   return (
     <div className="flex flex-col h-full min-h-[390px] bg-transparent relative isolate">
       <FloatingIcons />
-      <BackToGallery className="top-4 right-4 absolute" />
+      <BackToGallery className="top-4 end-4 absolute" />
 
       <div className="flex-1 w-full max-w-md mx-auto relative z-10 px-6 py-8">
         {/* Title */}
@@ -39,7 +39,7 @@ export function OpenWhenDesktop({ data }: OpenWhenViewProps) {
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl font-bold text-center dark:text-white mb-10 text-hebrew-heading"
+            className="text-display-md font-bold text-center mb-10" dir="auto"
             style={{ color: primaryColor }}
           >
             {data.title}

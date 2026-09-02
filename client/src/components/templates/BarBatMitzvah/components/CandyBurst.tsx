@@ -90,7 +90,7 @@ export function CandyBurst({ trigger, onComplete }: CandyBurstProps) {
 
   return (
     <div
-      className="fixed top-0 left-0 pointer-events-none overflow-hidden"
+      className="fixed top-0 start-0 pointer-events-none overflow-hidden"
       style={{ width: "100vw", height: "100vh", zIndex: 9999 }}
     >
       {particles.map((p) => (

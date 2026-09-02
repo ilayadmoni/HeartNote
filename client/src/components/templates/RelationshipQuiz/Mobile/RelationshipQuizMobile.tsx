@@ -9,7 +9,6 @@ import { AnimatePresence } from "framer-motion";
 import { usePathname } from "@/i18n/navigation";
 import type { QuizViewProps } from "../types";
 import { useQuiz } from "@/hooks/useQuiz";
-import { getScoreMessage } from "../constants";
 import { QuizProgressBar, QuestionCard, QuizResults } from "../components";
 import {
   FooterBranding,
@@ -21,33 +20,27 @@ export function RelationshipQuizMobile({ data }: QuizViewProps) {
   const isCreateRoute = pathname?.includes('/create/');
   const quiz = useQuiz(data.questions);
   const totalQuestions = data.questions.length;
-  const percentage = Math.round((quiz.score / totalQuestions) * 100);
-  const scoreMsg = getScoreMessage(percentage, data.scoreMessages);
 
   return (
     <div className={`bg-transparent px-4 py-6 relative isolate flex flex-col justify-between items-center gap-6 ${
-      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[100dvh]'
     }`}>
       <FloatingIcons />
       {/* Main Content - Top */}
       <div className="flex-1 max-w-md mx-auto w-full flex flex-col justify-center">
         {/* Title */}
         {data.title && (
-          <h1 className="text-2xl font-bold text-center text-[#2e3c52] dark:text-white mb-10 text-hebrew-heading break-words max-w-[300px] mx-auto">
-            {data.title.length > 50
-              ? `${data.title.substring(0, 50)}...`
-              : data.title}
+          <h1
+            className="text-title-lg font-bold text-center text-ink mb-10 break-words max-w-[300px] mx-auto"
+            dir="auto"
+          >
+            {data.title.length > 50 ? `${data.title.substring(0, 50)}...` : data.title}
           </h1>
         )}
 
         {quiz.isFinished ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-            <QuizResults
-              score={quiz.score}
-              total={totalQuestions}
-              message={scoreMsg}
-              onPlayAgain={quiz.reset}
-            />
+          <div className="bg-surface-raised rounded-card shadow-lift p-6">
+            <QuizResults score={quiz.score} total={totalQuestions} onPlayAgain={quiz.reset} />
           </div>
         ) : (
           <>

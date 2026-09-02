@@ -3,28 +3,22 @@
 import { useState, useRef } from "react";
 import { motion, useAnimationControls } from "framer-motion";
 import { RefreshCw } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   FooterBranding,
   BackToGallery,
-  TemplateResetButton,
 } from "@/components/templates/components";
 import type { ExcuseGeneratorViewProps } from "../types";
-
-const DEFAULT_EXCUSES = [
-  "הכלב שלי אכל את הזמן הפנוי שלי.",
-  "הגשם גרם לי לחשוב מחדש.",
-  "הצמח שלי חלה ואני צריך/ה לטפל בו.",
-  "השכן שלי נגן על גיטרה ולא הצלחתי להתרכז.",
-  "אמא שלי הזמינה אותי לאכול — לא יכול/ה לסרב.",
-];
 
 const EXCUSE_MAX_LENGTH = 80;
 
 export function ExcuseGeneratorDesktop({ data }: ExcuseGeneratorViewProps) {
+  const t = useTranslations("templates");
+  const defaultExcuses = t.raw("excuseGenerator.defaults") as string[];
   const excuses =
     data.excuses
       ?.map((excuse) => excuse.slice(0, EXCUSE_MAX_LENGTH))
-      .filter((excuse) => excuse.length > 0) || DEFAULT_EXCUSES;
+      .filter((excuse) => excuse.length > 0) || defaultExcuses;
 
   const [displayText, setDisplayText] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -52,21 +46,13 @@ export function ExcuseGeneratorDesktop({ data }: ExcuseGeneratorViewProps) {
     }, 80);
   }
 
-  function handleReset() {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    cogControls.stop();
-    cogControls.set({ rotate: 0 });
-    setDisplayText(null);
-    setGenerating(false);
-  }
-
   return (
     <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
-      <BackToGallery className="top-4 right-4 absolute" />
+      <BackToGallery className="top-4 end-4 absolute" />
 
       {/* Decorative blobs */}
-      <div className="absolute top-8 left-8 w-44 h-44 bg-[#fde68a]/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-16 right-8 w-52 h-52 bg-[#fca5a5]/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-8 start-8 w-44 h-44 bg-accent-soft/40 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-16 end-8 w-52 h-52 bg-accent-soft/30 rounded-full blur-3xl pointer-events-none" />
 
       <div className="flex-1 flex flex-col items-center w-full max-w-md mx-auto px-6 py-8">
         {/* Cog icon */}
@@ -95,10 +81,11 @@ export function ExcuseGeneratorDesktop({ data }: ExcuseGeneratorViewProps) {
         <motion.h1
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl font-bold text-center mb-2 text-hebrew-heading break-words"
+          className="text-display-md font-bold text-center mb-2 break-words"
           style={{ color: accent }}
+          dir="auto"
         >
-          {data.title || "מכונת התירוצים האוטומטית"}
+          {data.title || t("excuseGenerator.titleDefault")}
         </motion.h1>
 
         {/* Subtitle */}
@@ -106,28 +93,28 @@ export function ExcuseGeneratorDesktop({ data }: ExcuseGeneratorViewProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15 }}
-          className="text-base text-gray-500 text-center mb-6 text-hebrew-body break-words"
+          className="text-base text-ink-muted text-center mb-6 break-words"
+          dir="auto"
         >
-          {data.subtitle || "לא בא לך לצאת? יש לנו תירוץ בשבילך."}
+          {data.subtitle || t("excuseGenerator.subtitleDefault")}
         </motion.p>
 
         {/* Excuse display box */}
-        <div className="w-full bg-white border-2 border-gray-200 rounded-2xl p-8 mb-6 min-h-[120px] flex items-center justify-center shadow-inner relative overflow-hidden">
+        <div className="w-full bg-surface-raised border-2 border-line rounded-card p-8 mb-6 min-h-[120px] flex items-center justify-center shadow-inner relative overflow-hidden">
           {generating && (
             <motion.div
-              className="absolute inset-0 rounded-2xl"
+              className="absolute inset-0 rounded-card"
               animate={{ opacity: [0, 0.4, 0] }}
               transition={{ duration: 0.16, repeat: Infinity }}
               style={{ backgroundColor: `${accent}22` }}
             />
           )}
           <p
-            className="text-xl font-black text-center relative z-10 text-hebrew-body break-words"
+            className="text-xl font-black text-center relative z-10 break-words"
             style={{ color: accent }}
+            dir="auto"
           >
-            {displayText
-              ? `"${displayText}"`
-              : '"לחץ על הכפתור וקבל תירוץ מושלם"'}
+            {displayText ? `"${displayText}"` : `"${t("excuseGenerator.promptDefault")}"`}
           </p>
         </div>
 
@@ -136,29 +123,17 @@ export function ExcuseGeneratorDesktop({ data }: ExcuseGeneratorViewProps) {
           whileTap={generating ? undefined : { scale: 0.97 }}
           onClick={generateExcuse}
           disabled={generating}
-          className="w-full flex items-center justify-center gap-3 px-8 py-4 rounded-full font-bold text-lg text-white transition-opacity disabled:opacity-60"
+          className="w-full flex items-center justify-center gap-3 px-8 py-4 rounded-pill font-bold text-lg text-accent-ink transition-opacity disabled:opacity-60"
           style={{ backgroundColor: accent }}
         >
           <RefreshCw size={20} />
-          {generating ? "מחשב תירוץ..." : data.buttonLabel || "ג'נרט תירוץ"}
+          {generating ? t("excuseGenerator.generating") : data.buttonLabel || t("excuseGenerator.buttonLabel")}
         </motion.button>
-
-        {/* Reset button — shown after first excuse is generated */}
-        {displayText && !generating && (
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-4"
-          >
-          </motion.div>
-        )}
 
         {/* Disclaimer */}
         {(data.disclaimer !== undefined ? data.disclaimer : true) && (
-          <p className="text-xs text-gray-400 mt-4 text-center text-hebrew-body">
-            {data.disclaimer ||
-              "* החברה אינה אחראית לתוצאות השימוש בתירוצים אלו."}
+          <p className="text-xs text-ink-subtle mt-4 text-center" dir="auto">
+            {data.disclaimer || t("excuseGenerator.disclaimer")}
           </p>
         )}
       </div>

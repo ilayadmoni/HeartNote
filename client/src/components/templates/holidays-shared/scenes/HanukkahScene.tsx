@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { FrameSequenceScene } from "./FrameSequenceScene";
 import type { HolidaySceneProps } from "../holiday-scene-types";
 
@@ -12,11 +13,12 @@ const FRAMES = [
 ] as const;
 
 export function HanukkahScene(props: HolidaySceneProps) {
+  const t = useTranslations("templates");
   return (
     <FrameSequenceScene
       {...props}
       frames={FRAMES}
-      alt="אנימציית חנוכה עם השמש והנרות"
+      alt={t("holidays.hanukkahAlt")}
     />
   );
 }

@@ -5,7 +5,8 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
-import { GiftBox } from "../components";
+import { useTranslations } from "next-intl";
+import { GiftBox, SurpriseGiftReveal } from "../components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import { COLOR_PALETTE } from "@/constants/colors";
 
@@ -24,9 +25,10 @@ import { FloatingIcons } from "../../OpenWhen/components";
 const DEFAULT_CLICKS = 5;
 
 export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
+  const t = useTranslations("templates");
   const {
-    title = "יש לך הפתעה! 🎁",
-    greeting = "!אוהב/ת אותך",
+    title = t("surpriseGift.titleDefault"),
+    greeting = t("surpriseGift.greetingDefault"),
     boxColor = DEFAULT_BOX_COLOR,
     ribbonColor = DEFAULT_RIBBON_COLOR,
     clicksRequired = DEFAULT_CLICKS,
@@ -80,13 +82,14 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
   return (
     <div className="flex flex-col h-full min-h-[390px] 2xl:min-h-[650px] bg-transparent relative isolate overflow-hidden">
       <FloatingIcons />
-      <BackToGallery className="top-4 right-4 absolute" />
+      <BackToGallery className="top-4 end-4 absolute" />
       {/* Content Area */}
       <div className="flex-1 flex flex-col w-full max-w-md 2xl:max-w-2xl mx-auto px-6 pt-6 pb-4 2xl:pt-8 2xl:pb-6">
         {/* Title */}
         <h1
-          className="text-3xl 2xl:text-5xl font-bold dark:text-white mb-4 2xl:mb-6 text-hebrew-heading text-center"
+          className="text-display-md 2xl:text-display-xl font-bold mb-4 2xl:mb-6 text-center"
           style={{ color: primaryColor }}
+          dir="auto"
         >
           {title}
         </h1>
@@ -108,62 +111,33 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
                   transition={{ duration: 0.4 }}
                   whileHover={{ scale: 1.05 }}
                   exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-                  className="absolute cursor-pointer 2xl:scale-150 focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
-                  style={
-                    { focusVisibleRingColor: primaryColor } as React.CSSProperties
-                  }
-                  aria-label={`לחצו לנער את המתנה (${clicks}/${needed})`}
+                  className="absolute cursor-pointer 2xl:scale-150 focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-control"
+                  style={{ focusVisibleRingColor: primaryColor } as React.CSSProperties}
+                  aria-label={t("surpriseGift.shakeAria", { clicks, needed })}
                 >
-                  <GiftBox
-                    boxColor={boxColor}
-                    ribbonColor={ribbonColor}
-                    isOpen={false}
-                    size={240}
-                  />
+                  <GiftBox boxColor={boxColor} ribbonColor={ribbonColor} isOpen={false} size={240} />
                 </motion.button>
               )}
             </AnimatePresence>
 
             {/* Revealed greeting – normal flow so the container can grow to fit */}
             <AnimatePresence>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 40, scale: 0.7 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 180,
-                    damping: 14,
-                    delay: 0.2,
-                  }}
-                  className="w-full rounded-2xl 2xl:rounded-3xl shadow-lg bg-white dark:bg-gray-800 p-6 md:p-8 2xl:p-12"
-                >
-                  <div className="w-full flex justify-center text-center">
-                    <p
-                      className="text-center text-2xl 2xl:text-4xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words w-full"
-                      style={{ color: primaryColor }}
-                    >
-                      {greeting}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
+              {isOpen && <SurpriseGiftReveal greeting={greeting} primaryColor={primaryColor} />}
             </AnimatePresence>
           </div>
         </div>
       </div>
 
-        {showReset && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
-            className="flex justify-center mb-3"
-          >
-            <TemplateResetButton onClick={handleReset} label="נסה שוב" />
-          </motion.div>
-        )}
+      {showReset && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="flex justify-center mb-3"
+        >
+          <TemplateResetButton onClick={handleReset} label={t("common.resetDefault")} />
+        </motion.div>
+      )}
 
       {/* Footer Credit */}
       <FooterBranding className="shrink-0 mt-auto pb-4" />

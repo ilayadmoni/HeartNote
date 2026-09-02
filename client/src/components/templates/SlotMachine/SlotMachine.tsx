@@ -1,22 +1,28 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { SlotMachineDesktop } from "./Desktop/SlotMachineDesktop";
 import { SlotMachineMobile } from "./Mobile/SlotMachineMobile";
 import type { TemplateComponentProps, SlotMachineData } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "../types";
 
-const INITIAL_TEXTS: [string, string, string] = ["לחצי", "כדי", "לגלות"];
 const SPIN_ITERATIONS = 15;
 const SPIN_INTERVAL_MS = 100;
 
 export function SlotMachine({ data }: TemplateComponentProps<SlotMachineData>) {
+  const t = useTranslations("templates");
+  const initialTexts: [string, string, string] = [
+    t("slotMachine.reelDefault1"),
+    t("slotMachine.reelDefault2"),
+    t("slotMachine.reelDefault3"),
+  ];
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [mounted, setMounted] = useState(false);
   const [spinCount, setSpinCount] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [reelTexts, setReelTexts] = useState<[string, string, string]>(INITIAL_TEXTS);
+  const [reelTexts, setReelTexts] = useState<[string, string, string]>(initialTexts);
   const [hasWon, setHasWon] = useState(false);
 
   const spinCountRef = useRef(0);
@@ -39,9 +45,9 @@ export function SlotMachine({ data }: TemplateComponentProps<SlotMachineData>) {
     isSpinningRef.current = false;
     setSpinCount(0);
     setIsSpinning(false);
-    setReelTexts(INITIAL_TEXTS);
+    setReelTexts(initialTexts);
     setHasWon(false);
-  }, []);
+  }, [initialTexts]);
 
   const handleSpin = useCallback(() => {
     if (spinCountRef.current >= spinsRequired || isSpinningRef.current) return;
@@ -49,9 +55,9 @@ export function SlotMachine({ data }: TemplateComponentProps<SlotMachineData>) {
     isSpinningRef.current = true;
     setIsSpinning(true);
 
-    const opts1 = data.reel1Options?.length ? data.reel1Options : ["לחצי"];
-    const opts2 = data.reel2Options?.length ? data.reel2Options : ["כדי"];
-    const opts3 = data.reel3Options?.length ? data.reel3Options : ["לגלות"];
+    const opts1 = data.reel1Options?.length ? data.reel1Options : [t("slotMachine.reelDefault1")];
+    const opts2 = data.reel2Options?.length ? data.reel2Options : [t("slotMachine.reelDefault2")];
+    const opts3 = data.reel3Options?.length ? data.reel3Options : [t("slotMachine.reelDefault3")];
 
     let iterations = 0;
 
@@ -82,7 +88,7 @@ export function SlotMachine({ data }: TemplateComponentProps<SlotMachineData>) {
         }
       }
     }, SPIN_INTERVAL_MS);
-  }, [data, spinsRequired]);
+  }, [data, spinsRequired, t]);
 
   if (!mounted) return null;
 

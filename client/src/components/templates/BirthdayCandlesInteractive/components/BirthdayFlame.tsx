@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 interface BirthdayFlameProps {
   index: number;
@@ -15,6 +16,7 @@ export function BirthdayFlame({
   reduceMotion,
   onClick,
 }: BirthdayFlameProps) {
+  const t = useTranslations("templates");
   const flameSize = 24;
 
   return (
@@ -22,8 +24,8 @@ export function BirthdayFlame({
       type="button"
       onClick={onClick}
       disabled={!isLit}
-      aria-label={`כיבוי נר מספר ${index + 1}`}
-      className="group flex h-20 w-7 flex-col items-center justify-end rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]"
+      aria-label={t("birthdayCandles.blowCandle", { number: index + 1 })}
+      className="group flex h-20 w-7 flex-col items-center justify-end rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
       <AnimatePresence>
         {isLit ? (
@@ -60,7 +62,7 @@ export function BirthdayFlame({
           </motion.span>
         )}
       </AnimatePresence>
-      <span className="relative h-11 w-3 overflow-hidden rounded-t-sm border border-gray-200 bg-[#f5f0e8] shadow-sm">
+      <span className="relative h-11 w-3 overflow-hidden rounded-t-sm border border-line bg-surface-sunken shadow-sm">
         <span
           className="absolute inset-0 opacity-10"
           style={{

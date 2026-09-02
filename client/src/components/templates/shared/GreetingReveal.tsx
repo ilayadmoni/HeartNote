@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { DEFAULT_PRIMARY_COLOR } from "../types";
 import type { InteractiveGreetingData } from "../types";
 
 interface GreetingRevealProps {
@@ -12,8 +14,9 @@ interface GreetingRevealProps {
 export function GreetingReveal({
   data,
   titleFallback,
-  accentColor = "#d4826f",
+  accentColor = DEFAULT_PRIMARY_COLOR,
 }: GreetingRevealProps) {
+  const t = useTranslations("templates");
   const title = data.greetingTitle || titleFallback;
   const signature = data.signature || data.senderName;
 
@@ -22,24 +25,20 @@ export function GreetingReveal({
       initial={{ opacity: 0, y: 18, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className="w-full rounded-2xl border border-white/70 bg-white/88 p-6 text-center shadow-xl shadow-coral-900/10 backdrop-blur-md dark:border-white/10 dark:bg-slate-900/88"
-      dir="rtl"
+      className="w-full rounded-card border border-line bg-surface-raised/88 p-6 text-center shadow-xl backdrop-blur-md"
       aria-live="polite"
     >
-      <p className="text-sm font-semibold text-slate-500 dark:text-slate-300">
+      <p className="text-sm font-semibold text-ink-muted" dir="auto">
         {data.recipientName ? `?${data.recipientName}` : ""}
       </p>
-      <h2
-        className="mt-1 text-2xl font-black text-hebrew-heading"
-        style={{ color: accentColor }}
-      >
+      <h2 className="mt-1 text-title-lg font-black" style={{ color: accentColor }} dir="auto">
         {title}
       </h2>
-      <p className="mx-auto mt-4 max-w-md whitespace-pre-line text-base leading-8 text-[#2e3c52] dark:text-slate-100">
-        {data.message || "ברכה אישית שמחכה להתגלות."}
+      <p className="mx-auto mt-4 max-w-md whitespace-pre-line text-base leading-8 text-ink-muted" dir="auto">
+        {data.message || t("holidays.messageDefault")}
       </p>
       {signature && (
-        <p className="mt-5 text-sm font-bold text-slate-500 dark:text-slate-300">
+        <p className="mt-5 text-sm font-bold text-ink-muted" dir="auto">
           {signature}
         </p>
       )}

@@ -34,10 +34,10 @@ export function QuestionCard({
       animate={{ opacity: 1, x: 0 }}
       exit={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: -50 }}
       transition={shouldReduceMotion ? { duration: 0 } : undefined}
-      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
+      className="bg-surface-raised rounded-card shadow-lift p-6"
     >
       {/* Question */}
-      <h2 className="text-xl font-bold text-[#2e3c52] dark:text-white mb-6 text-center text-hebrew-heading break-words max-w-[90%] mx-auto">
+      <h2 className="text-title-md font-bold text-ink mb-6 text-center break-words max-w-[90%] mx-auto" dir="auto">
         {question.question}
       </h2>
 

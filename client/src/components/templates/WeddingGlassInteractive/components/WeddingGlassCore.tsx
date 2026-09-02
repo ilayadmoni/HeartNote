@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { InteractiveShell } from "@/components/templates/shared/InteractiveShell";
 import { WeddingRevealOverlay } from "./WeddingRevealOverlay";
 import type { WeddingInteractiveData, TemplateComponentProps } from "@/components/templates/types";
@@ -15,6 +16,7 @@ const FRAMES = [
 export function WeddingGlassCore({
   data,
 }: TemplateComponentProps<WeddingInteractiveData>) {
+  const t = useTranslations("templates");
   const reduceMotion = Boolean(useReducedMotion());
   const [frame, setFrame] = useState(0);
   const [started, setStarted] = useState(false);
@@ -52,23 +54,23 @@ export function WeddingGlassCore({
 
   return (
     <InteractiveShell
-      title={data.greetingTitle || data.coupleNames || "מזל טוב לזוג האהוב"}
-      instruction="לחצו כדי להפעיל את רגע החתונה"
+      title={data.greetingTitle || data.coupleNames || t("weddingGlass.titleDefault")}
+      instruction={t("weddingGlass.instruction")}
     >
       <div className="relative aspect-square w-full max-w-md overflow-visible">
         {!started && (
           <button
             type="button"
             onClick={start}
-            className="absolute inset-0 z-10 rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]"
-            aria-label="הפעילו את רגע החתונה"
+            className="absolute inset-0 z-10 rounded-card focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label={t("weddingGlass.trigger")}
           />
         )}
         {FRAMES.map((src, index) => (
           <motion.img
             key={src}
             src={src}
-            alt={index === frame ? "איור חתונה אינטראקטיבי" : ""}
+            alt={index === frame ? t("weddingGlass.illustrationAlt") : ""}
             aria-hidden={index !== frame}
             className="absolute inset-0 h-full w-full object-contain drop-shadow-2xl"
             initial={false}
@@ -88,9 +90,9 @@ export function WeddingGlassCore({
         <button
           type="button"
           onClick={start}
-          className="rounded-full bg-[#d4826f] px-6 py-3 text-sm font-bold text-white shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b263b]"
+          className="rounded-pill bg-accent px-6 py-3 text-sm font-bold text-accent-ink shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
         >
-          להפעיל את הרגע
+          {t("weddingGlass.trigger")}
         </button>
       )}
     </InteractiveShell>

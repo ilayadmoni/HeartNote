@@ -1,1 +1,12 @@
-{}
+{
+  "loading": "טוען...",
+  "expiredTitle": "פג תוקף הכרטיס",
+  "expiredMessage": "הכרטיס הזה כבר לא זמין. בקשו מהשולח לשלוח כרטיס חדש!",
+  "expiredCta": "צרו כרטיס משלכם",
+  "madeWith": "נוצר עם HeartNote",
+  "prompt": "אהבתם? שתפו את הכרטיס!",
+  "shareOnWhatsapp": "שתפו בוואטסאפ",
+  "copyLink": "העתקת קישור",
+  "copied": "הועתק!",
+  "whatsappText": "הכנתי לך כרטיס מיוחד ב-HeartNote! 💌"
+}

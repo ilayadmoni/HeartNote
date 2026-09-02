@@ -6,7 +6,8 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "@/i18n/navigation";
 import confetti from "canvas-confetti";
-import { GiftBox } from "../components";
+import { useTranslations } from "next-intl";
+import { GiftBox, SurpriseGiftReveal } from "../components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import { COLOR_PALETTE } from "@/constants/colors";
 
@@ -24,9 +25,10 @@ import { FloatingIcons } from "../../OpenWhen/components";
 const DEFAULT_CLICKS = 5;
 
 export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
+  const t = useTranslations("templates");
   const {
-    title = "יש לך הפתעה! 🎁",
-    greeting = "!אוהב/ת אותך",
+    title = t("surpriseGift.titleDefault"),
+    greeting = t("surpriseGift.greetingDefault"),
     boxColor = DEFAULT_BOX_COLOR,
     ribbonColor = DEFAULT_RIBBON_COLOR,
     clicksRequired = DEFAULT_CLICKS,
@@ -83,7 +85,7 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
   return (
     <div
       className={`w-full flex flex-col justify-between items-center gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate ${
-        isCreateRoute ? "min-h-[450px]" : "min-h-[650px]"
+        isCreateRoute ? "min-h-[450px]" : "min-h-[100dvh]"
       }`}
     >
       <FloatingIcons />
@@ -91,8 +93,9 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
       <div className="flex-1 flex flex-col items-center justify-center w-full">
         {/* Title */}
         <h1
-          className="text-2xl font-bold dark:text-white mb-6 text-hebrew-heading text-center"
+          className="text-title-lg font-bold mb-6 text-center"
           style={{ color: primaryColor }}
+          dir="auto"
         >
           {title}
         </h1>
@@ -100,10 +103,7 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
         {/* Stable transition zone — min-height holds the gift box footprint so
             neither the box (absolute) nor the greeting (normal flow) can shift
             surrounding content when they swap. */}
-        <div
-          className="relative w-full flex items-center justify-center"
-          style={{ minHeight: 200 }}
-        >
+        <div className="relative w-full flex items-center justify-center" style={{ minHeight: 200 }}>
           {/* Gift Box – absolutely positioned so it cannot affect layout height */}
           <AnimatePresence>
             {!isOpen && (
@@ -113,15 +113,10 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
                 transition={{ duration: 0.4 }}
                 whileTap={{ scale: 0.95 }}
                 exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-                className="absolute cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-xl"
-                aria-label={`הקישו לנער (${clicks}/${needed})`}
+                className="absolute cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 rounded-control"
+                aria-label={t("surpriseGift.tapAria", { clicks, needed })}
               >
-                <GiftBox
-                  boxColor={boxColor}
-                  ribbonColor={ribbonColor}
-                  isOpen={false}
-                  size={180}
-                />
+                <GiftBox boxColor={boxColor} ribbonColor={ribbonColor} isOpen={false} size={180} />
               </motion.button>
             )}
           </AnimatePresence>
@@ -129,27 +124,7 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
           {/* Revealed greeting – normal flow so the container can grow to fit */}
           <AnimatePresence>
             {isOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 30, scale: 0.7 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 180,
-                  damping: 14,
-                  delay: 0.2,
-                }}
-                className="w-full rounded-2xl shadow-lg bg-white dark:bg-gray-800 p-4 sm:p-6"
-              >
-                <div className="max-h-[50vh] overflow-y-auto">
-                  <p
-                    className="text-lg sm:text-xl font-bold text-hebrew-heading leading-relaxed whitespace-pre-wrap break-words text-center"
-                    style={{ color: primaryColor }}
-                  >
-                    {greeting}
-                  </p>
-                </div>
-              </motion.div>
+              <SurpriseGiftReveal greeting={greeting} primaryColor={primaryColor} size="sm" scrollable />
             )}
           </AnimatePresence>
         </div>
@@ -162,7 +137,7 @@ export function SurpriseGiftMobile({ data }: SurpriseGiftProps) {
           transition={{ duration: 0.4 }}
           className="flex justify-center mb-3"
         >
-          <TemplateResetButton onClick={handleReset} label="נסה שוב" />
+          <TemplateResetButton onClick={handleReset} label={t("common.resetDefault")} />
         </motion.div>
       )}
 

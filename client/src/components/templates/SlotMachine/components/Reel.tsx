@@ -24,7 +24,7 @@ export function Reel({ text, isSpinning, primaryColor, size = "desktop" }: ReelP
         flex items-center justify-center rounded-2xl shadow-inner border-2
         transition-colors duration-100
         ${isDesktop ? "w-40 h-40" : "w-24 h-24"}
-        ${isSpinning ? "border-gray-300 bg-gray-100" : "border-gray-200 bg-[#f8f4f1]"}
+        ${isSpinning ? "border-line-strong bg-surface-sunken" : "border-line bg-surface-sunken"}
       `}
       style={{
         borderColor: isSpinning ? "#e5e7eb" : `${primaryColor}30`,
@@ -38,7 +38,8 @@ export function Reel({ text, isSpinning, primaryColor, size = "desktop" }: ReelP
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: isSpinning ? 8 : 0 }}
           transition={{ duration: isSpinning ? 0.06 : 0.25, ease: "easeOut" }}
-          className={`font-bold text-[#1b263b] text-center px-2 leading-tight break-words
+          dir="auto"
+          className={`font-bold text-ink text-center px-2 leading-tight break-words
             ${isDesktop ? "text-2xl" : "text-base"}
           `}
         >

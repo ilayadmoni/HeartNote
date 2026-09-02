@@ -1,1 +1,12 @@
-{}
+{
+  "loading": "Loading...",
+  "expiredTitle": "This card has expired",
+  "expiredMessage": "This card isn't available anymore. Ask the sender for a fresh one!",
+  "expiredCta": "Create your own card",
+  "madeWith": "Made with HeartNote",
+  "prompt": "Loved it? Share the card!",
+  "shareOnWhatsapp": "Share on WhatsApp",
+  "copyLink": "Copy link",
+  "copied": "Copied!",
+  "whatsappText": "I made you something special on HeartNote! 💌"
+}

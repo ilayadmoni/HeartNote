@@ -3,16 +3,19 @@
 /**
  * UserPageClient Component
  * Renders the template on the public viewer page with:
- * - "Nuclear" grid centering on mobile (100dvh)
  * - Forced Light Mode (templates always render as designed)
- * - Three-tier watermark: white base → watermark at z-10 → transparent template at z-20 with solid cards
+ * - Gentle watermark for free-tier creations, with a "Made with HeartNote" caption
+ * - WhatsApp / copy-link share row
  * - Main website Footer at the bottom
  */
 
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { TemplateRenderer } from "@/components/templates";
 import { Footer } from "@/components/footer";
+import { Link } from "@/i18n/navigation";
+import { ShareSection } from "./ShareSection";
 
 interface UserPageClientProps {
   templateKey: string;
@@ -27,6 +30,7 @@ export function UserPageClient({
   isPaid,
   creationId,
 }: UserPageClientProps) {
+  const t = useTranslations("share");
   const searchParams = useSearchParams();
   const rawCode = searchParams?.get("code") ?? null;
   const verificationCode = rawCode && /^[0-9]{4}$/.test(rawCode) ? rawCode : null;
@@ -52,28 +56,11 @@ export function UserPageClient({
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col text-slate-900 bg-[#faf7f5]">
-      {isPaid ? (
-        /* ═══ Paid User — clean render, no watermark ═══ */
-        <div className="flex-1 flex items-center justify-center py-6 bg-[#faf7f5]">
-          <div className="w-full md:max-w-[620px] lg:max-w-[700px]">
-            <TemplateRenderer componentKey={componentKey} data={contentData} creationId={creationId} verificationCode={verificationCode} />
-          </div>
-        </div>
-      ) : (
-        /* ═══ Free User — 3-Tier Watermark Sandwich ═══
-         *
-         * CSS stacking order within the isolate context:
-         *
-         * TIER 1  Root          — bg-white, isolate → solid white base
-         * TIER 2  Watermark     — absolute z-10 opacity-20, semi-transparent pattern
-         * TIER 3  Template      — relative z-20, bg-transparent root lets watermark
-         *                         show through; inner cards have bg-white for solidity
-         */
-        <div className="relative flex-1 flex items-center justify-center py-6 bg-white isolate overflow-hidden">
-          {/* TIER 2: Watermark pattern — semi-transparent on solid white base */}
+    <div className="min-h-[100dvh] flex flex-col bg-surface">
+      <div className="relative flex-1 flex flex-col items-center py-section-sm px-gutter isolate overflow-hidden">
+        {!isPaid && (
           <div
-            className="absolute inset-0 z-10 pointer-events-none opacity-20"
+            className="absolute inset-0 z-0 pointer-events-none opacity-[0.12]"
             style={{
               backgroundImage: "url('/assets/images/watermarks.png')",
               backgroundSize: "cover",
@@ -81,15 +68,30 @@ export function UserPageClient({
             }}
             aria-hidden="true"
           />
+        )}
 
-          {/* TIER 3: Template — bg-transparent root, content cards are solid white */}
-          <div className="relative z-20 w-full md:max-w-[620px] lg:max-w-[700px]">
-            <TemplateRenderer componentKey={componentKey} data={contentData} creationId={creationId} verificationCode={verificationCode} />
-          </div>
+        <div className="relative z-10 w-full max-w-[700px]">
+          <TemplateRenderer
+            componentKey={componentKey}
+            data={contentData}
+            creationId={creationId}
+            verificationCode={verificationCode}
+          />
         </div>
-      )}
 
-      {/* Main Website Footer */}
+        <div className="relative z-10 w-full max-w-[700px]">
+          <ShareSection templateName={templateKey} />
+        </div>
+
+        {!isPaid && (
+          <p className="relative z-10 text-center text-caption text-ink-subtle mt-2">
+            <Link href="/" className="hover:text-ink transition-colors">
+              {t("madeWith")}
+            </Link>
+          </p>
+        )}
+      </div>
+
       <Footer />
     </div>
   );

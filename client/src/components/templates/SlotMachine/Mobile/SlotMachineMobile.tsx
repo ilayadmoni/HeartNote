@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
 import type { SlotMachineMobileProps } from "../types";
 import { Reel } from "../components/Reel";
@@ -20,8 +21,9 @@ export function SlotMachineMobile({
   onSpin,
   onReset,
 }: SlotMachineMobileProps) {
+  const t = useTranslations("templates");
   const remaining = spinsRequired - spinCount;
-  const spinLabel = data.spinButtonLabel ?? "סובבי";
+  const spinLabel = data.spinButtonLabel ?? t("slotMachine.spinLabel");
   const successEmoji = data.successEmoji ?? "🎉";
 
   const pathname = usePathname();
@@ -29,7 +31,7 @@ export function SlotMachineMobile({
 
   return (
     <div className={`w-full flex flex-col bg-transparent relative isolate overflow-hidden px-4 py-6 ${
-      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[100dvh]'
     }`}>
       <div className="flex-1 flex flex-col items-center justify-center gap-6">
         {/* Header */}
@@ -39,17 +41,11 @@ export function SlotMachineMobile({
           transition={{ duration: 0.4 }}
           className="text-center"
         >
-          <h2
-            className="text-xl font-bold text-hebrew-heading mb-1 break-words"
-            style={{ color: primaryColor }}
-          >
-            {data.title ?? "מכונת ההבטחות"}
+          <h2 className="text-title-lg font-bold mb-1 break-words" style={{ color: primaryColor }} dir="auto">
+            {data.title ?? t("slotMachine.titleDefault")}
           </h2>
-          <p
-            className="text-sm text-hebrew-body break-words"
-            style={{ color: primaryColor, opacity: 0.75 }}
-          >
-            {data.subtitle ?? "סובבי 3 פעמים כדי לגלות מה מחכה לך הערב..."}
+          <p className="text-sm break-words" style={{ color: primaryColor, opacity: 0.75 }} dir="auto">
+            {data.subtitle ?? t("slotMachine.subtitleDefault")}
           </p>
         </motion.div>
 
@@ -76,17 +72,17 @@ export function SlotMachineMobile({
           whileTap={!isSpinning && !hasWon ? { scale: 0.96 } : {}}
           onClick={onSpin}
           disabled={isSpinning || hasWon}
-          className="px-8 py-3 rounded-full text-lg font-bold shadow-lg transition-all duration-300 text-white text-hebrew-heading disabled:opacity-75 disabled:cursor-not-allowed"
+          className="px-8 py-3 rounded-pill text-lg font-bold shadow-lg transition-all duration-300 text-accent-ink disabled:opacity-75 disabled:cursor-not-allowed"
           style={{
             backgroundColor: hasWon ? "#22c55e" : primaryColor,
             boxShadow: `0 8px 25px ${hasWon ? "#22c55e" : primaryColor}40`,
           }}
         >
           {hasWon
-            ? `${successEmoji} יששש!`
+            ? `${successEmoji} ${t("slotMachine.won")}`
             : isSpinning
             ? `${spinLabel}...`
-            : `${spinLabel} (${remaining} נותרו)`}
+            : t("slotMachine.spinWithRemaining", { label: spinLabel, remaining })}
         </motion.button>
 
         {/* Reset button — shown after winning */}
@@ -96,7 +92,7 @@ export function SlotMachineMobile({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <TemplateResetButton onClick={onReset} label="נסה שוב" />
+            <TemplateResetButton onClick={onReset} label={t("common.resetDefault")} />
           </motion.div>
         )}
       </div>

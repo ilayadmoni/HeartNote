@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { FrameSequenceScene } from "./FrameSequenceScene";
 import type { HolidaySceneProps } from "../holiday-scene-types";
 
@@ -11,11 +12,12 @@ const FRAMES = [
 ] as const;
 
 export function PurimScene(props: HolidaySceneProps) {
+  const t = useTranslations("templates");
   return (
     <FrameSequenceScene
       {...props}
       frames={FRAMES}
-      alt="אנימציית פורים עם מסכה"
+      alt={t("holidays.purimAlt")}
     />
   );
 }

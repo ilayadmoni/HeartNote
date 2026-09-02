@@ -32,7 +32,7 @@ export function OpenWhenMobile({ data }: OpenWhenViewProps) {
 
   return (
     <div className={`bg-transparent py-8 px-4 relative isolate flex flex-col justify-between items-center ${
-      isCreateRoute ? 'min-h-[450px]' : 'min-h-[650px]'
+      isCreateRoute ? 'min-h-[450px]' : 'min-h-[100dvh]'
     }`}>
       <FloatingIcons />
 
@@ -42,7 +42,7 @@ export function OpenWhenMobile({ data }: OpenWhenViewProps) {
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold text-center dark:text-white mb-6 text-hebrew-heading"
+            className="text-title-lg font-bold text-center mb-6" dir="auto"
             style={{ color: primaryColor }}
           >
             {data.title}

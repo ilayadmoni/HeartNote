@@ -77,7 +77,7 @@ export function HolidayInteractiveCard({ data, slug }: HolidayInteractiveCardPro
             <button
               type="button"
               onClick={start}
-              className="absolute inset-0 z-10 rounded-[1.45rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d4826f]"
+              className="absolute inset-0 z-10 rounded-card focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               aria-label={config.prompt}
             />
           )}

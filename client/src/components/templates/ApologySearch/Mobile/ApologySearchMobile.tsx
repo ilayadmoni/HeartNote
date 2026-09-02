@@ -3,10 +3,9 @@
 import { usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
-import {
-  FooterBranding,
-  TemplateResetButton,
-} from "@/components/templates/components";
+import { useTranslations } from "next-intl";
+import { FooterBranding } from "@/components/templates/components";
+import { ApologySearchResult } from "../components/ApologySearchResult";
 import type { ApologySearchMobileProps } from "../types";
 
 export function ApologySearchMobile({
@@ -19,6 +18,7 @@ export function ApologySearchMobile({
 }: ApologySearchMobileProps) {
   const pathname = usePathname();
   const isCreateRoute = pathname?.includes('/create/');
+  const t = useTranslations("templates");
 
   return (
     <div className={`flex flex-col h-full bg-transparent relative isolate overflow-hidden ${
@@ -37,29 +37,26 @@ export function ApologySearchMobile({
               {/* Search icon heading */}
               <div className="flex flex-col items-center gap-1">
                 <Search size={36} color={primaryColor} strokeWidth={1.5} />
-                <p
-                  className="text-xl font-bold text-hebrew-body break-words"
-                  style={{ color: primaryColor }}
-                >
-                  חיפוש סליחה
+                <p className="text-xl font-bold break-words" style={{ color: primaryColor }}>
+                  {t("apologySearch.heading")}
                 </p>
               </div>
 
               {/* Search bar */}
-              <div className="w-full bg-white border-2 border-[#e8ddd8] rounded-full px-4 py-3 flex items-center shadow-md gap-2">
-                <Search size={16} color="#415a77" />
+              <div className="w-full bg-surface-raised border-2 border-line rounded-pill px-4 py-3 flex items-center shadow-md gap-2">
+                <Search size={16} className="text-ink-muted" />
                 <span
-                  dir="rtl"
-                  className="flex-1 text-base text-[#1b263b] bg-transparent outline-none text-hebrew-body min-h-[1.25rem] break-words"
+                  dir="auto"
+                  className="flex-1 text-base text-ink bg-transparent outline-none min-h-[1.25rem] break-words"
                 >
                   {typedText || (
-                    <span className="text-[#9baab5]">הקלידי חיפוש...</span>
+                    <span className="text-ink-subtle">{t("apologySearch.placeholder")}</span>
                   )}
                   {phase === "typing" && (
                     <motion.span
                       animate={{ opacity: [1, 0] }}
                       transition={{ duration: 0.5, repeat: Infinity }}
-                      className="inline-block w-0.5 h-4 bg-[#1b263b] align-middle mr-0.5"
+                      className="inline-block w-0.5 h-4 bg-ink align-middle ms-0.5"
                     />
                   )}
                 </span>
@@ -102,56 +99,16 @@ export function ApologySearchMobile({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 6 }}
                     onClick={onStart}
-                    className="px-7 py-2.5 rounded-full font-medium text-white text-sm text-hebrew-body shadow-md hover:opacity-90 active:scale-95 transition-all"
+                    className="px-7 py-2.5 rounded-pill font-medium text-accent-ink text-sm shadow-md hover:opacity-90 active:scale-95 transition-all"
                     style={{ backgroundColor: primaryColor }}
                   >
-                    {data.startButtonLabel ?? "התחל חיפוש"}
+                    {data.startButtonLabel ?? t("apologySearch.startButton")}
                   </motion.button>
                 )}
               </AnimatePresence>
             </motion.div>
           ) : (
-            <motion.div
-              key="result-area"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="flex flex-col items-center text-center gap-5"
-            >
-              <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="44"
-                  height="44"
-                  viewBox="0 0 24 24"
-                  fill={primaryColor}
-                  stroke={primaryColor}
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                </svg>
-              </motion.div>
-
-              <div className="bg-[#fdf6f2] border border-[#e8ddd8] rounded-[24px] px-6 py-6 shadow-lg flex flex-col items-center gap-2 w-full max-w-xs">
-                <h2 className="text-2xl font-extrabold text-[#1b263b] text-hebrew-heading break-words w-full">
-                  {data.resultTitle}
-                </h2>
-                {data.resultSubtitle && (
-                  <p className="text-[#415a77] text-sm text-hebrew-body leading-relaxed break-words w-full">
-                    {data.resultSubtitle}
-                  </p>
-                )}
-              </div>
-
-              <TemplateResetButton onClick={onReset} label="חפש שוב" />
-            </motion.div>
+            <ApologySearchResult data={data} primaryColor={primaryColor} onReset={onReset} />
           )}
         </AnimatePresence>
       </div>

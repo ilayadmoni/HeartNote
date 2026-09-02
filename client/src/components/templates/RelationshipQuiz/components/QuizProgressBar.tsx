@@ -6,6 +6,8 @@
  */
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { Lightbulb } from "lucide-react";
 
 interface QuizProgressBarProps {
   current: number;
@@ -14,20 +16,21 @@ interface QuizProgressBarProps {
 }
 
 export function QuizProgressBar({ current, total, progress }: QuizProgressBarProps) {
+  const t = useTranslations("templates");
   return (
     <div className="mb-6">
-      <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-2 text-hebrew-body">
-        <span>💡</span>
-        <span className="text-english-body font-bold text-[#d4826f]">
-          QUESTION {current} / {total}
+      <div className="flex justify-between text-sm text-ink-muted mb-2">
+        <Lightbulb size={16} aria-hidden="true" />
+        <span className="font-bold text-accent">
+          {t("relationshipQuiz.questionLabel", { current, total })}
         </span>
       </div>
-      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+      <div className="h-3 bg-surface-sunken rounded-full overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.4 }}
-          className="h-full bg-gradient-to-r from-[#e8917a] to-[#d4826f] rounded-full"
+          className="h-full bg-gradient-to-r from-brand-400 to-accent rounded-full"
           style={{
             backgroundImage: `repeating-linear-gradient(
               -45deg, transparent, transparent 4px,

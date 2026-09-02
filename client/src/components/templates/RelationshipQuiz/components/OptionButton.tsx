@@ -28,12 +28,11 @@ export function OptionButton({
   
   const getStyle = () => {
     if (answerState === "none") {
-      return "bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600";
+      return "bg-surface-sunken hover:bg-line border-line";
     }
     if (isCorrect) return "bg-green-100 dark:bg-green-900/30 border-green-500";
-    if (isSelected && !isCorrect)
-      return "bg-red-100 dark:bg-red-900/30 border-red-500";
-    return "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 opacity-50";
+    if (isSelected && !isCorrect) return "bg-red-100 dark:bg-red-900/30 border-red-500";
+    return "bg-surface-sunken border-line opacity-50";
   };
 
   return (
@@ -42,7 +41,7 @@ export function OptionButton({
       whileTap={!shouldReduceMotion && answerState === "none" ? { scale: 0.98 } : undefined}
       onClick={onClick}
       disabled={answerState !== "none"}
-      className={`w-full p-5 md:p-4 rounded-xl border-2 text-right transition-all flex items-center justify-between min-h-[60px] ${getStyle()}`}
+      className={`w-full p-5 md:p-4 rounded-control border-2 text-end transition-all flex items-center justify-between min-h-[60px] ${getStyle()}`}
     >
       {/* Radio circle */}
       <span
@@ -51,7 +50,7 @@ export function OptionButton({
             ? "border-green-500 bg-green-500"
             : answerState !== "none" && isSelected && !isCorrect
               ? "border-red-500 bg-red-500"
-              : "border-gray-300 dark:border-gray-500"
+              : "border-line-strong"
         }`}
       >
         {answerState !== "none" && isCorrect && (
@@ -62,7 +61,7 @@ export function OptionButton({
         )}
       </span>
 
-      <span className="text-[#2e3c52] dark:text-white text-hebrew-body break-words flex-1 pr-3 max-w-[85%]">
+      <span className="text-ink break-words flex-1 pe-3 max-w-[85%]" dir="auto">
         {option}
       </span>
     </motion.button>
