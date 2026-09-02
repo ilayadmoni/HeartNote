@@ -2,7 +2,7 @@
   "common": {
     "backToGallery": "חזרה לגלריה",
     "resetDefault": "התחל מחדש",
-    "createdUsing": "Created using",
+    "createdUsing": "נוצר עם",
     "notFound": "תבנית לא נמצאה: {key}",
     "loading": "טוען..."
   },
@@ -174,7 +174,7 @@
   },
   "scratchCard": {
     "scratchHere": "גרד כאן",
-    "congratulations": "CONGRATULATIONS",
+    "congratulations": "מזל טוב!",
     "prizeDefault": "זכית בהפתעה!",
     "dragHint": "👆 גררו את הכרטיס עם האצבע",
     "scratchAgain": "גרד שוב"

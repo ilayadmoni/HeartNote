@@ -17,8 +17,12 @@ export function FooterBranding({ className = "" }: FooterBrandingProps) {
   return (
     <div
       className={`flex items-center justify-center gap-1.5 ${className}`}
-      aria-label="Created using HeartNote"
+      aria-label={`${t("common.createdUsing")} HeartNote`}
     >
+      {/* "Created using" text */}
+      <span className="text-[10px] text-ink-subtle">
+        {t("common.createdUsing")}
+      </span>
       {/* Heart with Gear Icon - scaled down version of Logo */}
       <div className="relative w-4 h-4">
         {/* Heart SVG */}
@@ -66,10 +70,6 @@ export function FooterBranding({ className = "" }: FooterBrandingProps) {
         style={{ fontFamily: "var(--font-glacial-indifference, sans-serif)" }}
       >
         HeartNote
-      </span>
-      {/* "Created using" text */}
-      <span className="text-[10px] text-ink-subtle" dir="ltr">
-        {t("common.createdUsing")}
       </span>
     </div>
   );
