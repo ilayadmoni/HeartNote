@@ -6,7 +6,7 @@
  */
 
 import { AnimatePresence } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import type { QuizViewProps } from "../types";
 import { useQuiz } from "@/hooks/useQuiz";
 import { getScoreMessage } from "../constants";

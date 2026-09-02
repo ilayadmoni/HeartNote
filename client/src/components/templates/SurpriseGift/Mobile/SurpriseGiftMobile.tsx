@@ -4,7 +4,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import confetti from "canvas-confetti";
 import { GiftBox } from "../components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";

@@ -1,0 +1,16 @@
+{
+  "gallery": "Templates",
+  "pricing": "Pricing",
+  "howItWorks": "How it works",
+  "login": "Sign in",
+  "register": "Sign up",
+  "logout": "Sign out",
+  "profile": "My account",
+  "myCreations": "My greetings",
+  "menu": "Menu",
+  "openMenu": "Open menu",
+  "closeMenu": "Close menu",
+  "logoAlt": "HeartNote - go to homepage",
+  "userMenu": "Account menu",
+  "greeting": "Hi, {name}"
+}

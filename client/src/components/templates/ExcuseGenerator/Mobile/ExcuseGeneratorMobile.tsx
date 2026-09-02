@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { motion, useAnimationControls } from "framer-motion";
 import { RefreshCw } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import {
   FooterBranding,
   TemplateResetButton,

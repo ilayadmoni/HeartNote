@@ -8,7 +8,7 @@
 
 import { motion } from "framer-motion";
 import { RotateCcw, Heart } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import type { DateInviteMobileProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import {

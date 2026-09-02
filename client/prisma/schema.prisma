@@ -82,6 +82,7 @@ model Profile {
   premiumExpiry          DateTime? @map("premium_expiry") @db.Timestamp(6)
   resetAttempts          Int       @default(0) @map("reset_attempts")
   isBlocked              Boolean   @default(false) @map("is_blocked")
+  locale                 String    @default("he") // 'he' | 'en'
 
   user      User       @relation(fields: [id], references: [id], onDelete: Cascade)
   creations Creation[]

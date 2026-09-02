@@ -3,7 +3,7 @@
  * Column of links with title for footer
  */
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { FooterLinkGroup } from "../types";
 
 interface FooterLinkColumnProps {

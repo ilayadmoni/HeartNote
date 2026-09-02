@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { RotateCcw } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import type { CouponsViewProps } from "../types";
 import { useCoupons } from "@/hooks/useCoupons";
 import { CouponCard, CouponRedeemModal } from "../components";

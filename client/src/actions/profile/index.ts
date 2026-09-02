@@ -8,3 +8,4 @@
 export { getMyProfile, getAvatarOptions } from "./get";
 export { updateMyProfile } from "./update";
 export { deleteMyAccount } from "./delete";
+export { setMyLocale } from "./setLocale";

@@ -5,7 +5,7 @@
  * Upgrade call-to-action section
  */
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { Crown, ArrowLeft } from "lucide-react";
 import {

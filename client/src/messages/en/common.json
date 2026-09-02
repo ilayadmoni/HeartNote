@@ -1,0 +1,49 @@
+{
+  "brand": "HeartNote",
+  "language": {
+    "switcher": "Choose language",
+    "he": "Hebrew",
+    "en": "English"
+  },
+  "actions": {
+    "back": "Back",
+    "next": "Continue",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "retry": "Try again",
+    "home": "Go home",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "share": "Share",
+    "loading": "Loading...",
+    "learnMore": "Learn more"
+  },
+  "theme": {
+    "toDark": "Switch to dark mode",
+    "toLight": "Switch to light mode",
+    "dark": "Dark mode",
+    "light": "Light mode"
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "generic": "An unexpected error occurred. Try again or head back home.",
+    "loadFailed": "We couldn't load this page. Please try again.",
+    "code": "Error code: {digest}"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The link may have changed, or there's a typo. Either way, home is always open.",
+    "cta": "Back to home"
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "skipToNav": "Skip to navigation",
+    "skipToFooter": "Skip to footer",
+    "mainHeader": "Site header",
+    "mainNav": "Main navigation",
+    "footer": "Site footer"
+  }
+}

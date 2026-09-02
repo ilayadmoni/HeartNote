@@ -5,7 +5,7 @@
  * Welcome section with factory illustration
  */
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowLeft, Settings } from "lucide-react";
 import { useAccessibility } from "@/components/accessibility";

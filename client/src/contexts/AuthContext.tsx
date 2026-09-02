@@ -17,7 +17,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { SessionProvider, useSession } from "next-auth/react";
 import { useAuthActions } from "./useAuthActions";
-import Loading from "@/app/(main)/loading";
+import Loading from "@/app/[locale]/(main)/loading";
 
 export interface AuthUser {
   id: string;

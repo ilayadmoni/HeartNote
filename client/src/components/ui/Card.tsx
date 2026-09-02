@@ -1,8 +1,9 @@
 "use client";
 
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { transitions } from "@/lib/motion";
 
 interface CardProps {
   children: ReactNode;
@@ -11,24 +12,19 @@ interface CardProps {
   hoverable?: boolean;
 }
 
-export function Card({
-  children,
-  className,
-  onClick,
-  hoverable = false,
-}: CardProps) {
+/** Raised surface with the 24px shape lock and navy-tinted elevation. */
+export function Card({ children, className, onClick, hoverable = false }: CardProps): JSX.Element {
+  const interactive = hoverable || Boolean(onClick);
   return (
     <motion.div
-      whileHover={hoverable ? { y: -4, scale: 1.01 } : undefined}
+      whileHover={interactive ? { y: -4 } : undefined}
       whileTap={onClick ? { scale: 0.99 } : undefined}
+      transition={transitions.spring}
       onClick={onClick}
       className={cn(
-        "rounded-2xl p-6 transition-all duration-300",
-        "bg-white/70 dark:bg-white/5 backdrop-blur-xl",
-        "border border-gray-100 dark:border-white/10",
-        "shadow-lg shadow-gray-200/50 dark:shadow-black/20",
-        hoverable &&
-          "cursor-pointer hover:shadow-xl hover:shadow-primary-500/10",
+        "rounded-card p-6 bg-surface-raised border border-line shadow-card",
+        "transition-shadow duration-base ease-out-quint",
+        interactive && "cursor-pointer hover:shadow-lift hover:border-line-strong",
         className,
       )}
     >
@@ -37,45 +33,19 @@ export function Card({
   );
 }
 
-export function CardHeader({
-  children,
-  className,
-}: {
+interface SlotProps {
   children: ReactNode;
   className?: string;
-}) {
+}
+
+export function CardHeader({ children, className }: SlotProps): JSX.Element {
   return <div className={cn("mb-4", className)}>{children}</div>;
 }
 
-export function CardTitle({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <h3
-      className={cn(
-        "text-lg font-semibold text-gray-900 dark:text-white",
-        className,
-      )}
-    >
-      {children}
-    </h3>
-  );
+export function CardTitle({ children, className }: SlotProps): JSX.Element {
+  return <h3 className={cn("text-title-md text-ink", className)}>{children}</h3>;
 }
 
-export function CardContent({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={cn("text-gray-600 dark:text-gray-300", className)}>
-      {children}
-    </div>
-  );
+export function CardContent({ children, className }: SlotProps): JSX.Element {
+  return <div className={cn("text-body-md text-ink-muted", className)}>{children}</div>;
 }

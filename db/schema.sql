@@ -114,7 +114,8 @@ CREATE TABLE public.profiles (
     premium_start            TIMESTAMP,
     premium_expiry           TIMESTAMP,
     reset_attempts           INT         NOT NULL DEFAULT 0,
-    is_blocked               BOOLEAN     NOT NULL DEFAULT false
+    is_blocked               BOOLEAN     NOT NULL DEFAULT false,
+    locale                   TEXT        NOT NULL DEFAULT 'he' CHECK (locale IN ('he', 'en'))
 );
 
 CREATE INDEX idx_profiles_email        ON public.profiles (email);

@@ -1,75 +1,71 @@
 /**
- * Next.js Middleware — Minimal Server-Driven Auth
+ * Next.js Middleware: locale routing (next-intl) + minimal auth locks.
  *
- * Only two route-level guards:
- * 1) Profile Lock:    incomplete profile + /profile → /complete-profile
- * 2) Onboarding Lock: complete profile + /complete-profile → /
+ * 1) next-intl resolves the locale (URL prefix, then cookie, then
+ *    Accept-Language, then Hebrew), rewrites/redirects, refreshes NEXT_LOCALE.
+ * 2) Profile Lock:    incomplete profile + /profile -> /complete-profile
+ * 3) Onboarding Lock: complete profile + /complete-profile -> destination
  *
- * Everything else passes through freely. Incomplete users CAN browse
- * /, /gallery, /create/*, etc. The action-based guard in the editor
- * components handles the save interception client-side.
- *
- * Runs on the Edge runtime, so it uses the edge-safe partial NextAuth config
- * (lib/auth/edge.ts) — no Prisma/bcrypt here. `profileComplete` is a claim
- * embedded in the JWT by the full config's jwt() callback at sign-in time.
+ * Runs on the Edge runtime: uses the edge-safe NextAuth config (no Prisma).
  */
 
 import { type NextRequest, NextResponse } from "next/server";
+import createIntlMiddleware from "next-intl/middleware";
 import { middlewareAuth } from "@/lib/auth/edge";
+import { routing } from "@/i18n/routing";
+import { isLocale, type Locale } from "@/i18n/locale";
 
-/** Auth infra — skip entirely, never run profile checks. */
-const AUTH_INFRA_PREFIXES = [
-  "/auth/verify",
-  "/api/auth",
-];
-
+const intlMiddleware = createIntlMiddleware(routing);
 const ONBOARDING_ROUTE = "/complete-profile";
+const AUTH_INFRA_PREFIXES = ["/auth/verify", "/api/auth"];
 
-function isAuthInfra(pathname: string): boolean {
-  return AUTH_INFRA_PREFIXES.some((p) => pathname.startsWith(p));
+/** Splits "/en/profile" into { locale: "en", path: "/profile" }. */
+function splitLocale(pathname: string): { locale: Locale; path: string } {
+  const [, first, ...rest] = pathname.split("/");
+  if (isLocale(first)) {
+    return { locale: first, path: `/${rest.join("/")}` };
+  }
+  return { locale: routing.defaultLocale, path: pathname };
 }
 
-export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
+function withLocale(locale: Locale, path: string): string {
+  return locale === routing.defaultLocale ? path : `/${locale}${path}`;
+}
 
-  // Auth infra routes — always pass through.
-  if (isAuthInfra(pathname)) {
+export async function middleware(request: NextRequest): Promise<NextResponse> {
+  const { locale, path } = splitLocale(request.nextUrl.pathname);
+
+  if (AUTH_INFRA_PREFIXES.some((p) => path.startsWith(p))) {
     return NextResponse.next();
   }
 
   const session = await middlewareAuth();
+  if (session?.user) {
+    const profileComplete = session.profileComplete ?? false;
 
-  // No user — let everything through (public site).
-  if (!session?.user) {
-    return NextResponse.next();
+    if (!profileComplete && path.startsWith("/profile")) {
+      const url = new URL(withLocale(locale, ONBOARDING_ROUTE), request.url);
+      url.searchParams.set("returnTo", path);
+      url.searchParams.set("reason", "profile_access");
+      return NextResponse.redirect(url);
+    }
+
+    if (profileComplete && path === ONBOARDING_ROUTE) {
+      const destination =
+        request.nextUrl.searchParams.get("next") ||
+        request.nextUrl.searchParams.get("returnTo") ||
+        "/";
+      return NextResponse.redirect(
+        new URL(withLocale(locale, destination), request.nextUrl.origin),
+      );
+    }
   }
 
-  const profileComplete = session.profileComplete ?? false;
-
-  // ── Rule 1: Profile Lock ────────────────────────────────────────
-  // Incomplete profile + /profile → redirect to onboarding.
-  if (!profileComplete && pathname.startsWith("/profile")) {
-    const onboardUrl = new URL(ONBOARDING_ROUTE, request.url);
-    onboardUrl.searchParams.set("returnTo", pathname);
-    onboardUrl.searchParams.set("reason", "profile_access");
-    return NextResponse.redirect(onboardUrl);
-  }
-
-  // ── Rule 2: Onboarding Lock ─────────────────────────────────────
-  // Complete profile + /complete-profile → bounce to intended destination or home.
-  if (profileComplete && pathname === ONBOARDING_ROUTE) {
-    const nextParam = request.nextUrl.searchParams.get("next");
-    const returnTo = request.nextUrl.searchParams.get("returnTo");
-    const destination = nextParam || returnTo || "/";
-
-    const redirectUrl = new URL(destination, request.nextUrl.origin);
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  // ── Rule 3: Freedom ─────────────────────────────────────────────
-  return NextResponse.next();
+  return intlMiddleware(request);
 }
 
 export const config = {
-  matcher: ["/((?!_next|favicon.ico|robots.txt|sitemap.xml|assets|api).*)"],
+  matcher: [
+    "/((?!api|_next|_vercel|assets|favicon.ico|robots.txt|sitemap.xml|auth/verify|.*\\..*).*)",
+  ],
 };

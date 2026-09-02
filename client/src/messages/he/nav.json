@@ -1,0 +1,16 @@
+{
+  "gallery": "גלריית התבניות",
+  "pricing": "תוכניות ומחירים",
+  "howItWorks": "איך זה עובד?",
+  "login": "התחברות",
+  "register": "הרשמה",
+  "logout": "התנתקות",
+  "profile": "האזור האישי",
+  "myCreations": "הברכות שלי",
+  "menu": "תפריט",
+  "openMenu": "פתיחת תפריט",
+  "closeMenu": "סגירת תפריט",
+  "logoAlt": "HeartNote - לעמוד הבית",
+  "userMenu": "תפריט משתמש",
+  "greeting": "היי, {name}"
+}

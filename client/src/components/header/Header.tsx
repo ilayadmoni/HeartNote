@@ -7,7 +7,7 @@
  */
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import type { HeaderProps } from "./types";
 import { NAV_ITEMS } from "./constants";
 import { useHeader } from "@/hooks/useHeader";
@@ -20,6 +20,7 @@ import {
   HamburgerButton,
   MobileMenu,
   UserMenu,
+  LanguageSwitcher,
 } from "./components";
 import { LoginModal } from "@/components/auth";
 
@@ -91,6 +92,7 @@ export function Header({ className = "" }: HeaderProps) {
 
             {/* Left Side: Actions (RTL) */}
             <div className="flex items-center gap-2 flex-shrink-0">
+              <LanguageSwitcher className="hidden sm:inline-flex" />
               {/* Theme Toggle */}
               <ThemeToggle />
 

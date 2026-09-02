@@ -7,7 +7,7 @@
 
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import type { OpenWhenViewProps, OpenWhenEnvelope } from "../types";
 import { EnvelopeCard, LetterModal, FloatingIcons } from "../components";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";

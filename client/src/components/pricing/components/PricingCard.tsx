@@ -5,9 +5,8 @@
  * Individual pricing plan card with features
  */
 
-import Link from "next/link";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Check, Lock } from "lucide-react";
 import { toast } from "sonner";

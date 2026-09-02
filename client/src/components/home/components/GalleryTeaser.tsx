@@ -6,9 +6,8 @@
  * Reuses the shared TemplateCard component with Coming Soon logic for premium templates.
  */
 
+import { Link, useRouter } from "@/i18n/navigation";
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { GALLERY_TITLE, GALLERY_SUBTITLE, GALLERY_CTA } from "../constants";

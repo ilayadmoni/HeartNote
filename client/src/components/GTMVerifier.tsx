@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { pushToDataLayer } from "@/utils/gtm";
 
 /**

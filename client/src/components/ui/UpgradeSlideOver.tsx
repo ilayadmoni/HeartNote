@@ -14,7 +14,7 @@
 
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { X, Zap, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 

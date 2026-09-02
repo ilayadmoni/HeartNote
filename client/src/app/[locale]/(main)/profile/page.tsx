@@ -10,7 +10,9 @@
  * No API route needed — the server component queries the DB directly.
  */
 
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
+import { getLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkAndDowngradeSubscription } from "@/lib/subscription/checkAndDowngradeSubscription";
@@ -32,7 +34,7 @@ export default async function ProfilePage() {
   // ── 1. Auth (server-side session validation) ─────────────────────────
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/");
+    return redirect({ href: "/", locale: await getLocale() });
   }
   const userId = session.user.id;
 

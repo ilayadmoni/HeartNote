@@ -12,9 +12,9 @@
  * - Displaying a reason-based alert from searchParams
  */
 
+import { useRouter, Link } from "@/i18n/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateMyProfile } from "@/actions/profile/update";
 import { BrandCalendar } from "@/components/ui/BrandCalendar";

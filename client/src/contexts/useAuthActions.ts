@@ -10,7 +10,7 @@
  */
 
 import { useCallback } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { signIn as nextAuthSignIn, signOut as nextAuthSignOut } from "next-auth/react";
 import { getErrorMessage, formatDateOfBirth } from "./auth-helpers";

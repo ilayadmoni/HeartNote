@@ -1,7 +1,6 @@
 /**
- * In-memory rate limiter — local dev fallback only when Upstash isn't
- * configured (see rate-limiter.ts). Unsafe in serverless/multi-instance
- * production: each instance has its own counter, trivially bypassed.
+ * In-memory rate limiter. Single-process counter — fine for HeartNote's
+ * single-EC2-instance deployment, not safe if ever run multi-instance.
  */
 
 import type { RateLimitResult } from "./rate-limiter";

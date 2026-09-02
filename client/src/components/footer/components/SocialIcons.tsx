@@ -3,7 +3,7 @@
  * Social media icons for footer
  */
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { SocialLink } from "../types";
 
 interface SocialIconsProps {

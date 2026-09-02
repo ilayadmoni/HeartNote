@@ -1,42 +1,56 @@
 "use client";
 
-import { forwardRef, InputHTMLAttributes } from "react";
+import { forwardRef, useId, type InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  hint?: string;
 }
 
+/**
+ * Text input with label above, hint/error below (tasteskill 4.6).
+ * Font size is pinned to 16px globally to avoid iOS zoom.
+ */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, id, ...props }, ref) => {
-    const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
+  ({ className, label, error, hint, id, ...props }, ref) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const messageId = `${inputId}-message`;
+    const message = error ?? hint;
 
     return (
-      <div className="w-full">
+      <div className="w-full flex flex-col gap-2">
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
-          >
+          <label htmlFor={inputId} className="text-body-sm font-bold text-ink">
             {label}
           </label>
         )}
         <input
           ref={ref}
           id={inputId}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={message ? messageId : undefined}
           className={cn(
-            "w-full px-4 py-2.5 rounded-xl border transition-all duration-200",
-            "bg-white/50 dark:bg-white/5 backdrop-blur-sm",
-            "border-gray-200 dark:border-white/10",
-            "text-gray-900 dark:text-white placeholder:text-gray-400",
-            "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
-            error && "border-red-500 focus:ring-red-500",
+            "w-full min-h-[3rem] px-4 rounded-control border bg-surface-raised text-ink",
+            "placeholder:text-ink-subtle transition-colors duration-base ease-out-quint",
+            "border-line-strong hover:border-ink-subtle",
+            "focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/25",
+            error && "border-red-500 focus:border-red-500 focus:ring-red-500/25",
             className,
           )}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+        {message && (
+          <p
+            id={messageId}
+            role={error ? "alert" : undefined}
+            className={cn("text-caption", error ? "text-red-600 dark:text-red-400" : "text-ink-muted")}
+          >
+            {message}
+          </p>
+        )}
       </div>
     );
   },

@@ -7,7 +7,7 @@
  */
 
 import { AnimatePresence, motion } from "framer-motion";
-import Loading from "@/app/(main)/loading";
+import Loading from "@/app/[locale]/(main)/loading";
 import type { ReactNode } from "react";
 
 interface GalleryLoadingGateProps {

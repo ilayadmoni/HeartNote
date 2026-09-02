@@ -5,7 +5,7 @@
  * Mobile view for the footer - two-column layout for links
  */
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { FooterLinkColumn, SocialIcons, FooterLogo } from "../components";
 import {
   FOOTER_LINKS,

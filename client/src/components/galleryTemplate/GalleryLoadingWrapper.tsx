@@ -9,7 +9,7 @@
  */
 
 import { AnimatePresence, motion } from "framer-motion";
-import Loading from "@/app/(main)/loading";
+import Loading from "@/app/[locale]/(main)/loading";
 import { GalleryTemplate } from "./index";
 import { useHasMounted } from "@/hooks/useHasMounted";
 import { useActiveTemplates } from "@/hooks/useActiveTemplates";

@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { X } from "lucide-react";
 import { StoryProgress } from "./components/StoryProgress";
 import { Step1Animation } from "./components/Step1Animation";

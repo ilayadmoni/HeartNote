@@ -84,3 +84,7 @@ export const AvatarOptionsResponseSchema = z.object({
   avatars: z.array(z.string().url()),
 });
 export type AvatarOptionsResponse = z.infer<typeof AvatarOptionsResponseSchema>;
+
+/** Preferred UI language persisted on the profile. */
+export const LocaleSchema = z.enum(["he", "en"]);
+export type LocalePreference = z.infer<typeof LocaleSchema>;

@@ -1,0 +1,66 @@
+{
+  "keywords": "digital greeting card, interactive greeting, birthday card online, anniversary card, love coupons, personalized ecard, Israel greeting cards, HeartNote",
+  "home": {
+    "title": "HeartNote | Digital greeting cards they'll actually remember",
+    "description": "Surprise the people you love with an interactive digital greeting. Pick a template, add a few words, and share a link: decision wheel, scratch card, date invite, timeline, love coupons, friendship quiz and more."
+  },
+  "gallery": {
+    "title": "HeartNote | Greeting card gallery",
+    "description": "Choose an original template, make it yours, and send a digital greeting that moves someone. Decision wheel, scratch card, date invite, timeline, love coupons, friendship quiz and more."
+  },
+  "pricing": {
+    "title": "Plans and pricing | HeartNote",
+    "description": "Pick the plan that fits you. Start free, then upgrade to Lite or Premium for the full set of templates, no watermark and longer-lived links."
+  },
+  "faq": {
+    "title": "Frequently asked questions | HeartNote",
+    "description": "Answers to the questions we hear most: how HeartNote works, how to create a greeting, pricing and more."
+  },
+  "contact": {
+    "title": "Contact us | HeartNote",
+    "description": "Have a question, an idea or a request? Write to us and we'll get back to you soon."
+  },
+  "privacy": {
+    "title": "Privacy policy | HeartNote",
+    "description": "How HeartNote collects, stores and protects your information."
+  },
+  "terms": {
+    "title": "Terms of use | HeartNote",
+    "description": "The terms that govern your use of HeartNote."
+  },
+  "accessibility": {
+    "title": "Accessibility statement | HeartNote",
+    "description": "HeartNote's commitment to an accessible, equal experience for every visitor."
+  },
+  "profile": {
+    "title": "My account | HeartNote",
+    "description": "Your greetings, subscription and personal details in one place."
+  },
+  "demo": {
+    "title": "See it in action | HeartNote",
+    "description": "This is what a HeartNote greeting looks like, from template to share link."
+  },
+  "create": {
+    "title": "Design your greeting | HeartNote",
+    "description": "Personalize your greeting and share it with a link."
+  },
+  "share": {
+    "title": "{name} | HeartNote",
+    "description": "An interactive greeting made with HeartNote",
+    "ogTitle": "A special greeting, just for you",
+    "ogDescription": "Open it and see what's inside!",
+    "fallbackName": "Greeting"
+  },
+  "login": {
+    "title": "Sign in | HeartNote",
+    "description": "Sign in to create and keep your greetings."
+  },
+  "completeProfile": {
+    "title": "Complete your profile | HeartNote",
+    "description": "A few last details before you start creating."
+  },
+  "notFound": {
+    "title": "Page not found | HeartNote",
+    "description": "The page you were looking for doesn't exist."
+  }
+}

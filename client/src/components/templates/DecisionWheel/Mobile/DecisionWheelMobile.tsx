@@ -6,7 +6,7 @@
  */
 
 import { motion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import type { DecisionWheelViewProps } from "../types";
 import { WheelCanvas } from "../components";
 

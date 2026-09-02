@@ -5,7 +5,7 @@
  * Desktop view for the footer - RTL layout with logo on right, links on left
  */
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { FooterLinkColumn, SocialIcons, FooterLogo } from "../components";
 import {
   FOOTER_LINKS,

@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const createNextIntlPlugin = require("next-intl/plugin");
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 // SEC-HIGH-5: Content Security Policy
 // Allows: self, Supabase (REST/Storage/Realtime), Google Tag Manager/Analytics,
@@ -100,4 +102,4 @@ const nextConfig = {
 };
 
 
-module.exports = nextConfig;
+module.exports = withNextIntl(nextConfig);

@@ -5,7 +5,7 @@
  * Main footer with responsive wrapper
  */
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { FooterDesktop } from "./Desktop/FooterDesktop";
 import { FooterMobile } from "./Mobile/FooterMobile";

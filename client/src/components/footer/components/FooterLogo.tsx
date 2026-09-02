@@ -5,7 +5,7 @@
  * HeartNote logo styled for dark footer background (always dark mode appearance)
  */
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 export function FooterLogo() {
   return (

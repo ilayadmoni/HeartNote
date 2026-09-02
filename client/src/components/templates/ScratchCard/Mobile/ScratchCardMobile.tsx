@@ -9,7 +9,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import { RotateCcw } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import confetti from "canvas-confetti";
 import type { ScratchCardProps } from "../types";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";

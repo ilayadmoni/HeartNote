@@ -5,7 +5,7 @@
  * Navigation links for the header
  */
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { NavLinksProps } from "../types";
 
 export function NavLinks({

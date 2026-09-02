@@ -5,8 +5,7 @@
  * Arrow button to navigate back to the gallery page
  */
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { ChevronRight } from "lucide-react";
 
 interface BackToGalleryProps {

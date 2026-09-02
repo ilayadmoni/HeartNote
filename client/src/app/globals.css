@@ -6,39 +6,53 @@
 @import "./scrollbar.css";
 @import "./animations.css";
 
-/* ====================================
-   Tailwind Directives
-   ==================================== */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ====================================
-   Light Mode (Default)
+   Semantic tokens (rgb triplets so Tailwind opacity modifiers work)
+   Light: cream paper, navy ink, terracotta accent.
    ==================================== */
 :root {
-  --foreground-rgb: 37, 45, 59;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 248, 250, 252;
-  --header-bg: rgba(250, 248, 245, 0.95);
-  --header-border: #ebe7e0;
+  --surface: 249 244 240;          /* cream-100 */
+  --surface-raised: 255 253 251;   /* near-white, warm */
+  --surface-sunken: 245 237 232;   /* cream-200 (brand cream) */
+  --ink: 46 60 82;                 /* navy-700 */
+  --ink-muted: 95 119 148;         /* navy-400 */
+  --ink-subtle: 148 165 187;       /* navy-300 */
+  --accent: 216 90 48;             /* brand-500 terracotta */
+  --accent-hover: 189 74 36;       /* brand-600 */
+  --accent-soft: 249 225 215;      /* brand-100 */
+  --accent-ink: 255 250 247;       /* text on accent */
+  --line: 235 223 214;             /* cream-300 */
+  --line-strong: 220 203 191;      /* cream-400 */
+  --header-bg: rgb(249 244 240 / 0.92);
+  --header-border: rgb(235 223 214);
   --a11y-font-scale: 1;
   color-scheme: light;
 }
 
-/* ====================================
-   Dark Mode
-   ==================================== */
 .dark {
-  --foreground-rgb: 248, 250, 252;
-  --background-start-rgb: 26, 31, 46;
-  --background-end-rgb: 20, 25, 38;
-  --header-bg: rgba(26, 31, 46, 0.95);
-  --header-border: #252d3b;
+  --surface: 26 31 46;             /* navy-950 */
+  --surface-raised: 37 45 59;      /* navy-900 */
+  --surface-sunken: 20 25 38;
+  --ink: 248 244 240;
+  --ink-muted: 199 208 220;        /* navy-200 */
+  --ink-subtle: 148 165 187;
+  --accent: 227 122 87;            /* brand-400, lifted for dark */
+  --accent-hover: 236 158 130;     /* brand-300 */
+  --accent-soft: 94 39 22;         /* brand-900 */
+  --accent-ink: 26 31 46;
+  --line: 55 73 101;               /* navy-600 */
+  --line-strong: 68 90 120;        /* navy-500 */
+  --header-bg: rgb(26 31 46 / 0.92);
+  --header-border: rgb(55 73 101);
+  color-scheme: dark;
 }
 
 /* ====================================
-   Base Styles
+   Base
    ==================================== */
 * {
   box-sizing: border-box;
@@ -50,30 +64,24 @@ html {
   overflow-x: hidden;
   scroll-behavior: smooth;
   font-size: calc(16px * var(--a11y-font-scale));
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: var(--font-open-sans), system-ui, sans-serif;
+  color: rgb(var(--ink));
+  background-color: rgb(var(--surface));
+  min-height: 100vh;
   -webkit-overflow-scrolling: touch;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Prevent iOS auto-zoom on input focus — must be outside @layer base so
-   Tailwind utility classes (text-sm, text-xs) cannot lower font-size below 16px. */
+/* Prevent iOS auto-zoom on input focus. Lives outside @layer base so
+   utility classes (text-sm, text-xs) cannot lower font-size below 16px. */
 input,
-input[type="text"],
-input[type="number"],
-input[type="email"],
-input[type="password"],
-input[type="search"],
-input[type="tel"],
-input[type="url"],
-input[type="date"],
-input[type="datetime-local"],
-input[type="month"],
-input[type="time"],
-input[type="week"],
 textarea,
 select {
   font-size: 16px !important;
@@ -81,18 +89,6 @@ select {
 
 @media (max-width: 768px) {
   input,
-  input[type="text"],
-  input[type="number"],
-  input[type="email"],
-  input[type="password"],
-  input[type="search"],
-  input[type="tel"],
-  input[type="url"],
-  input[type="date"],
-  input[type="datetime-local"],
-  input[type="month"],
-  input[type="time"],
-  input[type="week"],
   textarea,
   select {
     font-size: max(16px, 1em) !important;
@@ -108,79 +104,67 @@ img[src*=".svg?"] {
   backface-visibility: hidden;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-    to bottom,
-    rgb(var(--background-start-rgb)),
-    rgb(var(--background-end-rgb))
-  );
-  min-height: 100vh;
-  transition: background-color 0.3s ease, color 0.3s ease;
+::selection {
+  background: rgb(var(--accent) / 0.22);
 }
 
 /* ====================================
-   Utility Classes
+   Components
    ==================================== */
 @layer components {
-  .glass {
-    @apply bg-white/10 backdrop-blur-lg border border-white/20;
-  }
-
-  .glass-dark {
-    @apply bg-black/20 backdrop-blur-lg border border-white/10;
-  }
-
-  .gradient-coral {
-    @apply bg-gradient-to-r from-coral-400 to-coral-600;
-  }
-
-  .gradient-navy {
-    @apply bg-gradient-to-r from-navy-600 to-navy-800;
-  }
-
-  .gradient-text-coral {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(to right, #d4826f, #a35a49);
-  }
-
-  .gradient-text {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(to right, #d4826f, #c4735f);
-  }
-
-  .dark .gradient-text {
-    background-image: linear-gradient(to right, #e8917a, #f5b5a5);
-  }
-
-  /* Button base styles */
   .btn {
-    @apply inline-flex items-center justify-center font-medium transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 font-bold rounded-pill
+      transition-all duration-base ease-out-quint select-none
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface
+      disabled:opacity-50 disabled:cursor-not-allowed active:translate-y-px;
   }
 
   .btn-primary {
-    @apply btn px-5 py-2.5 bg-coral-500 text-white rounded-full hover:bg-coral-600 shadow-md hover:shadow-lg;
+    @apply btn bg-accent text-accent-ink shadow-glow-sm hover:bg-accent-hover hover:shadow-glow;
   }
 
-  .btn-outline {
-    @apply btn px-5 py-2.5 border border-navy-200 dark:border-navy-600 text-navy-700 dark:text-gray-200 rounded-full hover:border-coral-400 dark:hover:border-coral-500;
+  .btn-secondary {
+    @apply btn bg-surface-raised text-ink border border-line-strong hover:border-accent hover:text-accent;
+  }
+
+  .btn-ghost {
+    @apply btn text-ink-muted hover:text-ink hover:bg-surface-sunken;
+  }
+
+  .surface-card {
+    @apply bg-surface-raised border border-line rounded-card shadow-card;
+  }
+
+  .section-shell {
+    @apply w-full max-w-shell mx-auto px-gutter;
+  }
+
+  .glass {
+    @apply bg-surface-raised/80 backdrop-blur-lg border border-line;
   }
 }
 
 /* ====================================
-   Container Sizes
+   Utilities
    ==================================== */
 @layer utilities {
   .container {
-    @apply max-w-7xl mx-auto;
+    @apply max-w-shell mx-auto;
   }
 
-  /* Safe area padding for iOS devices */
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .pt-safe {
     padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
   }
 }

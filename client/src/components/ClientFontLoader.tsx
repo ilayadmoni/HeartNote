@@ -19,7 +19,7 @@
  */
 
 import { useState, useEffect, type ReactNode } from "react";
-import Loading from "@/app/(main)/loading";
+import Loading from "@/app/[locale]/(main)/loading";
 
 export default function ClientFontLoader({
   children,

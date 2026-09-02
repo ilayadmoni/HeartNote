@@ -7,7 +7,7 @@
  */
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { TemplatePreview } from "./TemplatePreview";

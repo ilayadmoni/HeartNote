@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import { toast } from "sonner";
 import type { AuthUser } from "@/contexts/AuthContext";
 import { saveGuestDraft, claimGuestDraft } from "@/actions/draftActions";

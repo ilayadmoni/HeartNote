@@ -11,3 +11,4 @@ export { MobileMenu } from './MobileMenu';
 export { MobileNavItem } from './MobileNavItem';
 export { UserMenu } from './UserMenu';
 export { UserAvatar } from './UserAvatar';
+export { LanguageSwitcher } from "./LanguageSwitcher";

@@ -6,7 +6,7 @@
  * Uses text with custom font and SVG icons
  */
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { LogoProps } from "../types";
 
 export function Logo({ className = "" }: LogoProps) {

@@ -8,9 +8,8 @@
  * Uses z-[999] so the backdrop covers the site header / navbar.
  */
 
+import { useRouter, Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { X, Crown, Sparkles } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";

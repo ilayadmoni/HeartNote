@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { signIn as nextAuthSignIn, getSession } from "next-auth/react";

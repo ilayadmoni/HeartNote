@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { PROFILE_QUERY_KEY } from "@/hooks/useProfileQuery";
