@@ -66,12 +66,26 @@ export function BarBatMitzvahDesktop({
               transition={{ duration: 0.4 }}
               className="absolute inset-0 flex items-center justify-center"
             >
-              {data.kind === "bat" ? (
-                <GirlFigure onClick={!showGreeting ? onReveal : undefined} />
-              ) : (
-                <BoyFigure onClick={!showGreeting ? onReveal : undefined} />
-              )}
+              <motion.div
+                animate={isThrowing ? { scale: [1, 0.92, 1.04, 1] } : { scale: 1 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                {data.kind === "bat" ? (
+                  <GirlFigure onClick={!showGreeting ? onReveal : undefined} />
+                ) : (
+                  <BoyFigure onClick={!showGreeting ? onReveal : undefined} />
+                )}
+              </motion.div>
             </motion.div>
+
+            {!showGreeting && data.tapHintLabel && (
+              <p
+                className="absolute bottom-0 text-sm text-ink-muted text-center w-full pointer-events-none"
+                dir="auto"
+              >
+                {data.tapHintLabel}
+              </p>
+            )}
 
 <AnimatePresence>
               {showGreeting && (

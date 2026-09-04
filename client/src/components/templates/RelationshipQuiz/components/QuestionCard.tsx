@@ -6,6 +6,7 @@
  */
 
 import { motion } from "framer-motion";
+import { useLocale } from "next-intl";
 import type { AnswerState } from "../types";
 import { OptionButton } from "./OptionButton";
 import { useReducedMotion } from "@/components/accessibility";
@@ -26,13 +27,17 @@ export function QuestionCard({
   onAnswer,
 }: QuestionCardProps) {
   const shouldReduceMotion = useReducedMotion();
+  const locale = useLocale();
+  const isRtl = locale === "he";
+  const entranceX = isRtl ? -50 : 50;
+  const exitX = isRtl ? 50 : -50;
 
   return (
     <motion.div
       key={questionIndex}
-      initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: 50 }}
+      initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: entranceX }}
       animate={{ opacity: 1, x: 0 }}
-      exit={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: -50 }}
+      exit={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: exitX }}
       transition={shouldReduceMotion ? { duration: 0 } : undefined}
       className="bg-surface-raised rounded-card shadow-lift p-6"
     >

@@ -5,6 +5,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { InteractiveShell } from "@/components/templates/shared/InteractiveShell";
 import { WeddingRevealOverlay } from "./WeddingRevealOverlay";
+import { GlassShards } from "./GlassShards";
+import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import type { WeddingInteractiveData, TemplateComponentProps } from "@/components/templates/types";
 
 const FRAMES = [
@@ -21,7 +23,9 @@ export function WeddingGlassCore({
   const [frame, setFrame] = useState(0);
   const [started, setStarted] = useState(false);
   const [showGreeting, setShowGreeting] = useState(false);
+  const [shatter, setShatter] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
 
   useEffect(() => {
     if (!started) return;
@@ -33,7 +37,13 @@ export function WeddingGlassCore({
       return;
     }
     timers.current.push(setTimeout(() => setFrame(1), 620));
-    timers.current.push(setTimeout(() => setFrame(2), 1240));
+    timers.current.push(
+      setTimeout(() => {
+        setFrame(2);
+        setShatter(true);
+        timers.current.push(setTimeout(() => setShatter(false), 500));
+      }, 1240),
+    );
     timers.current.push(setTimeout(() => setShowGreeting(true), 1900));
     return () => timers.current.forEach(clearTimeout);
   }, [started, reduceMotion]);
@@ -41,6 +51,7 @@ export function WeddingGlassCore({
   const start = () => {
     if (started) return;
     setShowGreeting(false);
+    setShatter(false);
     setStarted(true);
   };
 
@@ -49,6 +60,7 @@ export function WeddingGlassCore({
     timers.current = [];
     setStarted(false);
     setShowGreeting(false);
+    setShatter(false);
     setFrame(0);
   };
 
@@ -82,6 +94,7 @@ export function WeddingGlassCore({
             transition={{ duration: reduceMotion ? 0.12 : 0.56, ease: "easeInOut" }}
           />
         ))}
+        {!reduceMotion && <GlassShards active={shatter} />}
         <AnimatePresence>
           {showGreeting && <WeddingRevealOverlay data={data} onReplay={replay} />}
         </AnimatePresence>
@@ -90,7 +103,8 @@ export function WeddingGlassCore({
         <button
           type="button"
           onClick={start}
-          className="rounded-pill bg-accent px-6 py-3 text-sm font-bold text-accent-ink shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+          style={{ backgroundColor: primaryColor }}
+          className="rounded-pill px-6 py-3 text-sm font-bold text-accent-ink shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
         >
           {t("weddingGlass.trigger")}
         </button>

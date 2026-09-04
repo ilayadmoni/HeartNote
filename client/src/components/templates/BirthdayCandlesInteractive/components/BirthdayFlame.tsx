@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 interface BirthdayFlameProps {
   index: number;
   isLit: boolean;
+  isLast: boolean;
   reduceMotion: boolean;
   onClick: () => void;
 }
@@ -13,6 +14,7 @@ interface BirthdayFlameProps {
 export function BirthdayFlame({
   index,
   isLit,
+  isLast,
   reduceMotion,
   onClick,
 }: BirthdayFlameProps) {
@@ -34,9 +36,16 @@ export function BirthdayFlame({
             animate={
               reduceMotion
                 ? {}
-                : { scale: [1, 1.16, 0.94, 1.08, 1], opacity: [0.9, 1, 0.86, 1] }
+                : isLast
+                  ? { scale: [1, 1.28, 0.82, 1.2, 0.92, 1], opacity: [0.85, 1, 0.8, 1] }
+                  : { scale: [1, 1.16, 0.94, 1.08, 1], opacity: [0.9, 1, 0.86, 1] }
             }
-            exit={{ opacity: 0, scale: 0.2, y: -8 }}
+            exit={{
+              opacity: 0,
+              scale: 0.2,
+              y: -8,
+              transition: { duration: isLast ? 0.55 : 0.3, ease: "easeOut" },
+            }}
             transition={{ duration: 1.4, repeat: Infinity, delay: index * 0.12 }}
           >
             <svg
@@ -53,12 +62,26 @@ export function BirthdayFlame({
           </motion.div>
         ) : (
           <motion.span
-            className="mb-1 h-6 text-xs text-slate-400"
+            className="mb-1 flex h-9 w-6 items-end justify-center text-slate-400"
             initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: -14 }}
+            animate={{ opacity: [0, 0.55, 0], y: -22 }}
+            transition={{ duration: 1.6, ease: "easeOut" }}
             exit={{ opacity: 0 }}
           >
-            ~
+            <svg
+              width="16"
+              height="28"
+              viewBox="0 0 16 28"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              <path d="M8 26c-3-3 3-5 0-9" />
+              <path d="M5 15c3 3-3 5 0 9" opacity="0.6" />
+              <path d="M8 26c2-4-2-6 1-11" opacity="0.4" />
+            </svg>
           </motion.span>
         )}
       </AnimatePresence>

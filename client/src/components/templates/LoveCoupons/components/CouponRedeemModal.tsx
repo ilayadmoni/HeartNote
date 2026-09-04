@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { CouponCodeInput } from "./CouponCodeInput";
+import { StampSpinner } from "./StampSpinner";
 
 interface Props {
   open: boolean;
@@ -106,6 +106,9 @@ export function CouponRedeemModal({
                   {couponTitle}
                 </p>
                 <p className="text-sm text-ink-muted">{t("loveCoupons.confirmQuestion")}</p>
+                <p className="text-xs text-amber-700/80 mt-1 font-medium">
+                  {t("loveCoupons.irreversibleNotice")}
+                </p>
               </div>
 
               {needsCodeInput && (
@@ -133,10 +136,9 @@ export function CouponRedeemModal({
                   type="button"
                   onClick={onConfirm}
                   disabled={isSubmitting}
-                  style={primaryColor ? { backgroundColor: primaryColor } : undefined}
-                  className="w-full sm:flex-1 py-3 rounded-pill text-accent-ink font-semibold text-sm bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity hover:opacity-90 inline-flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:flex-1 py-3 rounded-pill text-white font-semibold text-sm bg-amber-600 border border-amber-700/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-amber-700 inline-flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  {isSubmitting && <Loader2 className="animate-spin" size={16} />}
+                  {isSubmitting && <StampSpinner />}
                   {isSubmitting ? t("loveCoupons.redeeming") : t("loveCoupons.modalTitle")}
                 </button>
               </div>

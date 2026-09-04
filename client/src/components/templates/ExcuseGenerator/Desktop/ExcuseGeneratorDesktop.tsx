@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, useAnimationControls } from "framer-motion";
+import { motion } from "framer-motion";
 import { RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
@@ -9,6 +8,8 @@ import {
   BackToGallery,
 } from "@/components/templates/components";
 import type { ExcuseGeneratorViewProps } from "../types";
+import { ExcuseSlip } from "../components/ExcuseSlip";
+import { useExcuseRoll } from "../hooks/useExcuseRoll";
 
 const EXCUSE_MAX_LENGTH = 80;
 
@@ -20,31 +21,8 @@ export function ExcuseGeneratorDesktop({ data }: ExcuseGeneratorViewProps) {
       ?.map((excuse) => excuse.slice(0, EXCUSE_MAX_LENGTH))
       .filter((excuse) => excuse.length > 0) || defaultExcuses;
 
-  const [displayText, setDisplayText] = useState<string | null>(null);
-  const [generating, setGenerating] = useState(false);
-  const cogControls = useAnimationControls();
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
   const accent = data.primaryColor || "#d4826f";
-
-  function generateExcuse() {
-    if (generating) return;
-    setGenerating(true);
-    cogControls.start({ rotate: 360 * 6, transition: { duration: 1.1, ease: "linear" } });
-
-    let count = 0;
-    intervalRef.current = setInterval(() => {
-      setDisplayText(excuses[Math.floor(Math.random() * excuses.length)]);
-      count++;
-      if (count > 10) {
-        clearInterval(intervalRef.current!);
-        setDisplayText(excuses[Math.floor(Math.random() * excuses.length)]);
-        cogControls.stop();
-        cogControls.set({ rotate: 0 });
-        setGenerating(false);
-      }
-    }, 80);
-  }
+  const { displayText, generating, cogControls, generateExcuse } = useExcuseRoll(excuses);
 
   return (
     <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
@@ -100,22 +78,12 @@ export function ExcuseGeneratorDesktop({ data }: ExcuseGeneratorViewProps) {
         </motion.p>
 
         {/* Excuse display box */}
-        <div className="w-full bg-surface-raised border-2 border-line rounded-card p-8 mb-6 min-h-[120px] flex items-center justify-center shadow-inner relative overflow-hidden">
-          {generating && (
-            <motion.div
-              className="absolute inset-0 rounded-card"
-              animate={{ opacity: [0, 0.4, 0] }}
-              transition={{ duration: 0.16, repeat: Infinity }}
-              style={{ backgroundColor: `${accent}22` }}
-            />
-          )}
-          <p
-            className="text-xl font-black text-center relative z-10 break-words"
-            style={{ color: accent }}
-            dir="auto"
-          >
-            {displayText ? `"${displayText}"` : `"${t("excuseGenerator.promptDefault")}"`}
-          </p>
+        <div className="w-full mb-6">
+          <ExcuseSlip
+            text={displayText ? `"${displayText}"` : `"${t("excuseGenerator.promptDefault")}"`}
+            accent={accent}
+            generating={generating}
+          />
         </div>
 
         {/* Generate button */}

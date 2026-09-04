@@ -30,6 +30,8 @@ export function ScratchGrid({
   compact = false,
 }: ScratchGridProps) {
   const t = useTranslations("templates");
+  const scratchedFraction = totalBlocks > 0 ? scratchedBlocks.size / totalBlocks : 0;
+  const prizeOpacity = isRevealed ? 1 : 0.15 + Math.min(scratchedFraction / 0.6, 1) * 0.85;
 
   function handleTouchMove(e: React.TouchEvent<HTMLDivElement>) {
     const touch = e.touches[0];
@@ -46,14 +48,15 @@ export function ScratchGrid({
       style={{ backgroundColor: primaryColor + "15" }}
     >
       <div
-        className={`flex flex-col items-center justify-center z-0 ${
+        className={`flex flex-col items-center justify-center z-0 transition-opacity duration-300 ${
           compact ? "absolute inset-0 p-4" : "p-6 py-8 2xl:p-10 2xl:py-12"
         }`}
+        style={{ opacity: prizeOpacity }}
       >
         <p
           className={`${compact ? "text-[10px] mb-1" : "text-xs 2xl:text-sm mb-2 2xl:mb-3"} tracking-widest`}
           style={{ color: primaryColor }}
-          dir="ltr"
+          dir="auto"
         >
           {t("scratchCard.congratulations")}
         </p>
@@ -85,9 +88,10 @@ export function ScratchGrid({
               onTouchStart={mode === "touch" ? () => onScratch(index) : undefined}
               onTouchMove={mode === "touch" ? handleTouchMove : undefined}
               data-index={index}
-              className="bg-gradient-to-br from-line-strong via-line to-line-strong border border-line/30"
+              className="animate-shimmer border border-line/30 bg-[length:200%_100%]"
               style={{
-                backgroundImage: "linear-gradient(135deg, #d1d5db 0%, #e5e7eb 50%, #9ca3af 100%)",
+                backgroundImage:
+                  "linear-gradient(120deg, #b8bec7 0%, #e2e6ea 20%, #f4f6f8 35%, #9aa2ac 50%, #f4f6f8 65%, #e2e6ea 80%, #b8bec7 100%)",
               }}
             />
           ))}

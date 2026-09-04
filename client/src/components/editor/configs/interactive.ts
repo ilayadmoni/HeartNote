@@ -62,6 +62,7 @@ export const INTERACTIVE_CONFIGS: Record<string, EditorConfig> = {
       { key: "title", labelKey: "fields.decision-wheel.title.label", type: "text", placeholderKey: "fields.decision-wheel.title.placeholder" },
       { key: "subtitle", labelKey: "fields.decision-wheel.subtitle.label", type: "text", placeholderKey: "fields.decision-wheel.subtitle.placeholder" },
       { key: "options", labelKey: "fields.decision-wheel.options.label", type: "options" },
+      { key: "noTakeBacksText", labelKey: "fields.decision-wheel.noTakeBacksText.label", type: "text", placeholderKey: "fields.decision-wheel.noTakeBacksText.placeholder" },
       { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {

@@ -17,6 +17,7 @@ export function TimelineDesktop({ data }: TimelineDesktopProps) {
   const locale = useLocale();
   const hasEvents = data.events && data.events.length > 0;
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
+  const entranceX = locale === "he" ? 20 : -20;
 
   return (
     <div className="flex flex-col min-h-[390px] bg-transparent relative isolate overflow-hidden">
@@ -46,21 +47,27 @@ export function TimelineDesktop({ data }: TimelineDesktopProps) {
           {hasEvents ? (
             <div className="relative">
               {/* Vertical dashed line — aligned with icon center (w-9 = 36px → center at 18px from the trailing edge) */}
-              <div
-                className="absolute end-[18px] top-3 bottom-3 w-[2px] rounded-full"
+              <motion.div
+                initial={{ scaleY: 0 }}
+                whileInView={{ scaleY: 1 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
                 style={{
+                  transformOrigin: "top",
                   backgroundImage: `repeating-linear-gradient(to bottom, ${primaryColor}70 0px, ${primaryColor}70 7px, transparent 7px, transparent 13px)`,
                 }}
+                className="absolute end-[18px] top-3 bottom-3 w-[2px] rounded-full"
               />
 
               {/* Events */}
               <div className="space-y-4">
-                {data.events.map((event, index) => (
+                {data.events.map((event) => (
                   <motion.div
                     key={event.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.35, ease: "easeOut" }}
+                    initial={{ opacity: 0, x: entranceX }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, amount: 0.5 }}
+                    transition={{ duration: 0.35, ease: "easeOut" }}
                     className="relative flex items-start gap-4 ps-1"
                   >
                     {/* Icon Circle */}

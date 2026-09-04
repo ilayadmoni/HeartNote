@@ -114,6 +114,7 @@ export interface DecisionWheelData {
   title?: string;             // "גלגל ההחלטות"
   subtitle?: string;          // "סובבו וגלו!"
   options: string[];           // 2-8 text labels for wheel segments
+  noTakeBacksText?: string;   // Optional "the wheel decides" style subtitle near the wheel
   primaryColor?: string;      // Accent color for spin button, pointer
 }
 
@@ -216,6 +217,7 @@ export interface InteractiveGreetingData {
   greetingTitle?: string;
   message?: string;
   signature?: string;
+  primaryColor?: string;
 }
 
 export interface BirthdayInteractiveData extends InteractiveGreetingData {
@@ -227,6 +229,7 @@ export interface WeddingInteractiveData {
   senderName?: string;
   greetingTitle?: string;
   message?: string;
+  primaryColor?: string;
 }
 
 export type HolidayInteractiveSlug =
@@ -245,6 +248,8 @@ export type HolidayInteraction =
   | "sukkah"
   | "hanukkah";
 
+export type HolidayRevealMotion = "fade-up" | "spin-in" | "slide-open" | "bloom";
+
 export interface HolidayInteractiveConfig {
   slug: HolidayInteractiveSlug;
   componentKey: string;
@@ -256,5 +261,9 @@ export interface HolidayInteractiveConfig {
   prompt: string;
   accent: string;
   interaction: HolidayInteraction;
+  /** Optional per-holiday reveal choreography; absent = current fade/scale reveal. */
+  revealMotion?: HolidayRevealMotion;
+  /** Optional two-color palette (accent + background wash); absent = current styling. */
+  wash?: string;
 }
 

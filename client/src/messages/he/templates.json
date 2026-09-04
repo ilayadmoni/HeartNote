@@ -10,7 +10,8 @@
     "heading": "חיפוש סליחה",
     "placeholder": "הקלידי חיפוש...",
     "startButton": "התחל חיפוש",
-    "searchAgain": "חפש שוב"
+    "searchAgain": "חפש שוב",
+    "resultCount": "כ-1 תוצאה (0.42 שניות)"
   },
   "barBatMitzvah": {
     "introTitle": "מכונת ההתבגרות",
@@ -136,6 +137,7 @@
     "modalTitle": "מימוש קופון",
     "modalSubtitle": "אישור מימוש סופי",
     "confirmQuestion": "האם את/ה בטוח/ה? פעולה זו אינה ניתנת לביטול.",
+    "irreversibleNotice": "לא ניתן לשחזר לאחר המימוש",
     "codeLabel": "הזינו את קוד האימות בן 4 הספרות שקיבלתם",
     "cancel": "ביטול",
     "redeeming": "ממש...",
@@ -144,7 +146,10 @@
   },
   "openWhen": {
     "openLetterAria": "פתח מכתב: {title}",
-    "lockedLetterAria": "מכתב נעול: {title}"
+    "lockedLetterAria": "מכתב נעול: {title}",
+    "opensToday": "נפתח היום",
+    "opensTomorrow": "נפתח מחר",
+    "opensInDays": "נפתח בעוד {count} ימים"
   },
   "punchingBag": {
     "introTitle": "מערכת לשחרור לחצים",
@@ -152,7 +157,8 @@
     "hitAria": "הכה בשק",
     "hitInstructions": "הקישי על השק כדי להרביץ",
     "resultTitleDefault": "אאוץ׳... זה שחרר?",
-    "anotherRound": "אשמח לעוד סיבוב"
+    "anotherRound": "אשמח לעוד סיבוב",
+    "remainingHits": "נותרו {count} מכות"
   },
   "relationshipQuiz": {
     "feedbackTiers": [

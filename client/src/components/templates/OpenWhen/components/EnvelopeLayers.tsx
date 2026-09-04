@@ -7,10 +7,11 @@ interface EnvelopeLayersProps {
   index: number;
   primaryColor: string;
   unlocked: boolean;
+  isOpening?: boolean;
 }
 
 /** Envelope back, front flaps and heart seal — purely decorative SVG layers. */
-export function EnvelopeLayers({ index, primaryColor, unlocked }: EnvelopeLayersProps) {
+export function EnvelopeLayers({ index, primaryColor, unlocked, isOpening }: EnvelopeLayersProps) {
   const dark = darken(primaryColor, 0.18);
   const light = lighten(primaryColor, 0.15);
   const veryLight = lighten(primaryColor, 0.28);
@@ -45,12 +46,14 @@ export function EnvelopeLayers({ index, primaryColor, unlocked }: EnvelopeLayers
         }}
       />
 
-      {/* Front flaps SVG */}
-      <svg
+      {/* Front flaps SVG — swing down like doors opening when isOpening */}
+      <motion.svg
         viewBox="0 0 100 50"
         preserveAspectRatio="none"
         className="absolute inset-x-0 bottom-0 w-full pointer-events-none z-[4]"
-        style={{ height: "45%" }}
+        style={{ height: "45%", transformOrigin: "50% 100%" }}
+        animate={isOpening ? { rotateX: -120, opacity: 0 } : { rotateX: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: "easeIn" }}
         aria-hidden="true"
       >
         <defs>
@@ -67,7 +70,7 @@ export function EnvelopeLayers({ index, primaryColor, unlocked }: EnvelopeLayers
         <polygon points="100,0 50,50 100,50" fill={`url(#rf-${index})`} />
         <line x1="0" y1="0" x2="50" y2="50" stroke={dark} strokeWidth="0.4" opacity="0.2" />
         <line x1="100" y1="0" x2="50" y2="50" stroke={dark} strokeWidth="0.4" opacity="0.2" />
-      </svg>
+      </motion.svg>
 
       {/* Bottom rounded edge */}
       <div
@@ -75,7 +78,7 @@ export function EnvelopeLayers({ index, primaryColor, unlocked }: EnvelopeLayers
         style={{ backgroundColor: veryLight }}
       />
 
-      {/* Heart seal at flap junction */}
+      {/* Heart seal at flap junction — irregular wax-drip edge sells an intact seal when locked */}
       <motion.div
         className="absolute z-[6] left-1/2 -translate-x-1/2 pointer-events-none"
         style={{ bottom: "19%" }}
@@ -83,12 +86,17 @@ export function EnvelopeLayers({ index, primaryColor, unlocked }: EnvelopeLayers
         transition={{ type: "spring", stiffness: 400, damping: 15 }}
       >
         <div
-          className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm select-none"
+          className="relative w-10 h-10 flex items-center justify-center text-white text-sm select-none"
           style={{
-            background: `radial-gradient(circle at 40% 35%, ${lighten(primaryColor, 0.05)}, ${dark})`,
-            boxShadow: `0 2px 6px ${dark}, inset 0 1px 2px rgba(255,255,255,0.3)`,
+            borderRadius: "45% 55% 52% 48% / 55% 45% 55% 45%",
+            background: `radial-gradient(circle at 35% 30%, ${lighten(primaryColor, 0.08)}, ${dark} 70%)`,
+            boxShadow: `0 2px 6px ${dark}, inset 0 1px 2px rgba(255,255,255,0.35), inset 0 -2px 3px rgba(0,0,0,0.2)`,
           }}
         >
+          <span
+            className="absolute inset-0 rounded-[inherit] pointer-events-none"
+            style={{ boxShadow: `inset 0 0 0 1px rgba(255,255,255,0.15)` }}
+          />
           ♥
         </div>
       </motion.div>

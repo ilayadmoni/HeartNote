@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, useTransform } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useWheelAnimation } from "./useWheelAnimation";
 import { drawWheel } from "./wheelDrawing";
@@ -15,6 +15,8 @@ interface WheelCanvasProps {
   onResult?: (winner: string) => void;
   /** Accent color for center button */
   primaryColor?: string;
+  /** Optional "no take-backs" style subtitle rendered near the wheel */
+  noTakeBacksText?: string;
 }
 
 export function WheelCanvas({
@@ -22,13 +24,29 @@ export function WheelCanvas({
   size,
   onResult,
   primaryColor = "#d4826f",
+  noTakeBacksText,
 }: WheelCanvasProps) {
   const t = useTranslations("templates");
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
   const { rotation, spinning, winner, handleSpin } = useWheelAnimation({
     options,
     onResult,
   });
+
+  const segAngle = 360 / (options.length || 1);
+  const pointerTilt = useTransform(rotation, (value) => {
+    const mod = ((value % segAngle) + segAngle) % segAngle;
+    const progress = mod / segAngle;
+    return Math.sin(progress * Math.PI * 2) * 6;
+  });
+
+  useEffect(() => {
+    if (!winner) return;
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(max-width: 768px)").matches) return;
+    resultRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [winner]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -47,8 +65,8 @@ export function WheelCanvas({
     <div className="flex flex-col items-center gap-5">
       {/* Pointer triangle */}
       <div className="relative">
-        <div
-          className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"
+        <motion.div
+          className="absolute -top-3 left-1/2 z-10"
           style={{
             width: 0,
             height: 0,
@@ -56,6 +74,8 @@ export function WheelCanvas({
             borderRight: "12px solid transparent",
             borderTop: `20px solid ${primaryColor}`,
             filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.2))",
+            x: "-50%",
+            rotate: pointerTilt,
           }}
         />
 
@@ -85,16 +105,38 @@ export function WheelCanvas({
             backgroundColor: primaryColor,
           }}
         >
-          {spinning ? "🎯" : t("decisionWheel.spin")}
+          {spinning ? (
+            <span className="flex items-center justify-center gap-1" aria-hidden="true">
+              {[0, 1, 2].map((i) => (
+                <motion.span
+                  key={i}
+                  className="block rounded-full bg-accent-ink"
+                  style={{ width: Math.max(3, size * 0.014), height: Math.max(3, size * 0.014) }}
+                  animate={{ opacity: [0.3, 1, 0.3] }}
+                  transition={{ duration: 1, repeat: Infinity, delay: i * 0.15 }}
+                />
+              ))}
+            </span>
+          ) : (
+            t("decisionWheel.spin")
+          )}
         </button>
       </div>
+
+      {/* Optional "no take-backs" subtitle */}
+      {noTakeBacksText && (
+        <p className="text-xs text-ink-muted text-center" dir="auto">
+          {noTakeBacksText}
+        </p>
+      )}
 
       {/* Result */}
       {winner && (
         <motion.div
+          ref={resultRef}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
+          className="text-center rounded-card border border-line bg-surface shadow-card px-6 py-4"
         >
           <p className="text-sm text-ink-muted mb-1">{t("decisionWheel.resultLabel")}</p>
           <p className="text-title-lg font-black" style={{ color: primaryColor }} dir="auto">

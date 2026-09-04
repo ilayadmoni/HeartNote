@@ -9,6 +9,8 @@ export const ROMANCE_CONFIGS: Record<string, EditorConfig> = {
       { key: "title", labelKey: "fields.date-invite.title.label", type: "text", placeholderKey: "fields.date-invite.title.placeholder" },
       { key: "question", labelKey: "fields.date-invite.question.label", type: "text", placeholderKey: "fields.date-invite.question.placeholder" },
       { key: "successMessage", labelKey: "fields.date-invite.successMessage.label", type: "text", placeholderKey: "fields.date-invite.successMessage.placeholder" },
+      { key: "yesText", labelKey: "fields.date-invite.yesText.label", type: "text", placeholderKey: "fields.date-invite.yesText.placeholder" },
+      { key: "noText", labelKey: "fields.date-invite.noText.label", type: "text", placeholderKey: "fields.date-invite.noText.placeholder" },
       { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {
@@ -44,6 +46,16 @@ export const ROMANCE_CONFIGS: Record<string, EditorConfig> = {
       { key: "resultTitle", labelKey: "fields.apology-search.resultTitle.label", type: "text", placeholderKey: "fields.apology-search.resultTitle.placeholder", maxLength: 30 },
       { key: "resultSubtitle", labelKey: "fields.apology-search.resultSubtitle.label", type: "textarea", placeholderKey: "fields.apology-search.resultSubtitle.placeholder", maxLength: 100 },
       { key: "startButtonLabel", labelKey: "fields.apology-search.startButtonLabel.label", type: "text", placeholderKey: "fields.apology-search.startButtonLabel.placeholder", maxLength: 40 },
+      {
+        key: "typingSpeedMs",
+        labelKey: "fields.apology-search.typingSpeed.label",
+        type: "select",
+        options: [
+          { value: "140", labelKey: "fields.apology-search.typingSpeed.options.slow" },
+          { value: "80", labelKey: "fields.apology-search.typingSpeed.options.normal" },
+          { value: "45", labelKey: "fields.apology-search.typingSpeed.options.fast" },
+        ],
+      },
       { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {

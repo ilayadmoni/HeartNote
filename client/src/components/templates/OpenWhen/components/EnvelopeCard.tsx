@@ -8,20 +8,32 @@
  *   C) Front flaps with gradient + heart seal (top z, see EnvelopeLayers)
  */
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Lock } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import type { OpenWhenEnvelope } from "../types";
-import { isEnvelopeUnlocked } from "../constants";
+import { isEnvelopeUnlocked, daysUntil } from "../constants";
 import { DEFAULT_PRIMARY_COLOR } from "@/components/templates/types";
 import { darken } from "../utils/envelopeColor";
 import { EnvelopeLayers } from "./EnvelopeLayers";
+
+const OPEN_ANIMATION_MS = 450;
 
 interface EnvelopeCardProps {
   envelope: OpenWhenEnvelope;
   index: number;
   onOpen: (envelope: OpenWhenEnvelope) => void;
   primaryColor?: string;
+}
+
+function countdownLabel(
+  t: ReturnType<typeof useTranslations>,
+  dateOpen: string,
+): string {
+  const days = daysUntil(dateOpen);
+  if (days <= 0) return t("openWhen.opensToday");
+  if (days === 1) return t("openWhen.opensTomorrow");
+  return t("openWhen.opensInDays", { count: days });
 }
 
 export function EnvelopeCard({
@@ -31,22 +43,28 @@ export function EnvelopeCard({
   primaryColor = DEFAULT_PRIMARY_COLOR,
 }: EnvelopeCardProps) {
   const t = useTranslations("templates");
-  const locale = useLocale();
   const unlocked = isEnvelopeUnlocked(envelope.dateOpen);
+  const [isOpening, setIsOpening] = useState(false);
 
   const base = primaryColor;
   const dark = darken(primaryColor, 0.18);
   const textColor = darken(primaryColor, 0.35);
+
+  const handleClick = () => {
+    if (!unlocked || isOpening) return;
+    setIsOpening(true);
+    window.setTimeout(() => onOpen(envelope), OPEN_ANIMATION_MS);
+  };
 
   return (
     <motion.button
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.35 }}
-      whileHover={unlocked ? { y: -6, scale: 1.02 } : undefined}
-      whileTap={unlocked ? { scale: 0.97 } : undefined}
-      onClick={() => unlocked && onOpen(envelope)}
-      disabled={!unlocked}
+      whileHover={unlocked && !isOpening ? { y: -6, scale: 1.02 } : undefined}
+      whileTap={unlocked && !isOpening ? { scale: 0.97 } : undefined}
+      onClick={handleClick}
+      disabled={!unlocked || isOpening}
       aria-label={
         unlocked
           ? t("openWhen.openLetterAria", { title: envelope.title })
@@ -79,7 +97,7 @@ export function EnvelopeCard({
       />
 
       {/* Layer B — White card */}
-      <div
+      <motion.div
         className="absolute z-[2] flex flex-col items-center
           justify-center overflow-hidden
           transition-shadow duration-300 group-hover:shadow-lg"
@@ -93,6 +111,8 @@ export function EnvelopeCard({
           border: "1px solid rgba(0,0,0,0.05)",
           borderRadius: "4px",
         }}
+        animate={isOpening ? { y: "-55%", opacity: 0 } : { y: 0, opacity: 1 }}
+        transition={{ duration: OPEN_ANIMATION_MS / 1000, ease: "easeIn" }}
       >
         <div className="w-full h-full flex items-center justify-center p-2 overflow-hidden">
           <p
@@ -107,18 +127,19 @@ export function EnvelopeCard({
           </p>
         </div>
 
-        {!unlocked && <Lock size={16} className="text-ink-subtle" aria-hidden="true" />}
-
         {!unlocked && envelope.dateOpen && (
-          <span className="mt-1 text-[9px] text-ink-subtle">
-            {new Date(envelope.dateOpen + "T00:00:00").toLocaleDateString(
-              locale === "he" ? "he-IL" : "en-US",
-            )}
+          <span className="mt-1 text-xs font-medium text-ink-subtle">
+            {countdownLabel(t, envelope.dateOpen)}
           </span>
         )}
-      </div>
+      </motion.div>
 
-      <EnvelopeLayers index={index} primaryColor={primaryColor} unlocked={unlocked} />
+      <EnvelopeLayers
+        index={index}
+        primaryColor={primaryColor}
+        unlocked={unlocked}
+        isOpening={isOpening}
+      />
     </motion.button>
   );
 }

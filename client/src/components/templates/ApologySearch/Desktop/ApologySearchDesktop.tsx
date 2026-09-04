@@ -8,6 +8,7 @@ import {
   BackToGallery,
 } from "@/components/templates/components";
 import { ApologySearchResult } from "../components/ApologySearchResult";
+import { SkeletonResultRows } from "../components/SkeletonResultRows";
 import type { ApologySearchDesktopProps } from "../types";
 
 export function ApologySearchDesktop({
@@ -66,30 +67,17 @@ export function ApologySearchDesktop({
                 </span>
               </div>
 
-              {/* Bouncing dots */}
+              {/* Skeleton result rows */}
               <AnimatePresence>
                 {phase === "loading" && (
                   <motion.div
-                    key="dots"
+                    key="skeleton"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex gap-2"
+                    className="w-full flex justify-center"
                   >
-                    {[0, 1, 2].map((i) => (
-                      <motion.div
-                        key={i}
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: primaryColor }}
-                        animate={{ y: [0, -10, 0] }}
-                        transition={{
-                          duration: 0.6,
-                          delay: i * 0.2,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      />
-                    ))}
+                    <SkeletonResultRows size="desktop" />
                   </motion.div>
                 )}
               </AnimatePresence>

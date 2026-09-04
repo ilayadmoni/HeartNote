@@ -42,18 +42,18 @@ function shapeStyle(shape: Shape, color: string): React.CSSProperties {
     outlineOffset: "-1px",
   };
   if (shape === "oval") {
-    return { ...base, width: 10, height: 18, borderRadius: "50% / 30%" };
+    return { ...base, width: 15, height: 26, borderRadius: "50% / 30%" };
   }
   if (shape === "round") {
-    return { ...base, width: 12, height: 12, borderRadius: "50%" };
+    return { ...base, width: 18, height: 18, borderRadius: "50%" };
   }
-  return { ...base, width: 8, height: 14, borderRadius: 3 };
+  return { ...base, width: 12, height: 20, borderRadius: 4 };
 }
 
 function buildParticles(): Particle[] {
   const vw = typeof window !== "undefined" ? window.innerWidth : 1024;
   const vh = typeof window !== "undefined" ? window.innerHeight : 768;
-  return Array.from({ length: 40 }, (_, i) => {
+  return Array.from({ length: 22 }, (_, i) => {
     const startX = Math.random() * vw;
     const wobble = (Math.random() - 0.5) * 80;
     const drift = (Math.random() - 0.5) * 160;

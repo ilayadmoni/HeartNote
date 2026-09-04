@@ -18,6 +18,7 @@ export function DateInvite({ data }: TemplateComponentProps<DateInviteData>) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [answered, setAnswered] = useState(false);
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
+  const [dodgeCount, setDodgeCount] = useState(0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -53,15 +54,20 @@ export function DateInvite({ data }: TemplateComponentProps<DateInviteData>) {
   const handleReset = useCallback(() => {
     setAnswered(false);
     setNoPosition({ x: 0, y: 0 });
+    setDodgeCount(0);
   }, []);
 
   const handleNoHover = useCallback(() => {
-    // Constrained to stay within card bounds
+    // Constrained to stay within card bounds; radius grows slightly each dodge, capped
+    const escalation = Math.min(dodgeCount, 6);
+    const radiusX = (isMobile ? 100 : 180) + escalation * (isMobile ? 12 : 18);
+    const radiusY = (isMobile ? 60 : 100) + escalation * (isMobile ? 8 : 12);
     setNoPosition({
-      x: (Math.random() - 0.5) * (isMobile ? 100 : 180),
-      y: (Math.random() - 0.5) * (isMobile ? 60 : 100),
+      x: (Math.random() - 0.5) * radiusX,
+      y: (Math.random() - 0.5) * radiusY,
     });
-  }, [isMobile]);
+    setDodgeCount((count) => count + 1);
+  }, [isMobile, dodgeCount]);
 
   const sharedProps = {
     data,

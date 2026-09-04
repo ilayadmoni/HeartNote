@@ -6,9 +6,10 @@
  */
 
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { LoveCoupon } from "../types";
 import { getCouponColorClasses } from "../constants";
+import { PerforatedEdge, RedeemedStamp } from "./CouponCardParts";
 
 interface CouponCardProps {
   coupon: LoveCoupon;
@@ -24,23 +25,25 @@ export function CouponCard({
   primaryColor,
 }: CouponCardProps) {
   const t = useTranslations("templates");
+  const locale = useLocale();
+  const isRtl = locale === "he";
   const bgClass = getCouponColorClasses(coupon.color, index);
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
+      initial={{ opacity: 0, x: isRtl ? 20 : -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.1 }}
       className={`relative flex ${coupon.isRedeemed ? "opacity-60" : ""}`}
     >
       {/* Main Coupon Body */}
       <div
-        className={`flex-1 ${bgClass} rounded-s-card p-4 relative ${
+        className={`flex-1 ${bgClass} rounded-s-card p-4 relative overflow-hidden ${
           coupon.isRedeemed ? "grayscale" : ""
         }`}
       >
         {/* Redeem Button */}
-        <div className="absolute start-4 top-1/2 -translate-y-1/2">
+        <div className="absolute start-4 top-1/2 -translate-y-1/2 z-[1]">
           {!coupon.isRedeemed ? (
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -59,20 +62,20 @@ export function CouponCard({
         </div>
 
         {/* Content — Right aligned for RTL */}
-        <div className="text-end pe-2 ps-24">
+        <div className="text-end pe-2 ps-28 min-w-0">
           {coupon.icon && (
             <span className="text-2xl mb-1 block opacity-40">
               {coupon.icon}
             </span>
           )}
           <h3
-            className="text-lg font-bold text-ink break-words max-w-[200px]" dir="auto"
+            className="text-lg font-bold text-ink break-words" dir="auto"
             style={primaryColor ? { color: primaryColor } : undefined}
           >
             {coupon.title}
           </h3>
           {coupon.description && (
-            <p className="text-xs text-ink-muted mt-0.5 break-words max-w-[200px]" dir="auto">
+            <p className="text-xs text-ink-muted mt-0.5 break-words" dir="auto">
               {coupon.description}
             </p>
           )}
@@ -80,12 +83,18 @@ export function CouponCard({
       </div>
 
       {/* Perforated Edge */}
-      <PerforatedEdge primaryColor={primaryColor} />
+      <PerforatedEdge primaryColor={primaryColor} isRedeemed={coupon.isRedeemed} />
 
       {/* COUPON Stub */}
-      <div
+      <motion.div
         className="w-10 bg-ink rounded-e-card flex items-center justify-center"
         style={primaryColor ? { backgroundColor: primaryColor } : undefined}
+        animate={
+          coupon.isRedeemed
+            ? { x: isRtl ? -6 : 6, rotate: isRtl ? -3 : 3, opacity: 0.5 }
+            : { x: 0, rotate: 0, opacity: 1 }
+        }
+        transition={{ delay: 0.35, duration: 0.3, ease: "easeOut" }}
       >
         <span
           className="text-[10px] font-bold tracking-wider"
@@ -98,43 +107,10 @@ export function CouponCard({
         >
           COUPON
         </span>
-      </div>
+      </motion.div>
 
       {/* Redeemed Stamp Overlay */}
       {coupon.isRedeemed && <RedeemedStamp />}
-    </motion.div>
-  );
-}
-
-/** Perforated dots between body and stub */
-function PerforatedEdge({ primaryColor }: { primaryColor?: string }) {
-  return (
-    <div
-      className="relative w-4 flex flex-col items-center justify-around py-2 bg-ink"
-      style={primaryColor ? { backgroundColor: primaryColor } : undefined}
-    >
-      {[...Array(5)].map((_, i) => (
-        <div
-          key={i}
-          className="w-2.5 h-2.5 rounded-full bg-surface"
-        />
-      ))}
-    </div>
-  );
-}
-
-/** Redeemed stamp overlay - centered on coupon */
-function RedeemedStamp() {
-  const t = useTranslations("templates");
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.5, rotate: -15 }}
-      animate={{ opacity: 1, scale: 1, rotate: -8 }}
-      className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
-    >
-      <div className="px-6 py-2 border-4 border-red-500/70 rounded-control bg-surface-raised/30 backdrop-blur-[1px]">
-        <span className="text-2xl font-black text-red-500/80">{t("loveCoupons.redeemed")}</span>
-      </div>
     </motion.div>
   );
 }

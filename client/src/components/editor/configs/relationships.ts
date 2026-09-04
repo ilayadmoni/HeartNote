@@ -12,7 +12,29 @@ export const RELATIONSHIPS_CONFIGS: Record<string, EditorConfig> = {
     ],
     defaultData: {
       title: "defaults.timeline.title",
-      events: [],
+      events: [
+        {
+          id: "event-1",
+          date: "2023-06-15",
+          title: "defaults.timeline.events.1.title",
+          description: "defaults.timeline.events.1.description",
+          icon: "💫",
+        },
+        {
+          id: "event-2",
+          date: "2024-02-14",
+          title: "defaults.timeline.events.2.title",
+          description: "defaults.timeline.events.2.description",
+          icon: "💖",
+        },
+        {
+          id: "event-3",
+          date: "2024-12-25",
+          title: "defaults.timeline.events.3.title",
+          description: "defaults.timeline.events.3.description",
+          icon: "🎉",
+        },
+      ],
       primaryColor: "#d4826f",
     },
   },
@@ -50,13 +72,13 @@ export const RELATIONSHIPS_CONFIGS: Record<string, EditorConfig> = {
         {
           id: "env-1",
           title: "defaults.open-when.envelopes.1.title",
-          dateOpen: new Date().toISOString().split("T")[0],
+          dateOpen: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
           content: "defaults.open-when.envelopes.1.content",
         },
         {
           id: "env-2",
           title: "defaults.open-when.envelopes.2.title",
-          dateOpen: new Date().toISOString().split("T")[0],
+          dateOpen: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
           content: "defaults.open-when.envelopes.2.content",
         },
       ],

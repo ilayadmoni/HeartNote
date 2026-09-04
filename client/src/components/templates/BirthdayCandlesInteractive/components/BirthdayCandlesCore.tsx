@@ -38,6 +38,10 @@ export function BirthdayCandlesCore({
     return () => timers.current.forEach(clearTimeout);
   }, [lit, showGreeting, reduceMotion]);
 
+  const litCount = lit.filter(Boolean).length;
+  const extinguishedRatio = plan.candleCount > 0 ? 1 - litCount / plan.candleCount : 0;
+  const lastLitIndex = lit.reduce((acc, isLit, i) => (isLit ? i : acc), -1);
+
   const blowCandle = (index: number) => {
     setLit((current) => current.map((item, i) => (i === index ? false : item)));
   };
@@ -56,6 +60,16 @@ export function BirthdayCandlesCore({
   return (
     <InteractiveShell title={title} instruction={t("birthdayCandles.instruction")}>
       <div className="relative aspect-square w-full max-w-sm overflow-visible">
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 40%, transparent 30%, rgba(20,12,8,0.55) 100%)",
+          }}
+          animate={{ opacity: extinguishedRatio * 0.6 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        />
         <motion.div
           className="relative flex w-full flex-col items-center"
           animate={reduceMotion ? {} : { y: [0, -3, 0] }}
@@ -76,6 +90,7 @@ export function BirthdayCandlesCore({
                   key={index}
                   index={index}
                   isLit={isLit}
+                  isLast={isLit && index === lastLitIndex && litCount === 1}
                   reduceMotion={reduceMotion}
                   onClick={() => blowCandle(index)}
                 />

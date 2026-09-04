@@ -60,6 +60,7 @@ export function SlotMachineDesktop({
               isSpinning={isSpinning}
               primaryColor={primaryColor}
               size="desktop"
+              hasWon={hasWon}
             />
           ))}
         </motion.div>
@@ -70,11 +71,8 @@ export function SlotMachineDesktop({
           whileTap={!isSpinning && !hasWon ? { scale: 0.96 } : {}}
           onClick={onSpin}
           disabled={isSpinning || hasWon}
-          className="px-10 py-4 rounded-pill text-xl font-bold shadow-lg transition-all duration-300 text-accent-ink disabled:opacity-75 disabled:cursor-not-allowed"
-          style={{
-            backgroundColor: hasWon ? "#22c55e" : primaryColor,
-            boxShadow: `0 8px 25px ${hasWon ? "#22c55e" : primaryColor}40`,
-          }}
+          className={`px-10 py-4 rounded-pill text-xl font-bold shadow-lg transition-all duration-300 text-accent-ink disabled:opacity-75 disabled:cursor-not-allowed ${hasWon ? "bg-accent" : ""}`}
+          style={!hasWon ? { backgroundColor: primaryColor, boxShadow: `0 8px 25px ${primaryColor}40` } : undefined}
         >
           {hasWon
             ? `${successEmoji} ${t("slotMachine.won")}`

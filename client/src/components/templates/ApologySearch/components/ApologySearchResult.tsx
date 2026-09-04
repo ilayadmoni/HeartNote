@@ -43,6 +43,9 @@ export function ApologySearchResult({ data, primaryColor, onReset }: ApologySear
       </motion.div>
 
       <div className="bg-surface-raised border border-line rounded-card px-10 py-8 shadow-xl flex flex-col items-center gap-3 max-w-sm">
+        <p className="text-caption text-ink-subtle w-full" dir="auto">
+          {t("apologySearch.resultCount")}
+        </p>
         <h2 className="text-title-lg font-extrabold text-ink break-words w-full" dir="auto">
           {data.resultTitle}
         </h2>

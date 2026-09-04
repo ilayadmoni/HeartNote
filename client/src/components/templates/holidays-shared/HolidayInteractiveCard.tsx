@@ -76,7 +76,7 @@ export function HolidayInteractiveCard({ data, slug }: HolidayInteractiveCardPro
 
   return (
     <InteractiveShell title={data.greetingTitle || defaultTitle} instruction={prompt}>
-      <HolidayCardFrame shape={isFrameSequence ? "square" : "rectangle"}>
+      <HolidayCardFrame shape={isFrameSequence ? "square" : "rectangle"} wash={config.wash}>
         <div className="absolute inset-0">
           {status === "idle" && (
             <button
@@ -97,7 +97,8 @@ export function HolidayInteractiveCard({ data, slug }: HolidayInteractiveCardPro
               <HolidayRevealOverlay
                 data={data}
                 titleFallback={revealLine}
-                accentColor={config.accent}
+                accentColor={data.primaryColor || config.accent}
+                revealMotion={config.revealMotion}
                 onReplay={replay}
               />
             )}

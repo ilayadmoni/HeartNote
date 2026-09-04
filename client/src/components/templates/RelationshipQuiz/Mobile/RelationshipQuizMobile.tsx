@@ -40,7 +40,12 @@ export function RelationshipQuizMobile({ data }: QuizViewProps) {
 
         {quiz.isFinished ? (
           <div className="bg-surface-raised rounded-card shadow-lift p-6">
-            <QuizResults score={quiz.score} total={totalQuestions} onPlayAgain={quiz.reset} />
+            <QuizResults
+              score={quiz.score}
+              total={totalQuestions}
+              onPlayAgain={quiz.reset}
+              scoreMessages={data.scoreMessages}
+            />
           </div>
         ) : (
           <>

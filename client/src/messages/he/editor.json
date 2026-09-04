@@ -54,6 +54,9 @@
       },
       "ribbonColor": {
         "label": "צבע סרט"
+      },
+      "clicksRequired": {
+        "label": "מספר נגיעות נדרשות"
       }
     },
     "punching-bag": {
@@ -104,6 +107,10 @@
       },
       "options": {
         "label": "אופציות (2-8)"
+      },
+      "noTakeBacksText": {
+        "label": "כותרת משנה (אופציונלי)",
+        "placeholder": "הגלגל מחליט — בלי חזרה בי!"
       }
     },
     "slot-machine": {
@@ -194,6 +201,14 @@
       "successMessage": {
         "label": "הודעת הצלחה",
         "placeholder": "יש! איזה כיף"
+      },
+      "yesText": {
+        "label": "טקסט כפתור \"כן\"",
+        "placeholder": "כן"
+      },
+      "noText": {
+        "label": "טקסט כפתור \"לא\"",
+        "placeholder": "לא"
       }
     },
     "scratch-card": {
@@ -222,6 +237,14 @@
       "startButtonLabel": {
         "label": "כפתור התחלה",
         "placeholder": "התחל חיפוש"
+      },
+      "typingSpeed": {
+        "label": "מהירות הקלדה",
+        "options": {
+          "slow": "איטית",
+          "normal": "רגילה",
+          "fast": "מהירה"
+        }
       }
     },
     "bar-bat-mitzvah": {
@@ -689,7 +712,21 @@
       "disclaimer": "* החברה אינה אחראית לתוצאות השימוש בתירוצים אלו."
     },
     "timeline": {
-      "title": "הסיפור שלנו"
+      "title": "הסיפור שלנו",
+      "events": {
+        "1": {
+          "title": "איך התחלנו",
+          "description": "הפעם הראשונה שנפגשנו ומשהו פשוט הרגיש נכון."
+        },
+        "2": {
+          "title": "יום האהבה הראשון שלנו",
+          "description": "החלטנו רשמית שאנחנו זוג, ולא הבטנו לאחור."
+        },
+        "3": {
+          "title": "הרגע הזה",
+          "description": "עוד זיכרון קטן שהופך לסיפור הגדול שלנו."
+        }
+      }
     },
     "love-coupons": {
       "title": "פנקס קופונים",

@@ -21,6 +21,8 @@ export const HOLIDAY_INTERACTIVE_CONFIGS: Record<
     prompt: "holidays.holiday-rosh-hashanah-interactive.prompt",
     accent: "#d4826f",
     interaction: "honey",
+    revealMotion: "fade-up",
+    wash: "#FBEFE6",
   },
   "holiday-passover-interactive": {
     slug: "holiday-passover-interactive",
@@ -33,6 +35,8 @@ export const HOLIDAY_INTERACTIVE_CONFIGS: Record<
     prompt: "holidays.holiday-passover-interactive.prompt",
     accent: "#b7791f",
     interaction: "matzah",
+    revealMotion: "slide-open",
+    wash: "#F6EDD9",
   },
   "holiday-purim-interactive": {
     slug: "holiday-purim-interactive",
@@ -45,6 +49,8 @@ export const HOLIDAY_INTERACTIVE_CONFIGS: Record<
     prompt: "holidays.holiday-purim-interactive.prompt",
     accent: "#8b5cf6",
     interaction: "mask",
+    revealMotion: "spin-in",
+    wash: "#F1EBFB",
   },
   "holiday-shavuot-interactive": {
     slug: "holiday-shavuot-interactive",
@@ -57,6 +63,8 @@ export const HOLIDAY_INTERACTIVE_CONFIGS: Record<
     prompt: "holidays.holiday-shavuot-interactive.prompt",
     accent: "#7ed957",
     interaction: "bloom",
+    revealMotion: "bloom",
+    wash: "#EEF9E7",
   },
   "holiday-sukkot-interactive": {
     slug: "holiday-sukkot-interactive",
@@ -69,6 +77,8 @@ export const HOLIDAY_INTERACTIVE_CONFIGS: Record<
     prompt: "holidays.holiday-sukkot-interactive.prompt",
     accent: "#5f8f2f",
     interaction: "sukkah",
+    revealMotion: "fade-up",
+    wash: "#EFF4E5",
   },
   "holiday-hanukkah-interactive": {
     slug: "holiday-hanukkah-interactive",
@@ -81,6 +91,8 @@ export const HOLIDAY_INTERACTIVE_CONFIGS: Record<
     prompt: "holidays.holiday-hanukkah-interactive.prompt",
     accent: "#38b6ff",
     interaction: "hanukkah",
+    revealMotion: "fade-up",
+    wash: "#E9F6FF",
   },
 };
 

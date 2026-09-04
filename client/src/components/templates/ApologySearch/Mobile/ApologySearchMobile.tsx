@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FooterBranding } from "@/components/templates/components";
 import { ApologySearchResult } from "../components/ApologySearchResult";
+import { SkeletonResultRows } from "../components/SkeletonResultRows";
 import type { ApologySearchMobileProps } from "../types";
 
 export function ApologySearchMobile({
@@ -62,30 +63,17 @@ export function ApologySearchMobile({
                 </span>
               </div>
 
-              {/* Bouncing dots */}
+              {/* Skeleton result rows */}
               <AnimatePresence>
                 {phase === "loading" && (
                   <motion.div
-                    key="dots"
+                    key="skeleton"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex gap-2"
+                    className="w-full flex justify-center"
                   >
-                    {[0, 1, 2].map((i) => (
-                      <motion.div
-                        key={i}
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: primaryColor }}
-                        animate={{ y: [0, -8, 0] }}
-                        transition={{
-                          duration: 0.6,
-                          delay: i * 0.2,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      />
-                    ))}
+                    <SkeletonResultRows size="mobile" />
                   </motion.div>
                 )}
               </AnimatePresence>

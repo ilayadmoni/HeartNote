@@ -13,6 +13,13 @@ export const AI_ASSISTABLE_FIELDS = [
   { templateId: "surprise-gift", fieldKey: "greeting", maxLength: 100 },
   { templateId: "birthday-candles-interactive", fieldKey: "message", maxLength: 100 },
   { templateId: "scratch-card", fieldKey: "prizeContent", maxLength: 100 },
+  { templateId: "wedding-glass-interactive", fieldKey: "message", maxLength: 100 },
+  { templateId: "holiday-rosh-hashanah-interactive", fieldKey: "message", maxLength: 100 },
+  { templateId: "holiday-passover-interactive", fieldKey: "message", maxLength: 100 },
+  { templateId: "holiday-purim-interactive", fieldKey: "message", maxLength: 100 },
+  { templateId: "holiday-shavuot-interactive", fieldKey: "message", maxLength: 100 },
+  { templateId: "holiday-sukkot-interactive", fieldKey: "message", maxLength: 100 },
+  { templateId: "holiday-hanukkah-interactive", fieldKey: "message", maxLength: 100 },
 ] as const;
 
 export const GenerateAiTextSchema = z.object({

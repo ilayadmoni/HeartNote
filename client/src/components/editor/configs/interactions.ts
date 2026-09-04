@@ -14,6 +14,12 @@ export const INTERACTIONS_CONFIGS: Record<string, EditorConfig> = {
       { key: "greeting", labelKey: "fields.surprise-gift.greeting.label", type: "textarea", placeholderKey: "fields.surprise-gift.greeting.placeholder", aiAssist: true },
       { key: "boxColor", labelKey: "fields.surprise-gift.boxColor.label", type: "color" },
       { key: "ribbonColor", labelKey: "fields.surprise-gift.ribbonColor.label", type: "color" },
+      {
+        key: "clicksRequired",
+        labelKey: "fields.surprise-gift.clicksRequired.label",
+        type: "select",
+        options: [3, 5, 7].map((n) => ({ value: String(n), label: String(n) })),
+      },
       { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {

@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import type { PunchingBagMobileProps } from "../types";
 import { FooterBranding } from "@/components/templates/components";
-import { PunchingBagResult } from "../components/PunchingBagResult";
+import { PunchingBagResult, BoxingGlove, ImpactBurst, HitCounter } from "../components";
+import { getTiltKeyframes } from "../punchingBag.utils";
 
 export function PunchingBagMobile({
   data,
@@ -60,25 +61,25 @@ export function PunchingBagMobile({
                 </p>
               </div>
 
+              {/* Hit counter */}
+              <HitCounter remaining={remaining} primaryColor={primaryColor} size="sm" />
+
               {/* Rope + Bag */}
               <div className="flex flex-col items-center relative">
                 <div className="w-0.5 h-10 bg-line-strong" />
                 <motion.div
-                  animate={isTilting ? { rotate: [0, -18, 14, -8, 5, 0] } : { rotate: 0 }}
+                  animate={isTilting ? { rotate: getTiltKeyframes(hits, hitsRequired) } : { rotate: 0 }}
                   transition={{ duration: 0.35, ease: "easeInOut" }}
-                  className="cursor-pointer select-none"
+                  className="cursor-pointer select-none relative"
                   onClick={handleHit}
                   role="button"
                   aria-label={t("punchingBag.hitAria")}
                 >
                   <div
-                    className="w-24 h-36 rounded-[50px] shadow-xl flex items-center justify-center active:scale-95 transition-transform"
+                    className="w-24 h-36 rounded-[50px] shadow-xl active:scale-95 transition-transform"
                     style={{ backgroundColor: bagColor }}
-                  >
-                    <span className="text-white/60 font-bold text-4xl tabular-nums">
-                      {remaining}
-                    </span>
-                  </div>
+                  />
+                  <AnimatePresence>{showPunch && <ImpactBurst />}</AnimatePresence>
                 </motion.div>
 
                 {/* Boxing Glove */}
@@ -91,11 +92,7 @@ export function PunchingBagMobile({
                       transition={{ type: "spring", stiffness: 500, damping: 15 }}
                       className="absolute top-1/2 -end-4 transform -translate-y-1/2 pointer-events-none z-20 drop-shadow-xl"
                     >
-                      <div className="relative w-16 h-16">
-                        <div className="absolute inset-0 bg-red-500 rounded-[2rem] rounded-tl-md border-2 border-red-700 shadow-inner z-10" />
-                        <div className="absolute top-1/2 -left-2 w-8 h-10 bg-red-500 rounded-full transform -translate-y-1/2 border-2 border-red-700 z-20" />
-                        <div className="absolute -right-3 top-2 bottom-2 w-6 bg-gray-800 rounded-r-lg border-2 border-gray-900 z-0" />
-                      </div>
+                      <BoxingGlove size={56} />
                     </motion.div>
                   )}
                 </AnimatePresence>

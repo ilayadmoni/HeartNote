@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import type { WeddingInteractiveData } from "@/components/templates/types";
 
 interface WeddingRevealOverlayProps {
@@ -12,6 +13,12 @@ interface WeddingRevealOverlayProps {
 export function WeddingRevealOverlay({ data, onReplay }: WeddingRevealOverlayProps) {
   const t = useTranslations("templates");
   const title = data.greetingTitle || t("weddingGlass.mazalTov");
+  const [showReplay, setShowReplay] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowReplay(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <motion.div
@@ -43,13 +50,18 @@ export function WeddingRevealOverlay({ data, onReplay }: WeddingRevealOverlayPro
             {data.senderName}
           </p>
         )}
-        <button
-          type="button"
-          onClick={onReplay}
-          className="mt-5 rounded-pill bg-ink px-5 py-2.5 text-sm font-bold text-surface shadow-md transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-        >
-          {t("weddingGlass.replay")}
-        </button>
+        {showReplay && (
+          <motion.button
+            type="button"
+            onClick={onReplay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="mt-5 rounded-pill bg-ink px-5 py-2.5 text-sm font-bold text-surface shadow-md transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            {t("weddingGlass.replay")}
+          </motion.button>
+        )}
       </motion.section>
     </motion.div>
   );

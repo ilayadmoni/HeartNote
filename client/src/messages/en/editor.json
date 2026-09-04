@@ -54,6 +54,9 @@
       },
       "ribbonColor": {
         "label": "Ribbon color"
+      },
+      "clicksRequired": {
+        "label": "Taps required"
       }
     },
     "punching-bag": {
@@ -104,6 +107,10 @@
       },
       "options": {
         "label": "Options (2-8)"
+      },
+      "noTakeBacksText": {
+        "label": "Subtitle (optional)",
+        "placeholder": "The wheel decides — no take-backs!"
       }
     },
     "slot-machine": {
@@ -194,6 +201,14 @@
       "successMessage": {
         "label": "Success message",
         "placeholder": "Yes! So happy"
+      },
+      "yesText": {
+        "label": "\"Yes\" button text",
+        "placeholder": "Yes"
+      },
+      "noText": {
+        "label": "\"No\" button text",
+        "placeholder": "No"
       }
     },
     "scratch-card": {
@@ -222,6 +237,14 @@
       "startButtonLabel": {
         "label": "Start button",
         "placeholder": "Start searching"
+      },
+      "typingSpeed": {
+        "label": "Typing speed",
+        "options": {
+          "slow": "Slow",
+          "normal": "Normal",
+          "fast": "Fast"
+        }
       }
     },
     "bar-bat-mitzvah": {
@@ -689,7 +712,21 @@
       "disclaimer": "* The company is not responsible for the consequences of using these excuses."
     },
     "timeline": {
-      "title": "Our Story"
+      "title": "Our Story",
+      "events": {
+        "1": {
+          "title": "How We Started",
+          "description": "The first time we met and something just felt right."
+        },
+        "2": {
+          "title": "Our First Valentine's Day",
+          "description": "We officially became a couple, and never looked back."
+        },
+        "3": {
+          "title": "This Moment",
+          "description": "Another small memory becoming our bigger story."
+        }
+      }
     },
     "love-coupons": {
       "title": "Coupon Book",

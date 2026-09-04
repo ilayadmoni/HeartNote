@@ -6,7 +6,8 @@ const COMMON_FIELDS: EditorField[] = [
   { key: "recipientName", labelKey: "fields.common.recipientName.label", type: "text", placeholderKey: "fields.common.recipientName.placeholder", maxLength: 50 },
   { key: "senderName", labelKey: "fields.common.senderName.label", type: "text", placeholderKey: "fields.common.senderName.placeholder", maxLength: 50 },
   { key: "greetingTitle", labelKey: "fields.common.greetingTitle.label", type: "text", placeholderKey: "fields.common.greetingTitle.placeholder", maxLength: 70 },
-  { key: "message", labelKey: "fields.common.message.label", type: "textarea", placeholderKey: "fields.common.message.placeholder", maxLength: 500 },
+  { key: "message", labelKey: "fields.common.message.label", type: "textarea", placeholderKey: "fields.common.message.placeholder", maxLength: 500, aiAssist: true },
+  { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
 ];
 
 const COMMON_DEFAULTS = {
@@ -15,6 +16,7 @@ const COMMON_DEFAULTS = {
   greetingTitle: "",
   message: "",
   signature: "",
+  primaryColor: "#d4826f",
 };
 
 function holidayConfig(slug: HolidayInteractiveSlug): EditorConfig {
@@ -32,16 +34,17 @@ function holidayConfig(slug: HolidayInteractiveSlug): EditorConfig {
       ...COMMON_DEFAULTS,
       greetingTitle: `templates:${holiday.defaultTitle}`,
       message: `templates:${holiday.revealLine}`,
+      primaryColor: holiday.accent,
     },
   };
 }
 
 const BIRTHDAY_FIELDS: EditorField[] = [
   { key: "recipientName", labelKey: "fields.birthday-candles-interactive.recipientName.label", type: "text", placeholderKey: "fields.birthday-candles-interactive.recipientName.placeholder", maxLength: 50 },
+  { key: "recipientAge", labelKey: "fields.birthday-candles-interactive.recipientAge.label", type: "number", placeholderKey: "fields.birthday-candles-interactive.recipientAge.placeholder", min: 1, max: 120 },
   { key: "senderName", labelKey: "fields.birthday-candles-interactive.senderName.label", type: "text", placeholderKey: "fields.birthday-candles-interactive.senderName.placeholder", maxLength: 50 },
   { key: "greetingTitle", labelKey: "fields.common.greetingTitle.label", type: "text", placeholderKey: "fields.common.greetingTitle.placeholder", maxLength: 70 },
   { key: "message", labelKey: "fields.common.message.label", type: "textarea", placeholderKey: "fields.common.message.placeholder", maxLength: 500, aiAssist: true },
-  { key: "recipientAge", labelKey: "fields.birthday-candles-interactive.recipientAge.label", type: "number", placeholderKey: "fields.birthday-candles-interactive.recipientAge.placeholder", min: 1, max: 120 },
 ];
 
 const BIRTHDAY_DEFAULTS = {
@@ -72,13 +75,15 @@ export const INTERACTIVE_EVENT_CONFIGS: Record<string, EditorConfig> = {
       { key: "coupleNames", labelKey: "fields.wedding-glass-interactive.coupleNames.label", type: "text", placeholderKey: "fields.wedding-glass-interactive.coupleNames.placeholder", maxLength: 42 },
       { key: "senderName", labelKey: "fields.wedding-glass-interactive.senderName.label", type: "text", placeholderKey: "fields.wedding-glass-interactive.senderName.placeholder", maxLength: 36 },
       { key: "greetingTitle", labelKey: "fields.wedding-glass-interactive.greetingTitle.label", type: "text", placeholderKey: "fields.wedding-glass-interactive.greetingTitle.placeholder", maxLength: 48 },
-      { key: "message", labelKey: "fields.wedding-glass-interactive.message.label", type: "textarea", placeholderKey: "fields.wedding-glass-interactive.message.placeholder", maxLength: 260 },
+      { key: "message", labelKey: "fields.wedding-glass-interactive.message.label", type: "textarea", placeholderKey: "fields.wedding-glass-interactive.message.placeholder", maxLength: 260, aiAssist: true },
+      { key: "primaryColor", labelKey: "fields.common.primaryColor.label", type: "color" },
     ],
     defaultData: {
       coupleNames: "defaults.wedding-glass-interactive.coupleNames",
       senderName: "",
       greetingTitle: "defaults.wedding-glass-interactive.greetingTitle",
       message: "defaults.wedding-glass-interactive.message",
+      primaryColor: "#d4826f",
     },
   },
   "holiday-rosh-hashanah-interactive": holidayConfig("holiday-rosh-hashanah-interactive"),

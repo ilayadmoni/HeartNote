@@ -2,19 +2,22 @@
 
 /**
  * QuizResults Component
- * End-of-quiz score screen with percentage circle, message, and decorative stars
+ * End-of-quiz score screen with percentage circle, message, and reset button
  * Uses theme color (coral) as prominent highlight, gender-neutral Hebrew text
  */
 
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, animate } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useReducedMotion } from "@/components/accessibility";
 import { TemplateResetButton } from "@/components/templates/components";
+import type { QuizScoreMessage } from "../types";
 
 interface QuizResultsProps {
   score: number;
   total: number;
   onPlayAgain: () => void;
+  scoreMessages?: QuizScoreMessage[];
 }
 
 /**
@@ -26,48 +29,47 @@ function getFeedbackTierIndex(percentage: number): number {
   return Math.min(9, Math.max(0, Math.ceil(pct / 10) - 1));
 }
 
-export function QuizResults({ score, total, onPlayAgain }: QuizResultsProps) {
+function getScoreMessage(percentage: number, scoreMessages: QuizScoreMessage[] | undefined): string | null {
+  if (!scoreMessages?.length) return null;
+  const sorted = [...scoreMessages].sort((a, b) => b.minScore - a.minScore);
+  const match = sorted.find((entry) => percentage >= entry.minScore);
+  return match?.message ?? null;
+}
+
+export function QuizResults({ score, total, onPlayAgain, scoreMessages }: QuizResultsProps) {
   const t = useTranslations("templates");
   const percentage = Math.round((score / total) * 100);
   const shouldReduceMotion = useReducedMotion();
   const feedbackTiers = t.raw("relationshipQuiz.feedbackTiers") as string[];
-  const feedbackMessage = feedbackTiers[getFeedbackTierIndex(percentage)];
+  const feedbackMessage =
+    getScoreMessage(percentage, scoreMessages) ?? feedbackTiers[getFeedbackTierIndex(percentage)];
+
+  const [displayScore, setDisplayScore] = useState(shouldReduceMotion ? percentage : 0);
+
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      setDisplayScore(percentage);
+      return;
+    }
+    const controls = animate(0, percentage, {
+      duration: 0.7,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (value) => setDisplayScore(Math.round(value)),
+    });
+    return () => controls.stop();
+  }, [percentage, shouldReduceMotion]);
 
   return (
     <div className="flex flex-col items-center justify-center py-8 px-4 bg-gradient-to-b from-accent-soft to-transparent rounded-card">
-      {/* Decorative stars - only animate if motion is allowed */}
-      <div className="relative w-full max-w-xs">
-        {["⭐", "✨", "⭐", "✨", "⭐"].map((star, i) => (
-          <motion.span
-            key={i}
-            className="absolute text-lg text-yellow-400 opacity-60"
-            style={{
-              top: `${10 + (i % 3) * 25}%`,
-              left: `${5 + i * 20}%`,
-            }}
-            animate={shouldReduceMotion ? {} : { y: [0, -6, 0], rotate: [0, 15, 0] }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 2 + i * 0.3, repeat: Infinity }}
-          >
-            {star}
-          </motion.span>
-        ))}
-      </div>
-
       {/* Score Circle - theme color prominent highlight */}
       <motion.div
         initial={shouldReduceMotion ? { scale: 1 } : { scale: 0 }}
         animate={{ scale: 1 }}
         transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 200, damping: 15 }}
-        className="w-44 h-44 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-accent to-accent-hover flex flex-col items-center justify-center shadow-xl mb-8 relative ring-4 ring-accent/30"
+        className="w-44 h-44 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-accent to-accent-hover flex flex-col items-center justify-center shadow-xl mb-8 ring-4 ring-accent/30"
       >
-        <span
-          className="text-[10px] uppercase tracking-widest text-yellow-300 font-bold bg-yellow-400/20 px-2 py-0.5 rounded-full absolute -top-3"
-          dir="ltr"
-        >
-          {t("relationshipQuiz.finalScore")}
-        </span>
         <span className="text-5xl font-black text-white" dir="ltr">
-          {percentage}%
+          {displayScore}%
         </span>
         <span className="text-xs text-white/80 mt-1">
           {score} / {total}

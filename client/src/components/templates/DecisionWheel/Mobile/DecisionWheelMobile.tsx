@@ -71,6 +71,7 @@ export function DecisionWheelMobile({ data }: DecisionWheelViewProps) {
             options={options}
             size={280}
             primaryColor={data.primaryColor}
+            noTakeBacksText={data.noTakeBacksText}
           />
         </motion.div>
       </div>

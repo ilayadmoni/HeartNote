@@ -33,3 +33,13 @@ export function isEnvelopeUnlocked(dateOpen: string): boolean {
   const openDate = new Date(dateOpen + "T00:00:00");
   return openDate <= today;
 }
+
+/** Whole days remaining until an envelope unlocks (0 if today/past) */
+export function daysUntil(dateOpen: string): number {
+  if (!dateOpen) return 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const openDate = new Date(dateOpen + "T00:00:00");
+  const diffMs = openDate.getTime() - today.getTime();
+  return Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24)));
+}

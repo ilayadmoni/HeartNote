@@ -1,25 +1,51 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, type Transition, type Variants } from "framer-motion";
 import { useTranslations } from "next-intl";
-import type { InteractiveGreetingData } from "../types";
+import type { HolidayRevealMotion, InteractiveGreetingData } from "../types";
 
 interface HolidayRevealOverlayProps {
   data: InteractiveGreetingData;
   titleFallback: string;
   accentColor: string;
+  revealMotion?: HolidayRevealMotion;
   onReplay: () => void;
 }
+
+const DEFAULT_VARIANT: Variants = {
+  hidden: { opacity: 0, y: 18, scale: 0.96 },
+  visible: { opacity: 1, y: 0, scale: 1 },
+};
+
+const REVEAL_VARIANTS: Record<HolidayRevealMotion, Variants> = {
+  "fade-up": DEFAULT_VARIANT,
+  "spin-in": {
+    hidden: { opacity: 0, scale: 0.8, rotate: -14 },
+    visible: { opacity: 1, scale: 1, rotate: 0 },
+  },
+  "slide-open": {
+    hidden: { opacity: 0, scaleX: 0.3 },
+    visible: { opacity: 1, scaleX: 1 },
+  },
+  bloom: {
+    hidden: { opacity: 0, scale: 0.5 },
+    visible: { opacity: 1, scale: 1 },
+  },
+};
+
+const REVEAL_TRANSITION: Transition = { duration: 0.45, delay: 0.08 };
 
 export function HolidayRevealOverlay({
   data,
   titleFallback,
   accentColor,
+  revealMotion,
   onReplay,
 }: HolidayRevealOverlayProps) {
   const t = useTranslations("templates");
   const title = data.greetingTitle || titleFallback;
   const signature = data.signature || data.senderName;
+  const variant = revealMotion ? REVEAL_VARIANTS[revealMotion] : DEFAULT_VARIANT;
 
   return (
     <motion.div
@@ -30,9 +56,10 @@ export function HolidayRevealOverlay({
     >
       <motion.section
         className="w-full max-w-[22rem] overflow-hidden rounded-card border border-line bg-surface-raised/95 p-5 text-center shadow-2xl backdrop-blur-md"
-        initial={{ opacity: 0, y: 18, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.45, delay: 0.08 }}
+        variants={variant}
+        initial="hidden"
+        animate="visible"
+        transition={REVEAL_TRANSITION}
         aria-live="polite"
       >
         {data.recipientName && (

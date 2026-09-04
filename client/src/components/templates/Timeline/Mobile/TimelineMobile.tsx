@@ -22,6 +22,7 @@ export function TimelineMobile({ data }: TimelineMobileProps) {
   const isCreateRoute = pathname?.includes('/create/');
   const hasEvents = data.events && data.events.length > 0;
   const primaryColor = data.primaryColor || DEFAULT_PRIMARY_COLOR;
+  const entranceX = locale === "he" ? 15 : -15;
 
   return (
     <div className={`w-full h-full flex flex-col justify-between items-center gap-6 bg-transparent px-4 py-6 overflow-auto relative isolate ${
@@ -54,21 +55,27 @@ export function TimelineMobile({ data }: TimelineMobileProps) {
           {hasEvents ? (
             <div className="relative">
               {/* Vertical dashed line — aligned with icon center (w-7 = 28px → center at 14px from the trailing edge) */}
-              <div
-                className="absolute end-[14px] top-2 bottom-2 w-[2px] rounded-full"
+              <motion.div
+                initial={{ scaleY: 0 }}
+                whileInView={{ scaleY: 1 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
                 style={{
+                  transformOrigin: "top",
                   backgroundImage: `repeating-linear-gradient(to bottom, ${primaryColor}65 0px, ${primaryColor}65 6px, transparent 6px, transparent 11px)`,
                 }}
+                className="absolute end-[14px] top-2 bottom-2 w-[2px] rounded-full"
               />
 
               {/* Events */}
               <div className="space-y-3">
-                {data.events.map((event, index) => (
+                {data.events.map((event) => (
                   <motion.div
                     key={event.id}
-                    initial={{ opacity: 0, x: -15 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.08, duration: 0.3, ease: "easeOut" }}
+                    initial={{ opacity: 0, x: entranceX }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, amount: 0.5 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
                     className="relative flex items-start gap-3"
                   >
                     {/* Icon Circle */}
@@ -93,7 +100,7 @@ export function TimelineMobile({ data }: TimelineMobileProps) {
                     >
                       {/* Date Badge */}
                       <span
-                        className="inline-block px-2 py-0.5 text-[9px] font-bold rounded-full mb-1 tracking-wide"
+                        className="inline-block px-2 py-0.5 text-caption font-bold rounded-full mb-1 tracking-wide"
                         style={{
                           color: primaryColor,
                           backgroundColor: `${primaryColor}18`,
@@ -109,7 +116,7 @@ export function TimelineMobile({ data }: TimelineMobileProps) {
 
                       {/* Description */}
                       {event.description && (
-                        <p className="text-[10px] text-ink-muted leading-relaxed break-words" dir="auto">
+                        <p className="text-body-sm text-ink-muted leading-relaxed break-words" dir="auto">
                           {event.description}
                         </p>
                       )}

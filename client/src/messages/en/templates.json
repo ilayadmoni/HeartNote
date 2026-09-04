@@ -10,7 +10,8 @@
     "heading": "Apology search",
     "placeholder": "Type your search...",
     "startButton": "Start searching",
-    "searchAgain": "Search again"
+    "searchAgain": "Search again",
+    "resultCount": "About 1 result (0.42 seconds)"
   },
   "barBatMitzvah": {
     "introTitle": "The coming-of-age machine",
@@ -136,6 +137,7 @@
     "modalTitle": "Redeem coupon",
     "modalSubtitle": "Final confirmation",
     "confirmQuestion": "Are you sure? This can't be undone.",
+    "irreversibleNotice": "This action cannot be reversed once redeemed",
     "codeLabel": "Enter the 4-digit code you received",
     "cancel": "Cancel",
     "redeeming": "Redeeming...",
@@ -144,7 +146,10 @@
   },
   "openWhen": {
     "openLetterAria": "Open letter: {title}",
-    "lockedLetterAria": "Locked letter: {title}"
+    "lockedLetterAria": "Locked letter: {title}",
+    "opensToday": "Opens today",
+    "opensTomorrow": "Opens tomorrow",
+    "opensInDays": "Opens in {count} days"
   },
   "punchingBag": {
     "introTitle": "The stress-relief system",
@@ -152,7 +157,8 @@
     "hitAria": "Hit the bag",
     "hitInstructions": "Tap the bag to punch it",
     "resultTitleDefault": "Ouch... did that help?",
-    "anotherRound": "One more round"
+    "anotherRound": "One more round",
+    "remainingHits": "{count} hits left"
   },
   "relationshipQuiz": {
     "feedbackTiers": [

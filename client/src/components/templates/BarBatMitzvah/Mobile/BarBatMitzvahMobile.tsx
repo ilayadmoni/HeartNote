@@ -20,8 +20,6 @@ interface BarBatMitzvahMobileProps {
   onBurstComplete: () => void;
 }
 
-const CORAL = "#E28F79";
-
 export function BarBatMitzvahMobile({
   data,
   primaryColor,
@@ -74,14 +72,27 @@ export function BarBatMitzvahMobile({
             transition={{ duration: 0.4 }}
             className="w-full flex items-end justify-center"
           >
-            <div className="scale-90">
+            <motion.div
+              className="scale-90"
+              animate={isThrowing ? { scale: [1, 0.92, 1.04, 1] } : { scale: 1 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
               {data.kind === "bat" ? (
                 <GirlFigure onClick={!showGreeting ? onReveal : undefined} />
               ) : (
                 <BoyFigure onClick={!showGreeting ? onReveal : undefined} />
               )}
-            </div>
+            </motion.div>
           </motion.div>
+
+          {!showGreeting && data.tapHintLabel && (
+            <p
+              className="absolute bottom-0 text-xs text-ink-muted text-center w-full pointer-events-none"
+              dir="auto"
+            >
+              {data.tapHintLabel}
+            </p>
+          )}
 
           <AnimatePresence>
             {showGreeting && (
@@ -125,7 +136,7 @@ export function BarBatMitzvahMobile({
           style={{
             background: showGreeting
               ? undefined
-              : `linear-gradient(135deg, ${CORAL} 0%, #D17560 100%)`,
+              : `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}BF 100%)`,
             cursor: isThrowing ? "not-allowed" : "pointer",
           }}
         >
