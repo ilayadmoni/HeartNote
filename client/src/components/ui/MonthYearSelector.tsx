@@ -3,6 +3,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Select } from "./Select";
 
 
 interface MonthYearSelectorProps {
@@ -62,16 +63,13 @@ export function MonthYearSelector({
         {/* Month */}
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-bold text-navy-700">{t("calendar.monthLabel")}</label>
-          <select
-            value={viewMonth}
-            onChange={(e) => setViewMonth(Number(e.target.value))}
-            className="w-full bg-white/80 hover:bg-white text-body-md font-semibold text-navy-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-navy-700 rounded-control border border-white/40 px-2 py-1.5 appearance-none transition-colors"
+          <Select
+            value={String(viewMonth)}
+            onChange={(v) => setViewMonth(Number(v))}
             aria-label={t("calendar.monthLabel")}
-          >
-            {months.map((name, idx) => (
-              <option key={idx} value={idx}>{name}</option>
-            ))}
-          </select>
+            options={months.map((name, idx) => ({ value: String(idx), label: name }))}
+            className="min-h-0 px-2 py-1.5 gap-1 bg-white/80 hover:bg-white hover:border-white text-body-sm font-semibold text-navy-700 border-white/40"
+          />
         </div>
 
         {/* Year */}

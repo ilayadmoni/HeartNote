@@ -15,6 +15,7 @@ import { QuestionsEditor } from "./QuestionsEditor";
 import { CouponsEditor } from "./CouponsEditor";
 import { OptionsEditor } from "./OptionsEditor";
 import { TextEditorFields } from "./TextEditorFields";
+import { Select } from "@/components/ui";
 import type {
   TimelineEvent,
   OpenWhenEnvelope,
@@ -57,17 +58,17 @@ export function EditorField({ field, value, onChange, templateId }: EditorFieldP
       )}
 
       {field.type === "select" && (
-        <select
-          value={(value as string) || ""}
-          onChange={(e) => onChange(e.target.value)}
-          className={baseInputClass}
-        >
-          {field.options?.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.labelKey ? t(option.labelKey) : option.label}
-            </option>
-          ))}
-        </select>
+        <Select
+          // Config defaults may be numbers; option values are always strings.
+          value={value == null ? "" : String(value)}
+          onChange={onChange}
+          aria-label={label}
+          placeholder={placeholder}
+          options={(field.options ?? []).map((option) => ({
+            value: option.value,
+            label: option.labelKey ? t(option.labelKey) : (option.label ?? option.value),
+          }))}
+        />
       )}
 
       {field.type === "number" && (
