@@ -34,7 +34,7 @@ export function DateInviteDesktop({
   return (
     <div className="flex flex-col min-h-[390px] 2xl:min-h-[650px] bg-transparent relative isolate overflow-hidden">
      <FloatingIcons/>
-      <BackToGallery className="absolute top-4 end-4" />
+      <BackToGallery className="absolute top-4 start-4" />
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-sm 2xl:max-w-2xl mx-auto px-5 py-6 relative z-10">
         <h1

@@ -33,7 +33,7 @@ export function LoveCouponsDesktop({ data, creationId, verificationCode }: Coupo
   return (
     <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
       <FloatingIcons />
-      <BackToGallery className="top-4 end-4 absolute" />
+      <BackToGallery className="top-4 start-4 absolute" />
       <div className="flex-1 w-full max-w-sm mx-auto px-6 py-8">
         {data.title && (
           <motion.h1

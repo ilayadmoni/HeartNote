@@ -26,7 +26,7 @@ export function DecisionWheelDesktop({ data }: DecisionWheelViewProps) {
   return (
     <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
       <FloatingIcons/>
-      <BackToGallery className="top-4 end-4 absolute" />
+      <BackToGallery className="top-4 start-4 absolute" />
       {/* Decorative blobs */}
       <div className="absolute top-10 start-10 w-40 h-40 bg-accent-soft/40 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-20 end-10 w-56 h-56 bg-accent-soft/40 rounded-full blur-3xl pointer-events-none" />

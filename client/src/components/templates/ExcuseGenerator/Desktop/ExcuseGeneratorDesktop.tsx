@@ -26,7 +26,7 @@ export function ExcuseGeneratorDesktop({ data }: ExcuseGeneratorViewProps) {
 
   return (
     <div className="flex flex-col min-h-[390px] bg-transparent relative isolate">
-      <BackToGallery className="top-4 end-4 absolute" />
+      <BackToGallery className="top-4 start-4 absolute" />
 
       {/* Decorative blobs */}
       <div className="absolute top-8 start-8 w-44 h-44 bg-accent-soft/40 rounded-full blur-3xl pointer-events-none" />

@@ -75,7 +75,7 @@ export function ScratchCardDesktop({ data }: ScratchCardProps) {
   return (
     <div className="flex flex-col min-h-[390px] 2xl:min-h-[650px] bg-transparent relative isolate overflow-hidden">
       <FloatingIcons />
-      <BackToGallery className="top-4 end-4 absolute" />
+      <BackToGallery className="top-4 start-4 absolute" />
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md 2xl:max-w-2xl mx-auto px-6 py-8 2xl:py-10">
         {data.title && (
           <h1

@@ -22,7 +22,7 @@ export function TimelineDesktop({ data }: TimelineDesktopProps) {
   return (
     <div className="flex flex-col min-h-[390px] bg-transparent relative isolate overflow-hidden">
       <FloatingIcons />
-      <BackToGallery className="top-4 end-4 absolute" />
+      <BackToGallery className="top-4 start-4 absolute" />
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto px-6 py-8">
         {/* Main Card */}

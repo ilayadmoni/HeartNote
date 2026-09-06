@@ -41,7 +41,7 @@ export function SurpriseGiftDesktop({ data }: SurpriseGiftProps) {
   return (
     <div className="flex flex-col h-full min-h-[390px] 2xl:min-h-[650px] bg-transparent relative isolate overflow-hidden">
       <FloatingIcons />
-      <BackToGallery className="top-4 end-4 absolute" />
+      <BackToGallery className="top-4 start-4 absolute" />
       {/* Content Area */}
       <div className="flex-1 flex flex-col w-full max-w-md 2xl:max-w-2xl mx-auto px-6 pt-6 pb-4 2xl:pt-8 2xl:pb-6">
         {/* Title */}

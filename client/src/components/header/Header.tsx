@@ -72,7 +72,7 @@ export function Header({ className = "" }: HeaderProps): JSX.Element | null {
           className,
         )}
       >
-        <div className="section-shell">
+        <div className="w-full px-gutter">
           <div className="flex items-center justify-between h-16 lg:h-[4.5rem]">
             <div className="shrink-0">
               <Logo />

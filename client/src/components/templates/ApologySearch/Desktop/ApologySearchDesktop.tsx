@@ -22,7 +22,7 @@ export function ApologySearchDesktop({
   const t = useTranslations("templates");
   return (
     <div className="flex flex-col h-full min-h-[390px] bg-transparent relative isolate overflow-hidden">
-      <BackToGallery className="absolute top-4 end-4" />
+      <BackToGallery className="absolute top-4 start-4" />
 
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl mx-auto px-6 py-10 relative z-10">
         <AnimatePresence mode="wait">

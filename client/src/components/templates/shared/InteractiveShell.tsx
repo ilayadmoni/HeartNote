@@ -17,7 +17,7 @@ export function InteractiveShell({
 }: InteractiveShellProps) {
   return (
     <div className="relative flex min-h-[560px] flex-col overflow-hidden rounded-card bg-surface px-4 py-5 text-ink">
-      <BackToGallery className="absolute end-4 top-4 z-20" />
+      <BackToGallery className="absolute start-4 top-4 z-20" />
       <motion.header
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
