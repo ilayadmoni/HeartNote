@@ -17,8 +17,8 @@ AUTH_GOOGLE_ID=${auth_google_id}
 AUTH_GOOGLE_SECRET=${auth_google_secret}
 RESEND_KEY=${resend_key}
 MAIL_HEART_NOTE=${mail_heart_note}
-NEXT_PUBLIC_SITE_URL=https://${site_domain}
-AUTH_URL=https://${site_domain}
+NEXT_PUBLIC_SITE_URL=https://www.${site_domain}
+AUTH_URL=https://www.${site_domain}
 AUTH_TRUST_HOST=true
 ALLOWED_ORIGINS=https://www.${site_domain}
 EOF
@@ -35,6 +35,7 @@ cat > /etc/nginx/conf.d/heartnote.conf <<NGINX
 server {
     listen 80;
     server_name ${site_domain} www.${site_domain};
+    large_client_header_buffers 4 32k;
 
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -42,6 +43,9 @@ server {
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_buffer_size 16k;
+        proxy_buffers 4 16k;
+        proxy_busy_buffers_size 32k;
     }
 }
 NGINX

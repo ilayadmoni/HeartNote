@@ -1,0 +1,35 @@
+{
+  "plans": {
+    "storage": "local",
+    "localPath": ".claude/plans",
+    "enforceLocal": true,
+    "preventGlobalWrite": true,
+    "globalStorageCleaned": true,
+    "migrationDate": "2026-05-12"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Edit(*)",
+      "Write(*)",
+      "Read(*)"
+    ]
+  },
+  "autoApprove": ["*"],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$j=[Console]::In.ReadToEnd();$d=$j|ConvertFrom-Json;$f=$d.tool_input.file_path;if(-not $f){$f=$d.tool_response.filePath};if($f -and (Test-Path $f)){$l=(Get-Content -LiteralPath $f|Measure-Object -Line).Lines;if($l -gt 150){$m=\"File `\"$f`\" has $l lines, exceeds 150-line project limit. Split modularly (modular-code-architect skill / CLAUDE.md file-length rule).\";$o=@{hookSpecificOutput=@{hookEventName='PostToolUse';additionalContext=$m}}|ConvertTo-Json -Compress;Write-Output $o}}",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
+
