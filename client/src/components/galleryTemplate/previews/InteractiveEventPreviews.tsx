@@ -8,8 +8,9 @@ export function BirthdayCandlesInteractivePreview(): JSX.Element {
   const t = useTranslations("gallery");
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-surface-sunken">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,222,89,0.18),transparent_62%)]" />
       <div className="relative h-28 w-32">
-        <div className="absolute start-1/2 top-[13px] z-[1] flex -translate-x-1/2 gap-1">
+        <div className="absolute left-1/2 top-[13px] z-[1] flex -translate-x-1/2 gap-1">
           {[0, 1, 2, 3].map((i) => (
             <span key={i} className="flex h-10 w-4 flex-col items-center justify-end">
               <motion.span
@@ -60,7 +61,7 @@ export function HolidayRoshHashanahInteractivePreview(): JSX.Element {
   return (
     <HolidayArtPreview
       label={t("previews.holidayRoshHashanah.label")}
-      src="/assets/images/holiday-interactive/frames/rosh-hashanah/rh- 4.svg"
+      src="/assets/images/holiday-interactive/frames/rosh-hashanah/rh-4.svg"
     />
   );
 }
@@ -118,7 +119,7 @@ export function HolidayHanukkahInteractivePreview(): JSX.Element {
 function HolidayArtPreview({ label, src }: { label: string; src: string }): JSX.Element {
   return (
     <div className="flex h-full w-full items-center justify-center p-2">
-      <div className="relative h-24 w-32 overflow-hidden rounded-card border border-line bg-cream-50 p-1.5 shadow-soft">
+      <div className="relative h-24 w-32 overflow-hidden rounded-card border border-amber-400/40 bg-cream-50 p-1.5 shadow-soft">
         <div className="relative h-full w-full overflow-hidden rounded-xl bg-cream-100">
           <Image src={src} alt="" fill sizes="128px" className="object-contain" />
         </div>

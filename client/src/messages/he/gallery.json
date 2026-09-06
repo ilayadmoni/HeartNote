@@ -160,7 +160,13 @@
       "no": "לא"
     },
     "decisionWheel": {
-      "cta": "סובבו!"
+      "cta": "סובבו!",
+      "segment1": "סרט",
+      "segment2": "פיצה",
+      "segment3": "בית",
+      "segment4": "פארק",
+      "segment5": "מסעדה",
+      "segment6": "טיול"
     },
     "apologySearch": {
       "searchText": "סליחה שאני...",
@@ -169,13 +175,19 @@
       "result3": "ושוקולד"
     },
     "excuseGenerator": {
-      "sampleExcuse": "הכלב שלי אכל את הזמן הפנוי שלי",
-      "cta": "צור תירוץ"
+      "cta": "הפק תירוץ",
+      "excuse1": "הכלב אכל את שיעורי הבית",
+      "excuse2": "הייתי תקוע בפקק",
+      "excuse3": "הטלפון מת לי",
+      "excuse4": "שכחתי לגמרי",
+      "excuse5": "היה לי כאב ראש"
     },
     "barBatMitzvah": {
       "label": "בר / בת",
-      "cta": "לחצו",
-      "caption": "ברכה מרגשת מחכה"
+      "cta": "לברכה",
+      "name": "נועם כהן",
+      "date": "כ״ה אייר תשפ״ה",
+      "venue": "בית הכנסת המרכזי"
     },
     "punchingBag": {
       "caption": "שחררו לחץ!"
@@ -188,16 +200,7 @@
       "optionD": "ד"
     },
     "slotMachine": {
-      "cta": "סובבו",
-      "reel1Word1": "לחצי",
-      "reel1Word2": "אני",
-      "reel1Word3": "מחר",
-      "reel2Word1": "כדי",
-      "reel2Word2": "להזמין",
-      "reel2Word3": "לפנק",
-      "reel3Word1": "לגלות",
-      "reel3Word2": "פיצה",
-      "reel3Word3": "מסאז'"
+      "cta": "סובבו"
     },
     "birthdayCandles": {
       "alt": "עוגת יום הולדת עם נרות"
@@ -205,12 +208,27 @@
     "weddingGlass": {
       "alt": "חתונה תחת החופה"
     },
-    "holidayRoshHashanah": { "label": "ראש השנה" },
-    "holidayPassover": { "label": "פסח" },
-    "holidayPurim": { "label": "פורים" },
-    "holidayShavuot": { "label": "שבועות" },
-    "holidaySukkot": { "label": "סוכות" },
-    "holidayHanukkah": { "label": "חנוכה" }
+    "holidayRoshHashanah": {
+      "label": "ראש השנה"
+    },
+    "holidayPassover": {
+      "label": "פסח"
+    },
+    "holidayPurim": {
+      "label": "פורים"
+    },
+    "holidayShavuot": {
+      "label": "שבועות"
+    },
+    "holidaySukkot": {
+      "label": "סוכות"
+    },
+    "holidayHanukkah": {
+      "label": "חנוכה"
+    },
+    "surpriseGift": {
+      "caption": "הפתעה מחכה!"
+    }
   },
   "sampleData": {
     "dateInvite": {
@@ -284,9 +302,17 @@
       "title": "גרד וגלה את ההפתעה",
       "prizeContent": "זכית!"
     },
-    "timeline": { "title": "הסיפור שלנו" },
-    "loveCoupons": { "title": "קופונים מיוחדים" },
-    "relationshipQuiz": { "title": "?כמה את/ה מכיר/ה אותי" },
-    "openWhen": { "title": "מכתבים מיוחדים" }
+    "timeline": {
+      "title": "הסיפור שלנו"
+    },
+    "loveCoupons": {
+      "title": "קופונים מיוחדים"
+    },
+    "relationshipQuiz": {
+      "title": "?כמה את/ה מכיר/ה אותי"
+    },
+    "openWhen": {
+      "title": "מכתבים מיוחדים"
+    }
   }
 }

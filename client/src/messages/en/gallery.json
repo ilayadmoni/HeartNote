@@ -160,7 +160,13 @@
       "no": "No"
     },
     "decisionWheel": {
-      "cta": "Spin!"
+      "cta": "Spin!",
+      "segment1": "Movie",
+      "segment2": "Pizza",
+      "segment3": "Home",
+      "segment4": "Park",
+      "segment5": "Dinner",
+      "segment6": "Hike"
     },
     "apologySearch": {
       "searchText": "Sorry that I...",
@@ -169,13 +175,19 @@
       "result3": "and chocolate"
     },
     "excuseGenerator": {
-      "sampleExcuse": "My dog ate my free time",
-      "cta": "Generate excuse"
+      "cta": "Generate excuse",
+      "excuse1": "The dog ate my homework",
+      "excuse2": "I was stuck in traffic",
+      "excuse3": "My phone died",
+      "excuse4": "I completely forgot",
+      "excuse5": "I had a headache"
     },
     "barBatMitzvah": {
       "label": "Bar / Bat",
       "cta": "Tap",
-      "caption": "A moving blessing awaits"
+      "name": "Noam Cohen",
+      "date": "25 Iyar 5785",
+      "venue": "The Central Synagogue"
     },
     "punchingBag": {
       "caption": "Let it out!"
@@ -188,16 +200,7 @@
       "optionD": "D"
     },
     "slotMachine": {
-      "cta": "Spin",
-      "reel1Word1": "Tap",
-      "reel1Word2": "to",
-      "reel1Word3": "reveal",
-      "reel2Word1": "the",
-      "reel2Word2": "promise",
-      "reel2Word3": "tonight",
-      "reel3Word1": "pizza",
-      "reel3Word2": "treats",
-      "reel3Word3": "surprises"
+      "cta": "Spin"
     },
     "birthdayCandles": {
       "alt": "Birthday cake with candles"
@@ -205,12 +208,27 @@
     "weddingGlass": {
       "alt": "Wedding under the chuppah"
     },
-    "holidayRoshHashanah": { "label": "Rosh Hashanah" },
-    "holidayPassover": { "label": "Passover" },
-    "holidayPurim": { "label": "Purim" },
-    "holidayShavuot": { "label": "Shavuot" },
-    "holidaySukkot": { "label": "Sukkot" },
-    "holidayHanukkah": { "label": "Hanukkah" }
+    "holidayRoshHashanah": {
+      "label": "Rosh Hashanah"
+    },
+    "holidayPassover": {
+      "label": "Passover"
+    },
+    "holidayPurim": {
+      "label": "Purim"
+    },
+    "holidayShavuot": {
+      "label": "Shavuot"
+    },
+    "holidaySukkot": {
+      "label": "Sukkot"
+    },
+    "holidayHanukkah": {
+      "label": "Hanukkah"
+    },
+    "surpriseGift": {
+      "caption": "A surprise awaits!"
+    }
   },
   "sampleData": {
     "dateInvite": {
@@ -284,9 +302,17 @@
       "title": "Scratch to reveal the surprise",
       "prizeContent": "You won!"
     },
-    "timeline": { "title": "Our story" },
-    "loveCoupons": { "title": "Special coupons" },
-    "relationshipQuiz": { "title": "How well do you know me?" },
-    "openWhen": { "title": "Special letters" }
+    "timeline": {
+      "title": "Our story"
+    },
+    "loveCoupons": {
+      "title": "Special coupons"
+    },
+    "relationshipQuiz": {
+      "title": "How well do you know me?"
+    },
+    "openWhen": {
+      "title": "Special letters"
+    }
   }
 }

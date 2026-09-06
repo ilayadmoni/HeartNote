@@ -1,65 +1,60 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+
+const SYMBOLS = ["🍒", "⭐", "🎰", "💎", "🍋", "🔔"] as const;
+
+function Reel({ index }: { index: number }): JSX.Element {
+  const [symbolIdx, setSymbolIdx] = useState(index);
+
+  useEffect(() => {
+    const interval = setInterval(
+      () => setSymbolIdx((p) => (p + 1) % SYMBOLS.length),
+      320 + index * 110,
+    );
+    return () => clearInterval(interval);
+  }, [index]);
+
+  return (
+    <div className="w-7 h-8 rounded border border-amber-400/50 bg-navy-950 flex items-center justify-center overflow-hidden">
+      <motion.span
+        key={symbolIdx}
+        initial={{ y: -12, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.15 }}
+        className="text-[14px] leading-none"
+      >
+        {SYMBOLS[symbolIdx]}
+      </motion.span>
+    </div>
+  );
+}
 
 export function SlotMachinePreview(): JSX.Element {
   const t = useTranslations("gallery");
-  const columns = [
-    [
-      t("previews.slotMachine.reel1Word1"),
-      t("previews.slotMachine.reel1Word2"),
-      t("previews.slotMachine.reel1Word3"),
-    ],
-    [
-      t("previews.slotMachine.reel2Word1"),
-      t("previews.slotMachine.reel2Word2"),
-      t("previews.slotMachine.reel2Word3"),
-    ],
-    [
-      t("previews.slotMachine.reel3Word1"),
-      t("previews.slotMachine.reel3Word2"),
-      t("previews.slotMachine.reel3Word3"),
-    ],
-  ];
 
   return (
-    <div className="h-full w-full flex items-center justify-center p-3">
-      <div className="flex flex-col items-center gap-1.5">
-        <div className="flex gap-1">
-          {columns.map((labels, col) => (
-            <div
-              key={col}
-              className="w-7 h-10 rounded-md bg-cream-200 border border-line shadow-soft overflow-hidden relative"
-            >
-              <motion.div
-                animate={{ y: [0, -40, -80, -40, 0] }}
-                transition={{
-                  duration: 2,
-                  times: [0, 0.25, 0.5, 0.75, 1],
-                  repeat: Infinity,
-                  repeatDelay: 1,
-                  delay: col * 0.15,
-                  ease: "easeInOut",
-                }}
-                className="flex flex-col"
-              >
-                {labels.map((label, i) => (
-                  <div key={i} className="h-10 flex items-center justify-center text-[8px] font-bold text-ink">
-                    {label}
-                  </div>
-                ))}
-              </motion.div>
-            </div>
+    <div className="h-full w-full flex items-center justify-center p-2">
+      <div className="rounded-lg border border-navy-600 bg-navy-800 p-2 shadow-lift">
+        {/* Screen */}
+        <div className="mb-1.5 flex justify-center gap-1 rounded border border-amber-400/30 bg-navy-900 p-1.5">
+          {[0, 1, 2].map((i) => (
+            <Reel key={i} index={i} />
           ))}
         </div>
-        <motion.div
-          animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 1.2, repeat: Infinity }}
-          className="px-3 py-1 rounded-pill bg-accent text-accent-ink text-[8px] font-bold shadow-soft"
-        >
-          {t("previews.slotMachine.cta")}
-        </motion.div>
+
+        {/* Lever button */}
+        <div className="flex justify-center">
+          <motion.div
+            animate={{ scale: [1, 0.95, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="rounded-pill bg-amber-400 px-3 py-0.5 text-[6px] font-bold text-navy-900 shadow-soft"
+          >
+            {t("previews.slotMachine.cta")}
+          </motion.div>
+        </div>
       </div>
     </div>
   );
