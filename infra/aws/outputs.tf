@@ -21,3 +21,8 @@ output "github_deploy_role_arn" {
   description = "Set as the AWS_DEPLOY_ROLE_ARN GitHub Actions secret."
   value       = aws_iam_role.github_deploy.arn
 }
+
+output "releases_bucket" {
+  description = "Set as the RELEASES_BUCKET GitHub Actions repo variable."
+  value       = aws_s3_bucket.releases.bucket
+}

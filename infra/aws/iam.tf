@@ -27,6 +27,21 @@ resource "aws_iam_instance_profile" "ec2_ssm" {
   role = aws_iam_role.ec2_ssm.name
 }
 
+# Lets deploy.sh pull the CI-built image tarball instead of building on-box.
+resource "aws_iam_role_policy" "ec2_s3_read_releases" {
+  name = "heartnote-ec2-s3-read-releases"
+  role = aws_iam_role.ec2_ssm.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = "s3:GetObject"
+      Resource = "${aws_s3_bucket.releases.arn}/*"
+    }]
+  })
+}
+
 # ── GitHub OIDC: CI assumes a role directly, no stored AWS keys ──────────
 # GitHub mints a short-lived OIDC token per workflow run and AWS trades it
 # for temporary credentials, so there is no permanent access key to leak
@@ -84,6 +99,11 @@ resource "aws_iam_role_policy" "github_deploy" {
         Effect   = "Allow"
         Action   = ["ssm:GetCommandInvocation", "ssm:ListCommandInvocations"]
         Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = "s3:PutObject"
+        Resource = "${aws_s3_bucket.releases.arn}/*"
       },
     ]
   })

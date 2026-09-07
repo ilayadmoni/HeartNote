@@ -37,11 +37,18 @@ git reset --hard origin/main
 cd "$CLIENT_DIR"
 test -f .env || { echo "FATAL: $CLIENT_DIR/.env missing"; exit 1; }
 
-# The builder stage carries the toolchain (prisma CLI, full node_modules);
-# the runner stage is the slim image that actually serves traffic.
-echo "==> Building images"
-docker build --target builder -t heartnote-builder .
-docker build --target runner -t heartnote-app .
+# Images are built in CI, not on this box — a t3.micro doesn't have enough
+# RAM to run `next build` once the app got large; it swap-thrashes instead
+# of completing. CI drops both stages as a tarball in S3; we just load them.
+: "${RELEASE_SHA:?RELEASE_SHA must be set (the git SHA CI built and uploaded)}"
+: "${RELEASES_BUCKET:?RELEASES_BUCKET must be set}"
+
+echo "==> Fetching build ${RELEASE_SHA} from s3://${RELEASES_BUCKET}"
+aws s3 cp "s3://${RELEASES_BUCKET}/releases/${RELEASE_SHA}.tar.gz" /tmp/heartnote-release.tar.gz
+gunzip -c /tmp/heartnote-release.tar.gz | docker load
+rm -f /tmp/heartnote-release.tar.gz
+docker tag "heartnote-builder:${RELEASE_SHA}" heartnote-builder
+docker tag "heartnote-app:${RELEASE_SHA}" heartnote-app
 
 echo "==> Syncing database schema"
 docker run --rm --env-file .env heartnote-builder npx prisma db push --skip-generate

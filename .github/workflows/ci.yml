@@ -70,11 +70,29 @@ jobs:
       contents: read
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION || 'il-central-1' }}
+
+      # Built here, not on the EC2 box: a t3.micro doesn't have enough RAM
+      # to run `next build` reliably now that the app is large — it
+      # swap-thrashes instead of completing. GitHub's runner has plenty.
+      - name: Build images
+        working-directory: client
+        run: |
+          docker build --target builder -t "heartnote-builder:${GITHUB_SHA}" .
+          docker build --target runner -t "heartnote-app:${GITHUB_SHA}" .
+
+      - name: Push build to S3
+        working-directory: .
+        run: |
+          docker save "heartnote-builder:${GITHUB_SHA}" "heartnote-app:${GITHUB_SHA}" \
+            | gzip > release.tar.gz
+          aws s3 cp release.tar.gz "s3://${{ vars.RELEASES_BUCKET }}/releases/${GITHUB_SHA}.tar.gz"
 
       # SSM runs the command on the instance through the agent's outbound
       # connection, so the box needs no inbound SSH port open to CI.
@@ -86,8 +104,8 @@ jobs:
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --comment "Deploy ${GITHUB_SHA::7}" \
-            --parameters 'commands=["bash /opt/heartnote/infra/aws/deploy.sh"]' \
-            --timeout-seconds 900 \
+            --parameters "commands=[\"RELEASE_SHA=${GITHUB_SHA} RELEASES_BUCKET=${{ vars.RELEASES_BUCKET }} bash /opt/heartnote/infra/aws/deploy.sh\"]" \
+            --timeout-seconds 300 \
             --query "Command.CommandId" --output text)
           echo "command_id=$command_id" >> "$GITHUB_OUTPUT"
           echo "Dispatched SSM command $command_id"
@@ -98,9 +116,10 @@ jobs:
           command_id="${{ steps.send.outputs.command_id }}"
           instance="${{ secrets.EC2_INSTANCE_ID }}"
 
-          # The build runs on a t3.micro and takes a few minutes; poll
-          # rather than assuming a fixed duration.
-          for _ in $(seq 1 100); do
+          # deploy.sh only pulls the pre-built image from S3 and restarts
+          # the container now — no on-box build — but still poll rather
+          # than assume a fixed duration.
+          for _ in $(seq 1 40); do
             sleep 10
             status=$(aws ssm get-command-invocation \
               --command-id "$command_id" --instance-id "$instance" \
