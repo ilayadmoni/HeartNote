@@ -1,16 +1,110 @@
-# ❤️ HeartNote
+<div align="center">
 
-**HeartNote** is a Hebrew-first digital greeting card platform. Users pick an animated, interactive template, personalize it, and share it as a unique link — no app install, no recipient account.
+<img src=".github/assets/banner.svg" alt="HeartNote: interactive digital greeting cards" width="100%"/>
 
-🌐 **Live:** [heartnote.co.il](https://heartnote.co.il)
+<br/>
+
+<a href="https://www.heartnote.co.il"><img src="https://img.shields.io/badge/▶_Try_it_live-heartnote.co.il-d4826f?style=for-the-badge" alt="Try it live at heartnote.co.il"/></a>
+
+<br/><br/>
+
+[![Next.js](https://img.shields.io/badge/Next.js_14-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](#tech-stack)
+[![TypeScript](https://img.shields.io/badge/TypeScript_strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](#tech-stack)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL_16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](#data-model)
+[![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](#tech-stack)
+[![AWS](https://img.shields.io/badge/AWS_EC2_+_RDS-232F3E?style=for-the-badge&logo=amazonwebservices&logoColor=white)](#infrastructure)
+[![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)](#infrastructure)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#infrastructure)
+[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](#cicd-pipeline)
 
 > _יצירת ברכות דיגיטליות מעוצבות – בעברית, לכל אירוע._
+
+</div>
+
+---
+
+## What is HeartNote?
+
+**HeartNote** is a Hebrew-first platform for digital greeting cards, **live in production** at
+[heartnote.co.il](https://www.heartnote.co.il). Users pick an animated, interactive template (a scratch card, a
+decision wheel, love coupons, a holiday scene), personalize it in a live editor, and share it as a unique link.
+The recipient doesn't need an app or an account.
+
+I built the whole thing myself: product, UI, backend, database, security, infrastructure and delivery. I then
+**migrated it from Supabase + Vercel to self-hosted AWS** that I provision with Terraform and deploy through a
+zero-inbound-port CI/CD pipeline.
+
+<table>
+<tr>
+<td align="center" width="25%"><h3>20+</h3><sub>interactive, animated card templates</sub></td>
+<td align="center" width="25%"><h3>0</h3><sub>inbound ports opened for deploys (OIDC + SSM)</sub></td>
+<td align="center" width="25%"><h3>0</h3><sub>users who had to reset a password after the migration</sub></td>
+<td align="center" width="25%"><h3>$0</h3><sub>per month on the AWS Free Tier</sub></td>
+</tr>
+</table>
+
+## Features
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+### 🎨 Interactive templates
+Scratch cards, decision wheels, slot machines, love coupons, quizzes, timelines and Jewish-holiday scenes,
+all animated with Framer Motion.
+
+</td>
+<td width="33%" valign="top">
+
+### ✏️ Live editor
+Real-time preview while customizing text, colors and images. Fields are generated from each template's
+JSON schema and validated with Zod.
+
+</td>
+<td width="33%" valign="top">
+
+### 🔗 Shareable links
+Every card gets a public URL with a verification code. Guests can save a draft before signing in.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+### 🔐 Dual authentication
+Email/password (bcrypt) and Google OAuth through Auth.js v5, with email verification and password reset.
+
+</td>
+<td valign="top">
+
+### 💎 Tiered plans
+A free tier with quotas. Paid tiers remove branding and unlock premium templates. Quotas are enforced in transactions.
+
+</td>
+<td valign="top">
+
+### 🌐 RTL, dark mode, a11y
+Built right-to-left for Hebrew, with system-aware dark mode, focus trapping, keyboard navigation and ARIA labels.
+
+</td>
+</tr>
+</table>
+
+## Engineering highlights
+
+| What I did | How |
+| --- | --- |
+| **Moved a live product from Supabase + Vercel to AWS** | Rewrote auth on Auth.js v5 and data access on Prisma. Turned RLS policies and DB triggers into explicit, testable application guards. Migrated the data with `pg_dump` and carried bcrypt hashes over unchanged |
+| **Infrastructure as code** | EC2, RDS, security groups and IAM in Terraform. The database has no public route and is reachable only from the app's security group |
+| **Secure, keyless CI/CD** | GitHub Actions runs type-check → lint → tests → build, then assumes a branch-pinned AWS role via **OIDC** and deploys through **SSM**. No stored AWS keys, and SSH is never opened to CI |
+| **Defense in depth** | CSRF origin validation, an auth wrapper on every Server Action, Redis rate limiting, uniform login failures (no account enumeration), PII-masking logger, strict security headers |
+| **A clean error contract** | Every Server Action returns a typed `ActionResult<T>` discriminated union. Raw errors never reach the client |
+| **Real production debugging** | Fixed OAuth `redirect_uri_mismatch` behind a proxy, a cross-hostname CSRF rejection, a TLS name mismatch and OOM builds on a 1 GB instance ([details](#migration-history)) |
 
 ---
 
 ## Table of Contents
 
-- [Overview](#overview)
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
 - [CI/CD Pipeline](#cicd-pipeline)
@@ -22,21 +116,6 @@
 - [Local Development](#local-development)
 - [Deployment & Operations](#deployment--operations)
 - [Migration History](#migration-history)
-
----
-
-## Overview
-
-| | |
-| --- | --- |
-| 🎨 **Interactive templates** | 20 animated card types — scratch cards, decision wheels, love coupons, holiday scenes, quizzes, timelines |
-| ✏️ **Live editor** | Real-time preview while customizing text, colors, and images |
-| 🔗 **Shareable links** | Every card gets a public URL with a verification code |
-| 🔐 **Dual auth** | Email/password (bcrypt) and Google OAuth, both through Auth.js v5 |
-| 💎 **Tiered plans** | Free tier with quotas; paid tiers remove branding and unlock premium templates |
-| 🌐 **RTL-first** | Built right-to-left for Hebrew, with Hebrew-optimized typography |
-| 🌙 **Dark mode** | System-aware and manually toggleable |
-| ♿ **Accessible** | Focus trapping, keyboard navigation, ARIA labels |
 
 ---
 
@@ -464,3 +543,15 @@ Notable problems solved along the way:
 ## License
 
 MIT
+
+---
+
+<div align="center">
+
+**Built by [Ilay Admoni](https://github.com/ilayadmoni)**: Computer Science student and Application Support Engineer (Tier 3) at Elbit Systems.
+
+[![GitHub](https://img.shields.io/badge/GitHub-ilayadmoni-181717?style=flat-square&logo=github)](https://github.com/ilayadmoni)
+[![Email](https://img.shields.io/badge/Email-ilayadmoni9%40gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:ilayadmoni9@gmail.com)
+&nbsp;·&nbsp; See also **[AutoOps](https://github.com/ilayadmoni/AutoOps)**, an AI-assisted platform for secure Linux automation
+
+</div>
