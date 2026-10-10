@@ -548,7 +548,7 @@ MIT
 
 <div align="center">
 
-**Built by [Ilay Admoni](https://github.com/ilayadmoni)**: Computer Science student and Application Support Engineer (Tier 3) at Elbit Systems.
+**Built by [Ilay Admoni](https://github.com/ilayadmoni)**: Computer Science student and software engineer.
 
 [![GitHub](https://img.shields.io/badge/GitHub-ilayadmoni-181717?style=flat-square&logo=github)](https://github.com/ilayadmoni)
 [![Email](https://img.shields.io/badge/Email-ilayadmoni9%40gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:ilayadmoni9@gmail.com)
